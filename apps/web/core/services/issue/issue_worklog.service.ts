@@ -114,14 +114,8 @@ export class IssueWorkLogService extends APIService {
 
   // ── Summary ──────────────────────────────────────────────────────────
 
-  async getWorklogSummary(
-    workspaceSlug: string,
-    projectId: string,
-    issueId: string
-  ): Promise<TIssueWorkLogSummary> {
-    return this.get(
-      `/api/workspaces/${workspaceSlug}/projects/${projectId}/issues/${issueId}/worklog-summary/`
-    )
+  async getWorklogSummary(workspaceSlug: string, projectId: string, issueId: string): Promise<TIssueWorkLogSummary> {
+    return this.get(`/api/workspaces/${workspaceSlug}/projects/${projectId}/issues/${issueId}/worklog-summary/`)
       .then((res) => res?.data)
       .catch((err) => {
         throw err?.response?.data;
