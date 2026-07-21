@@ -97,6 +97,179 @@
           }
         }
       },
+      "custom_fields": {
+        "add_field": "Tambah bidang",
+        "projects": {
+          "title": "Proyek",
+          "description": "Tentukan bidang tambahan yang muncul saat membuat atau mengedit proyek di ruang kerja ini.",
+          "section_title": "Bidang kustom",
+          "section_description": "Informasi tambahan yang ditentukan untuk proyek di ruang kerja ini.",
+          "save_values": "Simpan bidang kustom",
+          "section_title_short": "Bidang kustom"
+        },
+        "work_items": {
+          "title": "Item Kerja",
+          "description": "Tentukan bidang tambahan yang muncul pada item kerja di seluruh ruang kerja ini.",
+          "section_title": "Bidang kustom",
+          "tab_empty": "Belum ada bidang kustom yang ditentukan untuk item kerja."
+        },
+        "types": {
+          "text": "Teks",
+          "paragraph": "Paragraf",
+          "number": "Angka",
+          "single_select": "Pilihan",
+          "multi_select": "Pilihan ganda",
+          "boolean": "Kotak centang",
+          "radio": "Tombol radio",
+          "date": "Tanggal",
+          "datetime": "Tanggal & waktu",
+          "color": "Warna",
+          "url": "Hyperlink",
+          "email": "Email"
+        },
+        "form": {
+          "create_title": "Buat bidang kustom",
+          "edit_title": "Edit bidang kustom",
+          "field_type": "Tipe bidang",
+          "type_locked": "Tipe bidang tidak dapat diubah setelah dibuat.",
+          "name": "Nama",
+          "name_placeholder": "mis. Departemen",
+          "name_required": "Nama wajib diisi",
+          "description": "Deskripsi",
+          "description_placeholder": "Teks bantuan yang ditampilkan di bawah bidang (opsional)",
+          "options": "Opsi",
+          "option_label": "Label opsi",
+          "add_option": "Tambah opsi",
+          "options_required": "Tambahkan setidaknya satu opsi.",
+          "placeholder": "Teks placeholder",
+          "min_length": "Panjang min",
+          "max_length": "Panjang maks",
+          "min": "Min",
+          "max": "Maks",
+          "step": "Langkah",
+          "min_date": "Tanggal paling awal",
+          "max_date": "Tanggal paling akhir",
+          "fixed": "Tanggal tetap",
+          "relative": "Relatif terhadap hari ini",
+          "today": "Hari ini",
+          "relative_offset": "Selisih dari hari ini",
+          "relative_unit": {
+            "d": "hari",
+            "w": "minggu",
+            "m": "bulan",
+            "y": "tahun"
+          },
+          "checkbox_label": "Label kotak centang",
+          "default_value": "Nilai bawaan",
+          "width": "Lebar (kolom)",
+          "width_hint": "1–12 dari grid 12 kolom",
+          "required": "Diperlukan",
+          "required_help": "Pengguna harus mengisi bidang ini.",
+          "admin_only": "Hanya admin",
+          "admin_only_help": "Hanya admin ruang kerja yang dapat melihat dan mengedit bidang ini.",
+          "active": "Aktif",
+          "active_help": "Bidang yang tidak aktif disembunyikan dari formulir proyek.",
+          "save": "Simpan perubahan",
+          "create": "Buat bidang",
+          "required_fields_missing": "Silakan isi semua bidang kustom yang diperlukan."
+        },
+        "list": {
+          "required": "Diperlukan",
+          "admin_only": "Hanya admin",
+          "inactive": "Tidak aktif",
+          "width": "Lebar {width}/12"
+        },
+        "empty": {
+          "title": "Belum ada bidang kustom",
+          "description": "Buat bidang kustom untuk mengumpulkan informasi tambahan pada setiap proyek di ruang kerja ini."
+        },
+        "delete": {
+          "title": "Hapus bidang kustom",
+          "description": "Apakah Anda yakin ingin menghapus \"{name}\"? Nilai yang tersimpan untuk bidang ini akan dihapus. Tindakan ini tidak dapat dibatalkan."
+        },
+        "toasts": {
+          "created": {
+            "title": "Bidang dibuat",
+            "message": "Bidang kustom telah dibuat."
+          },
+          "updated": {
+            "title": "Bidang diperbarui",
+            "message": "Bidang kustom telah diperbarui."
+          },
+          "removed": {
+            "title": "Bidang dihapus",
+            "message": "Bidang kustom telah dihapus."
+          },
+          "not_removed": {
+            "message": "Bidang kustom tidak dapat dihapus. Silakan coba lagi."
+          },
+          "values_saved": {
+            "title": "Tersimpan",
+            "message": "Nilai bidang kustom telah disimpan."
+          },
+          "error": {
+            "title": "Ada yang salah",
+            "message": "Silakan coba lagi."
+          }
+        }
+      },
+      "crm_sync": {
+        "title": "Sinkronisasi CRM",
+        "heading": "Sinkronisasi CRM",
+        "description": "Kirim jam yang tercatat setiap bulan ke CRM Anda secara otomatis agar penagihan klien tetap sinkron.",
+        "form": {
+          "crm_url": "URL dasar CRM",
+          "crm_url_placeholder": "https://crm.example.com",
+          "crm_url_required": "URL dasar CRM wajib diisi.",
+          "api_key": "Kunci API",
+          "api_key_placeholder": "Bearer token dari modul Plane API di CRM",
+          "api_key_set": "Kunci sudah dikonfigurasi. Biarkan kosong untuk mempertahankannya.",
+          "api_key_required": "Kunci API wajib diisi.",
+          "project_id_field": "Bidang kustom Plane untuk ID proyek CRM",
+          "project_id_field_help": "Bidang kustom proyek yang nilainya berisi ID proyek CRM yang sesuai.",
+          "project_id_field_none": "Pilih bidang kustom",
+          "invoice_hours_field": "ID bidang jam faktur CRM",
+          "invoice_hours_field_help": "ID numerik dari bidang kustom \"Invoice hours\" di CRM.",
+          "fetch_fields": "Ambil dari CRM",
+          "active": "Aktif",
+          "active_help": "Saat nonaktif, sinkronisasi bulanan dilewati untuk ruang kerja ini.",
+          "save": "Simpan perubahan",
+          "test_connection": "Uji koneksi",
+          "sync_now": "Sinkronkan sekarang"
+        },
+        "logs": {
+          "title": "Sinkronisasi terbaru",
+          "empty": "Belum ada sinkronisasi yang dijalankan.",
+          "month": "Bulan",
+          "status": "Status",
+          "synced": "Tersinkronisasi",
+          "skipped": "Dilewati",
+          "processed": "Diproses",
+          "ran_at": "Dijalankan pada"
+        },
+        "toasts": {
+          "saved": {
+            "title": "Tersimpan",
+            "message": "Pengaturan integrasi CRM telah disimpan."
+          },
+          "connection_ok": {
+            "title": "Koneksi berhasil",
+            "message": "Berhasil menjangkau CRM dan menemukan {count} proyek."
+          },
+          "connection_failed": {
+            "title": "Koneksi gagal",
+            "message": "Tidak dapat menjangkau CRM. Periksa URL dan kunci API."
+          },
+          "sync_started": {
+            "title": "Sinkronisasi dimulai",
+            "message": "Sinkronisasi berjalan di latar belakang. Periksa sinkronisasi terbaru sebentar lagi."
+          },
+          "error": {
+            "title": "Ada yang salah",
+            "message": "Silakan coba lagi."
+          }
+        }
+      },
       "webhooks": {
         "heading": "Webhook",
         "description": "Otomatiskan notifikasi ke layanan eksternal saat peristiwa proyek terjadi.",

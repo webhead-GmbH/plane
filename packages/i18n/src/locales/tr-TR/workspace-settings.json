@@ -97,6 +97,179 @@
           }
         }
       },
+      "custom_fields": {
+        "add_field": "Alan ekle",
+        "projects": {
+          "title": "Projeler",
+          "description": "Bu çalışma alanında proje oluştururken veya düzenlerken görünen ek alanları tanımlayın.",
+          "section_title": "Özel alanlar",
+          "section_description": "Bu çalışma alanındaki projeler için tanımlanan ek bilgiler.",
+          "save_values": "Özel alanları kaydet",
+          "section_title_short": "Özel alanlar"
+        },
+        "work_items": {
+          "title": "İş Öğeleri",
+          "description": "Bu çalışma alanındaki iş öğelerinde görünen ek alanları tanımlayın.",
+          "section_title": "Özel alanlar",
+          "tab_empty": "İş öğeleri için henüz özel alan tanımlanmadı."
+        },
+        "types": {
+          "text": "Metin",
+          "paragraph": "Paragraf",
+          "number": "Sayı",
+          "single_select": "Seçim",
+          "multi_select": "Çoklu seçim",
+          "boolean": "Onay kutusu",
+          "radio": "Radyo düğmesi",
+          "date": "Tarih",
+          "datetime": "Tarih ve saat",
+          "color": "Renk",
+          "url": "Köprü",
+          "email": "E-posta"
+        },
+        "form": {
+          "create_title": "Özel alan oluştur",
+          "edit_title": "Özel alanı düzenle",
+          "field_type": "Alan türü",
+          "type_locked": "Alan türü oluşturulduktan sonra değiştirilemez.",
+          "name": "Ad",
+          "name_placeholder": "örn. Departman",
+          "name_required": "Ad gereklidir",
+          "description": "Açıklama",
+          "description_placeholder": "Alanın altında gösterilen yardım metni (isteğe bağlı)",
+          "options": "Seçenekler",
+          "option_label": "Seçenek etiketi",
+          "add_option": "Seçenek ekle",
+          "options_required": "En az bir seçenek ekleyin.",
+          "placeholder": "Yer tutucu",
+          "min_length": "Min uzunluk",
+          "max_length": "Maks uzunluk",
+          "min": "Min",
+          "max": "Maks",
+          "step": "Adım",
+          "min_date": "En erken tarih",
+          "max_date": "En geç tarih",
+          "fixed": "Sabit tarih",
+          "relative": "Bugüne göre",
+          "today": "Bugün",
+          "relative_offset": "Bugüne göre fark",
+          "relative_unit": {
+            "d": "gün",
+            "w": "hafta",
+            "m": "ay",
+            "y": "yıl"
+          },
+          "checkbox_label": "Onay kutusu etiketi",
+          "default_value": "Varsayılan değer",
+          "width": "Genişlik (sütun)",
+          "width_hint": "12 sütunluk ızgarada 1–12",
+          "required": "Gerekli",
+          "required_help": "Kullanıcılar bu alanı doldurmak zorundadır.",
+          "admin_only": "Yalnızca yönetici",
+          "admin_only_help": "Bu alanı yalnızca çalışma alanı yöneticileri görebilir ve düzenleyebilir.",
+          "active": "Aktif",
+          "active_help": "Pasif alanlar proje formlarında gizlenir.",
+          "save": "Değişiklikleri kaydet",
+          "create": "Alan oluştur",
+          "required_fields_missing": "Lütfen gerekli tüm özel alanları doldurun."
+        },
+        "list": {
+          "required": "Gerekli",
+          "admin_only": "Yalnızca yönetici",
+          "inactive": "Pasif",
+          "width": "Genişlik {width}/12"
+        },
+        "empty": {
+          "title": "Henüz özel alan yok",
+          "description": "Bu çalışma alanındaki her proje için ek bilgi toplamak üzere özel alanlar oluşturun."
+        },
+        "delete": {
+          "title": "Özel alanı sil",
+          "description": "\"{name}\" alanını silmek istediğinizden emin misiniz? Bu alan için saklanan değerler kaldırılacaktır. Bu işlem geri alınamaz."
+        },
+        "toasts": {
+          "created": {
+            "title": "Alan oluşturuldu",
+            "message": "Özel alan oluşturuldu."
+          },
+          "updated": {
+            "title": "Alan güncellendi",
+            "message": "Özel alan güncellendi."
+          },
+          "removed": {
+            "title": "Alan kaldırıldı",
+            "message": "Özel alan kaldırıldı."
+          },
+          "not_removed": {
+            "message": "Özel alan kaldırılamadı. Lütfen tekrar deneyin."
+          },
+          "values_saved": {
+            "title": "Kaydedildi",
+            "message": "Özel alan değerleri kaydedildi."
+          },
+          "error": {
+            "title": "Bir şeyler yanlış gitti",
+            "message": "Lütfen tekrar deneyin."
+          }
+        }
+      },
+      "crm_sync": {
+        "title": "CRM Senkronizasyonu",
+        "heading": "CRM Senkronizasyonu",
+        "description": "Her ayın kaydedilen saatlerini otomatik olarak CRM'nize gönderin, böylece müşteri faturalandırması senkron kalsın.",
+        "form": {
+          "crm_url": "CRM temel URL adresi",
+          "crm_url_placeholder": "https://crm.example.com",
+          "crm_url_required": "CRM temel URL adresi gereklidir.",
+          "api_key": "API anahtarı",
+          "api_key_placeholder": "CRM'deki Plane API modülünden alınan Bearer token",
+          "api_key_set": "Bir anahtar yapılandırılmış. Korumak için boş bırakın.",
+          "api_key_required": "API anahtarı gereklidir.",
+          "project_id_field": "CRM proje ID'si için Plane özel alanı",
+          "project_id_field_help": "Değeri, eşleşen CRM proje ID'sini içeren bir proje özel alanı.",
+          "project_id_field_none": "Bir özel alan seçin",
+          "invoice_hours_field": "CRM fatura saatleri alanının ID'si",
+          "invoice_hours_field_help": "CRM'deki \"Invoice hours\" özel alanının sayısal ID'si.",
+          "fetch_fields": "CRM'den al",
+          "active": "Aktif",
+          "active_help": "Kapalıyken bu çalışma alanı için aylık senkronizasyon atlanır.",
+          "save": "Değişiklikleri kaydet",
+          "test_connection": "Bağlantıyı test et",
+          "sync_now": "Şimdi senkronize et"
+        },
+        "logs": {
+          "title": "Son senkronizasyonlar",
+          "empty": "Henüz senkronizasyon çalıştırılmadı.",
+          "month": "Ay",
+          "status": "Durum",
+          "synced": "Senkronize edildi",
+          "skipped": "Atlandı",
+          "processed": "İşlendi",
+          "ran_at": "Çalıştırılma zamanı"
+        },
+        "toasts": {
+          "saved": {
+            "title": "Kaydedildi",
+            "message": "CRM entegrasyon ayarları kaydedildi."
+          },
+          "connection_ok": {
+            "title": "Bağlantı başarılı",
+            "message": "CRM'ye ulaşıldı ve {count} proje bulundu."
+          },
+          "connection_failed": {
+            "title": "Bağlantı başarısız",
+            "message": "CRM'ye ulaşılamadı. URL adresini ve API anahtarını kontrol edin."
+          },
+          "sync_started": {
+            "title": "Senkronizasyon başlatıldı",
+            "message": "Senkronizasyon arka planda çalışıyor. Kısa süre sonra son senkronizasyonları kontrol edin."
+          },
+          "error": {
+            "title": "Bir şeyler yanlış gitti",
+            "message": "Lütfen tekrar deneyin."
+          }
+        }
+      },
       "webhooks": {
         "heading": "Webhook'lar",
         "description": "Proje olayları gerçekleştiğinde harici hizmetlere bildirimleri otomatikleştirin.",

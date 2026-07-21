@@ -97,6 +97,179 @@
           }
         }
       },
+      "custom_fields": {
+        "add_field": "Pridať pole",
+        "projects": {
+          "title": "Projekty",
+          "description": "Definujte ďalšie polia, ktoré sa zobrazujú pri vytváraní alebo úprave projektov v tomto pracovnom priestore.",
+          "section_title": "Vlastné polia",
+          "section_description": "Doplňujúce informácie definované pre projekty v tomto pracovnom priestore.",
+          "save_values": "Uložiť vlastné polia",
+          "section_title_short": "Vlastné polia"
+        },
+        "work_items": {
+          "title": "Pracovné položky",
+          "description": "Definujte ďalšie polia, ktoré sa zobrazujú pri pracovných položkách v celom tomto pracovnom priestore.",
+          "section_title": "Vlastné polia",
+          "tab_empty": "Pre pracovné položky zatiaľ nie sú definované žiadne vlastné polia."
+        },
+        "types": {
+          "text": "Text",
+          "paragraph": "Odsek",
+          "number": "Číslo",
+          "single_select": "Výber",
+          "multi_select": "Viacnásobný výber",
+          "boolean": "Zaškrtávacie políčko",
+          "radio": "Prepínač",
+          "date": "Dátum",
+          "datetime": "Dátum a čas",
+          "color": "Farba",
+          "url": "Hypertextový odkaz",
+          "email": "E-mail"
+        },
+        "form": {
+          "create_title": "Vytvoriť vlastné pole",
+          "edit_title": "Upraviť vlastné pole",
+          "field_type": "Typ poľa",
+          "type_locked": "Typ poľa nie je možné po vytvorení zmeniť.",
+          "name": "Názov",
+          "name_placeholder": "napr. Oddelenie",
+          "name_required": "Názov je povinný",
+          "description": "Popis",
+          "description_placeholder": "Text pomocníka zobrazený pod poľom (voliteľné)",
+          "options": "Možnosti",
+          "option_label": "Označenie možnosti",
+          "add_option": "Pridať možnosť",
+          "options_required": "Pridajte aspoň jednu možnosť.",
+          "placeholder": "Zástupný text",
+          "min_length": "Minimálna dĺžka",
+          "max_length": "Maximálna dĺžka",
+          "min": "Min",
+          "max": "Max",
+          "step": "Krok",
+          "min_date": "Najskorší dátum",
+          "max_date": "Najneskorší dátum",
+          "fixed": "Pevný dátum",
+          "relative": "Relatívne k dnešku",
+          "today": "Dnes",
+          "relative_offset": "Posun od dneška",
+          "relative_unit": {
+            "d": "dni",
+            "w": "týždne",
+            "m": "mesiace",
+            "y": "roky"
+          },
+          "checkbox_label": "Označenie zaškrtávacieho políčka",
+          "default_value": "Predvolená hodnota",
+          "width": "Šírka (stĺpce)",
+          "width_hint": "1–12 z mriežky s 12 stĺpcami",
+          "required": "Povinné",
+          "required_help": "Používatelia musia toto pole vyplniť.",
+          "admin_only": "Iba pre administrátorov",
+          "admin_only_help": "Toto pole môžu vidieť a upravovať iba administrátori pracovného priestoru.",
+          "active": "Aktívne",
+          "active_help": "Neaktívne polia sú vo formulároch projektov skryté.",
+          "save": "Uložiť zmeny",
+          "create": "Vytvoriť pole",
+          "required_fields_missing": "Vyplňte prosím všetky povinné vlastné polia."
+        },
+        "list": {
+          "required": "Povinné",
+          "admin_only": "Iba pre administrátorov",
+          "inactive": "Neaktívne",
+          "width": "Šírka {width}/12"
+        },
+        "empty": {
+          "title": "Zatiaľ žiadne vlastné polia",
+          "description": "Vytvorte vlastné polia, aby ste pri každom projekte v tomto pracovnom priestore zaznamenali doplňujúce informácie."
+        },
+        "delete": {
+          "title": "Zmazať vlastné pole",
+          "description": "Naozaj chcete zmazať „{name}“? Uložené hodnoty tohto poľa budú odstránené. Túto akciu nemožno vrátiť späť."
+        },
+        "toasts": {
+          "created": {
+            "title": "Pole vytvorené",
+            "message": "Vlastné pole bolo vytvorené."
+          },
+          "updated": {
+            "title": "Pole aktualizované",
+            "message": "Vlastné pole bolo aktualizované."
+          },
+          "removed": {
+            "title": "Pole odstránené",
+            "message": "Vlastné pole bolo odstránené."
+          },
+          "not_removed": {
+            "message": "Vlastné pole sa nepodarilo odstrániť. Skúste to prosím znova."
+          },
+          "values_saved": {
+            "title": "Uložené",
+            "message": "Hodnoty vlastných polí boli uložené."
+          },
+          "error": {
+            "title": "Niečo sa pokazilo",
+            "message": "Skúste to prosím znova."
+          }
+        }
+      },
+      "crm_sync": {
+        "title": "Synchronizácia CRM",
+        "heading": "Synchronizácia CRM",
+        "description": "Automaticky odosielajte zaznamenané hodiny za každý mesiac do svojho CRM, aby fakturácia klientov zostala synchronizovaná.",
+        "form": {
+          "crm_url": "Základná URL adresa CRM",
+          "crm_url_placeholder": "https://crm.example.com",
+          "crm_url_required": "Základná URL adresa CRM je povinná.",
+          "api_key": "Kľúč API",
+          "api_key_placeholder": "Token Bearer z modulu „Plane API“ v CRM",
+          "api_key_set": "Kľúč je nakonfigurovaný. Ponechajte prázdne, ak ho chcete zachovať.",
+          "api_key_required": "Kľúč API je povinný.",
+          "project_id_field": "Vlastné pole Plane pre ID projektu v CRM",
+          "project_id_field_help": "Vlastné pole projektu, ktorého hodnota obsahuje zodpovedajúce ID projektu v CRM.",
+          "project_id_field_none": "Vyberte vlastné pole",
+          "invoice_hours_field": "ID poľa fakturovaných hodín v CRM",
+          "invoice_hours_field_help": "Číselné ID vlastného poľa „Invoice hours“ v CRM.",
+          "fetch_fields": "Načítať z CRM",
+          "active": "Aktívne",
+          "active_help": "Keď je vypnuté, mesačná synchronizácia sa pre tento pracovný priestor preskočí.",
+          "save": "Uložiť zmeny",
+          "test_connection": "Otestovať pripojenie",
+          "sync_now": "Synchronizovať teraz"
+        },
+        "logs": {
+          "title": "Nedávne synchronizácie",
+          "empty": "Zatiaľ neprebehli žiadne synchronizácie.",
+          "month": "Mesiac",
+          "status": "Stav",
+          "synced": "Synchronizované",
+          "skipped": "Preskočené",
+          "processed": "Spracované",
+          "ran_at": "Spustené"
+        },
+        "toasts": {
+          "saved": {
+            "title": "Uložené",
+            "message": "Nastavenia integrácie CRM boli uložené."
+          },
+          "connection_ok": {
+            "title": "Pripojenie úspešné",
+            "message": "Pripojenie k CRM prebehlo úspešne. Počet nájdených projektov: {count}."
+          },
+          "connection_failed": {
+            "title": "Pripojenie zlyhalo",
+            "message": "Nepodarilo sa pripojiť k CRM. Skontrolujte URL adresu a kľúč API."
+          },
+          "sync_started": {
+            "title": "Synchronizácia spustená",
+            "message": "Synchronizácia prebieha na pozadí. O chvíľu skontrolujte nedávne synchronizácie."
+          },
+          "error": {
+            "title": "Niečo sa pokazilo",
+            "message": "Skúste to prosím znova."
+          }
+        }
+      },
       "webhooks": {
         "heading": "Webhooky",
         "description": "Automatizujte oznámenia do externých služieb pri udalostiach v projekte.",

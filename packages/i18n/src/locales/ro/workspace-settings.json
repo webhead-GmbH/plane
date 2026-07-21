@@ -97,6 +97,179 @@
           }
         }
       },
+      "custom_fields": {
+        "add_field": "Adaugă câmp",
+        "projects": {
+          "title": "Proiecte",
+          "description": "Definiți câmpuri suplimentare care apar la crearea sau editarea proiectelor din acest spațiu de lucru.",
+          "section_title": "Câmpuri personalizate",
+          "section_description": "Informații suplimentare definite pentru proiectele din acest spațiu de lucru.",
+          "save_values": "Salvează câmpurile personalizate",
+          "section_title_short": "Câmpuri personalizate"
+        },
+        "work_items": {
+          "title": "Activități",
+          "description": "Definiți câmpuri suplimentare care apar pe activitățile din acest spațiu de lucru.",
+          "section_title": "Câmpuri personalizate",
+          "tab_empty": "Nu există încă niciun câmp personalizat definit pentru activități."
+        },
+        "types": {
+          "text": "Text",
+          "paragraph": "Paragraf",
+          "number": "Număr",
+          "single_select": "Selecție",
+          "multi_select": "Selecție multiplă",
+          "boolean": "Casetă de bifat",
+          "radio": "Buton radio",
+          "date": "Dată",
+          "datetime": "Dată și oră",
+          "color": "Culoare",
+          "url": "Hyperlink",
+          "email": "E-mail"
+        },
+        "form": {
+          "create_title": "Creează câmp personalizat",
+          "edit_title": "Editează câmpul personalizat",
+          "field_type": "Tip de câmp",
+          "type_locked": "Tipul câmpului nu poate fi modificat după creare.",
+          "name": "Nume",
+          "name_placeholder": "ex.: Departament",
+          "name_required": "Numele este obligatoriu",
+          "description": "Descriere",
+          "description_placeholder": "Text de ajutor afișat sub câmp (opțional)",
+          "options": "Opțiuni",
+          "option_label": "Eticheta opțiunii",
+          "add_option": "Adaugă opțiune",
+          "options_required": "Adăugați cel puțin o opțiune.",
+          "placeholder": "Text substituent",
+          "min_length": "Lungime min.",
+          "max_length": "Lungime max.",
+          "min": "Min",
+          "max": "Max",
+          "step": "Pas",
+          "min_date": "Data minimă",
+          "max_date": "Data maximă",
+          "fixed": "Dată fixă",
+          "relative": "Relativă la ziua curentă",
+          "today": "Astăzi",
+          "relative_offset": "Decalaj față de ziua curentă",
+          "relative_unit": {
+            "d": "zile",
+            "w": "săptămâni",
+            "m": "luni",
+            "y": "ani"
+          },
+          "checkbox_label": "Eticheta casetei de bifat",
+          "default_value": "Valoare implicită",
+          "width": "Lățime (coloane)",
+          "width_hint": "1–12 dintr-o grilă cu 12 coloane",
+          "required": "Obligatoriu",
+          "required_help": "Utilizatorii trebuie să completeze acest câmp.",
+          "admin_only": "Doar administratori",
+          "admin_only_help": "Doar administratorii spațiului de lucru pot vedea și edita acest câmp.",
+          "active": "Activ",
+          "active_help": "Câmpurile inactive sunt ascunse în formularele de proiect.",
+          "save": "Salvează modificările",
+          "create": "Creează câmpul",
+          "required_fields_missing": "Vă rugăm să completați toate câmpurile personalizate obligatorii."
+        },
+        "list": {
+          "required": "Obligatoriu",
+          "admin_only": "Doar administratori",
+          "inactive": "Inactiv",
+          "width": "Lățime {width}/12"
+        },
+        "empty": {
+          "title": "Nu există încă câmpuri personalizate",
+          "description": "Creați câmpuri personalizate pentru a colecta informații suplimentare despre fiecare proiect din acest spațiu de lucru."
+        },
+        "delete": {
+          "title": "Șterge câmpul personalizat",
+          "description": "Sigur doriți să ștergeți „{name}”? Valorile stocate pentru acest câmp vor fi eliminate. Această acțiune nu poate fi anulată."
+        },
+        "toasts": {
+          "created": {
+            "title": "Câmp creat",
+            "message": "Câmpul personalizat a fost creat."
+          },
+          "updated": {
+            "title": "Câmp actualizat",
+            "message": "Câmpul personalizat a fost actualizat."
+          },
+          "removed": {
+            "title": "Câmp eliminat",
+            "message": "Câmpul personalizat a fost eliminat."
+          },
+          "not_removed": {
+            "message": "Câmpul personalizat nu a putut fi eliminat. Vă rugăm să încercați din nou."
+          },
+          "values_saved": {
+            "title": "Salvat",
+            "message": "Valorile câmpurilor personalizate au fost salvate."
+          },
+          "error": {
+            "title": "Ceva nu a funcționat",
+            "message": "Vă rugăm să încercați din nou."
+          }
+        }
+      },
+      "crm_sync": {
+        "title": "Sincronizare CRM",
+        "heading": "Sincronizare CRM",
+        "description": "Trimiteți automat către CRM-ul dumneavoastră orele înregistrate în fiecare lună, astfel încât facturarea clienților să rămână sincronizată.",
+        "form": {
+          "crm_url": "URL de bază al CRM-ului",
+          "crm_url_placeholder": "https://crm.example.com",
+          "crm_url_required": "URL-ul de bază al CRM-ului este obligatoriu.",
+          "api_key": "Cheie API",
+          "api_key_placeholder": "Token Bearer din modulul Plane API al CRM-ului",
+          "api_key_set": "O cheie este configurată. Lăsați gol pentru a o păstra.",
+          "api_key_required": "Cheia API este obligatorie.",
+          "project_id_field": "Câmp personalizat Plane pentru ID-ul proiectului din CRM",
+          "project_id_field_help": "Un câmp personalizat de proiect a cărui valoare conține ID-ul proiectului corespunzător din CRM.",
+          "project_id_field_none": "Selectați un câmp personalizat",
+          "invoice_hours_field": "ID-ul câmpului CRM pentru orele facturate",
+          "invoice_hours_field_help": "ID-ul numeric al câmpului personalizat „Invoice hours” din CRM.",
+          "fetch_fields": "Preia din CRM",
+          "active": "Activ",
+          "active_help": "Când este dezactivată, sincronizarea lunară este omisă pentru acest spațiu de lucru.",
+          "save": "Salvează modificările",
+          "test_connection": "Testează conexiunea",
+          "sync_now": "Sincronizează acum"
+        },
+        "logs": {
+          "title": "Sincronizări recente",
+          "empty": "Nu a fost executată încă nicio sincronizare.",
+          "month": "Lună",
+          "status": "Stare",
+          "synced": "Sincronizat",
+          "skipped": "Omis",
+          "processed": "Procesat",
+          "ran_at": "Executat la"
+        },
+        "toasts": {
+          "saved": {
+            "title": "Salvat",
+            "message": "Setările integrării CRM au fost salvate."
+          },
+          "connection_ok": {
+            "title": "Conexiune reușită",
+            "message": "Conexiune la CRM reușită. {count} proiect(e) găsit(e)."
+          },
+          "connection_failed": {
+            "title": "Conexiune eșuată",
+            "message": "Nu s-a putut realiza conexiunea la CRM. Verificați URL-ul și cheia API."
+          },
+          "sync_started": {
+            "title": "Sincronizare pornită",
+            "message": "Sincronizarea rulează în fundal. Verificați în scurt timp sincronizările recente."
+          },
+          "error": {
+            "title": "Ceva nu a funcționat",
+            "message": "Vă rugăm să încercați din nou."
+          }
+        }
+      },
       "webhooks": {
         "heading": "Webhook-uri",
         "description": "Automatizează notificările către servicii externe când se produc evenimente ale proiectului.",

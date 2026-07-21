@@ -126,7 +126,12 @@ class CrmIntegrationTestEndpoint(BaseAPIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        client = CrmApiClient(base_url=crm_api_url, api_key=crm_api_key, timeout=INTERACTIVE_CRM_TIMEOUT, verify=settings.CRM_VERIFY_SSL)
+        client = CrmApiClient(
+            base_url=crm_api_url,
+            api_key=crm_api_key,
+            timeout=INTERACTIVE_CRM_TIMEOUT,
+            verify=settings.CRM_VERIFY_SSL,
+        )
         try:
             projects = client.get_projects()
         except CrmApiError as exc:
@@ -199,7 +204,12 @@ class CrmIntegrationCrmFieldsEndpoint(BaseAPIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        client = CrmApiClient(base_url=crm_api_url, api_key=crm_api_key, timeout=INTERACTIVE_CRM_TIMEOUT, verify=settings.CRM_VERIFY_SSL)
+        client = CrmApiClient(
+            base_url=crm_api_url,
+            api_key=crm_api_key,
+            timeout=INTERACTIVE_CRM_TIMEOUT,
+            verify=settings.CRM_VERIFY_SSL,
+        )
         try:
             fields = client.get_custom_fields(entity)
         except CrmApiError as exc:

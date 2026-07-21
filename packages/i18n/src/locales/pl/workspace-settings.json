@@ -97,6 +97,179 @@
           }
         }
       },
+      "custom_fields": {
+        "add_field": "Dodaj pole",
+        "projects": {
+          "title": "Projekty",
+          "description": "Definiowanie dodatkowych pól, które pojawiają się podczas tworzenia lub edytowania projektów w tej przestrzeni roboczej.",
+          "section_title": "Pola niestandardowe",
+          "section_description": "Dodatkowe informacje zdefiniowane dla projektów w tej przestrzeni roboczej.",
+          "save_values": "Zapisz pola niestandardowe",
+          "section_title_short": "Pola niestandardowe"
+        },
+        "work_items": {
+          "title": "Elementy pracy",
+          "description": "Definiowanie dodatkowych pól, które pojawiają się w elementach pracy w całej tej przestrzeni roboczej.",
+          "section_title": "Pola niestandardowe",
+          "tab_empty": "Nie zdefiniowano jeszcze żadnych pól niestandardowych dla elementów pracy."
+        },
+        "types": {
+          "text": "Tekst",
+          "paragraph": "Akapit",
+          "number": "Liczba",
+          "single_select": "Lista wyboru",
+          "multi_select": "Wielokrotny wybór",
+          "boolean": "Pole wyboru",
+          "radio": "Przycisk opcji",
+          "date": "Data",
+          "datetime": "Data i godzina",
+          "color": "Kolor",
+          "url": "Hiperłącze",
+          "email": "E-mail"
+        },
+        "form": {
+          "create_title": "Utwórz pole niestandardowe",
+          "edit_title": "Edytuj pole niestandardowe",
+          "field_type": "Typ pola",
+          "type_locked": "Typu pola nie można zmienić po utworzeniu.",
+          "name": "Nazwa",
+          "name_placeholder": "np. Dział",
+          "name_required": "Nazwa jest wymagana",
+          "description": "Opis",
+          "description_placeholder": "Tekst pomocy wyświetlany pod polem (opcjonalnie)",
+          "options": "Opcje",
+          "option_label": "Etykieta opcji",
+          "add_option": "Dodaj opcję",
+          "options_required": "Dodaj co najmniej jedną opcję.",
+          "placeholder": "Symbol zastępczy",
+          "min_length": "Minimalna długość",
+          "max_length": "Maksymalna długość",
+          "min": "Min",
+          "max": "Maks",
+          "step": "Krok",
+          "min_date": "Najwcześniejsza data",
+          "max_date": "Najpóźniejsza data",
+          "fixed": "Data stała",
+          "relative": "Względem dzisiaj",
+          "today": "Dziś",
+          "relative_offset": "Przesunięcie od dzisiaj",
+          "relative_unit": {
+            "d": "dni",
+            "w": "tygodnie",
+            "m": "miesiące",
+            "y": "lata"
+          },
+          "checkbox_label": "Etykieta pola wyboru",
+          "default_value": "Wartość domyślna",
+          "width": "Szerokość (kolumny)",
+          "width_hint": "1–12 siatki o 12 kolumnach",
+          "required": "Wymagane",
+          "required_help": "Użytkownicy muszą wypełnić to pole.",
+          "admin_only": "Tylko dla administratorów",
+          "admin_only_help": "Tylko administratorzy przestrzeni roboczej mogą widzieć i edytować to pole.",
+          "active": "Aktywne",
+          "active_help": "Nieaktywne pola są ukrywane w formularzach projektów.",
+          "save": "Zapisz zmiany",
+          "create": "Utwórz pole",
+          "required_fields_missing": "Wypełnij wszystkie wymagane pola niestandardowe."
+        },
+        "list": {
+          "required": "Wymagane",
+          "admin_only": "Tylko dla administratorów",
+          "inactive": "Nieaktywne",
+          "width": "Szerokość {width}/12"
+        },
+        "empty": {
+          "title": "Brak pól niestandardowych",
+          "description": "Utwórz pola niestandardowe, aby zbierać dodatkowe informacje o każdym projekcie w tej przestrzeni roboczej."
+        },
+        "delete": {
+          "title": "Usuń pole niestandardowe",
+          "description": "Czy na pewno usunąć „{name}”? Zapisane wartości tego pola zostaną usunięte. Tej akcji nie można cofnąć."
+        },
+        "toasts": {
+          "created": {
+            "title": "Pole utworzone",
+            "message": "Pole niestandardowe zostało utworzone."
+          },
+          "updated": {
+            "title": "Pole zaktualizowane",
+            "message": "Pole niestandardowe zostało zaktualizowane."
+          },
+          "removed": {
+            "title": "Pole usunięte",
+            "message": "Pole niestandardowe zostało usunięte."
+          },
+          "not_removed": {
+            "message": "Nie udało się usunąć pola niestandardowego. Spróbuj ponownie."
+          },
+          "values_saved": {
+            "title": "Zapisano",
+            "message": "Wartości pól niestandardowych zostały zapisane."
+          },
+          "error": {
+            "title": "Coś poszło nie tak",
+            "message": "Spróbuj ponownie."
+          }
+        }
+      },
+      "crm_sync": {
+        "title": "Synchronizacja CRM",
+        "heading": "Synchronizacja CRM",
+        "description": "Automatycznie przesyłaj zarejestrowane godziny z każdego miesiąca do systemu CRM, aby rozliczenia klientów pozostawały zsynchronizowane.",
+        "form": {
+          "crm_url": "Podstawowy adres URL systemu CRM",
+          "crm_url_placeholder": "https://crm.example.com",
+          "crm_url_required": "Podstawowy adres URL systemu CRM jest wymagany.",
+          "api_key": "Klucz API",
+          "api_key_placeholder": "Token Bearer z modułu „Plane API” w systemie CRM",
+          "api_key_set": "Klucz jest skonfigurowany. Pozostaw puste, aby go zachować.",
+          "api_key_required": "Klucz API jest wymagany.",
+          "project_id_field": "Pole niestandardowe Plane dla ID projektu w systemie CRM",
+          "project_id_field_help": "Pole niestandardowe projektu, którego wartość zawiera odpowiadające ID projektu w systemie CRM.",
+          "project_id_field_none": "Wybierz pole niestandardowe",
+          "invoice_hours_field": "ID pola godzin do faktury w systemie CRM",
+          "invoice_hours_field_help": "Numeryczne ID pola niestandardowego „Invoice hours” w systemie CRM.",
+          "fetch_fields": "Pobierz z systemu CRM",
+          "active": "Aktywna",
+          "active_help": "Po wyłączeniu miesięczna synchronizacja jest pomijana dla tej przestrzeni roboczej.",
+          "save": "Zapisz zmiany",
+          "test_connection": "Testuj połączenie",
+          "sync_now": "Synchronizuj teraz"
+        },
+        "logs": {
+          "title": "Ostatnie synchronizacje",
+          "empty": "Nie wykonano jeszcze żadnych synchronizacji.",
+          "month": "Miesiąc",
+          "status": "Status",
+          "synced": "Zsynchronizowano",
+          "skipped": "Pominięto",
+          "processed": "Przetworzono",
+          "ran_at": "Wykonano"
+        },
+        "toasts": {
+          "saved": {
+            "title": "Zapisano",
+            "message": "Ustawienia integracji z systemem CRM zostały zapisane."
+          },
+          "connection_ok": {
+            "title": "Połączenie udane",
+            "message": "Nawiązano połączenie z systemem CRM. Liczba znalezionych projektów: {count}."
+          },
+          "connection_failed": {
+            "title": "Połączenie nieudane",
+            "message": "Nie udało się połączyć z systemem CRM. Sprawdź adres URL i klucz API."
+          },
+          "sync_started": {
+            "title": "Synchronizacja rozpoczęta",
+            "message": "Synchronizacja działa w tle. Sprawdź za chwilę ostatnie synchronizacje."
+          },
+          "error": {
+            "title": "Coś poszło nie tak",
+            "message": "Spróbuj ponownie."
+          }
+        }
+      },
       "webhooks": {
         "heading": "Webhooki",
         "description": "Automatyzuj powiadomienia do usług zewnętrznych, gdy wystąpią zdarzenia projektowe.",

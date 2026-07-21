@@ -19,9 +19,10 @@ import { IssueCustomFieldsTab } from "@/components/custom-fields";
 import { useIssueDetail } from "@/hooks/store/use-issue-detail";
 import { useProject } from "@/hooks/store/use-project";
 import { useUser, useUserPermissions } from "@/hooks/store/user";
-// plane web components
-import { IssueActivityWorklogCreateButton } from "@/plane-web/components/issues/worklog/activity/worklog-create-button";
-import { IssueWorklogList } from "@/plane-web/components/issues/worklog/activity/worklog-list";
+// worklog components
+import { IssueActivityWorklogCreateButton } from "@/components/issues/worklog/activity/worklog-create-button";
+import { IssueWorklogList } from "@/components/issues/worklog/activity/worklog-list";
+// local imports
 import type { TActivityTab } from "./activity-tab-bar";
 import { ActivityTabBar } from "./activity-tab-bar";
 import { IssueActivityCommentRoot } from "./activity-comment-root";
@@ -66,7 +67,6 @@ export const IssueActivity = observer(function IssueActivity(props: TIssueActivi
   const {
     issue: { getIssueById },
   } = useIssueDetail();
-
   const { getProjectRoleByWorkspaceSlugAndProjectId } = useUserPermissions();
   const { getProjectById } = useProject();
   const { data: currentUser } = useUser();
@@ -110,10 +110,11 @@ export const IssueActivity = observer(function IssueActivity(props: TIssueActivi
 
   return (
     <div className="space-y-4">
-      {/* header: tab bar + actions */}
+      {/* header: tab bar + actions — the tab strip absorbs the narrow-screen squeeze
+          (it scrolls internally) so the actions stay put and reachable */}
       <div className="flex items-end justify-between gap-2">
         <ActivityTabBar activeTab={activeTab} setActiveTab={setActiveTab} tabs={tabs} />
-        <div className="flex items-center gap-2 pb-1">
+        <div className="flex shrink-0 items-center gap-2 pb-1">
           {isWorklogButtonEnabled && (
             <IssueActivityWorklogCreateButton
               workspaceSlug={workspaceSlug}
