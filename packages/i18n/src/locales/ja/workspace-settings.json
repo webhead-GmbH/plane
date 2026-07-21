@@ -97,6 +97,179 @@
           }
         }
       },
+      "custom_fields": {
+        "add_field": "フィールドを追加",
+        "projects": {
+          "title": "プロジェクト",
+          "description": "このワークスペースでプロジェクトを作成または編集する際に表示される追加フィールドを定義します。",
+          "section_title": "カスタムフィールド",
+          "section_description": "このワークスペースのプロジェクトに対して定義された追加情報です。",
+          "save_values": "カスタムフィールドを保存",
+          "section_title_short": "カスタムフィールド"
+        },
+        "work_items": {
+          "title": "作業項目",
+          "description": "このワークスペース全体の作業項目に表示される追加フィールドを定義します。",
+          "section_title": "カスタムフィールド",
+          "tab_empty": "作業項目にはまだカスタムフィールドが定義されていません。"
+        },
+        "types": {
+          "text": "テキスト",
+          "paragraph": "段落",
+          "number": "数値",
+          "single_select": "選択",
+          "multi_select": "複数選択",
+          "boolean": "チェックボックス",
+          "radio": "ラジオボタン",
+          "date": "日付",
+          "datetime": "日付と時刻",
+          "color": "色",
+          "url": "ハイパーリンク",
+          "email": "メール"
+        },
+        "form": {
+          "create_title": "カスタムフィールドを作成",
+          "edit_title": "カスタムフィールドを編集",
+          "field_type": "フィールドタイプ",
+          "type_locked": "フィールドタイプは作成後に変更できません。",
+          "name": "名前",
+          "name_placeholder": "例：部署",
+          "name_required": "名前は必須です",
+          "description": "説明",
+          "description_placeholder": "フィールドの下に表示されるヘルプテキスト（任意）",
+          "options": "オプション",
+          "option_label": "オプションのラベル",
+          "add_option": "オプションを追加",
+          "options_required": "オプションを1つ以上追加してください。",
+          "placeholder": "プレースホルダー",
+          "min_length": "最小文字数",
+          "max_length": "最大文字数",
+          "min": "最小",
+          "max": "最大",
+          "step": "ステップ",
+          "min_date": "最も早い日付",
+          "max_date": "最も遅い日付",
+          "fixed": "固定日付",
+          "relative": "今日を基準にした相対日付",
+          "today": "今日",
+          "relative_offset": "今日からのオフセット",
+          "relative_unit": {
+            "d": "日",
+            "w": "週",
+            "m": "か月",
+            "y": "年"
+          },
+          "checkbox_label": "チェックボックスのラベル",
+          "default_value": "デフォルト値",
+          "width": "幅（列数）",
+          "width_hint": "12列グリッドのうち1〜12",
+          "required": "必須",
+          "required_help": "ユーザーはこのフィールドを入力する必要があります。",
+          "admin_only": "管理者のみ",
+          "admin_only_help": "ワークスペース管理者のみがこのフィールドを表示・編集できます。",
+          "active": "有効",
+          "active_help": "無効なフィールドはプロジェクトのフォームに表示されません。",
+          "save": "変更を保存",
+          "create": "フィールドを作成",
+          "required_fields_missing": "必須のカスタムフィールドをすべて入力してください。"
+        },
+        "list": {
+          "required": "必須",
+          "admin_only": "管理者のみ",
+          "inactive": "無効",
+          "width": "幅 {width}/12"
+        },
+        "empty": {
+          "title": "カスタムフィールドはまだありません",
+          "description": "カスタムフィールドを作成すると、このワークスペースのすべてのプロジェクトで追加情報を収集できます。"
+        },
+        "delete": {
+          "title": "カスタムフィールドを削除",
+          "description": "「{name}」を削除してもよろしいですか？このフィールドに保存されている値は削除されます。この操作は元に戻せません。"
+        },
+        "toasts": {
+          "created": {
+            "title": "フィールドを作成しました",
+            "message": "カスタムフィールドが作成されました。"
+          },
+          "updated": {
+            "title": "フィールドを更新しました",
+            "message": "カスタムフィールドが更新されました。"
+          },
+          "removed": {
+            "title": "フィールドを削除しました",
+            "message": "カスタムフィールドが削除されました。"
+          },
+          "not_removed": {
+            "message": "カスタムフィールドを削除できませんでした。もう一度お試しください。"
+          },
+          "values_saved": {
+            "title": "保存しました",
+            "message": "カスタムフィールドの値が保存されました。"
+          },
+          "error": {
+            "title": "問題が発生しました",
+            "message": "もう一度お試しください。"
+          }
+        }
+      },
+      "crm_sync": {
+        "title": "CRM同期",
+        "heading": "CRM同期",
+        "description": "毎月記録された作業時間を自動的にCRMへ送信し、顧客への請求を同期された状態に保ちます。",
+        "form": {
+          "crm_url": "CRMのベースURL",
+          "crm_url_placeholder": "https://crm.example.com",
+          "crm_url_required": "CRMのベースURLは必須です。",
+          "api_key": "APIキー",
+          "api_key_placeholder": "CRMのPlane APIモジュールのBearerトークン",
+          "api_key_set": "キーは設定済みです。変更しない場合は空欄のままにしてください。",
+          "api_key_required": "APIキーは必須です。",
+          "project_id_field": "CRMプロジェクトIDに対応するPlaneのカスタムフィールド",
+          "project_id_field_help": "対応するCRMプロジェクトIDを値として保持するプロジェクトのカスタムフィールドです。",
+          "project_id_field_none": "カスタムフィールドを選択",
+          "invoice_hours_field": "CRMの請求時間フィールドのID",
+          "invoice_hours_field_help": "CRM内の「Invoice hours」カスタムフィールドの数値IDです。",
+          "fetch_fields": "CRMから取得",
+          "active": "有効",
+          "active_help": "無効にすると、このワークスペースでは毎月の同期がスキップされます。",
+          "save": "変更を保存",
+          "test_connection": "接続をテスト",
+          "sync_now": "今すぐ同期"
+        },
+        "logs": {
+          "title": "最近の同期",
+          "empty": "同期はまだ実行されていません。",
+          "month": "月",
+          "status": "ステータス",
+          "synced": "同期済み",
+          "skipped": "スキップ",
+          "processed": "処理済み",
+          "ran_at": "実行日時"
+        },
+        "toasts": {
+          "saved": {
+            "title": "保存しました",
+            "message": "CRM連携の設定が保存されました。"
+          },
+          "connection_ok": {
+            "title": "接続に成功しました",
+            "message": "CRMに接続し、{count}件のプロジェクトが見つかりました。"
+          },
+          "connection_failed": {
+            "title": "接続に失敗しました",
+            "message": "CRMに接続できませんでした。URLとAPIキーを確認してください。"
+          },
+          "sync_started": {
+            "title": "同期を開始しました",
+            "message": "同期はバックグラウンドで実行中です。しばらくしてから最近の同期をご確認ください。"
+          },
+          "error": {
+            "title": "問題が発生しました",
+            "message": "もう一度お試しください。"
+          }
+        }
+      },
       "webhooks": {
         "heading": "Webhook",
         "description": "プロジェクトイベントが発生したときに、外部サービスへの通知を自動化します。",

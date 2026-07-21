@@ -97,6 +97,179 @@
           }
         }
       },
+      "custom_fields": {
+        "add_field": "添加字段",
+        "projects": {
+          "title": "项目",
+          "description": "定义在此工作区中创建或编辑项目时显示的额外字段。",
+          "section_title": "自定义字段",
+          "section_description": "为此工作区中的项目定义的附加信息。",
+          "save_values": "保存自定义字段",
+          "section_title_short": "自定义字段"
+        },
+        "work_items": {
+          "title": "工作项",
+          "description": "定义在此工作区的工作项上显示的额外字段。",
+          "section_title": "自定义字段",
+          "tab_empty": "尚未为工作项定义自定义字段。"
+        },
+        "types": {
+          "text": "文本",
+          "paragraph": "段落",
+          "number": "数字",
+          "single_select": "选择",
+          "multi_select": "多选",
+          "boolean": "复选框",
+          "radio": "单选按钮",
+          "date": "日期",
+          "datetime": "日期和时间",
+          "color": "颜色",
+          "url": "超链接",
+          "email": "电子邮件"
+        },
+        "form": {
+          "create_title": "创建自定义字段",
+          "edit_title": "编辑自定义字段",
+          "field_type": "字段类型",
+          "type_locked": "字段类型在创建后无法更改。",
+          "name": "名称",
+          "name_placeholder": "例如：部门",
+          "name_required": "名称为必填项",
+          "description": "描述",
+          "description_placeholder": "显示在字段下方的帮助文本（可选）",
+          "options": "选项",
+          "option_label": "选项标签",
+          "add_option": "添加选项",
+          "options_required": "请至少添加一个选项。",
+          "placeholder": "占位符",
+          "min_length": "最小长度",
+          "max_length": "最大长度",
+          "min": "最小值",
+          "max": "最大值",
+          "step": "步长",
+          "min_date": "最早日期",
+          "max_date": "最晚日期",
+          "fixed": "固定日期",
+          "relative": "相对于今天",
+          "today": "今天",
+          "relative_offset": "相对今天的偏移",
+          "relative_unit": {
+            "d": "天",
+            "w": "周",
+            "m": "个月",
+            "y": "年"
+          },
+          "checkbox_label": "复选框标签",
+          "default_value": "默认值",
+          "width": "宽度（列数）",
+          "width_hint": "12 列网格中的 1–12",
+          "required": "必填",
+          "required_help": "用户必须填写此字段。",
+          "admin_only": "仅限管理员",
+          "admin_only_help": "只有工作区管理员可以查看和编辑此字段。",
+          "active": "启用",
+          "active_help": "已停用的字段不会显示在项目表单中。",
+          "save": "保存更改",
+          "create": "创建字段",
+          "required_fields_missing": "请填写所有必填的自定义字段。"
+        },
+        "list": {
+          "required": "必填",
+          "admin_only": "仅限管理员",
+          "inactive": "已停用",
+          "width": "宽度 {width}/12"
+        },
+        "empty": {
+          "title": "尚无自定义字段",
+          "description": "创建自定义字段，以在此工作区的每个项目上收集额外信息。"
+        },
+        "delete": {
+          "title": "删除自定义字段",
+          "description": "您确定要删除“{name}”吗？此字段已存储的值将被移除。此操作无法撤销。"
+        },
+        "toasts": {
+          "created": {
+            "title": "字段已创建",
+            "message": "自定义字段已创建。"
+          },
+          "updated": {
+            "title": "字段已更新",
+            "message": "自定义字段已更新。"
+          },
+          "removed": {
+            "title": "字段已移除",
+            "message": "自定义字段已移除。"
+          },
+          "not_removed": {
+            "message": "无法移除自定义字段。请重试。"
+          },
+          "values_saved": {
+            "title": "已保存",
+            "message": "自定义字段的值已保存。"
+          },
+          "error": {
+            "title": "出现错误",
+            "message": "请重试。"
+          }
+        }
+      },
+      "crm_sync": {
+        "title": "CRM 同步",
+        "heading": "CRM 同步",
+        "description": "自动将每月记录的工时推送到您的 CRM，使客户账单保持同步。",
+        "form": {
+          "crm_url": "CRM 基础 URL",
+          "crm_url_placeholder": "https://crm.example.com",
+          "crm_url_required": "CRM 基础 URL 为必填项。",
+          "api_key": "API 密钥",
+          "api_key_placeholder": "来自 CRM 中 Plane API 模块的 Bearer 令牌",
+          "api_key_set": "已配置密钥。留空即可保留。",
+          "api_key_required": "API 密钥为必填项。",
+          "project_id_field": "用于 CRM 项目 ID 的 Plane 自定义字段",
+          "project_id_field_help": "其值保存对应 CRM 项目 ID 的项目自定义字段。",
+          "project_id_field_none": "选择自定义字段",
+          "invoice_hours_field": "CRM 开票工时字段 ID",
+          "invoice_hours_field_help": "CRM 中“Invoice hours”自定义字段的数字 ID。",
+          "fetch_fields": "从 CRM 获取",
+          "active": "启用",
+          "active_help": "关闭时，将跳过此工作区的每月同步。",
+          "save": "保存更改",
+          "test_connection": "测试连接",
+          "sync_now": "立即同步"
+        },
+        "logs": {
+          "title": "最近的同步",
+          "empty": "尚未运行过同步。",
+          "month": "月份",
+          "status": "状态",
+          "synced": "已同步",
+          "skipped": "已跳过",
+          "processed": "已处理",
+          "ran_at": "运行时间"
+        },
+        "toasts": {
+          "saved": {
+            "title": "已保存",
+            "message": "CRM 集成设置已保存。"
+          },
+          "connection_ok": {
+            "title": "连接成功",
+            "message": "已连接到 CRM，找到 {count} 个项目。"
+          },
+          "connection_failed": {
+            "title": "连接失败",
+            "message": "无法连接到 CRM。请检查 URL 和 API 密钥。"
+          },
+          "sync_started": {
+            "title": "同步已开始",
+            "message": "同步正在后台运行。请稍后查看最近的同步。"
+          },
+          "error": {
+            "title": "出现错误",
+            "message": "请重试。"
+          }
+        }
+      },
       "webhooks": {
         "heading": "Webhooks",
         "description": "在项目事件发生时自动向外部服务发送通知。",

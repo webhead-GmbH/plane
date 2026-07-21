@@ -97,6 +97,179 @@
           }
         }
       },
+      "custom_fields": {
+        "add_field": "Ajouter un champ",
+        "projects": {
+          "title": "Projets",
+          "description": "Définissez des champs supplémentaires qui apparaissent lors de la création ou de la modification de projets dans cet espace de travail.",
+          "section_title": "Champs personnalisés",
+          "section_description": "Informations supplémentaires définies pour les projets de cet espace de travail.",
+          "save_values": "Enregistrer les champs personnalisés",
+          "section_title_short": "Champs personnalisés"
+        },
+        "work_items": {
+          "title": "Éléments de travail",
+          "description": "Définissez des champs supplémentaires qui apparaissent sur les éléments de travail de cet espace de travail.",
+          "section_title": "Champs personnalisés",
+          "tab_empty": "Aucun champ personnalisé n’est encore défini pour les éléments de travail."
+        },
+        "types": {
+          "text": "Texte",
+          "paragraph": "Paragraphe",
+          "number": "Nombre",
+          "single_select": "Sélection",
+          "multi_select": "Sélection multiple",
+          "boolean": "Case à cocher",
+          "radio": "Bouton radio",
+          "date": "Date",
+          "datetime": "Date et heure",
+          "color": "Couleur",
+          "url": "Lien hypertexte",
+          "email": "E-mail"
+        },
+        "form": {
+          "create_title": "Créer un champ personnalisé",
+          "edit_title": "Modifier le champ personnalisé",
+          "field_type": "Type de champ",
+          "type_locked": "Le type de champ ne peut pas être modifié après la création.",
+          "name": "Nom",
+          "name_placeholder": "p. ex. Service",
+          "name_required": "Le nom est requis",
+          "description": "Description",
+          "description_placeholder": "Texte d’aide affiché sous le champ (optionnel)",
+          "options": "Options",
+          "option_label": "Libellé de l’option",
+          "add_option": "Ajouter une option",
+          "options_required": "Ajoutez au moins une option.",
+          "placeholder": "Texte indicatif",
+          "min_length": "Longueur min.",
+          "max_length": "Longueur max.",
+          "min": "Min",
+          "max": "Max",
+          "step": "Pas",
+          "min_date": "Date au plus tôt",
+          "max_date": "Date au plus tard",
+          "fixed": "Date fixe",
+          "relative": "Relative à aujourd’hui",
+          "today": "Aujourd’hui",
+          "relative_offset": "Décalage par rapport à aujourd’hui",
+          "relative_unit": {
+            "d": "jours",
+            "w": "semaines",
+            "m": "mois",
+            "y": "années"
+          },
+          "checkbox_label": "Libellé de la case à cocher",
+          "default_value": "Valeur par défaut",
+          "width": "Largeur (colonnes)",
+          "width_hint": "1–12 d’une grille à 12 colonnes",
+          "required": "Requis",
+          "required_help": "Les utilisateurs doivent remplir ce champ.",
+          "admin_only": "Administrateurs uniquement",
+          "admin_only_help": "Seuls les administrateurs de l’espace de travail peuvent voir et modifier ce champ.",
+          "active": "Actif",
+          "active_help": "Les champs inactifs sont masqués dans les formulaires de projet.",
+          "save": "Enregistrer les modifications",
+          "create": "Créer le champ",
+          "required_fields_missing": "Veuillez remplir tous les champs personnalisés requis."
+        },
+        "list": {
+          "required": "Requis",
+          "admin_only": "Administrateurs uniquement",
+          "inactive": "Inactif",
+          "width": "Largeur {width}/12"
+        },
+        "empty": {
+          "title": "Aucun champ personnalisé pour l’instant",
+          "description": "Créez des champs personnalisés pour recueillir des informations supplémentaires sur chaque projet de cet espace de travail."
+        },
+        "delete": {
+          "title": "Supprimer le champ personnalisé",
+          "description": "Êtes-vous sûr de vouloir supprimer « {name} » ? Les valeurs enregistrées pour ce champ seront supprimées. Cette action ne peut pas être annulée."
+        },
+        "toasts": {
+          "created": {
+            "title": "Champ créé",
+            "message": "Le champ personnalisé a été créé."
+          },
+          "updated": {
+            "title": "Champ mis à jour",
+            "message": "Le champ personnalisé a été mis à jour."
+          },
+          "removed": {
+            "title": "Champ supprimé",
+            "message": "Le champ personnalisé a été supprimé."
+          },
+          "not_removed": {
+            "message": "Le champ personnalisé n’a pas pu être supprimé. Veuillez réessayer."
+          },
+          "values_saved": {
+            "title": "Enregistré",
+            "message": "Les valeurs des champs personnalisés ont été enregistrées."
+          },
+          "error": {
+            "title": "Une erreur s’est produite",
+            "message": "Veuillez réessayer."
+          }
+        }
+      },
+      "crm_sync": {
+        "title": "Synchronisation CRM",
+        "heading": "Synchronisation CRM",
+        "description": "Transférez automatiquement les heures enregistrées chaque mois vers votre CRM afin que la facturation client reste synchronisée.",
+        "form": {
+          "crm_url": "URL de base du CRM",
+          "crm_url_placeholder": "https://crm.example.com",
+          "crm_url_required": "L’URL de base du CRM est requise.",
+          "api_key": "Clé API",
+          "api_key_placeholder": "Jeton Bearer du module Plane API du CRM",
+          "api_key_set": "Une clé est configurée. Laissez vide pour la conserver.",
+          "api_key_required": "La clé API est requise.",
+          "project_id_field": "Champ personnalisé Plane pour l’ID de projet CRM",
+          "project_id_field_help": "Un champ personnalisé de projet dont la valeur contient l’ID du projet CRM correspondant.",
+          "project_id_field_none": "Sélectionner un champ personnalisé",
+          "invoice_hours_field": "ID du champ CRM des heures facturées",
+          "invoice_hours_field_help": "ID numérique du champ personnalisé « Invoice hours » dans le CRM.",
+          "fetch_fields": "Récupérer depuis le CRM",
+          "active": "Actif",
+          "active_help": "Lorsque cette option est désactivée, la synchronisation mensuelle est ignorée pour cet espace de travail.",
+          "save": "Enregistrer les modifications",
+          "test_connection": "Tester la connexion",
+          "sync_now": "Synchroniser maintenant"
+        },
+        "logs": {
+          "title": "Synchronisations récentes",
+          "empty": "Aucune synchronisation n’a encore été exécutée.",
+          "month": "Mois",
+          "status": "Statut",
+          "synced": "Synchronisé",
+          "skipped": "Ignoré",
+          "processed": "Traité",
+          "ran_at": "Exécuté le"
+        },
+        "toasts": {
+          "saved": {
+            "title": "Enregistré",
+            "message": "Les paramètres d’intégration CRM ont été enregistrés."
+          },
+          "connection_ok": {
+            "title": "Connexion réussie",
+            "message": "Connexion au CRM établie. {count} projet(s) trouvé(s)."
+          },
+          "connection_failed": {
+            "title": "Échec de la connexion",
+            "message": "Impossible de contacter le CRM. Vérifiez l’URL et la clé API."
+          },
+          "sync_started": {
+            "title": "Synchronisation démarrée",
+            "message": "La synchronisation s’exécute en arrière-plan. Consultez les synchronisations récentes dans un instant."
+          },
+          "error": {
+            "title": "Une erreur s’est produite",
+            "message": "Veuillez réessayer."
+          }
+        }
+      },
       "webhooks": {
         "heading": "Webhooks",
         "description": "Automatisez les notifications vers des services externes lors d’événements du projet.",

@@ -97,6 +97,179 @@
           }
         }
       },
+      "custom_fields": {
+        "add_field": "Aggiungi campo",
+        "projects": {
+          "title": "Progetti",
+          "description": "Definire campi aggiuntivi che compaiono durante la creazione o la modifica dei progetti in questo spazio di lavoro.",
+          "section_title": "Campi personalizzati",
+          "section_description": "Informazioni aggiuntive definite per i progetti di questo spazio di lavoro.",
+          "save_values": "Salva campi personalizzati",
+          "section_title_short": "Campi personalizzati"
+        },
+        "work_items": {
+          "title": "Elementi di lavoro",
+          "description": "Definire campi aggiuntivi che compaiono sugli elementi di lavoro di questo spazio di lavoro.",
+          "section_title": "Campi personalizzati",
+          "tab_empty": "Non è ancora stato definito alcun campo personalizzato per gli elementi di lavoro."
+        },
+        "types": {
+          "text": "Testo",
+          "paragraph": "Paragrafo",
+          "number": "Numero",
+          "single_select": "Selezione",
+          "multi_select": "Selezione multipla",
+          "boolean": "Casella di controllo",
+          "radio": "Pulsante di opzione",
+          "date": "Data",
+          "datetime": "Data e ora",
+          "color": "Colore",
+          "url": "Collegamento ipertestuale",
+          "email": "Email"
+        },
+        "form": {
+          "create_title": "Crea campo personalizzato",
+          "edit_title": "Modifica campo personalizzato",
+          "field_type": "Tipo di campo",
+          "type_locked": "Il tipo di campo non può essere modificato dopo la creazione.",
+          "name": "Nome",
+          "name_placeholder": "es. Reparto",
+          "name_required": "Il nome è obbligatorio",
+          "description": "Descrizione",
+          "description_placeholder": "Testo di aiuto mostrato sotto il campo (facoltativo)",
+          "options": "Opzioni",
+          "option_label": "Etichetta dell'opzione",
+          "add_option": "Aggiungi opzione",
+          "options_required": "Aggiungere almeno un'opzione.",
+          "placeholder": "Segnaposto",
+          "min_length": "Lunghezza min.",
+          "max_length": "Lunghezza max.",
+          "min": "Min",
+          "max": "Max",
+          "step": "Incremento",
+          "min_date": "Data minima",
+          "max_date": "Data massima",
+          "fixed": "Data fissa",
+          "relative": "Relativa a oggi",
+          "today": "Oggi",
+          "relative_offset": "Scostamento da oggi",
+          "relative_unit": {
+            "d": "giorni",
+            "w": "settimane",
+            "m": "mesi",
+            "y": "anni"
+          },
+          "checkbox_label": "Etichetta della casella di controllo",
+          "default_value": "Valore predefinito",
+          "width": "Larghezza (colonne)",
+          "width_hint": "1–12 di una griglia a 12 colonne",
+          "required": "Obbligatorio",
+          "required_help": "Gli utenti devono compilare questo campo.",
+          "admin_only": "Solo amministratori",
+          "admin_only_help": "Solo gli amministratori dello spazio di lavoro possono vedere e modificare questo campo.",
+          "active": "Attivo",
+          "active_help": "I campi inattivi sono nascosti nei form dei progetti.",
+          "save": "Salva modifiche",
+          "create": "Crea campo",
+          "required_fields_missing": "Compilare tutti i campi personalizzati obbligatori."
+        },
+        "list": {
+          "required": "Obbligatorio",
+          "admin_only": "Solo amministratori",
+          "inactive": "Inattivo",
+          "width": "Larghezza {width}/12"
+        },
+        "empty": {
+          "title": "Ancora nessun campo personalizzato",
+          "description": "Creare campi personalizzati per raccogliere informazioni aggiuntive su ogni progetto di questo spazio di lavoro."
+        },
+        "delete": {
+          "title": "Elimina campo personalizzato",
+          "description": "È sicuro di voler eliminare «{name}»? I valori memorizzati per questo campo verranno rimossi. Questa azione non può essere annullata."
+        },
+        "toasts": {
+          "created": {
+            "title": "Campo creato",
+            "message": "Il campo personalizzato è stato creato."
+          },
+          "updated": {
+            "title": "Campo aggiornato",
+            "message": "Il campo personalizzato è stato aggiornato."
+          },
+          "removed": {
+            "title": "Campo rimosso",
+            "message": "Il campo personalizzato è stato rimosso."
+          },
+          "not_removed": {
+            "message": "Non è stato possibile rimuovere il campo personalizzato. Riprovare."
+          },
+          "values_saved": {
+            "title": "Salvato",
+            "message": "I valori dei campi personalizzati sono stati salvati."
+          },
+          "error": {
+            "title": "Qualcosa è andato storto",
+            "message": "Riprovare."
+          }
+        }
+      },
+      "crm_sync": {
+        "title": "Sincronizzazione CRM",
+        "heading": "Sincronizzazione CRM",
+        "description": "Le ore registrate ogni mese vengono inviate automaticamente al CRM, così la fatturazione ai clienti resta sincronizzata.",
+        "form": {
+          "crm_url": "URL di base del CRM",
+          "crm_url_placeholder": "https://crm.example.com",
+          "crm_url_required": "L'URL di base del CRM è obbligatorio.",
+          "api_key": "Chiave API",
+          "api_key_placeholder": "Token Bearer del modulo Plane API del CRM",
+          "api_key_set": "Una chiave è configurata. Lasciare vuoto per mantenerla.",
+          "api_key_required": "La chiave API è obbligatoria.",
+          "project_id_field": "Campo personalizzato di Plane per l'ID progetto del CRM",
+          "project_id_field_help": "Un campo personalizzato di progetto il cui valore contiene l'ID del progetto corrispondente nel CRM.",
+          "project_id_field_none": "Selezionare un campo personalizzato",
+          "invoice_hours_field": "ID del campo CRM delle ore fatturate",
+          "invoice_hours_field_help": "ID numerico del campo personalizzato «Invoice hours» nel CRM.",
+          "fetch_fields": "Recupera dal CRM",
+          "active": "Attivo",
+          "active_help": "Se disattivata, la sincronizzazione mensile viene saltata per questo spazio di lavoro.",
+          "save": "Salva modifiche",
+          "test_connection": "Prova connessione",
+          "sync_now": "Sincronizza ora"
+        },
+        "logs": {
+          "title": "Sincronizzazioni recenti",
+          "empty": "Non è ancora stata eseguita alcuna sincronizzazione.",
+          "month": "Mese",
+          "status": "Stato",
+          "synced": "Sincronizzato",
+          "skipped": "Saltato",
+          "processed": "Elaborato",
+          "ran_at": "Eseguito il"
+        },
+        "toasts": {
+          "saved": {
+            "title": "Salvato",
+            "message": "Le impostazioni dell'integrazione CRM sono state salvate."
+          },
+          "connection_ok": {
+            "title": "Connessione riuscita",
+            "message": "Connessione al CRM riuscita. Progetti trovati: {count}."
+          },
+          "connection_failed": {
+            "title": "Connessione non riuscita",
+            "message": "Impossibile raggiungere il CRM. Verificare l'URL e la chiave API."
+          },
+          "sync_started": {
+            "title": "Sincronizzazione avviata",
+            "message": "La sincronizzazione è in esecuzione in background. Controllare tra poco le sincronizzazioni recenti."
+          },
+          "error": {
+            "title": "Qualcosa è andato storto",
+            "message": "Riprovare."
+          }
+        }
+      },
       "webhooks": {
         "heading": "Webhook",
         "description": "Automatizza le notifiche verso servizi esterni quando si verificano eventi del progetto.",

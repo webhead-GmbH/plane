@@ -97,6 +97,179 @@
           }
         }
       },
+      "custom_fields": {
+        "add_field": "필드 추가",
+        "projects": {
+          "title": "프로젝트",
+          "description": "이 워크스페이스에서 프로젝트를 생성하거나 편집할 때 표시되는 추가 필드를 정의합니다.",
+          "section_title": "사용자 정의 필드",
+          "section_description": "이 워크스페이스의 프로젝트에 대해 정의된 추가 정보입니다.",
+          "save_values": "사용자 정의 필드 저장",
+          "section_title_short": "사용자 정의 필드"
+        },
+        "work_items": {
+          "title": "작업 항목",
+          "description": "이 워크스페이스 전체의 작업 항목에 표시되는 추가 필드를 정의합니다.",
+          "section_title": "사용자 정의 필드",
+          "tab_empty": "작업 항목에 대해 정의된 사용자 정의 필드가 아직 없습니다."
+        },
+        "types": {
+          "text": "텍스트",
+          "paragraph": "단락",
+          "number": "숫자",
+          "single_select": "선택",
+          "multi_select": "다중 선택",
+          "boolean": "체크박스",
+          "radio": "라디오 버튼",
+          "date": "날짜",
+          "datetime": "날짜 및 시간",
+          "color": "색상",
+          "url": "하이퍼링크",
+          "email": "이메일"
+        },
+        "form": {
+          "create_title": "사용자 정의 필드 생성",
+          "edit_title": "사용자 정의 필드 편집",
+          "field_type": "필드 유형",
+          "type_locked": "필드 유형은 생성 후에는 변경할 수 없습니다.",
+          "name": "이름",
+          "name_placeholder": "예: 부서",
+          "name_required": "이름은 필수입니다",
+          "description": "설명",
+          "description_placeholder": "필드 아래에 표시되는 도움말 텍스트 (선택 사항)",
+          "options": "옵션",
+          "option_label": "옵션 레이블",
+          "add_option": "옵션 추가",
+          "options_required": "옵션을 하나 이상 추가하세요.",
+          "placeholder": "자리 표시자",
+          "min_length": "최소 길이",
+          "max_length": "최대 길이",
+          "min": "최소",
+          "max": "최대",
+          "step": "증분",
+          "min_date": "가장 이른 날짜",
+          "max_date": "가장 늦은 날짜",
+          "fixed": "고정 날짜",
+          "relative": "오늘 기준 상대 날짜",
+          "today": "오늘",
+          "relative_offset": "오늘로부터의 오프셋",
+          "relative_unit": {
+            "d": "일",
+            "w": "주",
+            "m": "개월",
+            "y": "년"
+          },
+          "checkbox_label": "체크박스 레이블",
+          "default_value": "기본값",
+          "width": "너비(열)",
+          "width_hint": "12열 그리드 중 1~12",
+          "required": "필수",
+          "required_help": "사용자는 이 필드를 반드시 입력해야 합니다.",
+          "admin_only": "관리자 전용",
+          "admin_only_help": "워크스페이스 관리자만 이 필드를 보고 편집할 수 있습니다.",
+          "active": "활성",
+          "active_help": "비활성 필드는 프로젝트 양식에서 숨겨집니다.",
+          "save": "변경 사항 저장",
+          "create": "필드 생성",
+          "required_fields_missing": "필수 사용자 정의 필드를 모두 입력해 주세요."
+        },
+        "list": {
+          "required": "필수",
+          "admin_only": "관리자 전용",
+          "inactive": "비활성",
+          "width": "너비 {width}/12"
+        },
+        "empty": {
+          "title": "아직 사용자 정의 필드가 없습니다",
+          "description": "사용자 정의 필드를 생성하여 이 워크스페이스의 모든 프로젝트에서 추가 정보를 수집하세요."
+        },
+        "delete": {
+          "title": "사용자 정의 필드 삭제",
+          "description": "\"{name}\"을(를) 삭제하시겠습니까? 이 필드에 저장된 값이 삭제됩니다. 이 작업은 취소할 수 없습니다."
+        },
+        "toasts": {
+          "created": {
+            "title": "필드가 생성되었습니다",
+            "message": "사용자 정의 필드가 생성되었습니다."
+          },
+          "updated": {
+            "title": "필드가 업데이트되었습니다",
+            "message": "사용자 정의 필드가 업데이트되었습니다."
+          },
+          "removed": {
+            "title": "필드가 삭제되었습니다",
+            "message": "사용자 정의 필드가 삭제되었습니다."
+          },
+          "not_removed": {
+            "message": "사용자 정의 필드를 삭제하지 못했습니다. 다시 시도해 주세요."
+          },
+          "values_saved": {
+            "title": "저장되었습니다",
+            "message": "사용자 정의 필드 값이 저장되었습니다."
+          },
+          "error": {
+            "title": "문제가 발생했습니다",
+            "message": "다시 시도해 주세요."
+          }
+        }
+      },
+      "crm_sync": {
+        "title": "CRM 동기화",
+        "heading": "CRM 동기화",
+        "description": "매월 기록된 시간을 CRM으로 자동 전송하여 고객 청구가 동기화된 상태를 유지합니다.",
+        "form": {
+          "crm_url": "CRM 기본 URL",
+          "crm_url_placeholder": "https://crm.example.com",
+          "crm_url_required": "CRM 기본 URL은 필수입니다.",
+          "api_key": "API 키",
+          "api_key_placeholder": "CRM의 Plane API 모듈에서 발급한 Bearer 토큰",
+          "api_key_set": "키가 설정되어 있습니다. 유지하려면 비워 두세요.",
+          "api_key_required": "API 키는 필수입니다.",
+          "project_id_field": "CRM 프로젝트 ID에 해당하는 Plane 사용자 정의 필드",
+          "project_id_field_help": "값에 해당 CRM 프로젝트 ID가 저장된 프로젝트 사용자 정의 필드입니다.",
+          "project_id_field_none": "사용자 정의 필드 선택",
+          "invoice_hours_field": "CRM 청구 시간 필드 ID",
+          "invoice_hours_field_help": "CRM에 있는 \"Invoice hours\" 사용자 정의 필드의 숫자 ID입니다.",
+          "fetch_fields": "CRM에서 가져오기",
+          "active": "활성",
+          "active_help": "꺼져 있으면 이 워크스페이스에서는 월간 동기화를 건너뜁니다.",
+          "save": "변경 사항 저장",
+          "test_connection": "연결 테스트",
+          "sync_now": "지금 동기화"
+        },
+        "logs": {
+          "title": "최근 동기화",
+          "empty": "아직 실행된 동기화가 없습니다.",
+          "month": "월",
+          "status": "상태",
+          "synced": "동기화됨",
+          "skipped": "건너뜀",
+          "processed": "처리됨",
+          "ran_at": "실행 시각"
+        },
+        "toasts": {
+          "saved": {
+            "title": "저장되었습니다",
+            "message": "CRM 연동 설정이 저장되었습니다."
+          },
+          "connection_ok": {
+            "title": "연결에 성공했습니다",
+            "message": "CRM에 연결하여 프로젝트 {count}개를 찾았습니다."
+          },
+          "connection_failed": {
+            "title": "연결에 실패했습니다",
+            "message": "CRM에 연결할 수 없습니다. URL과 API 키를 확인하세요."
+          },
+          "sync_started": {
+            "title": "동기화가 시작되었습니다",
+            "message": "동기화가 백그라운드에서 실행 중입니다. 잠시 후 최근 동기화를 확인하세요."
+          },
+          "error": {
+            "title": "문제가 발생했습니다",
+            "message": "다시 시도해 주세요."
+          }
+        }
+      },
       "webhooks": {
         "heading": "웹훅",
         "description": "프로젝트 이벤트가 발생할 때 외부 서비스로 알림을 자동화하세요.",

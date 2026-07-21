@@ -97,6 +97,179 @@
           }
         }
       },
+      "custom_fields": {
+        "add_field": "Thêm trường",
+        "projects": {
+          "title": "Dự án",
+          "description": "Xác định các trường bổ sung xuất hiện khi tạo hoặc chỉnh sửa dự án trong không gian làm việc này.",
+          "section_title": "Trường tùy chỉnh",
+          "section_description": "Thông tin bổ sung được xác định cho các dự án trong không gian làm việc này.",
+          "save_values": "Lưu trường tùy chỉnh",
+          "section_title_short": "Trường tùy chỉnh"
+        },
+        "work_items": {
+          "title": "Mục công việc",
+          "description": "Xác định các trường bổ sung xuất hiện trên các mục công việc trong không gian làm việc này.",
+          "section_title": "Trường tùy chỉnh",
+          "tab_empty": "Chưa có trường tùy chỉnh nào được xác định cho mục công việc."
+        },
+        "types": {
+          "text": "Văn bản",
+          "paragraph": "Đoạn văn",
+          "number": "Số",
+          "single_select": "Lựa chọn",
+          "multi_select": "Chọn nhiều",
+          "boolean": "Hộp kiểm",
+          "radio": "Nút radio",
+          "date": "Ngày",
+          "datetime": "Ngày và giờ",
+          "color": "Màu sắc",
+          "url": "Siêu liên kết",
+          "email": "Email"
+        },
+        "form": {
+          "create_title": "Tạo trường tùy chỉnh",
+          "edit_title": "Chỉnh sửa trường tùy chỉnh",
+          "field_type": "Loại trường",
+          "type_locked": "Không thể thay đổi loại trường sau khi tạo.",
+          "name": "Tên",
+          "name_placeholder": "ví dụ: Phòng ban",
+          "name_required": "Tên là bắt buộc",
+          "description": "Mô tả",
+          "description_placeholder": "Văn bản trợ giúp hiển thị bên dưới trường (tùy chọn)",
+          "options": "Tùy chọn",
+          "option_label": "Nhãn tùy chọn",
+          "add_option": "Thêm tùy chọn",
+          "options_required": "Thêm ít nhất một tùy chọn.",
+          "placeholder": "Văn bản gợi ý",
+          "min_length": "Độ dài tối thiểu",
+          "max_length": "Độ dài tối đa",
+          "min": "Tối thiểu",
+          "max": "Tối đa",
+          "step": "Bước",
+          "min_date": "Ngày sớm nhất",
+          "max_date": "Ngày muộn nhất",
+          "fixed": "Ngày cố định",
+          "relative": "Tương đối so với hôm nay",
+          "today": "Hôm nay",
+          "relative_offset": "Chênh lệch so với hôm nay",
+          "relative_unit": {
+            "d": "ngày",
+            "w": "tuần",
+            "m": "tháng",
+            "y": "năm"
+          },
+          "checkbox_label": "Nhãn hộp kiểm",
+          "default_value": "Giá trị mặc định",
+          "width": "Chiều rộng (cột)",
+          "width_hint": "1–12 trong lưới 12 cột",
+          "required": "Bắt buộc",
+          "required_help": "Người dùng phải điền vào trường này.",
+          "admin_only": "Chỉ quản trị viên",
+          "admin_only_help": "Chỉ quản trị viên không gian làm việc mới có thể xem và chỉnh sửa trường này.",
+          "active": "Hoạt động",
+          "active_help": "Các trường không hoạt động sẽ bị ẩn khỏi biểu mẫu dự án.",
+          "save": "Lưu thay đổi",
+          "create": "Tạo trường",
+          "required_fields_missing": "Vui lòng điền tất cả các trường tùy chỉnh bắt buộc."
+        },
+        "list": {
+          "required": "Bắt buộc",
+          "admin_only": "Chỉ quản trị viên",
+          "inactive": "Không hoạt động",
+          "width": "Chiều rộng {width}/12"
+        },
+        "empty": {
+          "title": "Chưa có trường tùy chỉnh nào",
+          "description": "Tạo các trường tùy chỉnh để thu thập thông tin bổ sung cho mọi dự án trong không gian làm việc này."
+        },
+        "delete": {
+          "title": "Xóa trường tùy chỉnh",
+          "description": "Bạn có chắc chắn muốn xóa \"{name}\" không? Các giá trị đã lưu cho trường này sẽ bị xóa. Hành động này không thể hoàn tác."
+        },
+        "toasts": {
+          "created": {
+            "title": "Đã tạo trường",
+            "message": "Trường tùy chỉnh đã được tạo."
+          },
+          "updated": {
+            "title": "Đã cập nhật trường",
+            "message": "Trường tùy chỉnh đã được cập nhật."
+          },
+          "removed": {
+            "title": "Đã xóa trường",
+            "message": "Trường tùy chỉnh đã được xóa."
+          },
+          "not_removed": {
+            "message": "Không thể xóa trường tùy chỉnh. Vui lòng thử lại."
+          },
+          "values_saved": {
+            "title": "Đã lưu",
+            "message": "Các giá trị trường tùy chỉnh đã được lưu."
+          },
+          "error": {
+            "title": "Đã xảy ra lỗi",
+            "message": "Vui lòng thử lại."
+          }
+        }
+      },
+      "crm_sync": {
+        "title": "Đồng bộ CRM",
+        "heading": "Đồng bộ CRM",
+        "description": "Tự động gửi số giờ đã ghi nhận của mỗi tháng sang CRM của bạn để việc lập hóa đơn cho khách hàng luôn được đồng bộ.",
+        "form": {
+          "crm_url": "URL cơ sở của CRM",
+          "crm_url_placeholder": "https://crm.example.com",
+          "crm_url_required": "URL cơ sở của CRM là bắt buộc.",
+          "api_key": "Khóa API",
+          "api_key_placeholder": "Bearer token từ mô-đun Plane API trong CRM",
+          "api_key_set": "Đã cấu hình một khóa. Để trống để giữ nguyên.",
+          "api_key_required": "Khóa API là bắt buộc.",
+          "project_id_field": "Trường tùy chỉnh Plane cho ID dự án CRM",
+          "project_id_field_help": "Một trường tùy chỉnh của dự án có giá trị chứa ID dự án CRM tương ứng.",
+          "project_id_field_none": "Chọn một trường tùy chỉnh",
+          "invoice_hours_field": "ID trường giờ hóa đơn trong CRM",
+          "invoice_hours_field_help": "ID dạng số của trường tùy chỉnh \"Invoice hours\" trong CRM.",
+          "fetch_fields": "Lấy từ CRM",
+          "active": "Hoạt động",
+          "active_help": "Khi tắt, quá trình đồng bộ hằng tháng sẽ bị bỏ qua đối với không gian làm việc này.",
+          "save": "Lưu thay đổi",
+          "test_connection": "Kiểm tra kết nối",
+          "sync_now": "Đồng bộ ngay"
+        },
+        "logs": {
+          "title": "Các lần đồng bộ gần đây",
+          "empty": "Chưa có lần đồng bộ nào được chạy.",
+          "month": "Tháng",
+          "status": "Trạng thái",
+          "synced": "Đã đồng bộ",
+          "skipped": "Đã bỏ qua",
+          "processed": "Đã xử lý",
+          "ran_at": "Chạy lúc"
+        },
+        "toasts": {
+          "saved": {
+            "title": "Đã lưu",
+            "message": "Cài đặt tích hợp CRM đã được lưu."
+          },
+          "connection_ok": {
+            "title": "Kết nối thành công",
+            "message": "Đã kết nối tới CRM và tìm thấy {count} dự án."
+          },
+          "connection_failed": {
+            "title": "Kết nối thất bại",
+            "message": "Không thể kết nối tới CRM. Hãy kiểm tra URL và khóa API."
+          },
+          "sync_started": {
+            "title": "Đã bắt đầu đồng bộ",
+            "message": "Quá trình đồng bộ đang chạy ở chế độ nền. Hãy kiểm tra các lần đồng bộ gần đây sau ít phút."
+          },
+          "error": {
+            "title": "Đã xảy ra lỗi",
+            "message": "Vui lòng thử lại."
+          }
+        }
+      },
       "webhooks": {
         "heading": "Webhook",
         "description": "Tự động hóa thông báo đến các dịch vụ bên ngoài khi các sự kiện dự án xảy ra.",
