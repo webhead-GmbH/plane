@@ -13,7 +13,7 @@ from django.conf import settings
 from django.utils import timezone as dj_timezone
 
 # Module imports
-from plane.db.models import CrmIntegration, CrmSyncLog, CustomFieldValue, IssueWorkLog
+from plane.db.models import CrmIntegration, CrmSyncLog, CustomFieldValue, IssueWorkLog, Project
 from plane.utils.crm_client import CrmApiClient, CrmApiError
 
 logger = logging.getLogger(__name__)
@@ -53,8 +53,8 @@ def monthly_crm_sync(integration_id=None):
 
 def _sync_workspace(integration, month_start, month_end, now):
     """Sync a single workspace's projects for the [month_start, month_end) window."""
-    cf_field = integration.crm_project_id_custom_field
-    if cf_field is None:
+    uses_custom_field = integration.project_mapping_source == CrmIntegration.ProjectMappingSource.CUSTOM_FIELD
+    if uses_custom_field and integration.crm_project_id_custom_field is None:
         logger.warning(
             "CRM integration for %s has no project-id custom field configured; skipping.",
             integration.workspace.slug,
@@ -78,25 +78,15 @@ def _sync_workspace(integration, month_start, month_end, now):
     # CRM project ids already synced this month, so re-runs stay idempotent.
     already_synced = _already_synced_crm_project_ids(integration, month_start.date())
 
-    cf_values = CustomFieldValue.objects.filter(
-        workspace_id=integration.workspace_id,
-        custom_field=cf_field,
-        project__isnull=False,
-    ).select_related("project")
-
     details = []
     synced = skipped = errors = 0
 
-    for cfv in cf_values:
-        crm_project_id = _coerce_crm_project_id(cfv.value)
-        if crm_project_id is None:
-            continue  # blank / unmapped project, silently ignored
-
+    for project, crm_project_id in _mapped_projects(integration):
         if crm_project_id in already_synced:
             continue  # already pushed for this month
 
         result = _sync_project(
-            project=cfv.project,
+            project=project,
             crm_project_id=crm_project_id,
             month_start=month_start,
             month_end=month_end,
@@ -129,6 +119,33 @@ def _sync_workspace(integration, month_start, month_end, now):
     integration.last_synced_at = now
     integration.last_sync_status = status
     integration.save(update_fields=["last_synced_at", "last_sync_status", "updated_at"])
+
+
+def _mapped_projects(integration):
+    """Yield ``(project, crm_project_id)`` for every project mapped to the CRM.
+
+    Projects with no usable id are silently skipped — that is how a workspace
+    opts individual projects out of the sync.
+    """
+    if integration.project_mapping_source == CrmIntegration.ProjectMappingSource.IDENTIFIER:
+        # The project's own identifier (shown as "Project ID" in project settings)
+        # doubles as the CRM project id, so no per-project custom field is needed.
+        projects = Project.objects.filter(workspace_id=integration.workspace_id)
+        for project in projects:
+            crm_project_id = _coerce_crm_project_id(project.identifier)
+            if crm_project_id is not None:
+                yield project, crm_project_id
+        return
+
+    cf_values = CustomFieldValue.objects.filter(
+        workspace_id=integration.workspace_id,
+        custom_field=integration.crm_project_id_custom_field,
+        project__isnull=False,
+    ).select_related("project")
+    for cfv in cf_values:
+        crm_project_id = _coerce_crm_project_id(cfv.value)
+        if crm_project_id is not None:
+            yield cfv.project, crm_project_id
 
 
 def _sync_project(project, crm_project_id, month_start, month_end, crm, invoice_hours_field_id):

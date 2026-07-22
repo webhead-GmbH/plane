@@ -13,7 +13,12 @@ import { Button } from "@plane/propel/button";
 import { TOAST_TYPE, setToast } from "@plane/propel/toast";
 import { CustomSelect, Input, Loader, ToggleSwitch } from "@plane/ui";
 // services
-import { CrmIntegrationService, type TCrmField, type TCrmIntegrationPayload } from "@/services/crm-integration.service";
+import {
+  CrmIntegrationService,
+  type TCrmField,
+  type TCrmIntegrationPayload,
+  type TCrmProjectMappingSource,
+} from "@/services/crm-integration.service";
 
 const crmIntegrationService = new CrmIntegrationService();
 
@@ -29,6 +34,7 @@ export const CrmSyncRoot = observer(function CrmSyncRoot({ workspaceSlug }: Prop
   // form state
   const [crmApiUrl, setCrmApiUrl] = useState("");
   const [crmApiKey, setCrmApiKey] = useState("");
+  const [mappingSource, setMappingSource] = useState<TCrmProjectMappingSource>("custom_field");
   const [projectIdField, setProjectIdField] = useState<string | null>(null);
   const [invoiceHoursFieldId, setInvoiceHoursFieldId] = useState<string>("");
   const [isActive, setIsActive] = useState(true);
@@ -56,6 +62,7 @@ export const CrmSyncRoot = observer(function CrmSyncRoot({ workspaceSlug }: Prop
   useEffect(() => {
     if (!integration) return;
     setCrmApiUrl(integration.crm_api_url ?? "");
+    setMappingSource(integration.project_mapping_source ?? "custom_field");
     setProjectIdField(integration.crm_project_id_custom_field ?? null);
     setInvoiceHoursFieldId(
       integration.crm_invoice_hours_field_id != null ? String(integration.crm_invoice_hours_field_id) : ""
@@ -69,7 +76,9 @@ export const CrmSyncRoot = observer(function CrmSyncRoot({ workspaceSlug }: Prop
   const buildPayload = (): TCrmIntegrationPayload => {
     const payload: TCrmIntegrationPayload = {
       crm_api_url: crmApiUrl.trim(),
-      crm_project_id_custom_field: projectIdField || null,
+      project_mapping_source: mappingSource,
+      // the field is only meaningful for the custom-field mapping; clear it otherwise
+      crm_project_id_custom_field: mappingSource === "custom_field" ? projectIdField || null : null,
       crm_invoice_hours_field_id: invoiceHoursFieldId ? Number(invoiceHoursFieldId) : null,
       is_active: isActive,
     };
@@ -227,31 +236,52 @@ export const CrmSyncRoot = observer(function CrmSyncRoot({ workspaceSlug }: Prop
         />
       </div>
 
-      {/* Plane project custom field */}
+      {/* How each Plane project resolves to a CRM project */}
       <div className="flex flex-col gap-1">
-        <label className="text-body-sm-medium text-secondary">{t(`${I18N}.form.project_id_field`)}</label>
+        <label className="text-body-sm-medium text-secondary">{t(`${I18N}.form.mapping_source`)}</label>
         <CustomSelect
-          value={projectIdField}
-          onChange={(val: string | null) => setProjectIdField(val)}
-          label={
-            <span className={projectIdField ? "" : "text-placeholder"}>
-              {projectFields?.find((f) => f.id === projectIdField)?.display_name ??
-                t(`${I18N}.form.project_id_field_none`)}
-            </span>
-          }
+          value={mappingSource}
+          onChange={(val: TCrmProjectMappingSource) => setMappingSource(val)}
+          label={<span>{t(`${I18N}.form.mapping_source_${mappingSource}`)}</span>}
           className="w-full"
           buttonClassName="w-full justify-between"
           input
         >
-          <CustomSelect.Option value={null}>{t(`${I18N}.form.project_id_field_none`)}</CustomSelect.Option>
-          {(projectFields ?? []).map((field) => (
-            <CustomSelect.Option key={field.id} value={field.id}>
-              {field.display_name}
-            </CustomSelect.Option>
-          ))}
+          <CustomSelect.Option value="custom_field">
+            {t(`${I18N}.form.mapping_source_custom_field`)}
+          </CustomSelect.Option>
+          <CustomSelect.Option value="identifier">{t(`${I18N}.form.mapping_source_identifier`)}</CustomSelect.Option>
         </CustomSelect>
-        <p className="text-body-xs-regular text-tertiary">{t(`${I18N}.form.project_id_field_help`)}</p>
+        <p className="text-body-xs-regular text-tertiary">{t(`${I18N}.form.mapping_source_${mappingSource}_help`)}</p>
       </div>
+
+      {/* Plane project custom field — only relevant when mapping by custom field */}
+      {mappingSource === "custom_field" && (
+        <div className="flex flex-col gap-1">
+          <label className="text-body-sm-medium text-secondary">{t(`${I18N}.form.project_id_field`)}</label>
+          <CustomSelect
+            value={projectIdField}
+            onChange={(val: string | null) => setProjectIdField(val)}
+            label={
+              <span className={projectIdField ? "" : "text-placeholder"}>
+                {projectFields?.find((f) => f.id === projectIdField)?.display_name ??
+                  t(`${I18N}.form.project_id_field_none`)}
+              </span>
+            }
+            className="w-full"
+            buttonClassName="w-full justify-between"
+            input
+          >
+            <CustomSelect.Option value={null}>{t(`${I18N}.form.project_id_field_none`)}</CustomSelect.Option>
+            {(projectFields ?? []).map((field) => (
+              <CustomSelect.Option key={field.id} value={field.id}>
+                {field.display_name}
+              </CustomSelect.Option>
+            ))}
+          </CustomSelect>
+          <p className="text-body-xs-regular text-tertiary">{t(`${I18N}.form.project_id_field_help`)}</p>
+        </div>
+      )}
 
       {/* CRM invoice-hours field id */}
       <div className="flex flex-col gap-1">
