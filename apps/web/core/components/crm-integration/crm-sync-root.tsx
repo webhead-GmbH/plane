@@ -15,7 +15,6 @@ import { CustomSelect, Input, Loader, ToggleSwitch } from "@plane/ui";
 // services
 import {
   CrmIntegrationService,
-  type TCrmField,
   type TCrmIntegrationPayload,
   type TCrmProjectMappingSource,
 } from "@/services/crm-integration.service";
@@ -36,14 +35,11 @@ export const CrmSyncRoot = observer(function CrmSyncRoot({ workspaceSlug }: Prop
   const [crmApiKey, setCrmApiKey] = useState("");
   const [mappingSource, setMappingSource] = useState<TCrmProjectMappingSource>("custom_field");
   const [projectIdField, setProjectIdField] = useState<string | null>(null);
-  const [invoiceHoursFieldId, setInvoiceHoursFieldId] = useState<string>("");
   const [isActive, setIsActive] = useState(true);
   // ui state
   const [isSaving, setIsSaving] = useState(false);
   const [isTesting, setIsTesting] = useState(false);
-  const [isSyncing, setIsSyncing] = useState(false);
-  const [isFetchingFields, setIsFetchingFields] = useState(false);
-  const [crmFields, setCrmFields] = useState<TCrmField[]>([]);
+  const [isBackfilling, setIsBackfilling] = useState(false);
 
   // data
   const {
@@ -54,9 +50,6 @@ export const CrmSyncRoot = observer(function CrmSyncRoot({ workspaceSlug }: Prop
   const { data: projectFields } = useSWR(`CRM_PROJECT_CUSTOM_FIELDS_${workspaceSlug}`, () =>
     crmIntegrationService.fetchProjectCustomFields(workspaceSlug)
   );
-  const { data: logs, mutate: mutateLogs } = useSWR(`CRM_SYNC_LOGS_${workspaceSlug}`, () =>
-    crmIntegrationService.fetchLogs(workspaceSlug)
-  );
 
   // seed the form from the saved configuration
   useEffect(() => {
@@ -64,9 +57,6 @@ export const CrmSyncRoot = observer(function CrmSyncRoot({ workspaceSlug }: Prop
     setCrmApiUrl(integration.crm_api_url ?? "");
     setMappingSource(integration.project_mapping_source ?? "custom_field");
     setProjectIdField(integration.crm_project_id_custom_field ?? null);
-    setInvoiceHoursFieldId(
-      integration.crm_invoice_hours_field_id != null ? String(integration.crm_invoice_hours_field_id) : ""
-    );
     setIsActive(integration.is_active ?? true);
   }, [integration]);
 
@@ -79,7 +69,6 @@ export const CrmSyncRoot = observer(function CrmSyncRoot({ workspaceSlug }: Prop
       project_mapping_source: mappingSource,
       // the field is only meaningful for the custom-field mapping; clear it otherwise
       crm_project_id_custom_field: mappingSource === "custom_field" ? projectIdField || null : null,
-      crm_invoice_hours_field_id: invoiceHoursFieldId ? Number(invoiceHoursFieldId) : null,
       is_active: isActive,
     };
     // only send the key when the admin actually entered one
@@ -148,40 +137,15 @@ export const CrmSyncRoot = observer(function CrmSyncRoot({ workspaceSlug }: Prop
     }
   };
 
-  const handleFetchFields = async () => {
-    setIsFetchingFields(true);
+  const handleBackfill = async () => {
+    setIsBackfilling(true);
     try {
-      const result = await crmIntegrationService.fetchCrmFields(workspaceSlug, {
-        crm_api_url: crmApiUrl.trim() || undefined,
-        crm_api_key: crmApiKey.trim() || undefined,
-        entity: "tasks",
-      });
-      setCrmFields(result.fields ?? []);
-      // auto-select the field named "Invoice hours" when present
-      const invoiceField = (result.fields ?? []).find((f) => /invoice/i.test(f.name) && /hour/i.test(f.name));
-      if (invoiceField) setInvoiceHoursFieldId(String(invoiceField.id));
-    } catch {
-      setToast({
-        type: TOAST_TYPE.ERROR,
-        title: t(`${I18N}.toasts.connection_failed.title`),
-        message: t(`${I18N}.toasts.connection_failed.message`),
-      });
-    } finally {
-      setIsFetchingFields(false);
-    }
-  };
-
-  const handleSyncNow = async () => {
-    setIsSyncing(true);
-    try {
-      await crmIntegrationService.syncNow(workspaceSlug);
+      await crmIntegrationService.backfill(workspaceSlug);
       setToast({
         type: TOAST_TYPE.SUCCESS,
-        title: t(`${I18N}.toasts.sync_started.title`),
-        message: t(`${I18N}.toasts.sync_started.message`),
+        title: t(`${I18N}.toasts.backfill_started.title`),
+        message: t(`${I18N}.toasts.backfill_started.message`),
       });
-      // refresh the log list shortly after kicking off the run
-      setTimeout(() => mutateLogs(), 2000);
     } catch {
       setToast({
         type: TOAST_TYPE.ERROR,
@@ -189,7 +153,7 @@ export const CrmSyncRoot = observer(function CrmSyncRoot({ workspaceSlug }: Prop
         message: t(`${I18N}.toasts.error.message`),
       });
     } finally {
-      setIsSyncing(false);
+      setIsBackfilling(false);
     }
   };
 
@@ -205,6 +169,9 @@ export const CrmSyncRoot = observer(function CrmSyncRoot({ workspaceSlug }: Prop
 
   return (
     <div className="mt-4 w-full max-w-3xl space-y-6">
+      {/* How syncing works */}
+      <p className="text-body-sm-regular text-tertiary">{t(`${I18N}.realtime_note`)}</p>
+
       {/* CRM base URL */}
       <div className="flex flex-col gap-1">
         <label htmlFor="crm-url" className="text-body-sm-medium text-secondary">
@@ -283,50 +250,6 @@ export const CrmSyncRoot = observer(function CrmSyncRoot({ workspaceSlug }: Prop
         </div>
       )}
 
-      {/* CRM invoice-hours field id */}
-      <div className="flex flex-col gap-1">
-        <label htmlFor="crm-invoice-field" className="text-body-sm-medium text-secondary">
-          {t(`${I18N}.form.invoice_hours_field`)}
-        </label>
-        <div className="flex items-center gap-2">
-          <Input
-            id="crm-invoice-field"
-            type="number"
-            min={1}
-            value={invoiceHoursFieldId}
-            onChange={(e) => setInvoiceHoursFieldId(e.target.value)}
-            className="w-40"
-          />
-          <Button variant="secondary" size="sm" onClick={handleFetchFields} loading={isFetchingFields}>
-            {t(`${I18N}.form.fetch_fields`)}
-          </Button>
-        </div>
-        {crmFields.length > 0 && (
-          <div className="mt-2">
-            <CustomSelect
-              value={invoiceHoursFieldId ? Number(invoiceHoursFieldId) : null}
-              onChange={(val: number | null) => setInvoiceHoursFieldId(val != null ? String(val) : "")}
-              label={
-                <span className={invoiceHoursFieldId ? "" : "text-placeholder"}>
-                  {crmFields.find((f) => String(f.id) === invoiceHoursFieldId)?.name ??
-                    t(`${I18N}.form.invoice_hours_field`)}
-                </span>
-              }
-              className="w-full max-w-md"
-              buttonClassName="w-full justify-between"
-              input
-            >
-              {crmFields.map((field) => (
-                <CustomSelect.Option key={field.id} value={field.id}>
-                  {field.name} (#{field.id})
-                </CustomSelect.Option>
-              ))}
-            </CustomSelect>
-          </div>
-        )}
-        <p className="text-body-xs-regular text-tertiary">{t(`${I18N}.form.invoice_hours_field_help`)}</p>
-      </div>
-
       {/* Active toggle */}
       <div className="flex items-center justify-between gap-4">
         <div className="flex flex-col gap-1">
@@ -344,62 +267,15 @@ export const CrmSyncRoot = observer(function CrmSyncRoot({ workspaceSlug }: Prop
         <Button variant="secondary" onClick={handleTestConnection} loading={isTesting}>
           {t(`${I18N}.form.test_connection`)}
         </Button>
-        <Button variant="secondary" onClick={handleSyncNow} loading={isSyncing} disabled={!isConfigured || !isActive}>
-          {t(`${I18N}.form.sync_now`)}
+        <Button
+          variant="secondary"
+          onClick={handleBackfill}
+          loading={isBackfilling}
+          disabled={!isConfigured || !isActive}
+        >
+          {t(`${I18N}.form.backfill`)}
         </Button>
       </div>
-
-      {/* Recent syncs */}
-      <CrmSyncLogs logs={logs ?? []} />
     </div>
   );
 });
-
-type LogsProps = {
-  logs: {
-    id: string;
-    sync_month: string;
-    status: string;
-    projects_synced: number;
-    projects_skipped: number;
-    projects_processed: number;
-    created_at: string;
-  }[];
-};
-
-function CrmSyncLogs({ logs }: LogsProps) {
-  const { t } = useTranslation();
-  return (
-    <div className="space-y-2 border-t border-subtle pt-4">
-      <h4 className="text-h6-medium text-primary">{t(`${I18N}.logs.title`)}</h4>
-      {logs.length === 0 ? (
-        <p className="text-body-sm-regular text-tertiary">{t(`${I18N}.logs.empty`)}</p>
-      ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full text-body-sm-regular">
-            <thead className="text-tertiary">
-              <tr className="border-b border-subtle text-left">
-                <th className="py-2 pr-4 font-medium">{t(`${I18N}.logs.month`)}</th>
-                <th className="py-2 pr-4 font-medium">{t(`${I18N}.logs.status`)}</th>
-                <th className="py-2 pr-4 font-medium">{t(`${I18N}.logs.synced`)}</th>
-                <th className="py-2 pr-4 font-medium">{t(`${I18N}.logs.skipped`)}</th>
-                <th className="py-2 pr-4 font-medium">{t(`${I18N}.logs.ran_at`)}</th>
-              </tr>
-            </thead>
-            <tbody className="text-secondary">
-              {logs.map((log) => (
-                <tr key={log.id} className="border-b border-subtle">
-                  <td className="py-2 pr-4">{log.sync_month}</td>
-                  <td className="py-2 pr-4 capitalize">{log.status}</td>
-                  <td className="py-2 pr-4">{log.projects_synced}</td>
-                  <td className="py-2 pr-4">{log.projects_skipped}</td>
-                  <td className="py-2 pr-4">{new Date(log.created_at).toLocaleString()}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-    </div>
-  );
-}

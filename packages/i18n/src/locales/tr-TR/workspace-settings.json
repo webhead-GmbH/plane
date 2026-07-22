@@ -216,7 +216,8 @@
       "crm_sync": {
         "title": "CRM Senkronizasyonu",
         "heading": "CRM Senkronizasyonu",
-        "description": "Her ayın kaydedilen saatlerini otomatik olarak CRM'nize gönderin, böylece müşteri faturalandırması senkron kalsın.",
+        "description": "İş öğelerini ve kaydedilen saatleri CRM'nize gönderin, böylece müşteri faturalandırması senkron kalsın.",
+        "realtime_note": "Değişiklikler CRM'e otomatik olarak senkronize edilir, bu nedenle mevcut verilerin senkronizasyonu yalnızca daha önce oluşturulmuş iş öğeleri ve çalışma logları için gereklidir.",
         "form": {
           "crm_url": "CRM temel URL adresi",
           "crm_url_placeholder": "https://crm.example.com",
@@ -233,24 +234,11 @@
           "project_id_field": "CRM proje ID'si için Plane özel alanı",
           "project_id_field_help": "Değeri, eşleşen CRM proje ID'sini içeren bir proje özel alanı.",
           "project_id_field_none": "Bir özel alan seçin",
-          "invoice_hours_field": "CRM fatura saatleri alanının ID'si",
-          "invoice_hours_field_help": "CRM'deki \"Invoice hours\" özel alanının sayısal ID'si.",
-          "fetch_fields": "CRM'den al",
           "active": "Aktif",
-          "active_help": "Kapalıyken bu çalışma alanı için aylık senkronizasyon atlanır.",
+          "active_help": "Kapalıyken bu çalışma alanı için CRM'e hiçbir veri gönderilmez.",
           "save": "Değişiklikleri kaydet",
           "test_connection": "Bağlantıyı test et",
-          "sync_now": "Şimdi senkronize et"
-        },
-        "logs": {
-          "title": "Son senkronizasyonlar",
-          "empty": "Henüz senkronizasyon çalıştırılmadı.",
-          "month": "Ay",
-          "status": "Durum",
-          "synced": "Senkronize edildi",
-          "skipped": "Atlandı",
-          "processed": "İşlendi",
-          "ran_at": "Çalıştırılma zamanı"
+          "backfill": "Mevcut verileri senkronize et"
         },
         "toasts": {
           "saved": {
@@ -265,9 +253,9 @@
             "title": "Bağlantı başarısız",
             "message": "CRM'ye ulaşılamadı. URL adresini ve API anahtarını kontrol edin."
           },
-          "sync_started": {
-            "title": "Senkronizasyon başlatıldı",
-            "message": "Senkronizasyon arka planda çalışıyor. Kısa süre sonra son senkronizasyonları kontrol edin."
+          "backfill_started": {
+            "title": "Mevcut verilerin senkronizasyonu başlatıldı",
+            "message": "Mevcut iş öğeleri ve çalışma logları arka planda CRM'e gönderiliyor."
           },
           "error": {
             "title": "Bir şeyler yanlış gitti",

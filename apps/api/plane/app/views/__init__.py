@@ -251,8 +251,6 @@ from .crm_integration.base import (
     CrmIntegrationEndpoint,
     CrmIntegrationTestEndpoint,
     CrmIntegrationSyncEndpoint,
-    CrmIntegrationCrmFieldsEndpoint,
-    CrmSyncLogEndpoint,
 )
 
 from .error_404 import custom_404_view

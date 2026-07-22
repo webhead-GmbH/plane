@@ -216,7 +216,8 @@
       "crm_sync": {
         "title": "CRM同期",
         "heading": "CRM同期",
-        "description": "毎月記録された作業時間を自動的にCRMへ送信し、顧客への請求を同期された状態に保ちます。",
+        "description": "作業項目と記録された作業時間をCRMへ送信し、顧客への請求を同期された状態に保ちます。",
+        "realtime_note": "変更は自動的にCRMへ同期されるため、既存データの同期はすでに作成済みの作業項目と作業ログにのみ必要です。",
         "form": {
           "crm_url": "CRMのベースURL",
           "crm_url_placeholder": "https://crm.example.com",
@@ -233,24 +234,11 @@
           "project_id_field": "CRMプロジェクトIDに対応するPlaneのカスタムフィールド",
           "project_id_field_help": "対応するCRMプロジェクトIDを値として保持するプロジェクトのカスタムフィールドです。",
           "project_id_field_none": "カスタムフィールドを選択",
-          "invoice_hours_field": "CRMの請求時間フィールドのID",
-          "invoice_hours_field_help": "CRM内の「Invoice hours」カスタムフィールドの数値IDです。",
-          "fetch_fields": "CRMから取得",
           "active": "有効",
-          "active_help": "無効にすると、このワークスペースでは毎月の同期がスキップされます。",
+          "active_help": "無効にすると、このワークスペースからはCRMへ何も送信されません。",
           "save": "変更を保存",
           "test_connection": "接続をテスト",
-          "sync_now": "今すぐ同期"
-        },
-        "logs": {
-          "title": "最近の同期",
-          "empty": "同期はまだ実行されていません。",
-          "month": "月",
-          "status": "ステータス",
-          "synced": "同期済み",
-          "skipped": "スキップ",
-          "processed": "処理済み",
-          "ran_at": "実行日時"
+          "backfill": "既存データを同期"
         },
         "toasts": {
           "saved": {
@@ -265,9 +253,9 @@
             "title": "接続に失敗しました",
             "message": "CRMに接続できませんでした。URLとAPIキーを確認してください。"
           },
-          "sync_started": {
-            "title": "同期を開始しました",
-            "message": "同期はバックグラウンドで実行中です。しばらくしてから最近の同期をご確認ください。"
+          "backfill_started": {
+            "title": "既存データの同期を開始しました",
+            "message": "既存の作業項目と作業ログをバックグラウンドでCRMへ送信しています。"
           },
           "error": {
             "title": "問題が発生しました",

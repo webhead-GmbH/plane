@@ -216,7 +216,8 @@
       "crm_sync": {
         "title": "Synchronizacja CRM",
         "heading": "Synchronizacja CRM",
-        "description": "Automatycznie przesyłaj zarejestrowane godziny z każdego miesiąca do systemu CRM, aby rozliczenia klientów pozostawały zsynchronizowane.",
+        "description": "Przesyłaj elementy pracy i zarejestrowane godziny do systemu CRM, aby rozliczenia klientów pozostawały zsynchronizowane.",
+        "realtime_note": "Zmiany są synchronizowane z systemem CRM automatycznie, dlatego synchronizacja istniejących danych jest potrzebna tylko w przypadku wcześniej utworzonych elementów pracy i logów pracy.",
         "form": {
           "crm_url": "Podstawowy adres URL systemu CRM",
           "crm_url_placeholder": "https://crm.example.com",
@@ -233,24 +234,11 @@
           "project_id_field": "Pole niestandardowe Plane dla ID projektu w systemie CRM",
           "project_id_field_help": "Pole niestandardowe projektu, którego wartość zawiera odpowiadające ID projektu w systemie CRM.",
           "project_id_field_none": "Wybierz pole niestandardowe",
-          "invoice_hours_field": "ID pola godzin do faktury w systemie CRM",
-          "invoice_hours_field_help": "Numeryczne ID pola niestandardowego „Invoice hours” w systemie CRM.",
-          "fetch_fields": "Pobierz z systemu CRM",
           "active": "Aktywna",
-          "active_help": "Po wyłączeniu miesięczna synchronizacja jest pomijana dla tej przestrzeni roboczej.",
+          "active_help": "Po wyłączeniu nic nie jest wysyłane do systemu CRM dla tej przestrzeni roboczej.",
           "save": "Zapisz zmiany",
           "test_connection": "Testuj połączenie",
-          "sync_now": "Synchronizuj teraz"
-        },
-        "logs": {
-          "title": "Ostatnie synchronizacje",
-          "empty": "Nie wykonano jeszcze żadnych synchronizacji.",
-          "month": "Miesiąc",
-          "status": "Status",
-          "synced": "Zsynchronizowano",
-          "skipped": "Pominięto",
-          "processed": "Przetworzono",
-          "ran_at": "Wykonano"
+          "backfill": "Synchronizuj istniejące dane"
         },
         "toasts": {
           "saved": {
@@ -265,9 +253,9 @@
             "title": "Połączenie nieudane",
             "message": "Nie udało się połączyć z systemem CRM. Sprawdź adres URL i klucz API."
           },
-          "sync_started": {
-            "title": "Synchronizacja rozpoczęta",
-            "message": "Synchronizacja działa w tle. Sprawdź za chwilę ostatnie synchronizacje."
+          "backfill_started": {
+            "title": "Rozpoczęto synchronizację istniejących danych",
+            "message": "Istniejące elementy pracy i logi pracy są wysyłane do systemu CRM w tle."
           },
           "error": {
             "title": "Coś poszło nie tak",

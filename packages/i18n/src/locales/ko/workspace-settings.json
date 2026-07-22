@@ -216,7 +216,8 @@
       "crm_sync": {
         "title": "CRM 동기화",
         "heading": "CRM 동기화",
-        "description": "매월 기록된 시간을 CRM으로 자동 전송하여 고객 청구가 동기화된 상태를 유지합니다.",
+        "description": "작업 항목과 기록된 시간을 CRM으로 전송하여 고객 청구가 동기화된 상태를 유지합니다.",
+        "realtime_note": "변경 사항은 자동으로 CRM에 동기화되므로 기존 데이터 동기화는 이미 생성된 작업 항목과 워크로그에만 필요합니다.",
         "form": {
           "crm_url": "CRM 기본 URL",
           "crm_url_placeholder": "https://crm.example.com",
@@ -233,24 +234,11 @@
           "project_id_field": "CRM 프로젝트 ID에 해당하는 Plane 사용자 정의 필드",
           "project_id_field_help": "값에 해당 CRM 프로젝트 ID가 저장된 프로젝트 사용자 정의 필드입니다.",
           "project_id_field_none": "사용자 정의 필드 선택",
-          "invoice_hours_field": "CRM 청구 시간 필드 ID",
-          "invoice_hours_field_help": "CRM에 있는 \"Invoice hours\" 사용자 정의 필드의 숫자 ID입니다.",
-          "fetch_fields": "CRM에서 가져오기",
           "active": "활성",
-          "active_help": "꺼져 있으면 이 워크스페이스에서는 월간 동기화를 건너뜁니다.",
+          "active_help": "꺼져 있으면 이 워크스페이스에서는 CRM으로 아무것도 전송되지 않습니다.",
           "save": "변경 사항 저장",
           "test_connection": "연결 테스트",
-          "sync_now": "지금 동기화"
-        },
-        "logs": {
-          "title": "최근 동기화",
-          "empty": "아직 실행된 동기화가 없습니다.",
-          "month": "월",
-          "status": "상태",
-          "synced": "동기화됨",
-          "skipped": "건너뜀",
-          "processed": "처리됨",
-          "ran_at": "실행 시각"
+          "backfill": "기존 데이터 동기화"
         },
         "toasts": {
           "saved": {
@@ -265,9 +253,9 @@
             "title": "연결에 실패했습니다",
             "message": "CRM에 연결할 수 없습니다. URL과 API 키를 확인하세요."
           },
-          "sync_started": {
-            "title": "동기화가 시작되었습니다",
-            "message": "동기화가 백그라운드에서 실행 중입니다. 잠시 후 최근 동기화를 확인하세요."
+          "backfill_started": {
+            "title": "기존 데이터 동기화가 시작되었습니다",
+            "message": "기존 작업 항목과 워크로그를 백그라운드에서 CRM으로 전송하고 있습니다."
           },
           "error": {
             "title": "문제가 발생했습니다",

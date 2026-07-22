@@ -216,7 +216,8 @@
       "crm_sync": {
         "title": "Synchronizácia CRM",
         "heading": "Synchronizácia CRM",
-        "description": "Automaticky odosielajte zaznamenané hodiny za každý mesiac do svojho CRM, aby fakturácia klientov zostala synchronizovaná.",
+        "description": "Odosielajte pracovné položky a zaznamenané hodiny do svojho CRM, aby fakturácia klientov zostala synchronizovaná.",
+        "realtime_note": "Zmeny sa do CRM synchronizujú automaticky, preto je odoslanie existujúcich údajov potrebné len pri už vytvorených pracovných položkách a pracovných záznamoch.",
         "form": {
           "crm_url": "Základná URL adresa CRM",
           "crm_url_placeholder": "https://crm.example.com",
@@ -233,24 +234,11 @@
           "project_id_field": "Vlastné pole Plane pre ID projektu v CRM",
           "project_id_field_help": "Vlastné pole projektu, ktorého hodnota obsahuje zodpovedajúce ID projektu v CRM.",
           "project_id_field_none": "Vyberte vlastné pole",
-          "invoice_hours_field": "ID poľa fakturovaných hodín v CRM",
-          "invoice_hours_field_help": "Číselné ID vlastného poľa „Invoice hours“ v CRM.",
-          "fetch_fields": "Načítať z CRM",
           "active": "Aktívne",
-          "active_help": "Keď je vypnuté, mesačná synchronizácia sa pre tento pracovný priestor preskočí.",
+          "active_help": "Keď je vypnuté, do CRM sa pre tento pracovný priestor neodosiela nič.",
           "save": "Uložiť zmeny",
           "test_connection": "Otestovať pripojenie",
-          "sync_now": "Synchronizovať teraz"
-        },
-        "logs": {
-          "title": "Nedávne synchronizácie",
-          "empty": "Zatiaľ neprebehli žiadne synchronizácie.",
-          "month": "Mesiac",
-          "status": "Stav",
-          "synced": "Synchronizované",
-          "skipped": "Preskočené",
-          "processed": "Spracované",
-          "ran_at": "Spustené"
+          "backfill": "Odoslať existujúce údaje"
         },
         "toasts": {
           "saved": {
@@ -265,9 +253,9 @@
             "title": "Pripojenie zlyhalo",
             "message": "Nepodarilo sa pripojiť k CRM. Skontrolujte URL adresu a kľúč API."
           },
-          "sync_started": {
-            "title": "Synchronizácia spustená",
-            "message": "Synchronizácia prebieha na pozadí. O chvíľu skontrolujte nedávne synchronizácie."
+          "backfill_started": {
+            "title": "Odosielanie existujúcich údajov sa spustilo",
+            "message": "Existujúce pracovné položky a pracovné záznamy sa na pozadí odosielajú do CRM."
           },
           "error": {
             "title": "Niečo sa pokazilo",

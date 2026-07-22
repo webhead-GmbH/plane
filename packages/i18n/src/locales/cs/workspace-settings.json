@@ -216,7 +216,8 @@
       "crm_sync": {
         "title": "Synchronizace CRM",
         "heading": "Synchronizace CRM",
-        "description": "Automaticky odesílejte zaznamenané hodiny za každý měsíc do svého CRM, aby fakturace klientů zůstala synchronizovaná.",
+        "description": "Odesílejte pracovní položky a zaznamenané hodiny do svého CRM, aby fakturace klientů zůstala synchronizovaná.",
+        "realtime_note": "Změny se do CRM synchronizují automaticky, odeslání stávajících dat je proto potřeba jen u již vytvořených pracovních položek a pracovních záznamů.",
         "form": {
           "crm_url": "Základní URL adresa CRM",
           "crm_url_placeholder": "https://crm.example.com",
@@ -233,24 +234,11 @@
           "project_id_field": "Vlastní pole Plane pro ID projektu v CRM",
           "project_id_field_help": "Vlastní pole projektu, jehož hodnota obsahuje odpovídající ID projektu v CRM.",
           "project_id_field_none": "Vyberte vlastní pole",
-          "invoice_hours_field": "ID pole fakturovaných hodin v CRM",
-          "invoice_hours_field_help": "Číselné ID vlastního pole „Invoice hours“ v CRM.",
-          "fetch_fields": "Načíst z CRM",
           "active": "Aktivní",
-          "active_help": "Když je vypnuto, měsíční synchronizace se pro tento pracovní prostor přeskočí.",
+          "active_help": "Když je vypnuto, do CRM se pro tento pracovní prostor neodesílá nic.",
           "save": "Uložit změny",
           "test_connection": "Otestovat připojení",
-          "sync_now": "Synchronizovat nyní"
-        },
-        "logs": {
-          "title": "Nedávné synchronizace",
-          "empty": "Zatím neproběhly žádné synchronizace.",
-          "month": "Měsíc",
-          "status": "Stav",
-          "synced": "Synchronizováno",
-          "skipped": "Přeskočeno",
-          "processed": "Zpracováno",
-          "ran_at": "Spuštěno"
+          "backfill": "Odeslat stávající data"
         },
         "toasts": {
           "saved": {
@@ -265,9 +253,9 @@
             "title": "Připojení se nezdařilo",
             "message": "Nepodařilo se připojit k CRM. Zkontrolujte URL adresu a klíč API."
           },
-          "sync_started": {
-            "title": "Synchronizace zahájena",
-            "message": "Synchronizace probíhá na pozadí. Za chvíli zkontrolujte nedávné synchronizace."
+          "backfill_started": {
+            "title": "Odesílání stávajících dat zahájeno",
+            "message": "Stávající pracovní položky a pracovní záznamy se na pozadí odesílají do CRM."
           },
           "error": {
             "title": "Něco se pokazilo",

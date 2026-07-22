@@ -216,7 +216,8 @@
       "crm_sync": {
         "title": "CRM-Synchronisierung",
         "heading": "CRM-Synchronisierung",
-        "description": "Übertragen Sie die monatlich erfassten Stunden automatisch an Ihr CRM, damit die Kundenabrechnung synchron bleibt.",
+        "description": "Übertragen Sie Arbeitselemente und erfasste Stunden an Ihr CRM, damit die Kundenabrechnung synchron bleibt.",
+        "realtime_note": "Änderungen werden automatisch mit dem CRM synchronisiert, eine Bestandsübertragung ist daher nur für bereits vorhandene Arbeitselemente und Arbeitsberichte erforderlich.",
         "form": {
           "crm_url": "CRM-Basis-URL",
           "crm_url_placeholder": "https://crm.example.com",
@@ -233,24 +234,11 @@
           "project_id_field": "Plane-Benutzerfeld für die CRM-Projekt-ID",
           "project_id_field_help": "Ein Projekt-Benutzerfeld, dessen Wert die zugehörige CRM-Projekt-ID enthält.",
           "project_id_field_none": "Benutzerfeld auswählen",
-          "invoice_hours_field": "CRM-Feld-ID für Rechnungsstunden",
-          "invoice_hours_field_help": "Numerische ID des Benutzerfelds „Invoice hours“ im CRM.",
-          "fetch_fields": "Aus CRM abrufen",
           "active": "Aktiv",
-          "active_help": "Wenn deaktiviert, wird die monatliche Synchronisierung für diesen Arbeitsbereich übersprungen.",
+          "active_help": "Wenn deaktiviert, wird für diesen Arbeitsbereich nichts an das CRM übertragen.",
           "save": "Änderungen speichern",
           "test_connection": "Verbindung testen",
-          "sync_now": "Jetzt synchronisieren"
-        },
-        "logs": {
-          "title": "Letzte Synchronisierungen",
-          "empty": "Es wurden noch keine Synchronisierungen ausgeführt.",
-          "month": "Monat",
-          "status": "Status",
-          "synced": "Synchronisiert",
-          "skipped": "Übersprungen",
-          "processed": "Verarbeitet",
-          "ran_at": "Ausgeführt am"
+          "backfill": "Bestandsdaten übertragen"
         },
         "toasts": {
           "saved": {
@@ -265,9 +253,9 @@
             "title": "Verbindung fehlgeschlagen",
             "message": "Das CRM konnte nicht erreicht werden. Bitte überprüfen Sie URL und API-Schlüssel."
           },
-          "sync_started": {
-            "title": "Synchronisierung gestartet",
-            "message": "Die Synchronisierung läuft im Hintergrund. Sehen Sie in Kürze unter den letzten Synchronisierungen nach."
+          "backfill_started": {
+            "title": "Bestandsübertragung gestartet",
+            "message": "Vorhandene Arbeitselemente und Arbeitsberichte werden im Hintergrund an das CRM übertragen."
           },
           "error": {
             "title": "Etwas ist schiefgelaufen",

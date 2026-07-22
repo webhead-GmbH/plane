@@ -18,11 +18,6 @@ class CrmIntegration(BaseModel):
     CRM is made.
     """
 
-    class SyncStatus(models.TextChoices):
-        SUCCESS = "success", "Success"
-        PARTIAL = "partial", "Partial"
-        FAILED = "failed", "Failed"
-
     class ProjectMappingSource(models.TextChoices):
         # Read the CRM project id from a workspace custom field on each project.
         CUSTOM_FIELD = "custom_field", "Custom field"
@@ -54,16 +49,8 @@ class CrmIntegration(BaseModel):
         blank=True,
         related_name="crm_project_id_integration",
     )
-    # Numeric id of the "Invoice hours" custom field on the CRM side.
-    crm_invoice_hours_field_id = models.PositiveIntegerField(null=True, blank=True)
     is_active = models.BooleanField(default=True)
     last_synced_at = models.DateTimeField(null=True, blank=True)
-    last_sync_status = models.CharField(
-        max_length=20,
-        choices=SyncStatus.choices,
-        null=True,
-        blank=True,
-    )
 
     def set_api_key(self, raw_key):
         """Encrypt and store a raw CRM API key (pass an empty value to clear it)."""
@@ -85,29 +72,45 @@ class CrmIntegration(BaseModel):
         ordering = ("-created_at",)
 
 
-class CrmSyncLog(BaseModel):
-    """Audit record of a single monthly sync run for one workspace."""
+class CrmTaskLink(BaseModel):
+    """Ties one Plane work item to the CRM task that mirrors it.
 
-    integration = models.ForeignKey(
-        CrmIntegration,
-        on_delete=models.CASCADE,
-        related_name="sync_logs",
-    )
-    # First day of the month the run covered, e.g. 2025-01-01.
-    sync_month = models.DateField()
-    status = models.CharField(max_length=20, choices=CrmIntegration.SyncStatus.choices)
-    projects_processed = models.PositiveIntegerField(default=0)
-    projects_synced = models.PositiveIntegerField(default=0)
-    projects_skipped = models.PositiveIntegerField(default=0)
-    # Per-project breakdown:
-    # [{project_id, project_name, crm_project_id, total_hours, crm_task_id, status, error}]
-    details = models.JSONField(null=True, blank=True)
+    The link is what makes the sync idempotent: its presence means the work item
+    already exists in the CRM, so later edits become updates rather than
+    duplicate tasks. Sub work items get their own link and their own ordinary CRM
+    task — the CRM has no notion of a parent task here.
+    """
+
+    workspace = models.ForeignKey("db.Workspace", on_delete=models.CASCADE, related_name="crm_task_links")
+    issue = models.OneToOneField("db.Issue", on_delete=models.CASCADE, related_name="crm_task_link")
+    crm_task_id = models.PositiveIntegerField()
+    # CRM project the task was filed under, kept so a project remap can be detected.
+    crm_project_id = models.PositiveIntegerField()
+    last_synced_at = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
-        return f"{self.integration_id} {self.sync_month} {self.status}"
+        return f"issue {self.issue_id} -> CRM task {self.crm_task_id}"
 
     class Meta:
-        verbose_name = "CRM Sync Log"
-        verbose_name_plural = "CRM Sync Logs"
-        db_table = "crm_sync_logs"
+        verbose_name = "CRM Task Link"
+        verbose_name_plural = "CRM Task Links"
+        db_table = "crm_task_links"
+        ordering = ("-created_at",)
+
+
+class CrmTimerLink(BaseModel):
+    """Ties one Plane worklog (or running timer) to its CRM timer row."""
+
+    workspace = models.ForeignKey("db.Workspace", on_delete=models.CASCADE, related_name="crm_timer_links")
+    worklog = models.OneToOneField("db.IssueWorkLog", on_delete=models.CASCADE, related_name="crm_timer_link")
+    crm_timer_id = models.PositiveIntegerField()
+    last_synced_at = models.DateTimeField(null=True, blank=True)
+
+    def __str__(self):
+        return f"worklog {self.worklog_id} -> CRM timer {self.crm_timer_id}"
+
+    class Meta:
+        verbose_name = "CRM Timer Link"
+        verbose_name_plural = "CRM Timer Links"
+        db_table = "crm_timer_links"
         ordering = ("-created_at",)

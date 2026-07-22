@@ -216,7 +216,8 @@
       "crm_sync": {
         "title": "Đồng bộ CRM",
         "heading": "Đồng bộ CRM",
-        "description": "Tự động gửi số giờ đã ghi nhận của mỗi tháng sang CRM của bạn để việc lập hóa đơn cho khách hàng luôn được đồng bộ.",
+        "description": "Gửi các mục công việc và số giờ đã ghi nhận sang CRM của bạn để việc lập hóa đơn cho khách hàng luôn được đồng bộ.",
+        "realtime_note": "Các thay đổi được đồng bộ tự động sang CRM, vì vậy việc đồng bộ dữ liệu hiện có chỉ cần thiết cho các mục công việc và nhật ký công việc đã được tạo trước đó.",
         "form": {
           "crm_url": "URL cơ sở của CRM",
           "crm_url_placeholder": "https://crm.example.com",
@@ -233,24 +234,11 @@
           "project_id_field": "Trường tùy chỉnh Plane cho ID dự án CRM",
           "project_id_field_help": "Một trường tùy chỉnh của dự án có giá trị chứa ID dự án CRM tương ứng.",
           "project_id_field_none": "Chọn một trường tùy chỉnh",
-          "invoice_hours_field": "ID trường giờ hóa đơn trong CRM",
-          "invoice_hours_field_help": "ID dạng số của trường tùy chỉnh \"Invoice hours\" trong CRM.",
-          "fetch_fields": "Lấy từ CRM",
           "active": "Hoạt động",
-          "active_help": "Khi tắt, quá trình đồng bộ hằng tháng sẽ bị bỏ qua đối với không gian làm việc này.",
+          "active_help": "Khi tắt, không có dữ liệu nào được gửi đến CRM cho không gian làm việc này.",
           "save": "Lưu thay đổi",
           "test_connection": "Kiểm tra kết nối",
-          "sync_now": "Đồng bộ ngay"
-        },
-        "logs": {
-          "title": "Các lần đồng bộ gần đây",
-          "empty": "Chưa có lần đồng bộ nào được chạy.",
-          "month": "Tháng",
-          "status": "Trạng thái",
-          "synced": "Đã đồng bộ",
-          "skipped": "Đã bỏ qua",
-          "processed": "Đã xử lý",
-          "ran_at": "Chạy lúc"
+          "backfill": "Đồng bộ dữ liệu hiện có"
         },
         "toasts": {
           "saved": {
@@ -265,9 +253,9 @@
             "title": "Kết nối thất bại",
             "message": "Không thể kết nối tới CRM. Hãy kiểm tra URL và khóa API."
           },
-          "sync_started": {
-            "title": "Đã bắt đầu đồng bộ",
-            "message": "Quá trình đồng bộ đang chạy ở chế độ nền. Hãy kiểm tra các lần đồng bộ gần đây sau ít phút."
+          "backfill_started": {
+            "title": "Đã bắt đầu đồng bộ dữ liệu hiện có",
+            "message": "Các mục công việc và nhật ký công việc hiện có đang được gửi đến CRM ở chế độ nền."
           },
           "error": {
             "title": "Đã xảy ra lỗi",
