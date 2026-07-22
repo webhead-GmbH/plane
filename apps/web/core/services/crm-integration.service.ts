@@ -7,8 +7,6 @@
 import { API_BASE_URL } from "@plane/constants";
 import { APIService } from "@/services/api.service";
 
-export type TCrmSyncStatus = "success" | "partial" | "failed";
-
 /** Where each Plane project's CRM id comes from. */
 export type TCrmProjectMappingSource = "custom_field" | "identifier";
 
@@ -18,10 +16,8 @@ export type TCrmIntegration = {
   crm_api_url?: string;
   project_mapping_source?: TCrmProjectMappingSource;
   crm_project_id_custom_field?: string | null;
-  crm_invoice_hours_field_id?: number | null;
   is_active?: boolean;
   last_synced_at?: string | null;
-  last_sync_status?: TCrmSyncStatus | null;
   has_api_key?: boolean;
   created_at?: string;
   updated_at?: string;
@@ -32,29 +28,10 @@ export type TCrmIntegrationPayload = Partial<TCrmIntegration> & {
   crm_api_key?: string;
 };
 
-export type TCrmSyncLog = {
-  id: string;
-  integration: string;
-  sync_month: string;
-  status: TCrmSyncStatus;
-  projects_processed: number;
-  projects_synced: number;
-  projects_skipped: number;
-  details: Record<string, unknown>[] | null;
-  created_at: string;
-};
-
 export type TCrmConnectionTest = {
   success: boolean;
   projects_count?: number;
   error?: string;
-};
-
-export type TCrmField = {
-  id: number;
-  name: string;
-  slug: string;
-  type: string;
 };
 
 export class CrmIntegrationService extends APIService {
@@ -105,27 +82,12 @@ export class CrmIntegrationService extends APIService {
       });
   }
 
-  async fetchCrmFields(
-    workspaceSlug: string,
-    data: { crm_api_url?: string; crm_api_key?: string; entity?: string }
-  ): Promise<{ success: boolean; fields: TCrmField[]; error?: string }> {
-    return this.post(`/api/workspaces/${workspaceSlug}/crm-integration/crm-fields/`, data)
-      .then((response) => response?.data)
-      .catch((error) => {
-        throw error?.response?.data;
-      });
-  }
-
-  async syncNow(workspaceSlug: string): Promise<{ success: boolean; message: string }> {
+  /**
+   * Push every existing work item and worklog to the CRM once.
+   * Day-to-day syncing is event-driven, so this is only needed to seed a newly connected CRM.
+   */
+  async backfill(workspaceSlug: string): Promise<{ success: boolean; message: string }> {
     return this.post(`/api/workspaces/${workspaceSlug}/crm-integration/sync/`, {})
-      .then((response) => response?.data)
-      .catch((error) => {
-        throw error?.response?.data;
-      });
-  }
-
-  async fetchLogs(workspaceSlug: string): Promise<TCrmSyncLog[]> {
-    return this.get(`/api/workspaces/${workspaceSlug}/crm-integration/logs/`)
       .then((response) => response?.data)
       .catch((error) => {
         throw error?.response?.data;

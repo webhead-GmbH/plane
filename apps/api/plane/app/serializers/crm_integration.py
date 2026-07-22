@@ -7,7 +7,7 @@ from rest_framework import serializers
 
 # Module imports
 from .base import DynamicBaseSerializer
-from plane.db.models import CrmIntegration, CrmSyncLog
+from plane.db.models import CrmIntegration
 
 
 class CrmIntegrationSerializer(DynamicBaseSerializer):
@@ -31,10 +31,8 @@ class CrmIntegrationSerializer(DynamicBaseSerializer):
             "crm_api_url",
             "project_mapping_source",
             "crm_project_id_custom_field",
-            "crm_invoice_hours_field_id",
             "is_active",
             "last_synced_at",
-            "last_sync_status",
             "crm_api_key",
             "has_api_key",
             "created_at",
@@ -43,7 +41,6 @@ class CrmIntegrationSerializer(DynamicBaseSerializer):
         read_only_fields = [
             "workspace",
             "last_synced_at",
-            "last_sync_status",
             "created_at",
             "updated_at",
         ]
@@ -96,20 +93,3 @@ class CrmIntegrationSerializer(DynamicBaseSerializer):
             instance.set_api_key(raw_key)
         instance.save()
         return instance
-
-
-class CrmSyncLogSerializer(DynamicBaseSerializer):
-    class Meta:
-        model = CrmSyncLog
-        fields = [
-            "id",
-            "integration",
-            "sync_month",
-            "status",
-            "projects_processed",
-            "projects_synced",
-            "projects_skipped",
-            "details",
-            "created_at",
-        ]
-        read_only_fields = fields

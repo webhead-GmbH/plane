@@ -216,7 +216,8 @@
       "crm_sync": {
         "title": "Sincronizare CRM",
         "heading": "Sincronizare CRM",
-        "description": "Trimiteți automat către CRM-ul dumneavoastră orele înregistrate în fiecare lună, astfel încât facturarea clienților să rămână sincronizată.",
+        "description": "Trimiteți activitățile și orele înregistrate către CRM-ul dumneavoastră, astfel încât facturarea clienților să rămână sincronizată.",
+        "realtime_note": "Modificările sunt sincronizate automat cu CRM-ul, prin urmare sincronizarea datelor existente este necesară doar pentru activitățile și jurnalele de lucru create anterior.",
         "form": {
           "crm_url": "URL de bază al CRM-ului",
           "crm_url_placeholder": "https://crm.example.com",
@@ -233,24 +234,11 @@
           "project_id_field": "Câmp personalizat Plane pentru ID-ul proiectului din CRM",
           "project_id_field_help": "Un câmp personalizat de proiect a cărui valoare conține ID-ul proiectului corespunzător din CRM.",
           "project_id_field_none": "Selectați un câmp personalizat",
-          "invoice_hours_field": "ID-ul câmpului CRM pentru orele facturate",
-          "invoice_hours_field_help": "ID-ul numeric al câmpului personalizat „Invoice hours” din CRM.",
-          "fetch_fields": "Preia din CRM",
           "active": "Activ",
-          "active_help": "Când este dezactivată, sincronizarea lunară este omisă pentru acest spațiu de lucru.",
+          "active_help": "Când este dezactivată, nu se trimite nimic către CRM pentru acest spațiu de lucru.",
           "save": "Salvează modificările",
           "test_connection": "Testează conexiunea",
-          "sync_now": "Sincronizează acum"
-        },
-        "logs": {
-          "title": "Sincronizări recente",
-          "empty": "Nu a fost executată încă nicio sincronizare.",
-          "month": "Lună",
-          "status": "Stare",
-          "synced": "Sincronizat",
-          "skipped": "Omis",
-          "processed": "Procesat",
-          "ran_at": "Executat la"
+          "backfill": "Sincronizează datele existente"
         },
         "toasts": {
           "saved": {
@@ -265,9 +253,9 @@
             "title": "Conexiune eșuată",
             "message": "Nu s-a putut realiza conexiunea la CRM. Verificați URL-ul și cheia API."
           },
-          "sync_started": {
-            "title": "Sincronizare pornită",
-            "message": "Sincronizarea rulează în fundal. Verificați în scurt timp sincronizările recente."
+          "backfill_started": {
+            "title": "Sincronizarea datelor existente a pornit",
+            "message": "Activitățile și jurnalele de lucru existente sunt trimise către CRM în fundal."
           },
           "error": {
             "title": "Ceva nu a funcționat",

@@ -216,7 +216,8 @@
       "crm_sync": {
         "title": "CRM 同步",
         "heading": "CRM 同步",
-        "description": "自動將每月記錄的工時推送到您的 CRM，使客戶帳單保持同步。",
+        "description": "將工作事項和記錄的工時推送到您的 CRM，使客戶帳單保持同步。",
+        "realtime_note": "變更會自動同步到 CRM，同步現有資料僅用於推送已存在的工作事項和工作日誌。",
         "form": {
           "crm_url": "CRM 基礎 URL",
           "crm_url_placeholder": "https://crm.example.com",
@@ -233,24 +234,11 @@
           "project_id_field": "用於 CRM 專案 ID 的 Plane 自訂欄位",
           "project_id_field_help": "其值保存對應 CRM 專案 ID 的專案自訂欄位。",
           "project_id_field_none": "選擇自訂欄位",
-          "invoice_hours_field": "CRM 發票工時欄位 ID",
-          "invoice_hours_field_help": "CRM 中「Invoice hours」自訂欄位的數字 ID。",
-          "fetch_fields": "從 CRM 取得",
           "active": "啟用",
-          "active_help": "關閉時，將略過此工作區的每月同步。",
+          "active_help": "關閉時，此工作區不會向 CRM 推送任何內容。",
           "save": "儲存變更",
           "test_connection": "測試連線",
-          "sync_now": "立即同步"
-        },
-        "logs": {
-          "title": "最近的同步",
-          "empty": "尚未執行過同步。",
-          "month": "月份",
-          "status": "狀態",
-          "synced": "已同步",
-          "skipped": "已略過",
-          "processed": "已處理",
-          "ran_at": "執行時間"
+          "backfill": "同步現有資料"
         },
         "toasts": {
           "saved": {
@@ -265,9 +253,9 @@
             "title": "連線失敗",
             "message": "無法連線到 CRM。請檢查 URL 與 API 金鑰。"
           },
-          "sync_started": {
-            "title": "同步已開始",
-            "message": "同步正在背景執行。請稍後查看最近的同步。"
+          "backfill_started": {
+            "title": "已開始同步現有資料",
+            "message": "現有的工作事項和工作日誌正在背景推送到 CRM。"
           },
           "error": {
             "title": "發生錯誤",

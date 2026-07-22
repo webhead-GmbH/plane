@@ -216,7 +216,8 @@
       "crm_sync": {
         "title": "Sinkronisasi CRM",
         "heading": "Sinkronisasi CRM",
-        "description": "Kirim jam yang tercatat setiap bulan ke CRM Anda secara otomatis agar penagihan klien tetap sinkron.",
+        "description": "Kirim item kerja dan jam yang tercatat ke CRM Anda agar penagihan klien tetap sinkron.",
+        "realtime_note": "Perubahan disinkronkan ke CRM secara otomatis, sehingga sinkronisasi data yang sudah ada hanya diperlukan untuk item kerja dan log kerja yang telah dibuat sebelumnya.",
         "form": {
           "crm_url": "URL dasar CRM",
           "crm_url_placeholder": "https://crm.example.com",
@@ -233,24 +234,11 @@
           "project_id_field": "Bidang kustom Plane untuk ID proyek CRM",
           "project_id_field_help": "Bidang kustom proyek yang nilainya berisi ID proyek CRM yang sesuai.",
           "project_id_field_none": "Pilih bidang kustom",
-          "invoice_hours_field": "ID bidang jam faktur CRM",
-          "invoice_hours_field_help": "ID numerik dari bidang kustom \"Invoice hours\" di CRM.",
-          "fetch_fields": "Ambil dari CRM",
           "active": "Aktif",
-          "active_help": "Saat nonaktif, sinkronisasi bulanan dilewati untuk ruang kerja ini.",
+          "active_help": "Saat nonaktif, tidak ada data yang dikirim ke CRM untuk ruang kerja ini.",
           "save": "Simpan perubahan",
           "test_connection": "Uji koneksi",
-          "sync_now": "Sinkronkan sekarang"
-        },
-        "logs": {
-          "title": "Sinkronisasi terbaru",
-          "empty": "Belum ada sinkronisasi yang dijalankan.",
-          "month": "Bulan",
-          "status": "Status",
-          "synced": "Tersinkronisasi",
-          "skipped": "Dilewati",
-          "processed": "Diproses",
-          "ran_at": "Dijalankan pada"
+          "backfill": "Sinkronkan data yang ada"
         },
         "toasts": {
           "saved": {
@@ -265,9 +253,9 @@
             "title": "Koneksi gagal",
             "message": "Tidak dapat menjangkau CRM. Periksa URL dan kunci API."
           },
-          "sync_started": {
-            "title": "Sinkronisasi dimulai",
-            "message": "Sinkronisasi berjalan di latar belakang. Periksa sinkronisasi terbaru sebentar lagi."
+          "backfill_started": {
+            "title": "Sinkronisasi data yang ada dimulai",
+            "message": "Item kerja dan log kerja yang sudah ada sedang dikirim ke CRM di latar belakang."
           },
           "error": {
             "title": "Ada yang salah",

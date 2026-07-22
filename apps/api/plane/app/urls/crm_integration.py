@@ -8,8 +8,6 @@ from plane.app.views import (
     CrmIntegrationEndpoint,
     CrmIntegrationTestEndpoint,
     CrmIntegrationSyncEndpoint,
-    CrmIntegrationCrmFieldsEndpoint,
-    CrmSyncLogEndpoint,
 )
 
 
@@ -24,19 +22,10 @@ urlpatterns = [
         CrmIntegrationTestEndpoint.as_view(),
         name="crm-integration-test",
     ),
+    # Kept at .../sync/ so existing clients keep working; it now backfills.
     path(
         "workspaces/<str:slug>/crm-integration/sync/",
         CrmIntegrationSyncEndpoint.as_view(),
-        name="crm-integration-sync",
-    ),
-    path(
-        "workspaces/<str:slug>/crm-integration/crm-fields/",
-        CrmIntegrationCrmFieldsEndpoint.as_view(),
-        name="crm-integration-crm-fields",
-    ),
-    path(
-        "workspaces/<str:slug>/crm-integration/logs/",
-        CrmSyncLogEndpoint.as_view(),
-        name="crm-integration-logs",
+        name="crm-integration-backfill",
     ),
 ]

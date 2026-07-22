@@ -343,6 +343,8 @@ CELERY_IMPORTS = (
     "plane.bgtasks.email_notification_task",
     "plane.bgtasks.cleanup_task",
     "plane.license.bgtasks.telemetry_metrics",
+    # CRM mirroring, dispatched from db signals
+    "plane.bgtasks.crm_sync_task",
     # management tasks
     "plane.bgtasks.dummy_data_task",
     # issue version tasks

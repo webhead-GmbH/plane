@@ -10,9 +10,9 @@ from rest_framework import status
 from rest_framework.response import Response
 
 # Module imports
-from plane.db.models import CrmIntegration, CrmSyncLog, Workspace
+from plane.db.models import CrmIntegration, Workspace
 from plane.app.permissions import allow_permission, ROLE
-from plane.app.serializers import CrmIntegrationSerializer, CrmSyncLogSerializer
+from plane.app.serializers import CrmIntegrationSerializer
 from plane.utils.crm_client import CrmApiClient, CrmApiError
 from ..base import BaseAPIView
 
@@ -147,7 +147,12 @@ class CrmIntegrationTestEndpoint(BaseAPIView):
 
 
 class CrmIntegrationSyncEndpoint(BaseAPIView):
-    """Trigger an immediate (asynchronous) sync for this workspace."""
+    """Push every existing work item and worklog to the CRM once.
+
+    Day-to-day the sync is event-driven, so this is only needed to seed a CRM
+    that was connected after the work already existed. Anything already linked is
+    updated instead of duplicated, so it is safe to run more than once.
+    """
 
     @allow_permission(allowed_roles=[ROLE.ADMIN], level="WORKSPACE")
     def post(self, request, slug):
@@ -164,72 +169,10 @@ class CrmIntegrationSyncEndpoint(BaseAPIView):
             )
 
         # Imported lazily to avoid importing Celery machinery at module load.
-        from plane.bgtasks.crm_sync_task import monthly_crm_sync
+        from plane.bgtasks.crm_sync_task import backfill_workspace_to_crm
 
-        monthly_crm_sync.delay(integration_id=str(integration.id))
+        backfill_workspace_to_crm.delay(integration_id=str(integration.id))
         return Response(
-            {"success": True, "message": "Sync started."},
+            {"success": True, "message": "Backfill started."},
             status=status.HTTP_202_ACCEPTED,
-        )
-
-
-class CrmIntegrationCrmFieldsEndpoint(BaseAPIView):
-    """Proxy the CRM's custom-field definitions so the admin can pick the
-    "Invoice hours" field without leaving Plane.
-
-    Accepts optional ``crm_api_url`` / ``crm_api_key`` (to fetch before saving),
-    otherwise uses the stored configuration.
-    """
-
-    @allow_permission(allowed_roles=[ROLE.ADMIN], level="WORKSPACE")
-    def post(self, request, slug):
-        integration = CrmIntegration.objects.filter(workspace__slug=slug).first()
-
-        crm_api_url = request.data.get("crm_api_url") or (
-            integration.crm_api_url if integration else None
-        )
-        crm_api_key = request.data.get("crm_api_key") or (
-            integration.get_api_key() if integration else None
-        )
-        entity = request.data.get("entity", "tasks")
-
-        if not crm_api_url or not crm_api_key:
-            return Response(
-                {"error": "CRM URL and API key are required."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-        if not _is_valid_crm_url(crm_api_url):
-            return Response(
-                {"error": "CRM URL must start with http:// or https://."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        client = CrmApiClient(
-            base_url=crm_api_url,
-            api_key=crm_api_key,
-            timeout=INTERACTIVE_CRM_TIMEOUT,
-            verify=settings.CRM_VERIFY_SSL,
-        )
-        try:
-            fields = client.get_custom_fields(entity)
-        except CrmApiError as exc:
-            return Response(
-                {"success": False, "error": str(exc)},
-                status=status.HTTP_502_BAD_GATEWAY,
-            )
-
-        return Response({"success": True, "fields": fields}, status=status.HTTP_200_OK)
-
-
-class CrmSyncLogEndpoint(BaseAPIView):
-    """Read the recent sync history for the workspace's integration."""
-
-    @allow_permission(allowed_roles=[ROLE.ADMIN], level="WORKSPACE")
-    def get(self, request, slug):
-        integration = CrmIntegration.objects.filter(workspace__slug=slug).first()
-        if integration is None:
-            return Response([], status=status.HTTP_200_OK)
-        logs = CrmSyncLog.objects.filter(integration=integration)[:50]
-        return Response(
-            CrmSyncLogSerializer(logs, many=True).data, status=status.HTTP_200_OK
         )

@@ -218,6 +218,10 @@ class WorkspaceMember(BaseModel):
     getting_started_checklist = models.JSONField(default=dict)
     tips = models.JSONField(default=dict)
     explored_features = models.JSONField(default=dict)
+    # CRM staff id for the worklog sync. Members are normally matched to CRM staff
+    # by email address; this is the manual override for members whose CRM account
+    # uses a different address.
+    crm_staff_id = models.PositiveIntegerField(null=True, blank=True)
 
     class Meta:
         unique_together = ["workspace", "member", "deleted_at"]

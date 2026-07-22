@@ -70,17 +70,116 @@ class CrmApiClient:
             "GET", "custom_fields", params={"entity": entity}
         ).get("data", [])
 
-    def create_task(self, project_id, name, description):
-        """Create a CRM task under a project and return the created task payload."""
+    def get_staff(self):
+        """Return active CRM staff, used to match Plane users by email address."""
+        return self._request("GET", "staff").get("data", [])
+
+    def create_task(
+        self,
+        project_id,
+        name,
+        description,
+        month_year=None,
+        work_item_id=None,
+        work_item_url=None,
+        status=None,
+        assignee_ids=None,
+        priority=None,
+        startdate=None,
+        duedate=None,
+    ):
+        """Create a CRM task under a project and return the created task payload.
+
+        The CRM attaches the task to the client's service for ``month_year``
+        (defaulting to the current month), creating the service or the month when
+        either is missing — both are mandatory on a CRM task. Passing
+        ``work_item_id`` marks the task as Plane-owned, which is what the CRM
+        keys its edit lock off.
+        """
+        payload = {
+            "project_id": int(project_id),
+            "name": name,
+            "description": description,
+        }
+        if month_year:
+            payload["month_year"] = month_year
+        if work_item_id:
+            payload["work_item_id"] = str(work_item_id)
+        if work_item_url:
+            payload["work_item_url"] = work_item_url
+        if status is not None:
+            payload["status"] = int(status)
+        if assignee_ids is not None:
+            payload["assignee_ids"] = [int(s) for s in assignee_ids]
+        if priority is not None:
+            payload["priority"] = int(priority)
+        if startdate is not None:
+            payload["startdate"] = startdate
+        if duedate is not None:
+            payload["duedate"] = duedate
+        return self._request("POST", "tasks", json=payload).get("data", {})
+
+    def update_task(
+        self,
+        task_id,
+        name=None,
+        description=None,
+        status=None,
+        assignee_ids=None,
+        priority=None,
+        startdate=None,
+        duedate=None,
+    ):
+        """Update the CRM task fields Plane keeps authoritative."""
+        payload = {"task_id": int(task_id)}
+        if name is not None:
+            payload["name"] = name
+        if description is not None:
+            payload["description"] = description
+        if status is not None:
+            payload["status"] = int(status)
+        if assignee_ids is not None:
+            payload["assignee_ids"] = [int(s) for s in assignee_ids]
+        if priority is not None:
+            payload["priority"] = int(priority)
+        if startdate is not None:
+            payload["startdate"] = startdate
+        if duedate is not None:
+            payload["duedate"] = duedate
+        return self._request("PATCH", "tasks", json=payload).get("data", {})
+
+    def delete_task(self, task_id):
+        """Delete a CRM task along with its timers and service mapping."""
+        return self._request("DELETE", "tasks", json={"task_id": int(task_id)}).get("data", {})
+
+    def create_timer(self, task_id, staff_id, start_time, end_time=None, note=None):
+        """Create a CRM timer. Omit ``end_time`` for a timer that is still running."""
         return self._request(
             "POST",
-            "tasks",
+            "timers",
             json={
-                "project_id": int(project_id),
-                "name": name,
-                "description": description,
+                "task_id": int(task_id),
+                "staff_id": int(staff_id),
+                "start_time": str(start_time),
+                "end_time": str(end_time) if end_time is not None else None,
+                "note": note,
             },
         ).get("data", {})
+
+    def update_timer(self, timer_id, start_time=None, end_time=None, note=None):
+        """Amend a CRM timer — typically to close a running one."""
+        payload = {"timer_id": int(timer_id)}
+        if start_time is not None:
+            payload["start_time"] = str(start_time)
+        if end_time is not None:
+            payload["end_time"] = str(end_time)
+        if note is not None:
+            payload["note"] = note
+        return self._request("PATCH", "timers", json=payload).get("data", {})
+
+    def delete_timer(self, timer_id):
+        """Delete a CRM timer."""
+        return self._request("DELETE", "timers", json={"timer_id": int(timer_id)}).get("data", {})
 
     def set_custom_field(self, task_id, field_id, value):
         """Set a single custom-field value on a CRM task."""
