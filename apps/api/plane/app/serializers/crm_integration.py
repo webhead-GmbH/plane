@@ -29,6 +29,7 @@ class CrmIntegrationSerializer(DynamicBaseSerializer):
             "id",
             "workspace",
             "crm_api_url",
+            "project_mapping_source",
             "crm_project_id_custom_field",
             "crm_invoice_hours_field_id",
             "is_active",
@@ -60,6 +61,23 @@ class CrmIntegrationSerializer(DynamicBaseSerializer):
         if value.entity_type != "project":
             raise serializers.ValidationError("Custom field must target projects.")
         return value
+
+    def validate(self, data):
+        """A custom-field mapping is useless without the field, so require it."""
+        source = data.get(
+            "project_mapping_source",
+            getattr(self.instance, "project_mapping_source", CrmIntegration.ProjectMappingSource.CUSTOM_FIELD),
+        )
+        if source == CrmIntegration.ProjectMappingSource.CUSTOM_FIELD:
+            field = data.get(
+                "crm_project_id_custom_field",
+                getattr(self.instance, "crm_project_id_custom_field", None),
+            )
+            if field is None:
+                raise serializers.ValidationError(
+                    {"crm_project_id_custom_field": "Select a custom field, or map projects by project ID instead."}
+                )
+        return data
 
     def create(self, validated_data):
         raw_key = validated_data.pop("crm_api_key", None)

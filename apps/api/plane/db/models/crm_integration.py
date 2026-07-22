@@ -23,6 +23,13 @@ class CrmIntegration(BaseModel):
         PARTIAL = "partial", "Partial"
         FAILED = "failed", "Failed"
 
+    class ProjectMappingSource(models.TextChoices):
+        # Read the CRM project id from a workspace custom field on each project.
+        CUSTOM_FIELD = "custom_field", "Custom field"
+        # Use the project's own identifier (the "Project ID" in project settings),
+        # which admins can set to the numeric CRM project id.
+        IDENTIFIER = "identifier", "Project identifier"
+
     workspace = models.OneToOneField(
         "db.Workspace",
         on_delete=models.CASCADE,
@@ -32,7 +39,14 @@ class CrmIntegration(BaseModel):
     crm_api_url = models.URLField(max_length=500)
     # CRM Bearer token, encrypted at rest. Never expose this field directly.
     crm_api_key_encrypted = models.TextField(blank=True, default="")
+    # Where the CRM project id for each Plane project comes from.
+    project_mapping_source = models.CharField(
+        max_length=20,
+        choices=ProjectMappingSource.choices,
+        default=ProjectMappingSource.CUSTOM_FIELD,
+    )
     # Plane custom field (entity_type="project") whose value holds the CRM project id.
+    # Only consulted when project_mapping_source is "custom_field".
     crm_project_id_custom_field = models.ForeignKey(
         "db.CustomField",
         on_delete=models.SET_NULL,

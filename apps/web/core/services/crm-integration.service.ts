@@ -9,10 +9,14 @@ import { APIService } from "@/services/api.service";
 
 export type TCrmSyncStatus = "success" | "partial" | "failed";
 
+/** Where each Plane project's CRM id comes from. */
+export type TCrmProjectMappingSource = "custom_field" | "identifier";
+
 export type TCrmIntegration = {
   id?: string;
   workspace?: string;
   crm_api_url?: string;
+  project_mapping_source?: TCrmProjectMappingSource;
   crm_project_id_custom_field?: string | null;
   crm_invoice_hours_field_id?: number | null;
   is_active?: boolean;
