@@ -17,11 +17,12 @@ from django.db.models.signals import post_delete, post_save, pre_delete
 from django.dispatch import receiver
 
 # Module imports
-from plane.db.models import CrmTaskLink, CrmTimerLink, Issue, IssueWorkLog
+from plane.db.models import CrmTaskLink, CrmTimerLink, Issue, IssueAssignee, IssueWorkLog
 
-# Fields whose change is worth a CRM round-trip. Comments, attachments, links,
-# assignees, state and everything else deliberately stay out of the CRM.
-MIRRORED_ISSUE_FIELDS = {"name", "description_html"}
+# Fields whose change is worth a CRM round-trip. Comments, attachments and links
+# deliberately stay out of the CRM; state travels because the CRM task's status
+# tracks it, and assignees are handled by their own m2m signal below.
+MIRRORED_ISSUE_FIELDS = {"name", "description_html", "state"}
 
 
 def _enqueue(fn, *args, **kwargs):
@@ -63,6 +64,20 @@ def issue_deleted(sender, instance, **kwargs):
     from plane.bgtasks.crm_sync_task import delete_issue_from_crm
 
     _enqueue(delete_issue_from_crm, str(workspace_id), int(crm_task_id))
+
+
+@receiver(post_save, sender=IssueAssignee)
+@receiver(post_delete, sender=IssueAssignee)
+def issue_assignee_changed(sender, instance, **kwargs):
+    """Re-sync the work item when someone is assigned or unassigned.
+
+    The whole assignee set is pushed rather than the delta, so the CRM ends up
+    with exactly Plane's list. On the CRM side an unassign removes the assignment
+    but keeps the person as a follower.
+    """
+    from plane.bgtasks.crm_sync_task import sync_issue_to_crm
+
+    _enqueue(sync_issue_to_crm, str(instance.issue_id))
 
 
 @receiver(post_save, sender=IssueWorkLog)

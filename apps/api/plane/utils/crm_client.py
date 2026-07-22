@@ -74,12 +74,24 @@ class CrmApiClient:
         """Return active CRM staff, used to match Plane users by email address."""
         return self._request("GET", "staff").get("data", [])
 
-    def create_task(self, project_id, name, description, month_year=None):
+    def create_task(
+        self,
+        project_id,
+        name,
+        description,
+        month_year=None,
+        work_item_id=None,
+        work_item_url=None,
+        status=None,
+        assignee_ids=None,
+    ):
         """Create a CRM task under a project and return the created task payload.
 
         The CRM attaches the task to the client's service for ``month_year``
         (defaulting to the current month), creating the service or the month when
-        either is missing — both are mandatory on a CRM task.
+        either is missing — both are mandatory on a CRM task. Passing
+        ``work_item_id`` marks the task as Plane-owned, which is what the CRM
+        keys its edit lock off.
         """
         payload = {
             "project_id": int(project_id),
@@ -88,15 +100,27 @@ class CrmApiClient:
         }
         if month_year:
             payload["month_year"] = month_year
+        if work_item_id:
+            payload["work_item_id"] = str(work_item_id)
+        if work_item_url:
+            payload["work_item_url"] = work_item_url
+        if status is not None:
+            payload["status"] = int(status)
+        if assignee_ids is not None:
+            payload["assignee_ids"] = [int(s) for s in assignee_ids]
         return self._request("POST", "tasks", json=payload).get("data", {})
 
-    def update_task(self, task_id, name=None, description=None):
-        """Update a CRM task's name and/or description."""
+    def update_task(self, task_id, name=None, description=None, status=None, assignee_ids=None):
+        """Update a CRM task's name, description, status and/or assignees."""
         payload = {"task_id": int(task_id)}
         if name is not None:
             payload["name"] = name
         if description is not None:
             payload["description"] = description
+        if status is not None:
+            payload["status"] = int(status)
+        if assignee_ids is not None:
+            payload["assignee_ids"] = [int(s) for s in assignee_ids]
         return self._request("PATCH", "tasks", json=payload).get("data", {})
 
     def delete_task(self, task_id):

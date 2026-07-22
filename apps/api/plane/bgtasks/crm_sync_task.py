@@ -22,6 +22,7 @@ import logging
 # Third party imports
 from celery import shared_task
 from django.conf import settings
+from django.db import transaction
 from django.utils import timezone as dj_timezone
 
 # Module imports
@@ -31,6 +32,7 @@ from plane.db.models import (
     CrmTimerLink,
     CustomFieldValue,
     Issue,
+    IssueAssignee,
     IssueWorkLog,
     Project,
     WorkspaceMember,
@@ -97,6 +99,28 @@ def _crm_project_id_for(integration, project):
     return _coerce_crm_project_id(value)
 
 
+def _crm_staff_by_email(workspace_id):
+    """CRM staff keyed by lower-cased email, or an empty map when unavailable."""
+    integration = _active_integration(workspace_id)
+    if integration is None:
+        return {}
+    crm = _get_client(integration)
+    if crm is None:
+        return {}
+
+    try:
+        staff = crm.get_staff()
+    except CrmApiError as exc:
+        logger.error("Could not load CRM staff for workspace %s: %s", workspace_id, exc)
+        return {}
+
+    return {
+        str(entry.get("email", "")).strip().lower(): int(entry["id"])
+        for entry in staff
+        if entry.get("email") and entry.get("id")
+    }
+
+
 def _crm_staff_id_for(workspace_id, user):
     """Map a Plane user to a CRM staff id.
 
@@ -113,30 +137,17 @@ def _crm_staff_id_for(workspace_id, user):
     if member and member.crm_staff_id:
         return member.crm_staff_id
 
-    integration = _active_integration(workspace_id)
-    if integration is None or not user.email:
-        return None
-    crm = _get_client(integration)
-    if crm is None:
+    if not user.email:
         return None
 
-    try:
-        staff = crm.get_staff()
-    except CrmApiError as exc:
-        logger.error("Could not load CRM staff for workspace %s: %s", workspace_id, exc)
-        return None
-
-    email = user.email.strip().lower()
-    for entry in staff:
-        if str(entry.get("email", "")).strip().lower() == email:
-            return int(entry["id"])
-
-    logger.warning(
-        "No CRM staff matches %s in workspace %s; set the member's CRM staff id manually.",
-        user.email,
-        workspace_id,
-    )
-    return None
+    staff_id = _crm_staff_by_email(workspace_id).get(user.email.strip().lower())
+    if staff_id is None:
+        logger.warning(
+            "No CRM staff matches %s in workspace %s; set the member's CRM staff id manually.",
+            user.email,
+            workspace_id,
+        )
+    return staff_id
 
 
 def _description_for(issue):
@@ -144,15 +155,103 @@ def _description_for(issue):
     return issue.description_html or ""
 
 
+# Plane states are per-project and freely renamed, but every one belongs to a
+# fixed group, so the group is what maps onto the CRM's fixed status list.
+# The CRM has no "cancelled", and treating a cancelled item as complete would
+# inflate delivered work, so it maps to Not Started instead.
+CRM_STATUS_NOT_STARTED = 1
+CRM_STATUS_IN_PROGRESS = 4
+CRM_STATUS_COMPLETE = 5
+
+STATE_GROUP_TO_CRM_STATUS = {
+    "backlog": CRM_STATUS_NOT_STARTED,
+    "triage": CRM_STATUS_NOT_STARTED,
+    "unstarted": CRM_STATUS_NOT_STARTED,
+    "started": CRM_STATUS_IN_PROGRESS,
+    "completed": CRM_STATUS_COMPLETE,
+    "cancelled": CRM_STATUS_NOT_STARTED,
+}
+
+
+def _crm_status_for(issue):
+    """Map the work item's state group onto a CRM task status."""
+    group = getattr(issue.state, "group", None) if issue.state_id else None
+    return STATE_GROUP_TO_CRM_STATUS.get(group, CRM_STATUS_NOT_STARTED)
+
+
+def _work_item_url(issue):
+    """Deep link back to the work item, shown on the CRM task."""
+    base = (settings.WEB_URL or "").rstrip("/")
+    if not base:
+        return None
+    return f"{base}/{issue.workspace.slug}/projects/{issue.project_id}/issues/{issue.id}"
+
+
+def _assignee_staff_ids(issue):
+    """CRM staff ids for everyone currently assigned to the work item.
+
+    Assignees that cannot be matched to CRM staff are dropped rather than
+    guessed at; the warning from the resolver is the trail for fixing it.
+    The staff list is fetched once and shared across assignees, so a work item
+    with several people costs one CRM round-trip rather than one per person.
+    """
+    # Read through IssueAssignee rather than issue.assignees: unassigning
+    # soft-deletes the through row, and the m2m descriptor joins that table
+    # directly, so it would still hand back people who are no longer assigned.
+    users = [ia.assignee for ia in IssueAssignee.objects.filter(issue=issue).select_related("assignee")]
+    if not users:
+        return []
+
+    staff_by_email = _crm_staff_by_email(issue.workspace_id)
+    overrides = dict(
+        WorkspaceMember.objects.filter(
+            workspace_id=issue.workspace_id,
+            member__in=users,
+            is_active=True,
+            crm_staff_id__isnull=False,
+        ).values_list("member_id", "crm_staff_id")
+    )
+
+    staff_ids = []
+    for user in users:
+        staff_id = overrides.get(user.id)
+        if staff_id is None and user.email:
+            staff_id = staff_by_email.get(user.email.strip().lower())
+        if staff_id is None:
+            logger.warning(
+                "No CRM staff matches %s; work item %s will sync without them assigned.",
+                user.email,
+                issue.id,
+            )
+            continue
+        staff_ids.append(staff_id)
+    return staff_ids
+
+
 # ─── Work items ────────────────────────────────────────────────────────────
 
 
 @shared_task
 def sync_issue_to_crm(issue_id):
-    """Create or update the CRM task mirroring one work item."""
+    """Create or update the CRM task mirroring one work item.
+
+    Saving a work item and assigning someone fire separate signals that can land
+    in different workers at the same time. Both would see no link yet and each
+    create a CRM task, so the work item row is locked for the duration and the
+    second run sees the link the first one wrote.
+    """
+    with transaction.atomic():
+        _sync_issue_locked(issue_id)
+
+
+def _sync_issue_locked(issue_id):
+    # Locking the work item serialises concurrent syncs of the same item.
+    if not Issue.objects.select_for_update().filter(id=issue_id).exists():
+        return
+
     issue = (
         Issue.objects.filter(id=issue_id)
-        .select_related("project", "workspace")
+        .select_related("project", "workspace", "state")
         .first()
     )
     if issue is None:
@@ -173,6 +272,8 @@ def sync_issue_to_crm(issue_id):
     link = CrmTaskLink.objects.filter(issue_id=issue.id).first()
     name = issue.name
     description = _description_for(issue)
+    status = _crm_status_for(issue)
+    assignee_ids = _assignee_staff_ids(issue)
 
     try:
         if link is None:
@@ -181,6 +282,10 @@ def sync_issue_to_crm(issue_id):
                 name=name,
                 description=description,
                 month_year=dj_timezone.now().strftime("%Y-%m"),
+                work_item_id=str(issue.id),
+                work_item_url=_work_item_url(issue),
+                status=status,
+                assignee_ids=assignee_ids,
             )
             crm_task_id = created.get("id")
             if not crm_task_id:
@@ -194,7 +299,13 @@ def sync_issue_to_crm(issue_id):
                 last_synced_at=dj_timezone.now(),
             )
         else:
-            crm.update_task(link.crm_task_id, name=name, description=description)
+            crm.update_task(
+                link.crm_task_id,
+                name=name,
+                description=description,
+                status=status,
+                assignee_ids=assignee_ids,
+            )
             link.last_synced_at = dj_timezone.now()
             link.save(update_fields=["last_synced_at", "updated_at"])
     except CrmApiError as exc:
