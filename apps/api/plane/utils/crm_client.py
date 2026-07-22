@@ -84,6 +84,9 @@ class CrmApiClient:
         work_item_url=None,
         status=None,
         assignee_ids=None,
+        priority=None,
+        startdate=None,
+        duedate=None,
     ):
         """Create a CRM task under a project and return the created task payload.
 
@@ -108,10 +111,26 @@ class CrmApiClient:
             payload["status"] = int(status)
         if assignee_ids is not None:
             payload["assignee_ids"] = [int(s) for s in assignee_ids]
+        if priority is not None:
+            payload["priority"] = int(priority)
+        if startdate is not None:
+            payload["startdate"] = startdate
+        if duedate is not None:
+            payload["duedate"] = duedate
         return self._request("POST", "tasks", json=payload).get("data", {})
 
-    def update_task(self, task_id, name=None, description=None, status=None, assignee_ids=None):
-        """Update a CRM task's name, description, status and/or assignees."""
+    def update_task(
+        self,
+        task_id,
+        name=None,
+        description=None,
+        status=None,
+        assignee_ids=None,
+        priority=None,
+        startdate=None,
+        duedate=None,
+    ):
+        """Update the CRM task fields Plane keeps authoritative."""
         payload = {"task_id": int(task_id)}
         if name is not None:
             payload["name"] = name
@@ -121,6 +140,12 @@ class CrmApiClient:
             payload["status"] = int(status)
         if assignee_ids is not None:
             payload["assignee_ids"] = [int(s) for s in assignee_ids]
+        if priority is not None:
+            payload["priority"] = int(priority)
+        if startdate is not None:
+            payload["startdate"] = startdate
+        if duedate is not None:
+            payload["duedate"] = duedate
         return self._request("PATCH", "tasks", json=payload).get("data", {})
 
     def delete_task(self, task_id):

@@ -179,6 +179,29 @@ def _crm_status_for(issue):
     return STATE_GROUP_TO_CRM_STATUS.get(group, CRM_STATUS_NOT_STARTED)
 
 
+# The CRM's four priorities line up with Plane's, except that Plane also has
+# "none"; an unprioritised item lands on the CRM's own default of Medium.
+CRM_PRIORITY_MEDIUM = 2
+
+PRIORITY_TO_CRM = {
+    "low": 1,
+    "medium": 2,
+    "high": 3,
+    "urgent": 4,
+    "none": CRM_PRIORITY_MEDIUM,
+}
+
+
+def _crm_priority_for(issue):
+    """Map the work item's priority onto a CRM task priority."""
+    return PRIORITY_TO_CRM.get(issue.priority, CRM_PRIORITY_MEDIUM)
+
+
+def _iso_date(value):
+    """Render a date for the CRM, or an empty string to clear it."""
+    return value.isoformat() if value else ""
+
+
 def _work_item_url(issue):
     """Deep link back to the work item, shown on the CRM task."""
     base = (settings.WEB_URL or "").rstrip("/")
@@ -274,6 +297,9 @@ def _sync_issue_locked(issue_id):
     description = _description_for(issue)
     status = _crm_status_for(issue)
     assignee_ids = _assignee_staff_ids(issue)
+    priority = _crm_priority_for(issue)
+    startdate = _iso_date(issue.start_date)
+    duedate = _iso_date(issue.target_date)
 
     try:
         if link is None:
@@ -286,6 +312,9 @@ def _sync_issue_locked(issue_id):
                 work_item_url=_work_item_url(issue),
                 status=status,
                 assignee_ids=assignee_ids,
+                priority=priority,
+                startdate=startdate,
+                duedate=duedate,
             )
             crm_task_id = created.get("id")
             if not crm_task_id:
@@ -305,6 +334,9 @@ def _sync_issue_locked(issue_id):
                 description=description,
                 status=status,
                 assignee_ids=assignee_ids,
+                priority=priority,
+                startdate=startdate,
+                duedate=duedate,
             )
             link.last_synced_at = dj_timezone.now()
             link.save(update_fields=["last_synced_at", "updated_at"])

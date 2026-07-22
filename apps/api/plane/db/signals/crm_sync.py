@@ -22,7 +22,14 @@ from plane.db.models import CrmTaskLink, CrmTimerLink, Issue, IssueAssignee, Iss
 # Fields whose change is worth a CRM round-trip. Comments, attachments and links
 # deliberately stay out of the CRM; state travels because the CRM task's status
 # tracks it, and assignees are handled by their own m2m signal below.
-MIRRORED_ISSUE_FIELDS = {"name", "description_html", "state"}
+MIRRORED_ISSUE_FIELDS = {
+    "name",
+    "description_html",
+    "state",
+    "priority",
+    "start_date",
+    "target_date",
+}
 
 
 def _enqueue(fn, *args, **kwargs):
