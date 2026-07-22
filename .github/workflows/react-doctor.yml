@@ -47,6 +47,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+        with:
+          # React Doctor diffs against the base branch so it reports only what a
+          # PR introduces. The default shallow checkout has no merge base, which
+          # makes it fall back to listing every pre-existing issue as well.
+          fetch-depth: 0
 
       - uses: millionco/react-doctor@v2
         # Common configuration knobs — uncomment any to override the default.

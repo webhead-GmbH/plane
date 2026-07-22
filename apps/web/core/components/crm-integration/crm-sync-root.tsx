@@ -203,9 +203,13 @@ export const CrmSyncRoot = observer(function CrmSyncRoot({ workspaceSlug }: Prop
         />
       </div>
 
-      {/* How each Plane project resolves to a CRM project */}
-      <div className="flex flex-col gap-1">
-        <label className="text-body-sm-medium text-secondary">{t(`${I18N}.form.mapping_source`)}</label>
+      {/* How each Plane project resolves to a CRM project.
+          CustomSelect is a headless widget, not a native control, so the caption
+          labels the group rather than dangling off a <label htmlFor>. */}
+      <div className="flex flex-col gap-1" role="group" aria-labelledby="crm-mapping-source-label">
+        <span id="crm-mapping-source-label" className="text-body-sm-medium text-secondary">
+          {t(`${I18N}.form.mapping_source`)}
+        </span>
         <CustomSelect
           value={mappingSource}
           onChange={(val: TCrmProjectMappingSource) => setMappingSource(val)}
@@ -224,8 +228,10 @@ export const CrmSyncRoot = observer(function CrmSyncRoot({ workspaceSlug }: Prop
 
       {/* Plane project custom field — only relevant when mapping by custom field */}
       {mappingSource === "custom_field" && (
-        <div className="flex flex-col gap-1">
-          <label className="text-body-sm-medium text-secondary">{t(`${I18N}.form.project_id_field`)}</label>
+        <div className="flex flex-col gap-1" role="group" aria-labelledby="crm-project-id-field-label">
+          <span id="crm-project-id-field-label" className="text-body-sm-medium text-secondary">
+            {t(`${I18N}.form.project_id_field`)}
+          </span>
           <CustomSelect
             value={projectIdField}
             onChange={(val: string | null) => setProjectIdField(val)}
