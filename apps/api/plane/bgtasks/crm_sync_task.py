@@ -501,6 +501,11 @@ def backfill_workspace_to_crm(integration_id):
     for worklog_id in worklog_ids:
         sync_worklog_to_crm(worklog_id)
 
+    # Also reconcile project mappings, so the Backfill button doubles as a
+    # "fix any drift" action after a project id was corrected.
+    for project_id in mapped_project_ids:
+        remap_project_crm_tasks(str(project_id))
+
     integration.last_synced_at = dj_timezone.now()
     integration.save(update_fields=["last_synced_at", "updated_at"])
 
@@ -510,3 +515,109 @@ def backfill_workspace_to_crm(integration_id):
         len(issue_ids),
         len(worklog_ids),
     )
+
+
+# ─── Project remap (a project's CRM id changed) ──────────────────────────────
+
+
+@shared_task
+def remap_project_crm_tasks(project_id):
+    """Move a project's mirrored CRM tasks after its CRM project id changed.
+
+    Fired whenever the mapping *might* have changed (a project or custom-field
+    save). It resolves the current CRM project id and, for each linked task still
+    filed under a different one, enqueues a per-task move. When nothing changed no
+    task differs and nothing is enqueued, so the common no-op case is one query.
+
+    The links are read directly (not via Issue.objects) so tasks of soft-deleted
+    work items — whose CRM task still exists — are moved too.
+    """
+    project = Project.objects.filter(id=project_id).select_related("workspace").first()
+    if project is None:
+        return
+
+    integration = _active_integration(project.workspace_id)
+    if integration is None:
+        return
+
+    target = _crm_project_id_for(integration, project)
+    if target is None:
+        # Mapping cleared or now unresolvable (e.g. a non-numeric identifier).
+        # Existing tasks are left where they are rather than orphaned or deleted.
+        logger.info(
+            "CRM remap for project %s skipped: mapping resolves to no CRM project.",
+            project_id,
+        )
+        return
+
+    stale_link_ids = list(
+        CrmTaskLink.objects.filter(issue__project_id=project_id)
+        .exclude(crm_project_id=target)
+        .values_list("id", flat=True)
+    )
+    for link_id in stale_link_ids:
+        move_crm_task_to_crm_project.delay(str(link_id))
+
+
+@shared_task
+def move_crm_task_to_crm_project(link_id):
+    """Move one linked CRM task to whatever CRM project its Plane project now maps to.
+
+    The task carries only the link id and re-resolves the target inside a row
+    lock, never a value captured at enqueue time. That closes the race between two
+    remaps: whichever runs second re-reads the current mapping and either no-ops
+    or corrects, so a task can't be stranded under a superseded id.
+    """
+    with transaction.atomic():
+        link = CrmTaskLink.objects.select_for_update().filter(id=link_id).first()
+        if link is None:
+            return
+
+        # all_objects: the work item may be soft-deleted while its CRM task lives on.
+        project_id = (
+            Issue.all_objects.filter(id=link.issue_id).values_list("project_id", flat=True).first()
+        )
+        if project_id is None:
+            return
+        project = Project.objects.filter(id=project_id).select_related("workspace").first()
+        if project is None:
+            return
+
+        integration = _active_integration(link.workspace_id)
+        if integration is None:
+            return
+
+        target = _crm_project_id_for(integration, project)
+        if target is None or link.crm_project_id == target:
+            return  # unresolvable now, or already correct
+
+        crm = _get_client(integration)
+        if crm is None:
+            return
+
+        try:
+            crm.move_task(link.crm_task_id, target)
+        except CrmApiError as exc:
+            # Leave the link stale so a later trigger (or a backfill) retries;
+            # advancing it now would permanently skip a task that never moved.
+            logger.error("CRM move failed for task %s -> project %s: %s", link.crm_task_id, target, exc)
+            return
+
+        link.crm_project_id = target
+        link.last_synced_at = dj_timezone.now()
+        link.save(update_fields=["crm_project_id", "last_synced_at", "updated_at"])
+
+
+@shared_task
+def remap_workspace_crm_tasks(workspace_id):
+    """Reconcile every project in a workspace after the mapping *config* changed.
+
+    Triggered when the integration's mapping source or mapped custom field
+    changes, or when it is re-activated — any of which can change what projects
+    resolve to. Fans out to the per-project remap, which self-filters.
+    """
+    integration = _active_integration(workspace_id)
+    if integration is None:
+        return
+    for project_id in Project.objects.filter(workspace_id=workspace_id).values_list("id", flat=True):
+        remap_project_crm_tasks(str(project_id))

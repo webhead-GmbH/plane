@@ -17,7 +17,16 @@ from django.db.models.signals import post_delete, post_save, pre_delete
 from django.dispatch import receiver
 
 # Module imports
-from plane.db.models import CrmTaskLink, CrmTimerLink, Issue, IssueAssignee, IssueWorkLog
+from plane.db.models import (
+    CrmIntegration,
+    CrmTaskLink,
+    CrmTimerLink,
+    CustomFieldValue,
+    Issue,
+    IssueAssignee,
+    IssueWorkLog,
+    Project,
+)
 
 # Fields whose change is worth a CRM round-trip. Comments, attachments and links
 # deliberately stay out of the CRM; state travels because the CRM task's status
@@ -113,3 +122,71 @@ def worklog_deleted(sender, instance, **kwargs):
     from plane.bgtasks.crm_sync_task import delete_worklog_from_crm
 
     _enqueue(delete_worklog_from_crm, str(workspace_id), int(crm_timer_id))
+
+
+# ─── Project-mapping changes → move the project's CRM tasks ──────────────────
+
+
+@receiver(post_save, sender=CustomFieldValue)
+@receiver(post_delete, sender=CustomFieldValue)
+def project_crm_id_value_changed(sender, instance, **kwargs):
+    """When the custom field that holds a project's CRM id is written, remap it.
+
+    Gated tightly: only a project-scoped value of the field the active integration
+    is actually mapped to matters, so writing any other project custom field does
+    not enqueue anything.
+    """
+    if not instance.project_id or instance.issue_id:
+        return
+
+    integration = CrmIntegration.objects.filter(
+        workspace_id=instance.workspace_id,
+        is_active=True,
+        project_mapping_source=CrmIntegration.ProjectMappingSource.CUSTOM_FIELD,
+        crm_project_id_custom_field_id=instance.custom_field_id,
+    ).first()
+    if integration is None:
+        return
+
+    from plane.bgtasks.crm_sync_task import remap_project_crm_tasks
+
+    _enqueue(remap_project_crm_tasks, str(instance.project_id))
+
+
+@receiver(post_save, sender=Project)
+def project_identifier_maybe_changed(sender, instance, created, **kwargs):
+    """In identifier mode, a project save may have changed its CRM id.
+
+    Fires on any project save in that mode; the remap self-filters (nothing is
+    moved when the identifier did not actually change), which avoids tracking the
+    old value on a model that is saved for many unrelated reasons.
+    """
+    integration = CrmIntegration.objects.filter(
+        workspace_id=instance.workspace_id,
+        is_active=True,
+        project_mapping_source=CrmIntegration.ProjectMappingSource.IDENTIFIER,
+    ).first()
+    if integration is None:
+        return
+
+    from plane.bgtasks.crm_sync_task import remap_project_crm_tasks
+
+    _enqueue(remap_project_crm_tasks, str(instance.id))
+
+
+@receiver(post_save, sender=CrmIntegration)
+def integration_mapping_config_changed(sender, instance, created, **kwargs):
+    """Reconcile the whole workspace when the mapping config or activation changes.
+
+    Switching the mapping source or the mapped custom field re-resolves every
+    project; re-activating catches repoints made while the sync was off. An
+    inactive integration can move nothing, so those transitions are ignored.
+    """
+    if created or not instance.is_active:
+        return
+    if not instance.remap_relevant_changes():
+        return
+
+    from plane.bgtasks.crm_sync_task import remap_workspace_crm_tasks
+
+    _enqueue(remap_workspace_crm_tasks, str(instance.workspace_id))

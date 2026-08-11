@@ -148,6 +148,17 @@ class CrmApiClient:
             payload["duedate"] = duedate
         return self._request("PATCH", "tasks", json=payload).get("data", {})
 
+    def move_task(self, task_id, project_id):
+        """Re-home a CRM task to a different project.
+
+        The CRM re-attaches the task's service to the new project's client (or
+        detaches it when the new project has no client) in one transaction, so a
+        successful response means the task and its billing are consistent.
+        """
+        return self._request(
+            "PATCH", "tasks", json={"task_id": int(task_id), "project_id": int(project_id)}
+        ).get("data", {})
+
     def delete_task(self, task_id):
         """Delete a CRM task along with its timers and service mapping."""
         return self._request("DELETE", "tasks", json={"task_id": int(task_id)}).get("data", {})
