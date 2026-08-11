@@ -52,6 +52,44 @@ class CrmIntegration(BaseModel):
     is_active = models.BooleanField(default=True)
     last_synced_at = models.DateTimeField(null=True, blank=True)
 
+    # Fields whose change alters which CRM project a Plane project resolves to, or
+    # whether the sync runs at all. Snapshotted on load so a post_save receiver can
+    # tell a real mapping change from an unrelated edit — the settings UI saves via
+    # DRF with update_fields=None, so update_fields cannot be relied on here.
+    REMAP_TRACKED_FIELDS = ("project_mapping_source", "crm_project_id_custom_field_id", "is_active")
+
+    def _snapshot_remap_fields(self):
+        return {f: getattr(self, f, None) for f in self.REMAP_TRACKED_FIELDS}
+
+    @classmethod
+    def from_db(cls, db, field_names, values):
+        instance = super().from_db(db, field_names, values)
+        instance._remap_original = instance._snapshot_remap_fields()
+        return instance
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        # Re-baseline against what was just persisted, so a second save of the same
+        # in-memory instance detects only what changed since this save, not since it
+        # was first loaded. post_save (which reads the pre-save baseline) has already
+        # fired inside super().save() by this point.
+        self._remap_original = self._snapshot_remap_fields()
+
+    def remap_relevant_changes(self):
+        """Map each tracked field that changed since load/last-save to (old, new).
+
+        Empty for a brand-new row (post_save's ``created`` guard covers creation)
+        and for an instance that never went through ``from_db`` with no baseline.
+        """
+        original = getattr(self, "_remap_original", None)
+        if original is None:
+            return {}
+        return {
+            f: (original[f], getattr(self, f, None))
+            for f in self.REMAP_TRACKED_FIELDS
+            if original[f] != getattr(self, f, None)
+        }
+
     def set_api_key(self, raw_key):
         """Encrypt and store a raw CRM API key (pass an empty value to clear it)."""
         self.crm_api_key_encrypted = encrypt_data(raw_key) if raw_key else ""
