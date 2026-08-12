@@ -1042,12 +1042,29 @@ class IssueDescriptionVersionDetailSerializer(BaseSerializer):
 
 class IssueWorkLogSerializer(BaseSerializer):
     logged_by_detail = UserLiteSerializer(source="logged_by", read_only=True)
+    issue_detail = serializers.SerializerMethodField()
+
+    def get_issue_detail(self, obj):
+        """Just enough of the work item to name it and link to it — so any consumer of a
+        worklog/timer (e.g. the header timer widget) has the name without a second fetch.
+        Reads obj.issue and obj.project, both select_related in the list querysets."""
+        issue = obj.issue
+        if issue is None:
+            return None
+        return {
+            "id": str(obj.issue_id),
+            "name": issue.name,
+            "sequence_id": issue.sequence_id,
+            "project_id": str(obj.project_id) if obj.project_id else None,
+            "project_identifier": obj.project.identifier if obj.project_id else None,
+        }
 
     class Meta:
         model = IssueWorkLog
         fields = [
             "id",
             "issue",
+            "issue_detail",
             "project",
             "workspace",
             "logged_by",
