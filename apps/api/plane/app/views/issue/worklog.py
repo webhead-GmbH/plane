@@ -156,7 +156,7 @@ class IssueTimerEndpoint(BaseAPIView):
     @allow_permission([ROLE.ADMIN, ROLE.MEMBER])
     def get(self, request, slug, project_id, issue_id):
         try:
-            worklog = IssueWorkLog.objects.get(
+            worklog = IssueWorkLog.objects.select_related("issue", "project").get(
                 workspace__slug=slug,
                 project_id=project_id,
                 issue_id=issue_id,
@@ -286,7 +286,7 @@ class IssueActiveTimersEndpoint(BaseAPIView):
                 issue_id=issue_id,
                 duration__isnull=True,
             )
-            .select_related("logged_by")
+            .select_related("logged_by", "issue", "project")
             .order_by("started_at")
         )
         serializer = IssueWorkLogSerializer(worklogs, many=True)
@@ -301,14 +301,16 @@ class UserActiveTimerEndpoint(BaseAPIView):
 
     def get(self, request, slug):
         try:
-            worklog = IssueWorkLog.objects.get(
+            worklog = IssueWorkLog.objects.select_related("issue", "issue__project").get(
                 workspace__slug=slug,
                 logged_by=request.user,
                 duration__isnull=True,
             )
-            return Response(IssueWorkLogSerializer(worklog).data, status=status.HTTP_200_OK)
         except IssueWorkLog.DoesNotExist:
             return Response(None, status=status.HTTP_200_OK)
+
+        # issue_detail (work item name + identifier) is emitted by the serializer.
+        return Response(IssueWorkLogSerializer(worklog).data, status=status.HTTP_200_OK)
 
 
 class IssueWorkLogSummaryEndpoint(BaseAPIView):
@@ -331,7 +333,7 @@ class IssueWorkLogSummaryEndpoint(BaseAPIView):
                 project__project_projectmember__is_active=True,
                 project__archived_at__isnull=True,
             )
-            .select_related("logged_by")
+            .select_related("logged_by", "issue", "project")
             .distinct()
         )
 

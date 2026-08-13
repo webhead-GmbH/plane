@@ -6,6 +6,16 @@
 
 import type { TIssueActivityUserDetail } from "./activity/base";
 
+/** Enough of the work item to name and link to it, embedded by the
+ *  user-active-timer endpoint so the header timer widget needs no extra fetch. */
+export type TIssueWorkLogIssueDetail = {
+  id: string;
+  name: string;
+  sequence_id: number;
+  project_id: string;
+  project_identifier: string;
+};
+
 export type TIssueWorkLog = {
   id: string;
   issue: string;
@@ -22,6 +32,8 @@ export type TIssueWorkLog = {
   updated_at: string;
   created_by?: string;
   updated_by?: string;
+  /** Present only on the user-active-timer response. */
+  issue_detail?: TIssueWorkLogIssueDetail;
 };
 
 export type TIssueWorkLogMap = {
