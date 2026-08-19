@@ -4,6 +4,7 @@
 
 # Python imports
 import os
+from email.utils import formataddr, parseaddr
 
 # Django imports
 from django.conf import settings
@@ -39,8 +40,44 @@ def get_configuration_value(keys):
     return tuple(environment_list)
 
 
+def compose_sender(email_from, from_name):
+    """Build the From header from a plain address and a display name.
+
+    A mail always carries the sender's address — that is the protocol — but what
+    an inbox *shows* is the display name, so setting one is how the raw address
+    stops being what recipients read. The two are configured separately and
+    joined here rather than asking an admin to write RFC 5322 syntax by hand.
+
+    formataddr does the quoting and non-ASCII encoding, so a name with a comma or
+    umlaut cannot produce a malformed header. An EMAIL_FROM that already carries
+    its own display name is left exactly as configured.
+    """
+    if not email_from:
+        return email_from
+
+    name = (from_name or "").strip()
+    if not name:
+        return email_from
+
+    existing_name, address = parseaddr(email_from)
+    if existing_name or not address:
+        # Already "Name <addr>", or not parseable — do not second-guess it.
+        return email_from
+
+    return formataddr((name, address))
+
+
 def get_email_configuration():
-    return get_configuration_value(
+    (
+        email_host,
+        email_host_user,
+        email_host_password,
+        email_port,
+        email_use_tls,
+        email_use_ssl,
+        email_from,
+        email_from_name,
+    ) = get_configuration_value(
         [
             {"key": "EMAIL_HOST", "default": os.environ.get("EMAIL_HOST")},
             {"key": "EMAIL_HOST_USER", "default": os.environ.get("EMAIL_HOST_USER")},
@@ -55,5 +92,21 @@ def get_email_configuration():
                 "key": "EMAIL_FROM",
                 "default": os.environ.get("EMAIL_FROM", "Team Plane <team@mailer.plane.so>"),
             },
+            {
+                "key": "EMAIL_FROM_NAME",
+                "default": os.environ.get("EMAIL_FROM_NAME", ""),
+            },
         ]
+    )
+
+    # The senders all unpack seven values and pass the last straight to
+    # from_email, so the name is folded in here and every mail picks it up.
+    return (
+        email_host,
+        email_host_user,
+        email_host_password,
+        email_port,
+        email_use_tls,
+        email_use_ssl,
+        compose_sender(email_from, email_from_name),
     )

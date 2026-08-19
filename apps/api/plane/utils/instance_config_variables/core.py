@@ -200,6 +200,15 @@ smtp_config_variables = [
         "is_encrypted": False,
     },
     {
+        # Display name shown instead of the bare address in a recipient's inbox.
+        # Kept apart from EMAIL_FROM so nobody has to hand-write RFC 5322
+        # "Name <address>" syntax; the two are combined when a mail is sent.
+        "key": "EMAIL_FROM_NAME",
+        "value": os.environ.get("EMAIL_FROM_NAME", ""),
+        "category": "SMTP",
+        "is_encrypted": False,
+    },
+    {
         "key": "EMAIL_USE_TLS",
         "value": os.environ.get("EMAIL_USE_TLS", "1"),
         "category": "SMTP",
