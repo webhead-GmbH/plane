@@ -674,19 +674,26 @@ class IssueViewSet(BaseViewSet):
         if not issue:
             return Response({"error": "Issue not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        # Block moving a work item to a completed state while a timer is still running on it
+        # A running timer may only follow the work item into a state that also allows
+        # time tracking. Which groups those are is a workspace/project setting, so it is
+        # read rather than assumed: hard-coding "completed" both blocked moves between
+        # two perfectly legal states and let a timer run on in a state that forbids it.
         new_state_id = request.data.get("state_id")
         if new_state_id and str(new_state_id) != str(issue.state_id):
-            from plane.db.models import State, IssueWorkLog
+            from plane.app.views.issue.worklog import get_timer_allowed_state_groups
+            from plane.db.models import IssueWorkLog, State
 
             new_state = State.objects.filter(pk=new_state_id, project_id=project_id).first()
             if (
                 new_state
-                and new_state.group == "completed"
+                and new_state.group not in get_timer_allowed_state_groups(issue.project)
                 and IssueWorkLog.objects.filter(issue_id=pk, duration__isnull=True).exists()
             ):
                 return Response(
-                    {"error": "Stop the running timer before marking this work item as done."},
+                    {
+                        "error": "Stop the running timer before moving this work item to a state "
+                        "where time cannot be tracked."
+                    },
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 

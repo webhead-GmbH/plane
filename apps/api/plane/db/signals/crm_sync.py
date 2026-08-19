@@ -106,22 +106,33 @@ def worklog_saved(sender, instance, created, **kwargs):
 
 @receiver(pre_delete, sender=IssueWorkLog)
 def worklog_deleting(sender, instance, **kwargs):
+    # Only a hard delete reaches this. Deleting a worklog in Plane is a *soft*
+    # delete, which fires post_save instead — sync_worklog_to_crm recognises the
+    # deleted row and both removes the CRM timer and rebuilds the description
+    # table, so the ordinary path is handled there rather than here.
     link = CrmTimerLink.objects.filter(worklog_id=instance.id).first()
     if link is not None:
         instance._crm_timer_id = link.crm_timer_id
         instance._crm_workspace_id = link.workspace_id
+    instance._crm_issue_id = instance.issue_id
 
 
 @receiver(post_delete, sender=IssueWorkLog)
 def worklog_deleted(sender, instance, **kwargs):
     crm_timer_id = getattr(instance, "_crm_timer_id", None)
     workspace_id = getattr(instance, "_crm_workspace_id", None)
-    if not crm_timer_id or not workspace_id:
-        return
+    if crm_timer_id and workspace_id:
+        from plane.bgtasks.crm_sync_task import delete_worklog_from_crm
 
-    from plane.bgtasks.crm_sync_task import delete_worklog_from_crm
+        _enqueue(delete_worklog_from_crm, str(workspace_id), int(crm_timer_id))
 
-    _enqueue(delete_worklog_from_crm, str(workspace_id), int(crm_timer_id))
+    # Hours recorded on the task description (author has no CRM account) leave no
+    # timer to delete, so the work item is re-synced to rebuild that table.
+    issue_id = getattr(instance, "_crm_issue_id", None)
+    if issue_id and not crm_timer_id:
+        from plane.bgtasks.crm_sync_task import sync_issue_to_crm
+
+        _enqueue(sync_issue_to_crm, str(issue_id))
 
 
 # ─── Project-mapping changes → move the project's CRM tasks ──────────────────
