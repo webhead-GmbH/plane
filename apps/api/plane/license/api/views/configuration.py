@@ -74,6 +74,7 @@ class DisableEmailFeatureEndpoint(BaseAPIView):
                         "ENABLE_SMTP",
                         "EMAIL_PORT",
                         "EMAIL_FROM",
+                        "EMAIL_FROM_NAME",
                     ]
                 )
             ).update(value=Case(When(key="ENABLE_SMTP", then=Value("0")), default=Value("")))

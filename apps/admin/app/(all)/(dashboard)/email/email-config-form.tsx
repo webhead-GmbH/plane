@@ -56,6 +56,7 @@ export function InstanceEmailForm(props: IInstanceEmailForm) {
       EMAIL_USE_TLS: config["EMAIL_USE_TLS"],
       EMAIL_USE_SSL: config["EMAIL_USE_SSL"],
       EMAIL_FROM: config["EMAIL_FROM"],
+      EMAIL_FROM_NAME: config["EMAIL_FROM_NAME"],
       ENABLE_SMTP: config["ENABLE_SMTP"],
     },
   });
@@ -75,6 +76,16 @@ export function InstanceEmailForm(props: IInstanceEmailForm) {
       placeholder: "8080",
       error: Boolean(errors.EMAIL_PORT),
       required: true,
+    },
+    {
+      key: "EMAIL_FROM_NAME",
+      type: "text",
+      label: "Sender name",
+      description:
+        "The name your users see as the sender, in place of the bare email address. Leave it empty to show the address itself.",
+      placeholder: "Plane",
+      error: Boolean(errors.EMAIL_FROM_NAME),
+      required: false,
     },
     {
       key: "EMAIL_FROM",
