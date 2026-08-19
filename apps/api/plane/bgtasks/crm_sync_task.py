@@ -18,12 +18,14 @@ unreachable CRM never blocks a user's save.
 
 # Python imports
 import logging
+from datetime import timedelta
 
 # Third party imports
 from celery import shared_task
 from django.conf import settings
 from django.db import transaction
 from django.utils import timezone as dj_timezone
+from django.utils.html import escape
 
 # Module imports
 from plane.db.models import (
@@ -100,19 +102,26 @@ def _crm_project_id_for(integration, project):
 
 
 def _crm_staff_by_email(workspace_id):
-    """CRM staff keyed by lower-cased email, or an empty map when unavailable."""
+    """CRM staff keyed by lower-cased email.
+
+    Returns None when the list could not be read and ``{}`` when the CRM
+    genuinely has no usable staff. The two must stay apart: "nobody has an
+    account" is a fact worth acting on, while "the request failed" is not, and
+    treating a failed call as an empty roster would declare the whole team
+    unmatched and rewrite every task description off a transient error.
+    """
     integration = _active_integration(workspace_id)
     if integration is None:
-        return {}
+        return None
     crm = _get_client(integration)
     if crm is None:
-        return {}
+        return None
 
     try:
         staff = crm.get_staff()
     except CrmApiError as exc:
         logger.error("Could not load CRM staff for workspace %s: %s", workspace_id, exc)
-        return {}
+        return None
 
     return {
         str(entry.get("email", "")).strip().lower(): int(entry["id"])
@@ -121,12 +130,13 @@ def _crm_staff_by_email(workspace_id):
     }
 
 
-def _crm_staff_id_for(workspace_id, user):
+def _crm_staff_id_for(workspace_id, user, staff_by_email=None):
     """Map a Plane user to a CRM staff id.
 
     The explicit ``crm_staff_id`` on the membership wins; otherwise the user's
     email is matched against CRM staff, which is the common case because both
-    systems use the same addresses.
+    systems use the same addresses. Callers that already hold the staff map pass
+    it in so one sync costs a single CRM round-trip.
     """
     if user is None:
         return None
@@ -140,7 +150,9 @@ def _crm_staff_id_for(workspace_id, user):
     if not user.email:
         return None
 
-    staff_id = _crm_staff_by_email(workspace_id).get(user.email.strip().lower())
+    if staff_by_email is None:
+        staff_by_email = _crm_staff_by_email(workspace_id)
+    staff_id = (staff_by_email or {}).get(user.email.strip().lower())
     if staff_id is None:
         logger.warning(
             "No CRM staff matches %s in workspace %s; set the member's CRM staff id manually.",
@@ -150,9 +162,171 @@ def _crm_staff_id_for(workspace_id, user):
     return staff_id
 
 
-def _description_for(issue):
-    """The work item body to mirror. Only the description travels to the CRM."""
-    return issue.description_html or ""
+# ─── Hours logged by people the CRM has no account for ─────────────────────
+#
+# A worklog can only become a CRM timer when its author maps to a CRM staff id.
+# Rather than dropping the hours of everyone else, they are written onto the CRM
+# task itself, so the time is still visible and invoiceable. The block is
+# delimited purely so it reads as one unit — it is rebuilt from the worklogs on
+# every sync rather than parsed back out, because Plane owns the description and
+# overwrites it wholesale.
+#
+# Styling is inline on every element: the CRM stores this as task description HTML and
+# drops <style> blocks, so a stylesheet would not survive. Borders and muted text use
+# grey/alpha values that stay readable on both the CRM's light and dark themes, and the
+# date and duration cells never wrap — wrapped timestamps were what made this look messy.
+_CELL = "border:1px solid rgba(128,128,128,.35);padding:7px 10px;vertical-align:top"
+_HEAD = _CELL + ";text-align:left;font-weight:600;white-space:nowrap"
+_NOWRAP = _CELL + ";white-space:nowrap"
+_NUM = _CELL + ";white-space:nowrap;text-align:right"
+_HEAD_NUM = _CELL + ";font-weight:600;white-space:nowrap;text-align:right"
+_MUTED = "font-size:12px;color:#888"
+
+UNMATCHED_NOTE_START = "<!-- plane:unmatched-worklogs:start -->"
+UNMATCHED_NOTE_END = "<!-- plane:unmatched-worklogs:end -->"
+
+
+def _local_datetime(value):
+    """Render a timestamp in the server's timezone, as the CRM displays them.
+
+    Date and time go on separate lines: on one line these columns are wide enough
+    to squeeze the note column out of the CRM's task panel entirely.
+    """
+    if value is None:
+        return "—"
+    local = dj_timezone.localtime(value)
+    return f'{local.strftime("%Y-%m-%d")}<br>{local.strftime("%H:%M")}'
+
+
+def _duration_hm(seconds):
+    """Render a duration as H:MM, the shape a timesheet is read in."""
+    total = max(int(seconds or 0), 0)
+    return f"{total // 3600}:{(total % 3600) // 60:02d}"
+
+
+def _unmatched_worklogs(issue, staff_by_email):
+    """Worklogs on this work item whose hours are not in the CRM as a timer.
+
+    A worklog that already has a CRM timer is never listed, whatever its author
+    looks like today: ``get_staff`` only returns *active* staff, so someone who
+    leaves stops matching, and going by the author alone would re-list hours the
+    CRM already holds and count them twice.
+    """
+    worklogs = list(
+        IssueWorkLog.objects.filter(issue_id=issue.id)
+        .select_related("logged_by")
+        .order_by("started_at", "logged_at")
+    )
+    users = [wl.logged_by for wl in worklogs if wl.logged_by_id]
+    if not users:
+        return []
+
+    # A member with a manual crm_staff_id is matched even when no email lines up.
+    overrides = set(
+        WorkspaceMember.objects.filter(
+            workspace_id=issue.workspace_id,
+            member__in=users,
+            is_active=True,
+            # >0, not just set: the resolver treats 0 as "no override" and would
+            # fall through to email, so counting it as matched here would leave
+            # those hours in neither the timers nor the table.
+            crm_staff_id__gt=0,
+        ).values_list("member_id", flat=True)
+    )
+    mirrored = set(
+        CrmTimerLink.objects.filter(worklog__in=worklogs).values_list("worklog_id", flat=True)
+    )
+
+    unmatched = []
+    for worklog in worklogs:
+        user = worklog.logged_by
+        if user is None or worklog.id in mirrored or user.id in overrides:
+            continue
+        if user.email and staff_by_email.get(user.email.strip().lower()):
+            continue
+        unmatched.append(worklog)
+    return unmatched
+
+
+def _unmatched_worklog_note(issue, staff_by_email):
+    """An HTML table of the hours the CRM cannot attribute to any of its staff.
+
+    Returns "" when everyone who logged time on this work item does have a CRM
+    account, so the table only ever exists while there is something it is holding.
+
+    None means the staff list could not be read, so nothing is written rather
+    than declaring the whole team unmatched off a failed request. An empty map is
+    a real answer — a CRM with no staff matches nobody — and does build the table.
+    """
+    if staff_by_email is None:
+        return ""
+
+    worklogs = _unmatched_worklogs(issue, staff_by_email)
+    if not worklogs:
+        return ""
+
+    rows = []
+    total = 0
+    for worklog in worklogs:
+        user = worklog.logged_by
+        started = worklog.started_at or worklog.logged_at
+        if worklog.duration is None:
+            # Still running: it gets a real end and duration when it is stopped.
+            ended_cell = "—"
+            duration_cell = "running"
+        else:
+            ended = started + timedelta(seconds=int(worklog.duration)) if started else None
+            ended_cell = _local_datetime(ended)
+            duration_cell = _duration_hm(worklog.duration)
+            total += int(worklog.duration)
+
+        rows.append(
+            "<tr>"
+            f'<td style="{_CELL}">{escape(user.display_name or user.email or "—")}'
+            f'<br><span style="{_MUTED}">{escape(user.email or "")}</span></td>'
+            f'<td style="{_NOWRAP}">{_local_datetime(started)}</td>'
+            f'<td style="{_NOWRAP}">{ended_cell}</td>'
+            f'<td style="{_NUM}">{duration_cell}</td>'
+            f'<td style="{_CELL}">{escape(worklog.description or "")}</td>'
+            "</tr>"
+        )
+
+    # The CRM renders its own timers in the CRM's timezone, so the column says
+    # which one these are in rather than leaving billable times ambiguous.
+    tz_label = escape(dj_timezone.get_current_timezone_name())
+    return (
+        # A rule keeps the synced block visibly apart from the body written in Plane.
+        '<hr style="margin:18px 0 14px;border:0;border-top:1px solid rgba(128,128,128,.35)">'
+        '<p style="margin:0 0 3px"><strong>Time logged in Plane by people without a CRM account</strong></p>'
+        f'<p style="margin:0 0 10px;{_MUTED}">These entries could not be attached to a CRM staff '
+        'member, so they are recorded here instead of being lost.</p>'
+        '<table cellpadding="0" cellspacing="0" style="border-collapse:collapse;width:100%;font-size:13px">'
+        f'<thead><tr><th style="{_HEAD}">User</th><th style="{_HEAD}">Start ({tz_label})</th>'
+        f'<th style="{_HEAD}">End ({tz_label})</th>'
+        f'<th style="{_HEAD_NUM}">Duration</th><th style="{_HEAD}">Note</th></tr></thead>'
+        f"<tbody>{''.join(rows)}</tbody>"
+        f'<tfoot><tr><td colspan="3" style="{_CELL};text-align:right"><strong>Total</strong></td>'
+        f'<td style="{_NUM}"><strong>{_duration_hm(total)}</strong></td>'
+        f'<td style="{_CELL}"></td></tr></tfoot>'
+        "</table>"
+    )
+
+
+def _description_for(issue, staff_by_email=None):
+    """The work item body to mirror, plus any hours the CRM cannot attribute.
+
+    Only the description travels to the CRM. The unmatched-hours table is built
+    here rather than appended elsewhere because every sync rewrites the whole
+    description — a note added by any other path would be lost on the next save.
+    """
+    base = issue.description_html or ""
+    if staff_by_email is None:
+        staff_by_email = _crm_staff_by_email(issue.workspace_id)
+
+    note = _unmatched_worklog_note(issue, staff_by_email)
+    if not note:
+        return base
+    return f"{base}{UNMATCHED_NOTE_START}{note}{UNMATCHED_NOTE_END}"
 
 
 # Plane states are per-project and freely renamed, but every one belongs to a
@@ -210,7 +384,7 @@ def _work_item_url(issue):
     return f"{base}/{issue.workspace.slug}/projects/{issue.project_id}/issues/{issue.id}"
 
 
-def _assignee_staff_ids(issue):
+def _assignee_staff_ids(issue, staff_by_email=None):
     """CRM staff ids for everyone currently assigned to the work item.
 
     Assignees that cannot be matched to CRM staff are dropped rather than
@@ -225,13 +399,17 @@ def _assignee_staff_ids(issue):
     if not users:
         return []
 
-    staff_by_email = _crm_staff_by_email(issue.workspace_id)
+    if staff_by_email is None:
+        staff_by_email = _crm_staff_by_email(issue.workspace_id)
     overrides = dict(
         WorkspaceMember.objects.filter(
             workspace_id=issue.workspace_id,
             member__in=users,
             is_active=True,
-            crm_staff_id__isnull=False,
+            # >0, not just set: the resolver treats 0 as "no override" and would
+            # fall through to email, so counting it as matched here would leave
+            # those hours in neither the timers nor the table.
+            crm_staff_id__gt=0,
         ).values_list("member_id", "crm_staff_id")
     )
 
@@ -294,9 +472,27 @@ def _sync_issue_locked(issue_id):
 
     link = CrmTaskLink.objects.filter(issue_id=issue.id).first()
     name = issue.name
-    description = _description_for(issue)
+
+    # One staff fetch feeds both the assignee mapping and the unmatched-hours
+    # table, and is skipped entirely for a work item with neither — the common
+    # case, which must not start paying for a CRM round-trip it has no use for.
+    needs_staff = (
+        IssueAssignee.objects.filter(issue=issue).exists()
+        or IssueWorkLog.objects.filter(issue_id=issue.id).exists()
+    )
+    staff_by_email = _crm_staff_by_email(issue.workspace_id) if needs_staff else {}
+    if staff_by_email is None:
+        # Pushing now would drop every assignee and strip the unmatched-hours
+        # table off the task. Leave the CRM as it is; the next save re-syncs.
+        logger.error(
+            "Skipping CRM sync of work item %s: the CRM staff list could not be read.",
+            issue.id,
+        )
+        return
+
+    description = _description_for(issue, staff_by_email)
     status = _crm_status_for(issue)
-    assignee_ids = _assignee_staff_ids(issue)
+    assignee_ids = _assignee_staff_ids(issue, staff_by_email)
     priority = _crm_priority_for(issue)
     startdate = _iso_date(issue.start_date)
     duedate = _iso_date(issue.target_date)
@@ -342,6 +538,9 @@ def _sync_issue_locked(issue_id):
             link.save(update_fields=["last_synced_at", "updated_at"])
     except CrmApiError as exc:
         logger.error("CRM sync failed for work item %s: %s", issue.id, exc)
+        return
+
+    _mirror_newly_matched_worklogs(issue, staff_by_email)
 
 
 @shared_task
@@ -384,11 +583,52 @@ def _timer_times(worklog):
     return start_ts, start_ts + int(worklog.duration)
 
 
+def _unmirror_worklog(worklog, integration):
+    """Take a deleted worklog's hours back out of the CRM.
+
+    Plane soft-deletes a worklog, which reaches this module as an ordinary save
+    rather than a delete, so removal is handled here rather than from a delete
+    signal. The CRM timer goes if there was one, and the work item is re-synced
+    so an unattributed entry drops out of the description table too.
+    """
+    # all_objects: the soft delete cascades to the link, and that can land first.
+    link = CrmTimerLink.all_objects.filter(worklog_id=worklog.id).first()
+    if link is not None:
+        crm = _get_client(integration)
+        if crm is not None:
+            try:
+                crm.delete_timer(link.crm_timer_id)
+            except CrmApiError as exc:
+                logger.error("Could not delete CRM timer %s: %s", link.crm_timer_id, exc)
+        link.delete()
+
+    sync_issue_to_crm(str(worklog.issue_id))
+
+
+def _mirror_newly_matched_worklogs(issue, staff_by_email):
+    """Push hours that were logged before their author had a CRM account.
+
+    Once the person exists in the CRM their entries leave the description table,
+    so they have to become real timers in the same breath or the hours would
+    simply disappear from the CRM.
+    """
+    linked = set(
+        CrmTimerLink.objects.filter(worklog__issue_id=issue.id).values_list("worklog_id", flat=True)
+    )
+    unmatched = {worklog.id for worklog in _unmatched_worklogs(issue, staff_by_email)}
+    for worklog_id in IssueWorkLog.objects.filter(issue_id=issue.id).values_list("id", flat=True):
+        if worklog_id in linked or worklog_id in unmatched:
+            continue
+        sync_worklog_to_crm.delay(str(worklog_id))
+
+
 @shared_task
 def sync_worklog_to_crm(worklog_id):
     """Create or update the CRM timer mirroring one worklog / running timer."""
+    # all_objects: deleting a worklog in Plane is a soft delete, so removal
+    # arrives here as a save of a row the default manager no longer returns.
     worklog = (
-        IssueWorkLog.objects.filter(id=worklog_id)
+        IssueWorkLog.all_objects.filter(id=worklog_id)
         .select_related("issue", "project", "logged_by")
         .first()
     )
@@ -399,6 +639,23 @@ def sync_worklog_to_crm(worklog_id):
     if integration is None:
         return
 
+    if worklog.deleted_at is not None:
+        _unmirror_worklog(worklog, integration)
+        return
+
+    staff_by_email = _crm_staff_by_email(worklog.workspace_id)
+    if staff_by_email is None:
+        return  # roster unreadable; the next save syncs it
+
+    staff_id = _crm_staff_id_for(worklog.workspace_id, worklog.logged_by, staff_by_email)
+    if staff_id is None:
+        # Nobody in the CRM to hang a timer off, so the hours go onto the task
+        # description instead of being dropped. Routed through the work item sync
+        # so the description is written under the same row lock as every other
+        # description write, and so the task is created when it does not exist.
+        sync_issue_to_crm(str(worklog.issue_id))
+        return
+
     # The timer hangs off the CRM task, so the work item has to be mirrored first.
     link = CrmTaskLink.objects.filter(issue_id=worklog.issue_id).first()
     if link is None:
@@ -406,10 +663,6 @@ def sync_worklog_to_crm(worklog_id):
         link = CrmTaskLink.objects.filter(issue_id=worklog.issue_id).first()
         if link is None:
             return  # project unmapped, or the CRM rejected the task
-
-    staff_id = _crm_staff_id_for(worklog.workspace_id, worklog.logged_by)
-    if staff_id is None:
-        return  # cannot attribute the hours to anyone in the CRM
 
     crm = _get_client(integration)
     if crm is None:
