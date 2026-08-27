@@ -109,6 +109,7 @@ INSTALLED_APPS = [
     "plane.web",
     "plane.middleware",
     "plane.license",
+    "plane.hr",
     "plane.api",
     "plane.authentication",
     # Third-party things
