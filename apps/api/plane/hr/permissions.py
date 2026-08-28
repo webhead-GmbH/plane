@@ -57,10 +57,11 @@ def resolve_hr_context(request, slug):
     if role is None:
         return None, False
 
+    # Found by the person, not by the workspace. Somebody employed here has one
+    # employment record however many workspaces they work across, and they should
+    # see their own hours from any of them.
     profile = (
-        HrEmploymentProfile.objects.filter(member=request.user, workspace__slug=slug)
-        .select_related("workspace")
-        .first()
+        HrEmploymentProfile.objects.filter(member=request.user).select_related("workspace").first()
     )
     is_manager = role == ROLE.ADMIN.value or bool(profile and profile.is_hr_manager)
     return profile, is_manager
@@ -103,14 +104,19 @@ def visible_profiles(request, slug):
     one place and can be tested on its own rather than being restated at each
     endpoint — which is how such a rule ends up applied inconsistently.
     """
-    is_manager = getattr(request, "hr_is_manager", False)
-    base = HrEmploymentProfile.objects.filter(workspace__slug=slug)
-    if is_manager:
-        return base
     profile = getattr(request, "hr_profile", None)
+
+    if getattr(request, "hr_is_manager", False):
+        # A manager sees the people this workspace administers HR for. Managing
+        # one workspace does not give sight of another's employment records, even
+        # though the hours inside a record are gathered from everywhere.
+        return HrEmploymentProfile.objects.filter(workspace__slug=slug)
+
     if profile is None:
-        return base.none()
-    return base.filter(pk=profile.pk)
+        return HrEmploymentProfile.objects.none()
+    # Your own record, whichever workspace administers it — you are looking at
+    # your own hours, and where the paperwork lives is not your concern.
+    return HrEmploymentProfile.objects.filter(pk=profile.pk)
 
 
 def readable_profile_or_none(request, slug, profile_id):

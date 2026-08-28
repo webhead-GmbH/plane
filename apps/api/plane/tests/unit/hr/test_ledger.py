@@ -25,7 +25,12 @@ from plane.hr.models import (
     HrTimeEntry,
     HrWorkSchedule,
 )
-from plane.hr.services.ledger import period_totals, rebuild_period, settle_day
+from plane.hr.services.ledger import (
+    has_running_timer,
+    period_totals,
+    rebuild_period,
+    settle_day,
+)
 from plane.tests.factories import ProjectFactory, UserFactory, WorkspaceFactory, WorkspaceMemberFactory
 
 pytestmark = [pytest.mark.unit, pytest.mark.django_db]
@@ -216,6 +221,76 @@ class TestDisappearingHours:
         rebuild_period(profile, 2026, 3)
         assert not HrPeriodDay.objects.filter(profile_id=profile.id, needs_review=True).exists()
         assert not HrAuditLog.objects.filter(action="counted_hours_disappeared").exists()
+
+
+class TestHoursAcrossWorkspaces:
+    """One company, several workspaces, one set of hours.
+
+    Somebody employed here is employed once. Counting only the workspace their
+    paperwork happens to live in would split their month in half and invent a
+    shortfall against them for hours they actually worked.
+    """
+
+    def test_hours_from_another_workspace_count_towards_the_same_month(self, profile, issue):
+        # Four hours in the workspace that administers their HR.
+        log_hours(profile, issue, utc(2026, 3, 2, 8, 0), 4 * 3600)
+
+        # Three more in a second workspace of the same company.
+        other = WorkspaceFactory(owner=profile.member)
+        WorkspaceMemberFactory(workspace=other, member=profile.member)
+        other_project = ProjectFactory(workspace=other, created_by=profile.member)
+        state = State.objects.filter(project=other_project).first() or State.objects.create(
+            name="Todo", project=other_project, workspace=other, group="unstarted"
+        )
+        other_issue = Issue.objects.create(
+            project=other_project, workspace=other, name="Elsewhere", state=state
+        )
+        IssueWorkLog.objects.create(
+            workspace=other,
+            project=other_project,
+            issue=other_issue,
+            logged_by=profile.member,
+            started_at=utc(2026, 3, 2, 13, 0),
+            logged_at=utc(2026, 3, 2, 13, 0),
+            duration=3 * 3600,
+        )
+
+        rebuild_period(profile, 2026, 3)
+        monday = HrPeriodDay.objects.get(profile_id=profile.id, work_date=date(2026, 3, 2))
+        assert monday.project_minutes == 7 * 60
+        # Seven hours worked against 7:42 owed, not four against 7:42.
+        assert monday.balance_minutes == 420 - FULL
+
+    def test_one_person_gets_one_employment_record(self, profile):
+        from django.db.utils import IntegrityError
+
+        other = WorkspaceFactory(owner=profile.member)
+        WorkspaceMemberFactory(workspace=other, member=profile.member)
+        with pytest.raises(IntegrityError):
+            HrEmploymentProfile.objects.create(
+                workspace=other, member=profile.member, hire_date=date(2024, 1, 1)
+            )
+
+    def test_a_timer_running_in_another_workspace_still_counts_as_running(self, profile):
+        other = WorkspaceFactory(owner=profile.member)
+        WorkspaceMemberFactory(workspace=other, member=profile.member)
+        other_project = ProjectFactory(workspace=other, created_by=profile.member)
+        state = State.objects.filter(project=other_project).first() or State.objects.create(
+            name="Todo", project=other_project, workspace=other, group="unstarted"
+        )
+        other_issue = Issue.objects.create(
+            project=other_project, workspace=other, name="Elsewhere", state=state
+        )
+        IssueWorkLog.objects.create(
+            workspace=other,
+            project=other_project,
+            issue=other_issue,
+            logged_by=profile.member,
+            started_at=utc(2026, 3, 2, 8, 0),
+            logged_at=utc(2026, 3, 2, 8, 0),
+            duration=None,
+        )
+        assert has_running_timer(profile, 2026, 3) is True
 
 
 class TestRecordingSwitches:

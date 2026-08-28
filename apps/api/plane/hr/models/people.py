@@ -17,13 +17,22 @@ from plane.hr.models.base import HrBaseModel
 
 
 class HrEmploymentProfile(HrBaseModel):
-    """One row per person per workspace: the anchor every other HR record hangs off.
+    """One row per person: the anchor every other HR record hangs off.
 
-    Kept separate from ``WorkspaceMember`` so that removing someone from the
+    One per *person*, not one per workspace. Somebody employed here is employed
+    once, however many workspaces they happen to work across — they have one
+    contract, one leave account, and one set of hours a month. Keying this to a
+    workspace would give anyone working in two of them two employment records and
+    two monthly figures, neither of which is what they actually worked.
+
+    Kept separate from ``WorkspaceMember`` so that removing someone from a
     workspace does not take their employment history with it, and so that HR data
     is not readable through the ordinary member endpoints.
     """
 
+    # Where HR is administered from, not where the person works. It decides who
+    # may see this record — the managers of that one workspace — while the hours
+    # themselves are gathered from everywhere the person logs time.
     workspace = models.ForeignKey(
         "db.Workspace",
         on_delete=models.CASCADE,
@@ -64,8 +73,11 @@ class HrEmploymentProfile(HrBaseModel):
         db_table = "hr_employment_profiles"
         ordering = ("-created_at",)
         constraints = [
+            # One employment record per person, full stop. Including the workspace
+            # here would permit a second record for somebody working across two of
+            # them, and their month would then be split in half.
             models.UniqueConstraint(
-                fields=["workspace", "member"],
+                fields=["member"],
                 name="unique_hr_profile_per_member",
             )
         ]

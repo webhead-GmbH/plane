@@ -121,7 +121,12 @@ def _worklog_minutes_by_day(profile, first, last, tz):
     rows = (
         IssueWorkLog.objects.filter(
             logged_by_id=profile.member_id,
-            workspace_id=profile.workspace_id,
+            # Not narrowed to one workspace. An hour somebody worked is an hour
+            # they worked, wherever they logged it — the company is one company
+            # however many workspaces it keeps, and a month that counted only some
+            # of them would understate what the person did and manufacture a
+            # shortfall against them.
+            #
             # A running timer has no length yet, so it is not counted. It is
             # surfaced separately rather than guessed at.
             duration__isnull=False,
@@ -461,7 +466,7 @@ def has_running_timer(profile, year, month):
     return (
         IssueWorkLog.objects.filter(
             logged_by_id=profile.member_id,
-            workspace_id=profile.workspace_id,
+            # Any workspace: a timer left running somewhere else is still running.
             duration__isnull=True,
         )
         .annotate(occurred=Coalesce("started_at", F("logged_at")))
