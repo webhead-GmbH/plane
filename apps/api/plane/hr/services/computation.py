@@ -80,6 +80,12 @@ class AbsenceSlice:
 @dataclass
 class DayInput:
     day: date
+    # Whether a daily obligation is recorded for this person at all. Distinct from
+    # a day whose obligation happens to be zero: a Saturday worked by somebody on a
+    # weekday schedule is genuine surplus, whereas somebody who invoices their own
+    # hours has no obligation to be above or below in the first place. Conflating
+    # the two credits them the whole of every month as overtime.
+    records_target: bool = True
     # What the contract says is owed on this day.
     scheduled_minutes: int = 0
     # What is credited when the person is paid but not working. Equal to the
@@ -170,7 +176,11 @@ def compute_day(day_input):
     result.actual_minutes = (
         result.project_minutes + result.non_project_minutes + result.absence_minutes + result.holiday_minutes
     )
-    result.balance_minutes = result.actual_minutes - result.target_minutes
+    # No obligation, no surplus and no shortfall. Anything else accrues a balance
+    # nobody agreed to and that grows by the whole of every month.
+    result.balance_minutes = (
+        result.actual_minutes - result.target_minutes if day_input.records_target else 0
+    )
     result.day_kind = _classify(day_input, result)
     return result
 

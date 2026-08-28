@@ -18,7 +18,7 @@ from .master_data import (
     HrHolidayEndpoint,
     HrLeaveEntitlementEndpoint,
     HrWorkScheduleEndpoint,
-    HrWorkspaceBootstrapEndpoint,
+    HrSetupEndpoint,
 )
 from .period import (
     HrMeEndpoint,
@@ -82,6 +82,6 @@ __all__ = [
     "HrStatementEndpoint",
     "HrTimeEntryEndpoint",
     "HrWorkScheduleEndpoint",
-    "HrWorkspaceBootstrapEndpoint",
+    "HrSetupEndpoint",
     "HrWorkspaceConfigEndpoint",
 ]

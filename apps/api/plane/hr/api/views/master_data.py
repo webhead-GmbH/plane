@@ -15,7 +15,6 @@ from rest_framework.response import Response
 
 # Module imports
 from plane.app.views.base import BaseAPIView
-from plane.db.models import Workspace
 from plane.hr.api.serializers.records import (
     HrAbsenceTypeSerializer,
     HrContractSerializer,
@@ -36,6 +35,7 @@ from plane.hr.models import (
     HrPeriod,
     HrWorkSchedule,
 )
+from plane.hr.utils.company import hr_home_workspace
 from plane.hr.permissions import (
     MANAGER,
     SELF,
@@ -52,14 +52,14 @@ class HrEmploymentProfileEndpoint(HrWorkspaceConfigEndpoint):
     serializer_class = HrEmploymentProfileSerializer
     filter_fields = ("is_active", "member")
 
-    def get_queryset(self, slug):
-        return super().get_queryset(slug).select_related("member")
+    def get_queryset(self):
+        return super().get_queryset().select_related("member")
 
     @hr_permission(SELF)
-    def get(self, request, slug, pk=None):
+    def get(self, request, pk=None):
         # Reading a person is the one thing here that is not manager-only: you can
         # always read your own record.
-        rows = visible_profiles(request, slug).select_related("member")
+        rows = visible_profiles(request).select_related("member")
         if pk is not None:
             row = rows.filter(pk=pk).first()
             if row is None:
@@ -69,10 +69,10 @@ class HrEmploymentProfileEndpoint(HrWorkspaceConfigEndpoint):
         return Response(self.serializer_class(rows, many=True).data, status=status.HTTP_200_OK)
 
     @hr_permission(MANAGER)
-    def delete(self, request, slug, pk):
+    def delete(self, request, pk):
         # An employment record is not deleted when somebody leaves — the months
         # they worked still have to be readable. It is marked inactive instead.
-        row = self.get_queryset(slug).filter(pk=pk).first()
+        row = self.get_queryset().filter(pk=pk).first()
         if row is None:
             return Response({"error": "Not found."}, status=status.HTTP_404_NOT_FOUND)
         row.is_active = False
@@ -84,8 +84,8 @@ class HrContractEndpoint(BaseAPIView):
     """Somebody's terms, as a series of dated slices."""
 
     @hr_permission(SELF)
-    def get(self, request, slug, profile_id, pk=None):
-        profile = readable_profile_or_none(request, slug, profile_id)
+    def get(self, request, profile_id, pk=None):
+        profile = readable_profile_or_none(request, profile_id)
         if profile is None:
             return Response({"error": "Not found."}, status=status.HTTP_404_NOT_FOUND)
         rows = HrContract.objects.filter(profile_id=profile.id)
@@ -97,8 +97,8 @@ class HrContractEndpoint(BaseAPIView):
         return Response(HrContractSerializer(rows, many=True).data, status=status.HTTP_200_OK)
 
     @hr_permission(MANAGER)
-    def post(self, request, slug, profile_id):
-        profile = readable_profile_or_none(request, slug, profile_id)
+    def post(self, request, profile_id):
+        profile = readable_profile_or_none(request, profile_id)
         if profile is None:
             return Response({"error": "Not found."}, status=status.HTTP_404_NOT_FOUND)
         serializer = HrContractSerializer(data=request.data, context={"profile": profile})
@@ -108,8 +108,8 @@ class HrContractEndpoint(BaseAPIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @hr_permission(MANAGER)
-    def patch(self, request, slug, profile_id, pk):
-        profile = readable_profile_or_none(request, slug, profile_id)
+    def patch(self, request, profile_id, pk):
+        profile = readable_profile_or_none(request, profile_id)
         if profile is None:
             return Response({"error": "Not found."}, status=status.HTTP_404_NOT_FOUND)
         row = HrContract.objects.filter(profile_id=profile.id, pk=pk).first()
@@ -124,8 +124,8 @@ class HrContractEndpoint(BaseAPIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     @hr_permission(MANAGER)
-    def delete(self, request, slug, profile_id, pk):
-        profile = readable_profile_or_none(request, slug, profile_id)
+    def delete(self, request, profile_id, pk):
+        profile = readable_profile_or_none(request, profile_id)
         if profile is None:
             return Response({"error": "Not found."}, status=status.HTTP_404_NOT_FOUND)
         row = HrContract.objects.filter(profile_id=profile.id, pk=pk).first()
@@ -165,8 +165,8 @@ class HrWorkScheduleEndpoint(HrWorkspaceConfigEndpoint):
     filter_fields = ("profile",)
 
     @hr_permission(MANAGER)
-    def delete(self, request, slug, pk):
-        row = self.get_queryset(slug).filter(pk=pk).first()
+    def delete(self, request, pk):
+        row = self.get_queryset().filter(pk=pk).first()
         if row is None:
             return Response({"error": "Not found."}, status=status.HTTP_404_NOT_FOUND)
         if row.profile_id and _overlaps_a_closed_month(row.profile, row.valid_from, row.valid_to):
@@ -192,12 +192,12 @@ class HrHolidayEndpoint(HrWorkspaceConfigEndpoint):
     filter_fields = ("calendar",)
     read_requires_manager = False
 
-    def get_queryset(self, slug):
-        return super().get_queryset(slug).select_related("calendar")
+    def get_queryset(self):
+        return super().get_queryset().select_related("calendar")
 
     @hr_permission(SELF)
-    def get(self, request, slug, pk=None):
-        rows = self._apply_filters(self.get_queryset(slug), request)
+    def get(self, request, pk=None):
+        rows = self._apply_filters(self.get_queryset(), request)
         year = request.query_params.get("year")
         if year and year.isdigit():
             rows = rows.filter(date__year=int(year))
@@ -223,16 +223,16 @@ class HrLeaveEntitlementEndpoint(BaseAPIView):
     """How much leave somebody has for a leave year."""
 
     @hr_permission(SELF)
-    def get(self, request, slug, profile_id):
-        profile = readable_profile_or_none(request, slug, profile_id)
+    def get(self, request, profile_id):
+        profile = readable_profile_or_none(request, profile_id)
         if profile is None:
             return Response({"error": "Not found."}, status=status.HTTP_404_NOT_FOUND)
         rows = HrLeaveEntitlement.objects.filter(profile_id=profile.id)
         return Response(HrLeaveEntitlementSerializer(rows, many=True).data, status=status.HTTP_200_OK)
 
     @hr_permission(MANAGER)
-    def post(self, request, slug, profile_id):
-        profile = readable_profile_or_none(request, slug, profile_id)
+    def post(self, request, profile_id):
+        profile = readable_profile_or_none(request, profile_id)
         if profile is None:
             return Response({"error": "Not found."}, status=status.HTTP_404_NOT_FOUND)
         serializer = HrLeaveEntitlementSerializer(data=request.data)
@@ -242,8 +242,8 @@ class HrLeaveEntitlementEndpoint(BaseAPIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @hr_permission(MANAGER)
-    def patch(self, request, slug, profile_id, pk):
-        profile = readable_profile_or_none(request, slug, profile_id)
+    def patch(self, request, profile_id, pk):
+        profile = readable_profile_or_none(request, profile_id)
         if profile is None:
             return Response({"error": "Not found."}, status=status.HTTP_404_NOT_FOUND)
         row = HrLeaveEntitlement.objects.filter(profile_id=profile.id, pk=pk).first()
@@ -266,7 +266,7 @@ class HrLeaveEntitlementEndpoint(BaseAPIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class HrWorkspaceBootstrapEndpoint(BaseAPIView):
+class HrSetupEndpoint(BaseAPIView):
     """Create the records a workspace needs before anybody can be set up.
 
     Doing this by hand means eight forms before the first useful screen, and the
@@ -275,13 +275,11 @@ class HrWorkspaceBootstrapEndpoint(BaseAPIView):
     """
 
     @hr_permission(MANAGER)
-    def post(self, request, slug):
-        workspace = Workspace.objects.filter(slug=slug).first()
-        if workspace is None:
-            return Response({"error": "No such workspace."}, status=status.HTTP_404_NOT_FOUND)
+    def post(self, request):
+        workspace = hr_home_workspace()
 
         created = {}
-        if not HrAbsenceType.objects.filter(workspace=workspace).exists():
+        if not HrAbsenceType.objects.exists():
             HrAbsenceType.objects.bulk_create(
                 [
                     HrAbsenceType(
@@ -325,15 +323,15 @@ class HrWorkspaceBootstrapEndpoint(BaseAPIView):
                     )
                 ]
             )
-            created["absence_types"] = HrAbsenceType.objects.filter(workspace=workspace).count()
+            created["absence_types"] = HrAbsenceType.objects.count()
 
-        if not HrHolidayCalendar.objects.filter(workspace=workspace).exists():
+        if not HrHolidayCalendar.objects.exists():
             HrHolidayCalendar.objects.create(
                 workspace=workspace, name="Österreich", country_code="AT", is_default=True
             )
             created["holiday_calendar"] = "AT"
 
-        if not HrWorkSchedule.objects.filter(workspace=workspace, profile__isnull=True).exists():
+        if not HrWorkSchedule.objects.filter(profile__isnull=True).exists():
             # The collective agreement week rather than forty hours, because that
             # is what applies here and a wrong default is worse than none.
             HrWorkSchedule.objects.create(

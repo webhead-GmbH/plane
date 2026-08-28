@@ -57,9 +57,9 @@ class HrAbsenceEndpoint(BaseAPIView):
     """Time away from work."""
 
     @hr_permission(SELF)
-    def get(self, request, slug, pk=None):
+    def get(self, request, pk=None):
         rows = HrAbsence.objects.filter(
-            profile__in=visible_profiles(request, slug)
+            profile__in=visible_profiles(request)
         ).select_related("absence_type", "profile__member")
 
         if pk is not None:
@@ -81,8 +81,8 @@ class HrAbsenceEndpoint(BaseAPIView):
         )
 
     @hr_permission(SELF)
-    def post(self, request, slug):
-        profile = readable_profile_or_none(request, slug, request.data.get("profile_id"))
+    def post(self, request):
+        profile = readable_profile_or_none(request, request.data.get("profile_id"))
         if profile is None:
             return Response({"error": "Not found."}, status=status.HTTP_404_NOT_FOUND)
 
@@ -106,8 +106,8 @@ class HrAbsenceEndpoint(BaseAPIView):
         return Response(HrAbsenceSerializer(absence).data, status=status.HTTP_201_CREATED)
 
     @hr_permission(SELF)
-    def patch(self, request, slug, pk):
-        row = HrAbsence.objects.filter(profile__in=visible_profiles(request, slug), pk=pk).first()
+    def patch(self, request, pk):
+        row = HrAbsence.objects.filter(profile__in=visible_profiles(request), pk=pk).first()
         if row is None:
             return Response({"error": "Not found."}, status=status.HTTP_404_NOT_FOUND)
         if row.locked_period_id:
@@ -129,8 +129,8 @@ class HrAbsenceEndpoint(BaseAPIView):
         return Response(HrAbsenceSerializer(absence).data, status=status.HTTP_200_OK)
 
     @hr_permission(MANAGER)
-    def delete(self, request, slug, pk):
-        row = HrAbsence.objects.filter(profile__in=visible_profiles(request, slug), pk=pk).first()
+    def delete(self, request, pk):
+        row = HrAbsence.objects.filter(profile__in=visible_profiles(request), pk=pk).first()
         if row is None:
             return Response({"error": "Not found."}, status=status.HTTP_404_NOT_FOUND)
         if row.locked_period_id:
@@ -148,14 +148,14 @@ def _settle_minutes(absence):
 class HrAbsenceDecisionEndpoint(BaseAPIView):
     """Agreeing to, refusing, or withdrawing a request."""
 
-    def _row(self, request, slug, pk):
+    def _row(self, request, pk):
         return HrAbsence.objects.filter(
-            profile__in=visible_profiles(request, slug), pk=pk
+            profile__in=visible_profiles(request), pk=pk
         ).select_related("profile").first()
 
     @hr_permission(SELF)
-    def post(self, request, slug, pk, decision):
-        row = self._row(request, slug, pk)
+    def post(self, request, pk, decision):
+        row = self._row(request, pk)
         if row is None:
             return Response({"error": "Not found."}, status=status.HTTP_404_NOT_FOUND)
         if row.locked_period_id:
@@ -210,10 +210,9 @@ class HrAbsenceCalendarEndpoint(BaseAPIView):
     """
 
     @hr_permission(SELF)
-    def get(self, request, slug):
+    def get(self, request):
         rows = HrAbsence.objects.filter(
-            profile__workspace__slug=slug,
-            state=HrAbsence.State.APPROVED,
+                        state=HrAbsence.State.APPROVED,
         ).select_related("profile__member")
         rows = _date_window(request, rows, "start_date", "end_date")
         return Response(
@@ -226,8 +225,8 @@ class HrTimeEntryEndpoint(BaseAPIView):
     """Hours with no work item behind them, and hours carried over from before."""
 
     @hr_permission(SELF)
-    def get(self, request, slug, pk=None):
-        rows = HrTimeEntry.objects.filter(profile__in=visible_profiles(request, slug))
+    def get(self, request, pk=None):
+        rows = HrTimeEntry.objects.filter(profile__in=visible_profiles(request))
         if pk is not None:
             row = rows.filter(pk=pk).first()
             if row is None:
@@ -244,8 +243,8 @@ class HrTimeEntryEndpoint(BaseAPIView):
         )
 
     @hr_permission(SELF)
-    def post(self, request, slug):
-        profile = readable_profile_or_none(request, slug, request.data.get("profile_id"))
+    def post(self, request):
+        profile = readable_profile_or_none(request, request.data.get("profile_id"))
         if profile is None:
             return Response({"error": "Not found."}, status=status.HTTP_404_NOT_FOUND)
         serializer = HrTimeEntrySerializer(data=request.data)
@@ -261,8 +260,8 @@ class HrTimeEntryEndpoint(BaseAPIView):
         return Response(HrTimeEntrySerializer(entry).data, status=status.HTTP_201_CREATED)
 
     @hr_permission(SELF)
-    def patch(self, request, slug, pk):
-        row = HrTimeEntry.objects.filter(profile__in=visible_profiles(request, slug), pk=pk).first()
+    def patch(self, request, pk):
+        row = HrTimeEntry.objects.filter(profile__in=visible_profiles(request), pk=pk).first()
         if row is None:
             return Response({"error": "Not found."}, status=status.HTTP_404_NOT_FOUND)
         if row.locked_period_id:
@@ -274,8 +273,8 @@ class HrTimeEntryEndpoint(BaseAPIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     @hr_permission(SELF)
-    def delete(self, request, slug, pk):
-        row = HrTimeEntry.objects.filter(profile__in=visible_profiles(request, slug), pk=pk).first()
+    def delete(self, request, pk):
+        row = HrTimeEntry.objects.filter(profile__in=visible_profiles(request), pk=pk).first()
         if row is None:
             return Response({"error": "Not found."}, status=status.HTTP_404_NOT_FOUND)
         if row.locked_period_id:

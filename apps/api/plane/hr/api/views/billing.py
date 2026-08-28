@@ -42,9 +42,9 @@ class HrStatementEndpoint(BaseAPIView):
     """What a month is worth, sent before the invoice is written rather than after."""
 
     @hr_permission(SELF)
-    def get(self, request, slug, pk):
+    def get(self, request, pk):
         period = (
-            HrPeriod.objects.filter(pk=pk, profile__in=visible_profiles(request, slug))
+            HrPeriod.objects.filter(pk=pk, profile__in=visible_profiles(request))
             .select_related("profile__member", "profile__workspace")
             .first()
         )
@@ -56,14 +56,14 @@ class HrStatementEndpoint(BaseAPIView):
 class HrInvoiceEndpoint(BaseAPIView):
     """The invoice somebody sends for their own hours."""
 
-    def _visible(self, request, slug):
+    def _visible(self, request):
         return HrInvoiceDocument.objects.filter(
-            profile__in=visible_profiles(request, slug)
+            profile__in=visible_profiles(request)
         ).select_related("profile__member", "period")
 
     @hr_permission(SELF)
-    def get(self, request, slug, pk=None):
-        rows = self._visible(request, slug)
+    def get(self, request, pk=None):
+        rows = self._visible(request)
         if pk is not None:
             row = rows.filter(pk=pk).first()
             if row is None:
@@ -82,8 +82,8 @@ class HrInvoiceEndpoint(BaseAPIView):
         )
 
     @hr_permission(SELF)
-    def post(self, request, slug):
-        profile = readable_profile_or_none(request, slug, request.data.get("profile_id"))
+    def post(self, request):
+        profile = readable_profile_or_none(request, request.data.get("profile_id"))
         if profile is None:
             return Response({"error": "Not found."}, status=status.HTTP_404_NOT_FOUND)
 
@@ -108,8 +108,8 @@ class HrInvoiceEndpoint(BaseAPIView):
         return Response(HrInvoiceDocumentSerializer(invoice).data, status=status.HTTP_201_CREATED)
 
     @hr_permission(SELF)
-    def patch(self, request, slug, pk):
-        row = self._visible(request, slug).filter(pk=pk).first()
+    def patch(self, request, pk):
+        row = self._visible(request).filter(pk=pk).first()
         if row is None:
             return Response({"error": "Not found."}, status=status.HTTP_404_NOT_FOUND)
         if (
@@ -131,10 +131,10 @@ class HrInvoiceReconcileEndpoint(BaseAPIView):
     """Check an invoice against the month it is for."""
 
     @hr_permission(MANAGER)
-    def post(self, request, slug, pk):
+    def post(self, request, pk):
         invoice = (
             HrInvoiceDocument.objects.filter(
-                pk=pk, profile__in=visible_profiles(request, slug)
+                pk=pk, profile__in=visible_profiles(request)
             )
             .select_related("period")
             .first()
@@ -155,9 +155,9 @@ class HrInvoiceAcceptVarianceEndpoint(BaseAPIView):
     """Accept an invoice that does not match, with the reason recorded."""
 
     @hr_permission(MANAGER)
-    def post(self, request, slug, pk):
+    def post(self, request, pk):
         invoice = HrInvoiceDocument.objects.filter(
-            pk=pk, profile__in=visible_profiles(request, slug)
+            pk=pk, profile__in=visible_profiles(request)
         ).first()
         if invoice is None:
             return Response({"error": "Not found."}, status=status.HTTP_404_NOT_FOUND)

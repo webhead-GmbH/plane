@@ -343,3 +343,46 @@ class TestPeriodTotals:
         totals = total_period(days)
         assert totals.balance_minutes == 0
         assert closing_balance(1000, totals) == 1000 - FULL
+
+
+class TestNoRecordedObligation:
+    """The self-invoicing arrangements have no daily target, and so no balance.
+
+    Treating a missing obligation as an obligation of zero credits the whole of
+    every month as surplus. Over a year that is a claim of several hundred hours
+    against the company, arrived at by arithmetic nobody agreed to.
+    """
+
+    def test_a_day_worked_produces_no_surplus(self):
+        result = compute_day(
+            DayInput(
+                day=date(2026, 3, 2),
+                records_target=False,
+                scheduled_minutes=0,
+                credited_day_minutes=480,
+                project_minutes=300,
+            )
+        )
+        assert result.actual_minutes == 300
+        assert result.target_minutes == 0
+        assert result.balance_minutes == 0
+
+    def test_a_day_not_worked_produces_no_shortfall(self):
+        result = compute_day(
+            DayInput(day=date(2026, 3, 3), records_target=False, credited_day_minutes=480)
+        )
+        assert result.balance_minutes == 0
+
+    def test_a_weekend_worked_by_somebody_who_does_have_a_target_still_counts(self):
+        # The distinction is whether an obligation is recorded at all, not whether
+        # today's obligation happens to be zero.
+        result = compute_day(
+            DayInput(
+                day=date(2026, 3, 7),
+                records_target=True,
+                scheduled_minutes=0,
+                credited_day_minutes=0,
+                project_minutes=240,
+            )
+        )
+        assert result.balance_minutes == 240

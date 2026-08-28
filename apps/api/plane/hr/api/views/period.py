@@ -111,7 +111,7 @@ class HrMeEndpoint(BaseAPIView):
     """
 
     @hr_permission(SELF)
-    def get(self, request, slug):
+    def get(self, request):
         profile = request.hr_profile
         if profile is None:
             return Response(
@@ -127,7 +127,7 @@ class HrMeEndpoint(BaseAPIView):
         contracts = list(HrContract.objects.filter(profile_id=profile.id))
         personal = list(HrWorkSchedule.objects.filter(profile_id=profile.id))
         defaults = list(
-            HrWorkSchedule.objects.filter(workspace_id=profile.workspace_id, profile__isnull=True)
+            HrWorkSchedule.objects.filter(profile__isnull=True)
         )
         contract = effective(contracts, today)
         schedule = effective_schedule(personal, defaults, today)
@@ -159,9 +159,8 @@ class HrMeEndpoint(BaseAPIView):
 
 class HrPeriodListEndpoint(BaseAPIView):
     @hr_permission(SELF)
-    def get(self, request, slug):
-        profile = readable_profile_or_none(
-            request, slug, request.query_params.get("profile_id") or None
+    def get(self, request):
+        profile = readable_profile_or_none(request, request.query_params.get("profile_id") or None
         )
         if profile is None:
             return Response({"error": "No such person, or not yours to read."}, status=status.HTTP_404_NOT_FOUND)
@@ -177,16 +176,16 @@ class HrPeriodListEndpoint(BaseAPIView):
 
 
 class HrPeriodDetailEndpoint(BaseAPIView):
-    def _period_for(self, request, slug, pk):
+    def _period_for(self, request, pk):
         return (
-            HrPeriod.objects.filter(pk=pk, profile__in=visible_profiles(request, slug))
+            HrPeriod.objects.filter(pk=pk, profile__in=visible_profiles(request))
             .select_related("profile__member")
             .first()
         )
 
     @hr_permission(SELF)
-    def get(self, request, slug, pk):
-        period = self._period_for(request, slug, pk)
+    def get(self, request, pk):
+        period = self._period_for(request, pk)
         if period is None:
             return Response({"error": "No such month, or not yours to read."}, status=status.HTTP_404_NOT_FOUND)
         payload = _period_payload(period)
@@ -200,8 +199,8 @@ class HrPeriodDaysEndpoint(BaseAPIView):
     """The day-by-day breakdown — the same read whether the month is open or closed."""
 
     @hr_permission(SELF)
-    def get(self, request, slug, pk):
-        period = HrPeriod.objects.filter(pk=pk, profile__in=visible_profiles(request, slug)).first()
+    def get(self, request, pk):
+        period = HrPeriod.objects.filter(pk=pk, profile__in=visible_profiles(request)).first()
         if period is None:
             return Response({"error": "No such month, or not yours to read."}, status=status.HTTP_404_NOT_FOUND)
         days = HrPeriodDay.objects.filter(period_id=period.id).order_by("work_date")
@@ -210,8 +209,8 @@ class HrPeriodDaysEndpoint(BaseAPIView):
 
 class HrPeriodRecomputeEndpoint(BaseAPIView):
     @hr_permission(SELF)
-    def post(self, request, slug, pk):
-        period = HrPeriod.objects.filter(pk=pk, profile__in=visible_profiles(request, slug)).first()
+    def post(self, request, pk):
+        period = HrPeriod.objects.filter(pk=pk, profile__in=visible_profiles(request)).first()
         if period is None:
             return Response({"error": "No such month, or not yours to read."}, status=status.HTTP_404_NOT_FOUND)
 
@@ -235,9 +234,9 @@ class HrPeriodDaySettleEndpoint(BaseAPIView):
     """
 
     @hr_permission(MANAGER)
-    def post(self, request, slug, pk, day_id):
+    def post(self, request, pk, day_id):
         day = HrPeriodDay.objects.filter(
-            pk=day_id, period_id=pk, profile__in=visible_profiles(request, slug)
+            pk=day_id, period_id=pk, profile__in=visible_profiles(request)
         ).first()
         if day is None:
             return Response({"error": "No such day."}, status=status.HTTP_404_NOT_FOUND)
@@ -251,9 +250,9 @@ class HrPeriodDaySettleEndpoint(BaseAPIView):
 class _TransitionEndpoint(BaseAPIView):
     """Shared plumbing for the four steps of closing a month."""
 
-    def _period_or_none(self, request, slug, pk):
+    def _period_or_none(self, request, pk):
         return (
-            HrPeriod.objects.filter(pk=pk, profile__in=visible_profiles(request, slug))
+            HrPeriod.objects.filter(pk=pk, profile__in=visible_profiles(request))
             .select_related("profile__member", "profile__workspace")
             .first()
         )
@@ -271,8 +270,8 @@ class _TransitionEndpoint(BaseAPIView):
 
 class HrPeriodSubmitEndpoint(_TransitionEndpoint):
     @hr_permission(SELF)
-    def post(self, request, slug, pk):
-        period = self._period_or_none(request, slug, pk)
+    def post(self, request, pk):
+        period = self._period_or_none(request, pk)
         if period is None:
             return Response({"error": "No such month, or not yours to read."}, status=status.HTTP_404_NOT_FOUND)
         return self._run(request, period, submit)
@@ -280,8 +279,8 @@ class HrPeriodSubmitEndpoint(_TransitionEndpoint):
 
 class HrPeriodApproveEndpoint(_TransitionEndpoint):
     @hr_permission(MANAGER)
-    def post(self, request, slug, pk):
-        period = self._period_or_none(request, slug, pk)
+    def post(self, request, pk):
+        period = self._period_or_none(request, pk)
         if period is None:
             return Response({"error": "No such month."}, status=status.HTTP_404_NOT_FOUND)
         if not can_approve(request, period.profile):
@@ -294,8 +293,8 @@ class HrPeriodApproveEndpoint(_TransitionEndpoint):
 
 class HrPeriodLockEndpoint(_TransitionEndpoint):
     @hr_permission(MANAGER)
-    def post(self, request, slug, pk):
-        period = self._period_or_none(request, slug, pk)
+    def post(self, request, pk):
+        period = self._period_or_none(request, pk)
         if period is None:
             return Response({"error": "No such month."}, status=status.HTTP_404_NOT_FOUND)
         return self._run(request, period, lock)
@@ -303,8 +302,8 @@ class HrPeriodLockEndpoint(_TransitionEndpoint):
 
 class HrPeriodReopenEndpoint(_TransitionEndpoint):
     @hr_permission(MANAGER)
-    def post(self, request, slug, pk):
-        period = self._period_or_none(request, slug, pk)
+    def post(self, request, pk):
+        period = self._period_or_none(request, pk)
         if period is None:
             return Response({"error": "No such month."}, status=status.HTTP_404_NOT_FOUND)
         return self._run(request, period, reopen, reason=request.data.get("reason", ""))
@@ -318,12 +317,12 @@ class HrOverviewEndpoint(BaseAPIView):
     """
 
     @hr_permission(MANAGER)
-    def get(self, request, slug):
+    def get(self, request):
         year, month = _requested_month(request, getattr(request, "hr_profile", None))
         first = date(year, month, 1)
 
         rows = []
-        for profile in visible_profiles(request, slug).filter(is_active=True).select_related("member"):
+        for profile in visible_profiles(request).filter(is_active=True).select_related("member"):
             period = HrPeriod.objects.filter(profile_id=profile.id, period_start=first).first()
             if period is None or period.state != HrPeriod.State.LOCKED:
                 rebuild_period(profile, year, month, actor=request.user)

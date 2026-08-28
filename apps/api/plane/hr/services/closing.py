@@ -111,7 +111,7 @@ def _snapshot(period, totals):
     contracts = list(HrContract.objects.filter(profile_id=profile.id))
     personal = list(HrWorkSchedule.objects.filter(profile_id=profile.id))
     defaults = list(
-        HrWorkSchedule.objects.filter(workspace_id=profile.workspace_id, profile__isnull=True)
+        HrWorkSchedule.objects.filter(profile__isnull=True)
     )
     contract = effective(contracts, period.period_start)
     schedule = effective_schedule(personal, defaults, period.period_start)

@@ -43,7 +43,7 @@ def client_for(user):
 
 
 def url(workspace, path):
-    return f"/api/hr/workspaces/{workspace.slug}/{path}"
+    return f"/api/hr/{path}"
 
 
 @pytest.fixture

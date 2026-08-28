@@ -20,18 +20,12 @@ import { formatMonthLabel, isPeriodEditable, nextMonth, previousMonth } from "./
 
 const hrService = new HrService();
 
-type TProps = {
-  workspaceSlug: string;
-};
-
-export const MyTimeRoot = observer(function MyTimeRoot({ workspaceSlug }: TProps) {
+export const MyTimeRoot = observer(function MyTimeRoot() {
   const now = new Date();
   const [[year, month], setMonth] = useState<[number, number]>([now.getFullYear(), now.getMonth() + 1]);
   const [isBusy, setIsBusy] = useState(false);
 
-  const { data, isLoading, mutate } = useSWR(`HR_ME_${workspaceSlug}_${year}_${month}`, () =>
-    hrService.me(workspaceSlug, year, month)
-  );
+  const { data, isLoading, mutate } = useSWR(`HR_ME_${year}_${month}`, () => hrService.me(year, month));
 
   const period = data?.period ?? null;
   const days = period?.days ?? [];
@@ -41,7 +35,7 @@ export const MyTimeRoot = observer(function MyTimeRoot({ workspaceSlug }: TProps
     if (!period) return;
     setIsBusy(true);
     try {
-      await hrService.recompute(workspaceSlug, period.id);
+      await hrService.recompute(period.id);
       await mutate();
       setToast({ type: TOAST_TYPE.SUCCESS, title: "Brought up to date" });
     } catch (error) {
@@ -59,7 +53,7 @@ export const MyTimeRoot = observer(function MyTimeRoot({ workspaceSlug }: TProps
     if (!period) return;
     setIsBusy(true);
     try {
-      await hrService.submit(workspaceSlug, period.id);
+      await hrService.submit(period.id);
       await mutate();
       setToast({
         type: TOAST_TYPE.SUCCESS,

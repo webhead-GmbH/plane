@@ -26,7 +26,7 @@ def resolve_total_minutes(absence):
     profile = absence.profile
     personal = list(HrWorkSchedule.objects.filter(profile_id=profile.id))
     defaults = list(
-        HrWorkSchedule.objects.filter(workspace_id=profile.workspace_id, profile__isnull=True)
+        HrWorkSchedule.objects.filter(profile__isnull=True)
     )
 
     total = 0

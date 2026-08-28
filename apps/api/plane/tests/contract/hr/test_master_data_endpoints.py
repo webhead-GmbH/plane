@@ -73,13 +73,13 @@ def employ(workspace, is_hr_manager=False):
 
 
 def url(workspace, path):
-    return f"/api/hr/workspaces/{workspace.slug}/{path}"
+    return f"/api/hr/{path}"
 
 
-class TestBootstrap:
-    def test_it_creates_what_a_workspace_needs_to_start(self, workspace):
+class TestSetup:
+    def test_it_creates_what_the_company_needs_to_start(self, workspace):
         manager, _ = employ(workspace, is_hr_manager=True)
-        response = client_for(manager).post(url(workspace, "bootstrap/"))
+        response = client_for(manager).post(url(workspace, "setup/"))
         assert response.status_code == 200
         assert HrAbsenceType.objects.filter(workspace=workspace).count() == 6
         assert HrHolidayCalendar.objects.filter(workspace=workspace, is_default=True).exists()
@@ -90,7 +90,7 @@ class TestBootstrap:
 
     def test_sickness_outranks_leave(self, workspace):
         manager, _ = employ(workspace, is_hr_manager=True)
-        client_for(manager).post(url(workspace, "bootstrap/"))
+        client_for(manager).post(url(workspace, "setup/"))
         sick = HrAbsenceType.objects.get(workspace=workspace, code="krankenstand")
         leave = HrAbsenceType.objects.get(workspace=workspace, code="urlaub")
         assert sick.precedence < leave.precedence
@@ -98,14 +98,14 @@ class TestBootstrap:
     def test_running_it_twice_changes_nothing(self, workspace):
         manager, _ = employ(workspace, is_hr_manager=True)
         client = client_for(manager)
-        client.post(url(workspace, "bootstrap/"))
-        response = client.post(url(workspace, "bootstrap/"))
+        client.post(url(workspace, "setup/"))
+        response = client.post(url(workspace, "setup/"))
         assert response.json()["already_present"] is True
         assert HrAbsenceType.objects.filter(workspace=workspace).count() == 6
 
     def test_an_employee_cannot_run_it(self, workspace):
         user, _ = employ(workspace)
-        assert client_for(user).post(url(workspace, "bootstrap/")).status_code == 403
+        assert client_for(user).post(url(workspace, "setup/")).status_code == 403
 
 
 class TestPeople:
@@ -212,14 +212,14 @@ class TestContracts:
 class TestSharedReferenceData:
     def test_everybody_can_read_the_holidays(self, workspace):
         manager, _ = employ(workspace, is_hr_manager=True)
-        client_for(manager).post(url(workspace, "bootstrap/"))
+        client_for(manager).post(url(workspace, "setup/"))
         user, _ = employ(workspace)
         assert client_for(user).get(url(workspace, "holidays/")).status_code == 200
         assert client_for(user).get(url(workspace, "holiday-calendars/")).status_code == 200
 
     def test_everybody_can_read_the_absence_types(self, workspace):
         manager, _ = employ(workspace, is_hr_manager=True)
-        client_for(manager).post(url(workspace, "bootstrap/"))
+        client_for(manager).post(url(workspace, "setup/"))
         user, _ = employ(workspace)
         response = client_for(user).get(url(workspace, "absence-types/"))
         assert response.status_code == 200

@@ -155,78 +155,79 @@ export class HrService extends APIService {
     super(API_BASE_URL);
   }
 
-  private base(workspaceSlug: string) {
-    return `/api/hr/workspaces/${workspaceSlug}`;
-  }
+  // No workspace in any of these paths. The workspaces on this installation
+  // belong to one company and the people in them are the same people, so somebody
+  // reaches their own hours and their own month from wherever they happen to be.
+  private base = "/api/hr";
 
-  async me(workspaceSlug: string, year?: number, month?: number): Promise<THrMe> {
+  async me(year?: number, month?: number): Promise<THrMe> {
     const query = year && month ? `?year=${year}&month=${month}` : "";
-    return this.get(`${this.base(workspaceSlug)}/me/${query}`)
+    return this.get(`${this.base}/me/${query}`)
       .then((response) => response?.data)
       .catch((error) => {
         throw error?.response?.data;
       });
   }
 
-  async periods(workspaceSlug: string, year?: number): Promise<THrPeriod[]> {
+  async periods(year?: number): Promise<THrPeriod[]> {
     const query = year ? `?year=${year}` : "";
-    return this.get(`${this.base(workspaceSlug)}/periods/${query}`)
+    return this.get(`${this.base}/periods/${query}`)
       .then((response) => response?.data)
       .catch((error) => {
         throw error?.response?.data;
       });
   }
 
-  async periodDays(workspaceSlug: string, periodId: string): Promise<THrPeriodDay[]> {
-    return this.get(`${this.base(workspaceSlug)}/periods/${periodId}/days/`)
+  async periodDays(periodId: string): Promise<THrPeriodDay[]> {
+    return this.get(`${this.base}/periods/${periodId}/days/`)
       .then((response) => response?.data)
       .catch((error) => {
         throw error?.response?.data;
       });
   }
 
-  async recompute(workspaceSlug: string, periodId: string): Promise<THrPeriod> {
-    return this.post(`${this.base(workspaceSlug)}/periods/${periodId}/recompute/`)
+  async recompute(periodId: string): Promise<THrPeriod> {
+    return this.post(`${this.base}/periods/${periodId}/recompute/`)
       .then((response) => response?.data)
       .catch((error) => {
         throw error?.response?.data;
       });
   }
 
-  async submit(workspaceSlug: string, periodId: string): Promise<THrPeriod> {
-    return this.post(`${this.base(workspaceSlug)}/periods/${periodId}/submit/`)
+  async submit(periodId: string): Promise<THrPeriod> {
+    return this.post(`${this.base}/periods/${periodId}/submit/`)
       .then((response) => response?.data)
       .catch((error) => {
         throw error?.response?.data;
       });
   }
 
-  async statement(workspaceSlug: string, periodId: string): Promise<THrStatement> {
-    return this.get(`${this.base(workspaceSlug)}/periods/${periodId}/statement/`)
+  async statement(periodId: string): Promise<THrStatement> {
+    return this.get(`${this.base}/periods/${periodId}/statement/`)
       .then((response) => response?.data)
       .catch((error) => {
         throw error?.response?.data;
       });
   }
 
-  async createTimeEntry(workspaceSlug: string, data: Partial<THrTimeEntry> & { profile_id: string }) {
-    return this.post(`${this.base(workspaceSlug)}/time-entries/`, data)
+  async createTimeEntry(data: Partial<THrTimeEntry> & { profile_id: string }) {
+    return this.post(`${this.base}/time-entries/`, data)
       .then((response) => response?.data)
       .catch((error) => {
         throw error?.response?.data;
       });
   }
 
-  async deleteTimeEntry(workspaceSlug: string, entryId: string) {
-    return this.delete(`${this.base(workspaceSlug)}/time-entries/${entryId}/`)
+  async deleteTimeEntry(entryId: string) {
+    return this.delete(`${this.base}/time-entries/${entryId}/`)
       .then((response) => response?.data)
       .catch((error) => {
         throw error?.response?.data;
       });
   }
 
-  async timeEntries(workspaceSlug: string, from: string, to: string): Promise<THrTimeEntry[]> {
-    return this.get(`${this.base(workspaceSlug)}/time-entries/?from=${from}&to=${to}`)
+  async timeEntries(from: string, to: string): Promise<THrTimeEntry[]> {
+    return this.get(`${this.base}/time-entries/?from=${from}&to=${to}`)
       .then((response) => response?.data)
       .catch((error) => {
         throw error?.response?.data;

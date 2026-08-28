@@ -16,7 +16,7 @@ from rest_framework.response import Response
 
 # Module imports
 from plane.app.views.base import BaseAPIView
-from plane.db.models import Workspace
+from plane.hr.utils.company import hr_home_workspace
 from plane.hr.permissions import MANAGER, SELF, hr_permission
 
 
@@ -37,8 +37,8 @@ class HrWorkspaceConfigEndpoint(BaseAPIView):
     # holiday calendar and the list of absence types to use the module at all.
     read_requires_manager = True
 
-    def get_queryset(self, slug):
-        return self.model.objects.filter(workspace__slug=slug)
+    def get_queryset(self):
+        return self.model.objects.all()
 
     def _apply_filters(self, queryset, request):
         for field in self.filter_fields:
@@ -47,32 +47,30 @@ class HrWorkspaceConfigEndpoint(BaseAPIView):
                 queryset = queryset.filter(**{field: value})
         return queryset
 
-    def _serializer_context(self, request, slug):
-        return {"request": request, "slug": slug}
+    def _serializer_context(self, request):
+        return {"request": request}
 
     @hr_permission(SELF)
-    def get(self, request, slug, pk=None):
+    def get(self, request, pk=None):
         if self.read_requires_manager and not request.hr_is_manager:
             return Response(
                 {"error": "You don't have the required permissions."},
                 status=status.HTTP_403_FORBIDDEN,
             )
         if pk is not None:
-            row = self.get_queryset(slug).filter(pk=pk).first()
+            row = self.get_queryset().filter(pk=pk).first()
             if row is None:
                 return Response({"error": "Not found."}, status=status.HTTP_404_NOT_FOUND)
             return Response(self.serializer_class(row).data, status=status.HTTP_200_OK)
 
-        rows = self._apply_filters(self.get_queryset(slug), request)
+        rows = self._apply_filters(self.get_queryset(), request)
         return Response(self.serializer_class(rows, many=True).data, status=status.HTTP_200_OK)
 
     @hr_permission(MANAGER)
-    def post(self, request, slug):
-        workspace = Workspace.objects.filter(slug=slug).first()
-        if workspace is None:
-            return Response({"error": "No such workspace."}, status=status.HTTP_404_NOT_FOUND)
+    def post(self, request):
+        workspace = hr_home_workspace()
         serializer = self.serializer_class(
-            data=request.data, context=self._serializer_context(request, slug)
+            data=request.data, context=self._serializer_context(request)
         )
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -80,12 +78,12 @@ class HrWorkspaceConfigEndpoint(BaseAPIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @hr_permission(MANAGER)
-    def patch(self, request, slug, pk):
-        row = self.get_queryset(slug).filter(pk=pk).first()
+    def patch(self, request, pk):
+        row = self.get_queryset().filter(pk=pk).first()
         if row is None:
             return Response({"error": "Not found."}, status=status.HTTP_404_NOT_FOUND)
         serializer = self.serializer_class(
-            row, data=request.data, partial=True, context=self._serializer_context(request, slug)
+            row, data=request.data, partial=True, context=self._serializer_context(request)
         )
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -93,8 +91,8 @@ class HrWorkspaceConfigEndpoint(BaseAPIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     @hr_permission(MANAGER)
-    def delete(self, request, slug, pk):
-        row = self.get_queryset(slug).filter(pk=pk).first()
+    def delete(self, request, pk):
+        row = self.get_queryset().filter(pk=pk).first()
         if row is None:
             return Response({"error": "Not found."}, status=status.HTTP_404_NOT_FOUND)
         row.delete()

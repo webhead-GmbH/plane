@@ -7,17 +7,13 @@
 // components
 import { PageHead } from "@/components/core/page-title";
 import { MyTimeRoot } from "@/components/hr";
-// types
-import type { Route } from "./+types/page";
 
-export default function MyTimePage({ params }: Route.ComponentProps) {
-  const { workspaceSlug } = params;
-
+export default function MyTimePage() {
   return (
     <>
       <PageHead title="My time" />
       <div className="relative h-full w-full overflow-hidden overflow-y-auto">
-        <MyTimeRoot workspaceSlug={workspaceSlug} />
+        <MyTimeRoot />
       </div>
     </>
   );

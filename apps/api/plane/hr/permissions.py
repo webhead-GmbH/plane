@@ -4,19 +4,21 @@
 
 """Who may see whose figures.
 
+None of this is scoped to a workspace, and that is the point. The workspaces on
+this installation all belong to one company and the people in them are the same
+people, so employment, hours, leave and the monthly figures belong to the person
+and the company — not to whichever workspace somebody happened to be looking at
+when they opened the page. Everybody reaches the same records from anywhere.
+
 Two roles, because at this size there are two: you look at your own record, or you
 look at everyone's. There is no team scoping, because there are no teams — a
 branch for it would be code that never runs and still has to be kept correct.
 
-The role lives on the employment profile rather than on workspace membership. The
-membership role is shared with the wider product and is not ours to extend, and it
-does not divide along the right line anyway: somebody engaged on a single project
-may legitimately administer that project while having no business seeing anyone
-else's hours.
-
-Workspace administrators are treated as managers. They can already grant
-themselves the flag, so withholding it would buy nothing; the point of the
-separation is that looking is recorded, not that it is prevented.
+Being a manager is a property of the person, recorded on their employment record,
+rather than something inferred from administering a workspace. Inferring it would
+have meant that creating a workspace was enough to see everybody's sick leave.
+Instance administrators also count, which is what makes the very first setup
+possible before anybody has been given the flag.
 """
 
 # Python imports
@@ -27,9 +29,8 @@ from rest_framework import status
 from rest_framework.response import Response
 
 # Module imports
-from plane.app.permissions import ROLE
-from plane.db.models import WorkspaceMember
 from plane.hr.models import HrEmploymentProfile
+from plane.license.models import InstanceAdmin
 
 SELF = "SELF"
 MANAGER = "MANAGER"
@@ -37,33 +38,36 @@ MANAGER = "MANAGER"
 _DENIED = {"error": "You don't have the required permissions."}
 
 
-def _workspace_role(user, slug):
-    """The caller's role in the workspace, or None if they are not an active member."""
-    return (
-        WorkspaceMember.objects.filter(member=user, workspace__slug=slug, is_active=True)
-        .values_list("role", flat=True)
-        .first()
-    )
+def is_instance_admin(user):
+    """Whether somebody administers the installation itself.
+
+    The only authority here that does not come from an employment record, and so
+    the only one available before the first one exists.
+    """
+    if user is None or user.is_anonymous:
+        return False
+    return InstanceAdmin.objects.filter(user=user).exists()
 
 
-def resolve_hr_context(request, slug):
+def resolve_hr_context(request):
     """Work out who is asking and what they are allowed to see.
 
-    Returns ``(profile, is_manager)``. The profile may be None for a workspace
-    administrator who has no employment record of their own, which is a normal
-    state — somebody can administer the workspace without being employed through it.
+    Returns ``(profile, is_manager)``. The profile may be None for an instance
+    administrator who is not employed here, which is a normal state.
     """
-    role = _workspace_role(request.user, slug)
-    if role is None:
+    user = request.user
+    if user is None or user.is_anonymous:
         return None, False
 
-    # Found by the person, not by the workspace. Somebody employed here has one
-    # employment record however many workspaces they work across, and they should
-    # see their own hours from any of them.
+    # Somebody who has left is marked inactive rather than removed, because the
+    # months they worked still have to be readable by a manager. Their own way in
+    # closes here: an inactive record is history, not an account.
     profile = (
-        HrEmploymentProfile.objects.filter(member=request.user).select_related("workspace").first()
+        HrEmploymentProfile.objects.filter(member=user, is_active=True)
+        .select_related("member")
+        .first()
     )
-    is_manager = role == ROLE.ADMIN.value or bool(profile and profile.is_hr_manager)
+    is_manager = bool(profile and profile.is_hr_manager) or is_instance_admin(user)
     return profile, is_manager
 
 
@@ -80,8 +84,7 @@ def hr_permission(scope=SELF):
     def decorator(view_func):
         @wraps(view_func)
         def _wrapped(instance, request, *args, **kwargs):
-            slug = kwargs.get("slug")
-            profile, is_manager = resolve_hr_context(request, slug)
+            profile, is_manager = resolve_hr_context(request)
 
             if profile is None and not is_manager:
                 return Response(_DENIED, status=status.HTTP_403_FORBIDDEN)
@@ -97,33 +100,28 @@ def hr_permission(scope=SELF):
     return decorator
 
 
-def visible_profiles(request, slug):
+def visible_profiles(request):
     """The employment records this caller may read.
 
-    Every list view goes through here, so the rule about who can see whom lives in
-    one place and can be tested on its own rather than being restated at each
-    endpoint — which is how such a rule ends up applied inconsistently.
+    Every list view goes through here, so the rule about who sees whom lives in
+    one place and can be tested on its own. Restating it at each endpoint is how
+    such a rule ends up applied inconsistently, and the failure mode is not a
+    broken page — it is one colleague reading another's medical absence.
     """
-    profile = getattr(request, "hr_profile", None)
-
     if getattr(request, "hr_is_manager", False):
-        # A manager sees the people this workspace administers HR for. Managing
-        # one workspace does not give sight of another's employment records, even
-        # though the hours inside a record are gathered from everywhere.
-        return HrEmploymentProfile.objects.filter(workspace__slug=slug)
+        return HrEmploymentProfile.objects.all()
 
+    profile = getattr(request, "hr_profile", None)
     if profile is None:
         return HrEmploymentProfile.objects.none()
-    # Your own record, whichever workspace administers it — you are looking at
-    # your own hours, and where the paperwork lives is not your concern.
     return HrEmploymentProfile.objects.filter(pk=profile.pk)
 
 
-def readable_profile_or_none(request, slug, profile_id):
+def readable_profile_or_none(request, profile_id):
     """One record, if this caller may read it."""
     if profile_id is None:
         return getattr(request, "hr_profile", None)
-    return visible_profiles(request, slug).filter(pk=profile_id).first()
+    return visible_profiles(request).filter(pk=profile_id).first()
 
 
 def can_approve(request, profile):

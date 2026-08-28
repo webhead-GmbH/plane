@@ -33,7 +33,7 @@ def rate_for(profile, day):
     if found is not None:
         return found
     defaults = list(
-        HrRateCard.objects.filter(workspace_id=profile.workspace_id, profile__isnull=True)
+        HrRateCard.objects.filter(profile__isnull=True)
     )
     return effective(defaults, day)
 

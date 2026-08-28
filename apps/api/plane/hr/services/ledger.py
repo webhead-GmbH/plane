@@ -179,7 +179,7 @@ def _holiday_lookup(profile, first, last):
     calendar_id = profile.holiday_calendar_id
     if calendar_id is None:
         default = (
-            HrHolidayCalendar.objects.filter(workspace_id=profile.workspace_id, is_default=True)
+            HrHolidayCalendar.objects.filter(is_default=True)
             .values_list("id", flat=True)
             .first()
         )
@@ -249,7 +249,7 @@ def rebuild_period(profile, year, month, actor=None):
     contracts = list(HrContract.objects.filter(profile_id=profile.id))
     personal_schedules = list(HrWorkSchedule.objects.filter(profile_id=profile.id))
     default_schedules = list(
-        HrWorkSchedule.objects.filter(workspace_id=profile.workspace_id, profile__isnull=True)
+        HrWorkSchedule.objects.filter(profile__isnull=True)
     )
     holidays = _holiday_lookup(profile, first, last)
     absences = _absence_lookup(profile, first, last)
@@ -290,6 +290,7 @@ def rebuild_period(profile, year, month, actor=None):
 
         day_input = DayInput(
             day=day,
+            records_target=records_target,
             scheduled_minutes=scheduled_minutes(schedule, day) if records_target else 0,
             # The notional day stays available as the base for crediting an
             # absence even where no target is recorded, so a person with a leave

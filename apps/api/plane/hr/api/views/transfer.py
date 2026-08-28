@@ -18,8 +18,8 @@ from rest_framework.response import Response
 
 # Module imports
 from plane.app.views.base import BaseAPIView
-from plane.db.models import Workspace
 from plane.hr.models import HrImportBatch, HrPeriod
+from plane.hr.utils.company import hr_home_workspace
 from plane.hr.permissions import (
     MANAGER,
     SELF,
@@ -63,8 +63,8 @@ class HrImportEndpoint(BaseAPIView):
     """Upload a file and see exactly what it would do, before it does it."""
 
     @hr_permission(MANAGER)
-    def get(self, request, slug, pk=None):
-        batches = HrImportBatch.objects.filter(workspace__slug=slug).order_by("-created_at")
+    def get(self, request, pk=None):
+        batches = HrImportBatch.objects.order_by("-created_at")
         if pk is not None:
             batch = batches.filter(pk=pk).first()
             if batch is None:
@@ -76,10 +76,8 @@ class HrImportEndpoint(BaseAPIView):
         )
 
     @hr_permission(MANAGER)
-    def post(self, request, slug):
-        workspace = Workspace.objects.filter(slug=slug).first()
-        if workspace is None:
-            return Response({"error": "No such workspace."}, status=status.HTTP_404_NOT_FOUND)
+    def post(self, request):
+        workspace = hr_home_workspace()
 
         upload = request.FILES.get("file")
         if upload is None:
@@ -107,7 +105,6 @@ class HrImportEndpoint(BaseAPIView):
         # The same file applied twice would double every hour in it.
         digest = importing.checksum(content)
         already = HrImportBatch.objects.filter(
-            workspace=workspace,
             kind=kind,
             checksum=digest,
             state=HrImportBatch.State.COMMITTED,
@@ -150,8 +147,8 @@ class HrImportEndpoint(BaseAPIView):
 
 class HrImportCommitEndpoint(BaseAPIView):
     @hr_permission(MANAGER)
-    def post(self, request, slug, pk):
-        batch = HrImportBatch.objects.filter(workspace__slug=slug, pk=pk).first()
+    def post(self, request, pk):
+        batch = HrImportBatch.objects.filter(pk=pk).first()
         if batch is None:
             return Response({"error": "Not found."}, status=status.HTTP_404_NOT_FOUND)
         try:
@@ -163,8 +160,8 @@ class HrImportCommitEndpoint(BaseAPIView):
 
 class HrImportUndoEndpoint(BaseAPIView):
     @hr_permission(MANAGER)
-    def post(self, request, slug, pk):
-        batch = HrImportBatch.objects.filter(workspace__slug=slug, pk=pk).first()
+    def post(self, request, pk):
+        batch = HrImportBatch.objects.filter(pk=pk).first()
         if batch is None:
             return Response({"error": "Not found."}, status=status.HTTP_404_NOT_FOUND)
         try:
@@ -178,7 +175,7 @@ class HrMonthExportEndpoint(BaseAPIView):
     """A month for everybody, in the shape payroll expects."""
 
     @hr_permission(MANAGER)
-    def get(self, request, slug):
+    def get(self, request):
         try:
             year = int(request.query_params.get("year"))
             month = int(request.query_params.get("month"))
@@ -192,7 +189,7 @@ class HrMonthExportEndpoint(BaseAPIView):
         file_format = _requested_format(request)
         periods = (
             HrPeriod.objects.filter(
-                profile__in=visible_profiles(request, slug), period_start=first
+                profile__in=visible_profiles(request), period_start=first
             )
             .select_related("profile__member")
             .order_by("profile__member__email")
@@ -215,9 +212,9 @@ class HrPeriodExportEndpoint(BaseAPIView):
     """One person's month, day by day."""
 
     @hr_permission(SELF)
-    def get(self, request, slug, pk):
+    def get(self, request, pk):
         period = (
-            HrPeriod.objects.filter(pk=pk, profile__in=visible_profiles(request, slug))
+            HrPeriod.objects.filter(pk=pk, profile__in=visible_profiles(request))
             .select_related("profile__member")
             .first()
         )
@@ -242,10 +239,10 @@ class HrOpeningBalanceEndpoint(BaseAPIView):
     """What somebody's balance was when the module started counting for them."""
 
     @hr_permission(SELF)
-    def get(self, request, slug, profile_id):
+    def get(self, request, profile_id):
         from plane.hr.models import HrOpeningBalance
 
-        profile = readable_profile_or_none(request, slug, profile_id)
+        profile = readable_profile_or_none(request, profile_id)
         if profile is None:
             return Response({"error": "Not found."}, status=status.HTTP_404_NOT_FOUND)
         rows = HrOpeningBalance.objects.filter(profile_id=profile.id).order_by("-effective_on")
@@ -267,10 +264,10 @@ class HrOpeningBalanceEndpoint(BaseAPIView):
         )
 
     @hr_permission(MANAGER)
-    def post(self, request, slug, profile_id):
+    def post(self, request, profile_id):
         from plane.hr.models import HrOpeningBalance
 
-        profile = readable_profile_or_none(request, slug, profile_id)
+        profile = readable_profile_or_none(request, profile_id)
         if profile is None:
             return Response({"error": "Not found."}, status=status.HTTP_404_NOT_FOUND)
 
@@ -303,11 +300,11 @@ class HrOpeningBalanceEndpoint(BaseAPIView):
         return Response({"id": str(row.id)}, status=status.HTTP_201_CREATED)
 
     @hr_permission(MANAGER)
-    def patch(self, request, slug, profile_id, pk):
+    def patch(self, request, profile_id, pk):
         """Replace a figure with a corrected one, keeping the original readable."""
         from plane.hr.models import HrOpeningBalance
 
-        profile = readable_profile_or_none(request, slug, profile_id)
+        profile = readable_profile_or_none(request, profile_id)
         if profile is None:
             return Response({"error": "Not found."}, status=status.HTTP_404_NOT_FOUND)
         old = HrOpeningBalance.objects.filter(profile_id=profile.id, pk=pk).first()
