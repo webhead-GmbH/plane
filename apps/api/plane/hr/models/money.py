@@ -104,15 +104,19 @@ class HrInvoiceDocument(HrBaseModel):
         on_delete=models.CASCADE,
         related_name="hr_invoice_documents",
     )
-    # Neither the person nor the month can be removed while an invoice refers to it.
+    # Neither the person nor the month can be removed on its own while an invoice
+    # refers to it. RESTRICT rather than PROTECT, so that deleting the whole
+    # workspace still works — the invoice is going too, and there is nothing left
+    # to protect. PROTECT would refuse, and since the shared retention task deletes
+    # workspaces outright it would take that task down for every workspace at once.
     profile = models.ForeignKey(
         "hr.HrEmploymentProfile",
-        on_delete=models.PROTECT,
+        on_delete=models.RESTRICT,
         related_name="invoice_documents",
     )
     period = models.ForeignKey(
         "hr.HrPeriod",
-        on_delete=models.PROTECT,
+        on_delete=models.RESTRICT,
         related_name="invoice_documents",
     )
 

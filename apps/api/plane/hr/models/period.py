@@ -68,6 +68,7 @@ class HrPeriod(HrBaseModel):
     absence_minutes = models.IntegerField(null=True, blank=True)
     holiday_minutes = models.IntegerField(null=True, blank=True)
     leave_consumed_minutes = models.IntegerField(null=True, blank=True)
+    balance_consumed_minutes = models.IntegerField(null=True, blank=True)
     overtime_minutes = models.IntegerField(null=True, blank=True)
 
     # The inputs the figures were derived from — which contract, which schedule,

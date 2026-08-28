@@ -5,6 +5,7 @@
 from .period import (
     HrMeEndpoint,
     HrOverviewEndpoint,
+    HrPeriodDaySettleEndpoint,
     HrPeriodDaysEndpoint,
     HrPeriodDetailEndpoint,
     HrPeriodListEndpoint,
@@ -18,6 +19,7 @@ from .period import (
 __all__ = [
     "HrMeEndpoint",
     "HrOverviewEndpoint",
+    "HrPeriodDaySettleEndpoint",
     "HrPeriodDaysEndpoint",
     "HrPeriodDetailEndpoint",
     "HrPeriodListEndpoint",

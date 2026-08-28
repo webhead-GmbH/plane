@@ -220,6 +220,41 @@ class TestPeriods:
         assert response.status_code == 404
 
 
+class TestMalformedParameters:
+    """A typo in a query string must not come back as a server error."""
+
+    @pytest.mark.parametrize(
+        "query",
+        ["?month=13", "?month=0", "?month=-1", "?year=0", "?year=99999999", "?month=abc", "?year="],
+    )
+    def test_the_personal_view_survives_nonsense(self, workspace, query):
+        user, _ = employ(workspace)
+        response = client_for(user).get(f"/api/hr/workspaces/{workspace.slug}/me/{query}")
+        assert response.status_code == 200
+
+    @pytest.mark.parametrize("query", ["?month=13", "?year=99999999", "?month=0"])
+    def test_the_overview_survives_nonsense(self, workspace, query):
+        manager_user, _ = employ(workspace, is_hr_manager=True)
+        response = client_for(manager_user).get(
+            f"/api/hr/workspaces/{workspace.slug}/overview/{query}"
+        )
+        assert response.status_code == 200
+
+    def test_listing_survives_an_impossible_year(self, workspace):
+        user, _ = employ(workspace)
+        response = client_for(user).get(
+            f"/api/hr/workspaces/{workspace.slug}/periods/?year=99999999"
+        )
+        assert response.status_code == 200
+
+    def test_a_malformed_person_id_is_not_a_server_error(self, workspace):
+        user, _ = employ(workspace)
+        response = client_for(user).get(
+            f"/api/hr/workspaces/{workspace.slug}/periods/?profile_id=not-a-uuid"
+        )
+        assert response.status_code in (400, 404)
+
+
 class TestOverview:
     def test_a_manager_sees_a_row_for_everyone(self, workspace):
         manager_user, _ = employ(workspace, is_hr_manager=True)

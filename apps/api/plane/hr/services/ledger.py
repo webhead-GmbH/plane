@@ -76,26 +76,37 @@ def _profile_timezone(profile):
     return profile.timezone or getattr(profile.workspace, "timezone", "") or None
 
 
-def _slice_for_day(absence, day, absence_type):
+def _slice_for_day(absence, day, absence_type, records_leave_account=True):
     """How one absence applies to one particular day of its range."""
     granularity = absence.granularity
     half = None
     if granularity == HALF_DAY:
         # Half days only mean anything at the ends of a range; the days in between
-        # are whole ones.
+        # are whole ones. A one-day absence is both ends at once, and the opening
+        # half is the one that describes it.
         if day == absence.start_date:
             half = absence.start_half
         elif day == absence.end_date:
             half = absence.end_half
         else:
             granularity = FULL_DAY
+
+    # Somebody with no leave account cannot spend leave they do not have, so an
+    # absence that would draw on one credits nothing for them. Absences that draw
+    # on neither account — sickness, for instance — are unaffected.
+    consumes_leave = absence_type.consumes_leave_entitlement
+    credits_actual = absence_type.credits_actual
+    if consumes_leave and not records_leave_account:
+        credits_actual = False
+
     return AbsenceSlice(
-        credits_actual=absence_type.credits_actual,
+        credits_actual=credits_actual,
         granularity=granularity,
         half=half,
         minutes=absence.minutes_per_day if granularity == HOURS else None,
-        consumes_leave=absence_type.consumes_leave_entitlement,
+        consumes_leave=consumes_leave and records_leave_account,
         consumes_balance=absence_type.consumes_balance,
+        precedence=absence_type.precedence,
     )
 
 
@@ -193,24 +204,39 @@ def _absence_lookup(profile, first, last):
 
 
 def _records_disappeared(previous_ids, current_ids):
-    """Identifiers counted last time that are not there now."""
+    """Identifiers counted last time that are nowhere in the month now.
+
+    Compared across the whole month rather than day by day, because moving an
+    entry to a different date within the same month is a correction, not a loss —
+    a per-day comparison would report it as hours having vanished from the day it
+    left and flag a month that is entirely intact.
+    """
     if not previous_ids:
         return []
-    current = set(current_ids)
-    return [identifier for identifier in previous_ids if identifier not in current]
+    current = {str(identifier) for identifier in current_ids}
+    return [identifier for identifier in previous_ids if str(identifier) not in current]
 
 
 @transaction.atomic
 def rebuild_period(profile, year, month, actor=None):
     """Recompute one person's month. Returns the period, or None if it is closed."""
     first, last = month_range(year, month)
-    period, _created = HrPeriod.objects.get_or_create(
+    HrPeriod.objects.get_or_create(
         profile_id=profile.id,
         period_start=first,
         defaults={"workspace_id": profile.workspace_id, "period_end": last},
     )
-    if period.state in (HrPeriod.State.LOCKED,):
-        # A closed month is exactly a month the rebuild no longer touches.
+    # Re-read under a row lock. Two rebuilds of the same month can otherwise both
+    # find no days and both try to create them, and the second loses on the unique
+    # constraint — which at this size is unlikely but produces a 500 in a request
+    # that had nothing wrong with it.
+    period = HrPeriod.objects.select_for_update().get(profile_id=profile.id, period_start=first)
+
+    # Only a month still in play is rebuilt. A closed one is closed, and a
+    # submitted or approved one has figures somebody has already looked at —
+    # rewriting those underneath them, on a passing GET, would mean approving one
+    # set of numbers and locking another.
+    if period.state not in (HrPeriod.State.OPEN, HrPeriod.State.REOPENED):
         return None
 
     tz = _profile_timezone(profile)
@@ -229,27 +255,44 @@ def rebuild_period(profile, year, month, actor=None):
 
     existing = {row.work_date: row for row in HrPeriodDay.objects.filter(period_id=period.id)}
 
+    # Compared across the month as a whole: an entry moved to another date is a
+    # correction, not a loss.
+    seen_before = {
+        str(identifier) for row in existing.values() for identifier in (row.worklog_ids or [])
+    }
+    seen_now = {str(identifier) for ids in worklog_ids.values() for identifier in ids}
+    vanished = seen_before - seen_now
+
     to_create = []
     to_update = []
     disappearances = []
 
     for day in iter_days(first, last):
         contract = effective(contracts, day)
-        # Whether a target is recorded for this person at all is a per-contract
-        # decision, and for some arrangements the answer is deliberately no.
+        # Whether a daily obligation is recorded, and whether the person has a
+        # leave account at all, are separate per-contract decisions. For the
+        # self-invoicing arrangements the first is deliberately off, which must not
+        # silently switch off the second.
         records_target = contract.records_target_hours if contract else False
+        records_leave = contract.records_leave_account if contract else False
         schedule = effective_schedule(personal_schedules, default_schedules, day)
 
         holiday = holidays.get(day)
         slices = [
-            _slice_for_day(absence, day, absence.absence_type) for absence in absences.covering(day)
+            _slice_for_day(absence, day, absence.absence_type, records_leave_account=records_leave)
+            for absence in absences.covering(day)
         ]
 
         day_input = DayInput(
             day=day,
             scheduled_minutes=scheduled_minutes(schedule, day) if records_target else 0,
-            credited_day_minutes=credited_day_minutes(schedule, day) if records_target else 0,
-            holiday_fraction=holiday.day_fraction if holiday else None,
+            # The notional day stays available as the base for crediting an
+            # absence even where no target is recorded, so a person with a leave
+            # account still has their leave measured against a real day.
+            credited_day_minutes=credited_day_minutes(schedule, day),
+            # Holiday pay belongs with a recorded working obligation. Somebody
+            # invoicing their own hours is not owed a public holiday.
+            holiday_fraction=holiday.day_fraction if (holiday and records_target) else None,
             absences=slices,
             project_minutes=project_minutes.get(day, 0),
             non_project_minutes=entry_minutes.get(day, 0),
@@ -259,7 +302,11 @@ def rebuild_period(profile, year, month, actor=None):
 
         current_worklog_ids = worklog_ids.get(day, [])
         row = existing.get(day)
-        gone = _records_disappeared(row.worklog_ids if row else [], current_worklog_ids)
+        gone = [
+            identifier
+            for identifier in (row.worklog_ids or [] if row else [])
+            if str(identifier) in vanished
+        ]
         if gone:
             disappearances.append((day, gone))
 
@@ -280,6 +327,11 @@ def rebuild_period(profile, year, month, actor=None):
             "worklog_ids": current_worklog_ids,
             "time_entry_ids": entry_ids.get(day, []),
             "last_rebuilt_at": timezone.now(),
+            # Once raised the flag stays until somebody settles it. Clearing it on
+            # the next rebuild would be worse than leaving it: the discrepancy
+            # would come and go before anyone had a chance to look, and the point
+            # of raising it is that a person has to decide what it meant.
+            "needs_review": bool(gone) or bool(row.needs_review if row else False),
         }
 
         if row is None:
@@ -287,8 +339,6 @@ def rebuild_period(profile, year, month, actor=None):
         else:
             for name, value in values.items():
                 setattr(row, name, value)
-            if gone:
-                row.needs_review = True
             to_update.append(row)
 
     if to_create:
@@ -347,6 +397,35 @@ def _record_disappearances(profile, period, disappearances, actor):
         for day, gone in disappearances
     ]
     HrAuditLog.objects.bulk_create(entries, batch_size=100)
+
+
+def settle_day(day, actor, note):
+    """Record that somebody has looked at a flagged day and decided what it meant.
+
+    The flag exists because hours counted earlier are no longer there, and only a
+    person can say whether they were withdrawn on purpose or lost by accident.
+    Settling does not change any figure — it records that the question was asked
+    and answered, which is what lets the month be closed.
+    """
+    if not (note or "").strip():
+        raise ValueError("Say what was decided about this day.")
+
+    day.needs_review = False
+    day.note = note
+    day.save()
+
+    HrAuditLog.objects.create(
+        workspace_id=day.workspace_id,
+        profile_id=day.profile_id,
+        actor=actor if actor is not None and not actor.is_anonymous else None,
+        actor_email=getattr(actor, "email", "") or "",
+        object_type="hr_period_day",
+        object_id=day.id,
+        action="review_settled",
+        changes={"date": day.work_date.isoformat()},
+        reason=note,
+    )
+    return day
 
 
 def period_totals(period):

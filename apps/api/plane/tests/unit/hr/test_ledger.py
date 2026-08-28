@@ -13,15 +13,19 @@ import pytest
 # Module imports
 from plane.db.models import Issue, IssueWorkLog, State
 from plane.hr.models import (
+    HrAbsence,
+    HrAbsenceType,
     HrAuditLog,
     HrContract,
     HrEmploymentProfile,
+    HrHoliday,
+    HrHolidayCalendar,
     HrPeriod,
     HrPeriodDay,
     HrTimeEntry,
     HrWorkSchedule,
 )
-from plane.hr.services.ledger import period_totals, rebuild_period
+from plane.hr.services.ledger import period_totals, rebuild_period, settle_day
 from plane.tests.factories import ProjectFactory, UserFactory, WorkspaceFactory, WorkspaceMemberFactory
 
 pytestmark = [pytest.mark.unit, pytest.mark.django_db]
@@ -212,6 +216,117 @@ class TestDisappearingHours:
         rebuild_period(profile, 2026, 3)
         assert not HrPeriodDay.objects.filter(profile_id=profile.id, needs_review=True).exists()
         assert not HrAuditLog.objects.filter(action="counted_hours_disappeared").exists()
+
+
+class TestRecordingSwitches:
+    def test_a_person_with_no_leave_account_cannot_spend_leave(self, profile):
+        # Somebody invoicing their own hours has no leave to draw on, so an
+        # absence that would spend some credits nothing for them.
+        HrContract.objects.filter(profile_id=profile.id).update(
+            records_target_hours=False, records_leave_account=False
+        )
+        leave = HrAbsenceType.objects.create(
+            workspace=profile.workspace,
+            code="urlaub",
+            name_de="Urlaub",
+            credits_actual=True,
+            consumes_leave_entitlement=True,
+        )
+        HrAbsence.objects.create(
+            workspace=profile.workspace,
+            profile=profile,
+            absence_type=leave,
+            start_date=date(2026, 3, 2),
+            end_date=date(2026, 3, 2),
+            state=HrAbsence.State.APPROVED,
+        )
+        rebuild_period(profile, 2026, 3)
+        monday = HrPeriodDay.objects.get(profile_id=profile.id, work_date=date(2026, 3, 2))
+        assert monday.absence_minutes == 0
+        assert monday.leave_minutes == 0
+
+    def test_a_leave_account_survives_having_no_daily_target(self, profile):
+        # The two switches are independent: no obligation to work a set day does
+        # not mean no leave account.
+        HrContract.objects.filter(profile_id=profile.id).update(
+            records_target_hours=False, records_leave_account=True
+        )
+        leave = HrAbsenceType.objects.create(
+            workspace=profile.workspace,
+            code="urlaub",
+            name_de="Urlaub",
+            credits_actual=True,
+            consumes_leave_entitlement=True,
+        )
+        HrAbsence.objects.create(
+            workspace=profile.workspace,
+            profile=profile,
+            absence_type=leave,
+            start_date=date(2026, 3, 2),
+            end_date=date(2026, 3, 2),
+            state=HrAbsence.State.APPROVED,
+        )
+        rebuild_period(profile, 2026, 3)
+        monday = HrPeriodDay.objects.get(profile_id=profile.id, work_date=date(2026, 3, 2))
+        assert monday.target_minutes == 0
+        assert monday.leave_minutes == FULL
+
+    def test_no_holiday_pay_without_a_recorded_working_obligation(self, profile):
+        HrContract.objects.filter(profile_id=profile.id).update(records_target_hours=False)
+        calendar = HrHolidayCalendar.objects.create(
+            workspace=profile.workspace, name="AT", country_code="AT", is_default=True
+        )
+        HrHoliday.objects.create(
+            workspace=profile.workspace,
+            calendar=calendar,
+            date=date(2026, 3, 2),
+            name_de="Testfeiertag",
+        )
+        rebuild_period(profile, 2026, 3)
+        monday = HrPeriodDay.objects.get(profile_id=profile.id, work_date=date(2026, 3, 2))
+        assert monday.holiday_minutes == 0
+
+
+class TestReviewFlag:
+    def test_a_flag_survives_later_rebuilds_until_somebody_settles_it(self, profile, issue):
+        worklog = log_hours(profile, issue, utc(2026, 3, 2, 8, 0), 3600)
+        rebuild_period(profile, 2026, 3)
+        worklog.delete()
+        rebuild_period(profile, 2026, 3)
+        rebuild_period(profile, 2026, 3)
+
+        monday = HrPeriodDay.objects.get(profile_id=profile.id, work_date=date(2026, 3, 2))
+        # Clearing it on the next pass would make the discrepancy come and go
+        # before anybody had a chance to look at it.
+        assert monday.needs_review is True
+
+        settle_day(monday, profile.member, "Duplicate entry, removed on purpose.")
+        monday.refresh_from_db()
+        assert monday.needs_review is False
+        assert HrAuditLog.objects.filter(action="review_settled").exists()
+
+    def test_settling_requires_saying_what_was_decided(self, profile):
+        rebuild_period(profile, 2026, 3)
+        monday = HrPeriodDay.objects.get(profile_id=profile.id, work_date=date(2026, 3, 2))
+        with pytest.raises(ValueError):
+            settle_day(monday, profile.member, "   ")
+
+    def test_moving_an_entry_within_the_month_is_not_a_loss(self, profile, issue):
+        # A correction, not a disappearance. Comparing day by day would report the
+        # day it left as having lost hours the month never lost.
+        worklog = log_hours(profile, issue, utc(2026, 3, 2, 8, 0), 3600)
+        rebuild_period(profile, 2026, 3)
+        worklog.started_at = utc(2026, 3, 4, 8, 0)
+        worklog.logged_at = utc(2026, 3, 4, 8, 0)
+        worklog.save()
+        rebuild_period(profile, 2026, 3)
+
+        assert not HrPeriodDay.objects.filter(profile_id=profile.id, needs_review=True).exists()
+        assert not HrAuditLog.objects.filter(action="counted_hours_disappeared").exists()
+        assert (
+            HrPeriodDay.objects.get(profile_id=profile.id, work_date=date(2026, 3, 4)).project_minutes
+            == 60
+        )
 
 
 class TestClosedMonths:

@@ -12,6 +12,9 @@ onto the month when it closes, and from then on that is what is read.
 # Python imports
 from datetime import date
 
+# Django imports
+from django.utils import timezone
+
 # Third-party imports
 from rest_framework import status
 from rest_framework.response import Response
@@ -35,18 +38,55 @@ from plane.hr.permissions import (
     visible_profiles,
 )
 from plane.hr.services.closing import TransitionRefused, approve, lock, reopen, submit
-from plane.hr.services.ledger import has_running_timer, period_totals, rebuild_period
+from plane.hr.services.ledger import (
+    has_running_timer,
+    period_totals,
+    rebuild_period,
+    settle_day,
+)
+from plane.hr.utils.calendar import hr_local_date
 from plane.hr.utils.resolve import effective, effective_schedule
 
+# Bounds a date object can actually hold, so a typo in a query string cannot
+# reach date() and surface as a server error.
+MIN_YEAR = 1970
+MAX_YEAR = 2200
 
-def _int_param(request, name, default=None):
+
+def _int_param(request, name, default=None, low=None, high=None):
+    """A query parameter as an integer, clamped to something a date can hold.
+
+    Range matters as much as type here: 13 is a perfectly good integer and a
+    perfectly bad month, and it would reach ``date()`` and come back as a 500 on
+    a request whose only fault was a typo.
+    """
     raw = request.query_params.get(name)
     if raw in (None, ""):
         return default
     try:
-        return int(raw)
+        value = int(raw)
     except (TypeError, ValueError):
         return default
+    if low is not None and value < low:
+        return default
+    if high is not None and value > high:
+        return default
+    return value
+
+
+def _requested_month(request, profile=None):
+    """The month being asked about, defaulting to the one that is current here.
+
+    Taken in the working timezone rather than from the server clock, or for the
+    first hour of every month the page would open on the previous one.
+    """
+    zone = None
+    if profile is not None:
+        zone = profile.timezone or getattr(profile.workspace, "timezone", "") or None
+    today = hr_local_date(timezone.now(), zone)
+    year = _int_param(request, "year", today.year, low=MIN_YEAR, high=MAX_YEAR)
+    month = _int_param(request, "month", today.month, low=1, high=12)
+    return year, month
 
 
 def _period_payload(period, include_days=False):
@@ -79,9 +119,10 @@ class HrMeEndpoint(BaseAPIView):
                 status=status.HTTP_200_OK,
             )
 
-        today = date.today()
-        year = _int_param(request, "year", today.year)
-        month = _int_param(request, "month", today.month)
+        year, month = _requested_month(request, profile)
+        today = hr_local_date(
+            timezone.now(), profile.timezone or getattr(profile.workspace, "timezone", "") or None
+        )
 
         contracts = list(HrContract.objects.filter(profile_id=profile.id))
         personal = list(HrWorkSchedule.objects.filter(profile_id=profile.id))
@@ -116,7 +157,7 @@ class HrPeriodListEndpoint(BaseAPIView):
             return Response({"error": "No such person, or not yours to read."}, status=status.HTTP_404_NOT_FOUND)
 
         periods = HrPeriod.objects.filter(profile_id=profile.id).select_related("profile__member")
-        year = _int_param(request, "year")
+        year = _int_param(request, "year", low=MIN_YEAR, high=MAX_YEAR)
         if year:
             periods = periods.filter(period_start__year=year)
         return Response(
@@ -173,6 +214,28 @@ class HrPeriodRecomputeEndpoint(BaseAPIView):
                 status=status.HTTP_409_CONFLICT,
             )
         return Response(_period_payload(rebuilt, include_days=True), status=status.HTTP_200_OK)
+
+
+class HrPeriodDaySettleEndpoint(BaseAPIView):
+    """Record that a flagged day has been looked at.
+
+    A month refuses to close while any day is flagged, so this is how the question
+    "hours that were counted are no longer there — what happened?" gets an answer
+    on the record rather than being cleared away silently.
+    """
+
+    @hr_permission(MANAGER)
+    def post(self, request, slug, pk, day_id):
+        day = HrPeriodDay.objects.filter(
+            pk=day_id, period_id=pk, profile__in=visible_profiles(request, slug)
+        ).first()
+        if day is None:
+            return Response({"error": "No such day."}, status=status.HTTP_404_NOT_FOUND)
+        try:
+            settle_day(day, request.user, request.data.get("note", ""))
+        except ValueError as invalid:
+            return Response({"error": str(invalid)}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(HrPeriodDaySerializer(day).data, status=status.HTTP_200_OK)
 
 
 class _TransitionEndpoint(BaseAPIView):
@@ -246,9 +309,7 @@ class HrOverviewEndpoint(BaseAPIView):
 
     @hr_permission(MANAGER)
     def get(self, request, slug):
-        today = date.today()
-        year = _int_param(request, "year", today.year)
-        month = _int_param(request, "month", today.month)
+        year, month = _requested_month(request, getattr(request, "hr_profile", None))
         first = date(year, month, 1)
 
         rows = []

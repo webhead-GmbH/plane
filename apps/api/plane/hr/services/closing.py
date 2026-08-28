@@ -73,16 +73,23 @@ def opening_balance_for(period):
     rather than derived, and is the only honest starting point when there is no
     history to derive from.
     """
+    # Only the month immediately before counts. Reaching further back for the most
+    # recent closed month would step over one that was reopened, or never closed,
+    # and silently drop whatever it contributed — an error that then rides forward
+    # on every month after it.
     previous = (
         HrPeriod.objects.filter(
             profile_id=period.profile_id,
             period_start__lt=period.period_start,
-            state=HrPeriod.State.LOCKED,
         )
         .order_by("-period_start")
         .first()
     )
-    if previous is not None and previous.closing_balance_minutes is not None:
+    if (
+        previous is not None
+        and previous.state == HrPeriod.State.LOCKED
+        and previous.closing_balance_minutes is not None
+    ):
         return previous.closing_balance_minutes
 
     balance = (
@@ -201,9 +208,16 @@ def lock(period, actor):
     period.holiday_minutes = totals["holiday_minutes"] or 0
     period.attendance_minutes = totals["attendance_minutes"] or 0
     period.leave_consumed_minutes = totals["leave_consumed_minutes"] or 0
+    period.balance_consumed_minutes = consumed
     period.opening_balance_minutes = opening
     period.closing_balance_minutes = opening + balance - consumed
-    period.snapshot = _snapshot(period, totals)
+
+    # Carry forward any earlier closings. Assigning a fresh snapshot outright would
+    # throw away the record reopen() kept of what the month was closed on the first
+    # time, which is the one thing that makes a correction explicable afterwards.
+    snapshot = _snapshot(period, totals)
+    snapshot["superseded"] = (period.snapshot or {}).get("superseded", [])
+    period.snapshot = snapshot
     period.state = HrPeriod.State.LOCKED
     period.locked_by = actor
     period.locked_at = timezone.now()

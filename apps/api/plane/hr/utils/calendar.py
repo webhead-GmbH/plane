@@ -41,7 +41,9 @@ def hr_timezone(name=None):
             continue
         try:
             return zoneinfo.ZoneInfo(candidate)
-        except zoneinfo.ZoneInfoNotFoundError:
+        except (zoneinfo.ZoneInfoNotFoundError, ValueError, OSError, TypeError):
+            # ZoneInfo raises different things depending on how the key is
+            # malformed. All of them mean the same thing here: fall through.
             continue
     return UTC
 

@@ -46,6 +46,11 @@ class HrAbsenceType(HrBaseModel):
     max_consecutive_days = models.PositiveSmallIntegerField(null=True, blank=True)
     colour = models.CharField(max_length=9, blank=True, default="")
     is_active = models.BooleanField(default=True)
+    # Decides which absence wins when two cover the same day — sickness during
+    # booked leave being the ordinary case. Without it the day would be charged to
+    # whichever record happened to be entered first, which is not a rule anyone
+    # could explain to the person whose leave was spent.
+    precedence = models.PositiveSmallIntegerField(default=100)
 
     def __str__(self):
         return f"{self.code} ({self.workspace_id})"
@@ -89,10 +94,15 @@ class HrAbsence(HrBaseModel):
         on_delete=models.CASCADE,
         related_name="absences",
     )
-    # PROTECT so a historical absence never loses its meaning.
+    # RESTRICT rather than PROTECT: a type that is in use must not be deleted on
+    # its own, or a historical absence would lose its meaning — but when the whole
+    # workspace goes, the absence goes with it and there is nothing to protect.
+    # PROTECT does not make that distinction, and because the shared retention task
+    # deletes workspaces outright, it would abort that task for every workspace in
+    # the installation rather than just refusing this one.
     absence_type = models.ForeignKey(
         HrAbsenceType,
-        on_delete=models.PROTECT,
+        on_delete=models.RESTRICT,
         related_name="absences",
     )
 

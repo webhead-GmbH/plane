@@ -132,7 +132,15 @@ class HrHolidayCalendar(HrBaseModel):
             models.UniqueConstraint(
                 fields=["workspace", "country_code", "region_code"],
                 name="unique_hr_holiday_calendar_region",
-            )
+            ),
+            # Exactly one fallback. With two, whoever has no calendar of their own
+            # would get whichever happened to sort first, and a whole group of
+            # people would quietly be on the wrong holidays.
+            models.UniqueConstraint(
+                fields=["workspace"],
+                condition=models.Q(is_default=True),
+                name="unique_hr_default_holiday_calendar",
+            ),
         ]
 
 

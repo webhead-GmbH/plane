@@ -73,6 +73,8 @@ class AbsenceSlice:
     minutes: int | None = None
     consumes_leave: bool = False
     consumes_balance: bool = False
+    # Lower wins where two absences cover the same day.
+    precedence: int = 100
 
 
 @dataclass
@@ -139,13 +141,20 @@ def compute_day(day_input):
     # and a half.
     remainder = max(credited_base - result.holiday_minutes, 0)
     absence_total = 0
-    for absence in day_input.absences:
+    # Where two absences cover the same day — sickness during booked leave being
+    # the ordinary case — the one with the lower precedence number takes the day.
+    for absence in sorted(day_input.absences, key=lambda item: item.precedence):
         if not absence.credits_actual:
             continue
         if absence.granularity == HOURS:
             share = min(absence.minutes or 0, remainder - absence_total)
         elif absence.granularity == HALF_DAY:
-            share = min(_half_day_minutes(remainder, absence.half), remainder - absence_total)
+            # Half of the *day*, not half of what the holiday left. Someone taking
+            # a half day of leave on a half holiday is off for the whole day, and
+            # halving the remainder would leave them a quarter short and draw only
+            # half as much from their leave as they actually spent. The cap below
+            # is what stops the two adding to more than a day.
+            share = min(_half_day_minutes(credited_base, absence.half), remainder - absence_total)
         else:
             share = remainder - absence_total
         share = max(share, 0)
@@ -167,13 +176,20 @@ def compute_day(day_input):
 
 
 def _classify(day_input, result):
-    """A label for the day, for the benefit of anyone reading the breakdown."""
-    if day_input.holiday_fraction is not None:
-        if day_input.holiday_fraction < 1:
-            return KIND_HALF_HOLIDAY
-        return KIND_HOLIDAY
+    """A label for the day, for the benefit of anyone reading the breakdown.
+
+    A day the person does not work is that first, whatever else falls on it — a
+    public holiday on somebody's regular day off is not a holiday for them, and
+    labelling it one invites the reader to expect hours that were never owed.
+    """
     if not day_input.scheduled_minutes:
         return KIND_NON_WORKING
+    if day_input.holiday_fraction is not None:
+        if day_input.holiday_fraction < 1:
+            # Half the day is a holiday; the other half may still be worked or
+            # taken off, and the reader needs to be able to tell which.
+            return KIND_PARTIAL_ABSENCE if result.absence_minutes else KIND_HALF_HOLIDAY
+        return KIND_HOLIDAY
     if result.absence_minutes:
         if result.absence_minutes >= day_input.scheduled_minutes:
             return KIND_ABSENCE

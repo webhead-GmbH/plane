@@ -253,6 +253,89 @@ class TestBalanceCarry:
         assert period.closing_balance_minutes == 10000 + period.balance_minutes - FULL
 
 
+class TestBalanceChainGaps:
+    def test_a_reopened_month_in_the_chain_does_not_get_stepped_over(self, profile, approver):
+        # January closes at +600. February closes at +600-x, then is reopened to be
+        # corrected. March must not reach back past February to January, or
+        # February's contribution vanishes from every month that follows.
+        HrOpeningBalance.objects.create(
+            workspace=profile.workspace,
+            profile=profile,
+            effective_on=date(2026, 1, 1),
+            kind=HrOpeningBalance.Kind.TIME_BALANCE,
+            minutes=600,
+            basis="Opening",
+        )
+        for year, month in ((2026, 1), (2026, 2)):
+            rebuild_period(profile, year, month)
+            period = HrPeriod.objects.get(
+                profile_id=profile.id, period_start=date(year, month, 1)
+            )
+            submit(period, profile.member)
+            approve(period, approver)
+            lock(period, approver)
+
+        january = HrPeriod.objects.get(profile_id=profile.id, period_start=date(2026, 1, 1))
+        february = HrPeriod.objects.get(profile_id=profile.id, period_start=date(2026, 2, 1))
+        reopen(february, approver, "A day was recorded against the wrong person.")
+
+        rebuild_period(profile, *MARCH)
+        march_period = HrPeriod.objects.get(profile_id=profile.id, period_start=date(2026, 3, 1))
+        opening = opening_balance_for(march_period)
+        assert opening != january.closing_balance_minutes
+        # February is no longer closed, so March falls back to the agreed opening
+        # rather than silently inheriting a figure from two months earlier.
+        assert opening == 600
+
+    def test_a_contiguous_chain_still_carries_forward(self, profile, approver):
+        february = march(profile)  # any month; reuse the helper for a closed one
+        submit(february, profile.member)
+        approve(february, approver)
+        closed = lock(february, approver)
+        rebuild_period(profile, 2026, 4)
+        april = HrPeriod.objects.get(profile_id=profile.id, period_start=date(2026, 4, 1))
+        assert opening_balance_for(april) == closed.closing_balance_minutes
+
+
+class TestRebuildGating:
+    def test_a_submitted_month_is_not_rewritten_underneath_the_approver(self, profile):
+        # Approving one set of figures and locking another is the failure this
+        # prevents.
+        period = submit(march(profile), profile.member)
+        HrTimeEntry.objects.create(
+            workspace=profile.workspace,
+            profile=profile,
+            entry_date=date(2026, 3, 3),
+            minutes=300,
+        )
+        assert rebuild_period(profile, *MARCH) is None
+        day = HrPeriodDay.objects.get(period_id=period.id, work_date=date(2026, 3, 3))
+        assert day.non_project_minutes == 0
+
+    def test_an_approved_month_is_not_rewritten_either(self, profile, approver):
+        through_to_approved(profile, approver)
+        assert rebuild_period(profile, *MARCH) is None
+
+
+class TestRelock:
+    def test_closing_a_reopened_month_keeps_the_first_closing_on_the_record(
+        self, profile, approver
+    ):
+        period = lock(through_to_approved(profile, approver), approver)
+        first_target = period.target_minutes
+        reopen(period, approver, "Correcting a misfiled day.")
+
+        period.refresh_from_db()
+        submit(period, profile.member)
+        approve(period, approver)
+        relocked = lock(period, approver)
+
+        superseded = relocked.snapshot["superseded"]
+        assert len(superseded) == 1
+        assert superseded[0]["target_minutes"] == first_target
+        assert superseded[0]["reason"] == "Correcting a misfiled day."
+
+
 class TestReopen:
     def test_reopening_needs_a_reason(self, profile, approver):
         period = lock(through_to_approved(profile, approver), approver)

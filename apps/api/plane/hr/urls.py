@@ -8,6 +8,7 @@ from plane.hr.api.views import (
     HrMeEndpoint,
     HrOverviewEndpoint,
     HrPeriodApproveEndpoint,
+    HrPeriodDaySettleEndpoint,
     HrPeriodDaysEndpoint,
     HrPeriodDetailEndpoint,
     HrPeriodListEndpoint,
@@ -30,6 +31,11 @@ urlpatterns = [
         "workspaces/<str:slug>/periods/<uuid:pk>/days/",
         HrPeriodDaysEndpoint.as_view(),
         name="hr-period-days",
+    ),
+    path(
+        "workspaces/<str:slug>/periods/<uuid:pk>/days/<uuid:day_id>/settle/",
+        HrPeriodDaySettleEndpoint.as_view(),
+        name="hr-period-day-settle",
     ),
     path(
         "workspaces/<str:slug>/periods/<uuid:pk>/recompute/",

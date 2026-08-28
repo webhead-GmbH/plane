@@ -376,6 +376,7 @@ class HrPeriodSerializer(HrBaseSerializer):
             "absence_minutes",
             "holiday_minutes",
             "leave_consumed_minutes",
+            "balance_consumed_minutes",
             "overtime_minutes",
             "computation_version",
             "submitted_at",
