@@ -125,6 +125,19 @@ export type THrMe = {
   has_running_timer: boolean;
 };
 
+/** One person's row in the manager's month. */
+export type THrOverviewRow = THrPeriod & {
+  member_display_name: string;
+  needs_review: boolean;
+  has_running_timer: boolean;
+};
+
+export type THrOverview = {
+  year: number;
+  month: number;
+  rows: THrOverviewRow[];
+};
+
 export type THrStatement = {
   period_id: string;
   period_start: string;
@@ -167,6 +180,44 @@ export class HrService extends APIService {
       .catch((error) => {
         throw error?.response?.data;
       });
+  }
+
+  async overview(year?: number, month?: number): Promise<THrOverview> {
+    const query = year && month ? `?year=${year}&month=${month}` : "";
+    return this.get(`${this.base}/overview/${query}`)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  async approve(periodId: string): Promise<THrPeriod> {
+    return this.post(`${this.base}/periods/${periodId}/approve/`)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  async lock(periodId: string): Promise<THrPeriod> {
+    return this.post(`${this.base}/periods/${periodId}/lock/`)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  async reopen(periodId: string, reason: string): Promise<THrPeriod> {
+    return this.post(`${this.base}/periods/${periodId}/reopen/`, { reason })
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  /** The payroll export for a whole month, as a file. */
+  monthExportUrl(year: number, month: number, fileFormat: "csv" | "xlsx"): string {
+    return `${this.base}/export/?year=${year}&month=${month}&file_format=${fileFormat}`;
   }
 
   async periods(year?: number): Promise<THrPeriod[]> {

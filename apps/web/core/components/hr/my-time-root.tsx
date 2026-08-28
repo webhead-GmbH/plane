@@ -6,7 +6,8 @@
 
 import { useState } from "react";
 import { observer } from "mobx-react";
-import { ChevronLeft, ChevronRight, RefreshCw, Send } from "lucide-react";
+import { Link, useParams } from "react-router";
+import { ChevronLeft, ChevronRight, RefreshCw, Send, Users } from "lucide-react";
 import useSWR from "swr";
 // plane imports
 import { Button } from "@plane/propel/button";
@@ -21,6 +22,8 @@ import { formatMonthLabel, isPeriodEditable, nextMonth, previousMonth } from "./
 const hrService = new HrService();
 
 export const MyTimeRoot = observer(function MyTimeRoot() {
+  // Only used to build the link, not to decide what the figures are.
+  const { workspaceSlug } = useParams();
   const now = new Date();
   const [[year, month], setMonth] = useState<[number, number]>([now.getFullYear(), now.getMonth() + 1]);
   const [isBusy, setIsBusy] = useState(false);
@@ -117,6 +120,14 @@ export const MyTimeRoot = observer(function MyTimeRoot() {
         </div>
 
         <div className="flex items-center gap-2">
+          {data.is_hr_manager ? (
+            <Link to={`/${workspaceSlug}/team-time`}>
+              <Button variant="secondary" size="sm">
+                <Users className="size-3.5" />
+                Everyone
+              </Button>
+            </Link>
+          ) : null}
           {period && isPeriodEditable(period.state) ? (
             <Button variant="secondary" size="sm" onClick={handleRecompute} loading={isBusy}>
               <RefreshCw className="size-3.5" />

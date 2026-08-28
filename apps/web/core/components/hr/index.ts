@@ -6,5 +6,7 @@
 
 export * from "./day-table";
 export * from "./month-summary";
+export * from "./overview-table";
 export * from "./my-time-root";
+export * from "./team-month-root";
 export * from "./utils";
