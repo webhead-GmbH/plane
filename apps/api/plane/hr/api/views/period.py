@@ -29,10 +29,12 @@ from plane.hr.models import HrContract, HrPeriod, HrPeriodDay, HrWorkSchedule
 from plane.hr.permissions import (
     MANAGER,
     SELF,
+    can_approve,
     hr_permission,
     readable_profile_or_none,
     visible_profiles,
 )
+from plane.hr.services.closing import TransitionRefused, approve, lock, reopen, submit
 from plane.hr.services.ledger import has_running_timer, period_totals, rebuild_period
 from plane.hr.utils.resolve import effective, effective_schedule
 
@@ -171,6 +173,68 @@ class HrPeriodRecomputeEndpoint(BaseAPIView):
                 status=status.HTTP_409_CONFLICT,
             )
         return Response(_period_payload(rebuilt, include_days=True), status=status.HTTP_200_OK)
+
+
+class _TransitionEndpoint(BaseAPIView):
+    """Shared plumbing for the four steps of closing a month."""
+
+    def _period_or_none(self, request, slug, pk):
+        return (
+            HrPeriod.objects.filter(pk=pk, profile__in=visible_profiles(request, slug))
+            .select_related("profile__member", "profile__workspace")
+            .first()
+        )
+
+    def _run(self, request, period, action, **kwargs):
+        try:
+            updated = action(period, request.user, **kwargs)
+        except TransitionRefused as refused:
+            return Response(
+                {"error": refused.message},
+                status=status.HTTP_409_CONFLICT if refused.conflict else status.HTTP_400_BAD_REQUEST,
+            )
+        return Response(_period_payload(updated), status=status.HTTP_200_OK)
+
+
+class HrPeriodSubmitEndpoint(_TransitionEndpoint):
+    @hr_permission(SELF)
+    def post(self, request, slug, pk):
+        period = self._period_or_none(request, slug, pk)
+        if period is None:
+            return Response({"error": "No such month, or not yours to read."}, status=status.HTTP_404_NOT_FOUND)
+        return self._run(request, period, submit)
+
+
+class HrPeriodApproveEndpoint(_TransitionEndpoint):
+    @hr_permission(MANAGER)
+    def post(self, request, slug, pk):
+        period = self._period_or_none(request, slug, pk)
+        if period is None:
+            return Response({"error": "No such month."}, status=status.HTTP_404_NOT_FOUND)
+        if not can_approve(request, period.profile):
+            return Response(
+                {"error": "Approving your own month is not a decision. Ask someone else."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+        return self._run(request, period, approve)
+
+
+class HrPeriodLockEndpoint(_TransitionEndpoint):
+    @hr_permission(MANAGER)
+    def post(self, request, slug, pk):
+        period = self._period_or_none(request, slug, pk)
+        if period is None:
+            return Response({"error": "No such month."}, status=status.HTTP_404_NOT_FOUND)
+        return self._run(request, period, lock)
+
+
+class HrPeriodReopenEndpoint(_TransitionEndpoint):
+    @hr_permission(MANAGER)
+    def post(self, request, slug, pk):
+        period = self._period_or_none(request, slug, pk)
+        if period is None:
+            return Response({"error": "No such month."}, status=status.HTTP_404_NOT_FOUND)
+        return self._run(request, period, reopen, reason=request.data.get("reason", ""))
 
 
 class HrOverviewEndpoint(BaseAPIView):

@@ -9,6 +9,10 @@ from .period import (
     HrPeriodDetailEndpoint,
     HrPeriodListEndpoint,
     HrPeriodRecomputeEndpoint,
+    HrPeriodApproveEndpoint,
+    HrPeriodLockEndpoint,
+    HrPeriodReopenEndpoint,
+    HrPeriodSubmitEndpoint,
 )
 
 __all__ = [
@@ -18,4 +22,8 @@ __all__ = [
     "HrPeriodDetailEndpoint",
     "HrPeriodListEndpoint",
     "HrPeriodRecomputeEndpoint",
+    "HrPeriodApproveEndpoint",
+    "HrPeriodLockEndpoint",
+    "HrPeriodReopenEndpoint",
+    "HrPeriodSubmitEndpoint",
 ]

@@ -156,6 +156,12 @@ class HrPeriodDay(HrBaseModel):
     holiday_minutes = models.IntegerField(default=0)
     actual_minutes = models.IntegerField(default=0)
     balance_minutes = models.IntegerField(default=0)
+    # The share of the day's absence that came out of the annual leave account,
+    # and the share that came out of accumulated time. Kept apart because they are
+    # different accounts with different rules, and because a day can draw on
+    # neither — sick leave is credited but paid for from neither balance.
+    leave_minutes = models.IntegerField(default=0)
+    balance_consumed_minutes = models.IntegerField(default=0)
     day_kind = models.PositiveSmallIntegerField(choices=DayKind.choices, default=DayKind.WORKDAY)
 
     # What the figures were built from. Kept so a closed month can still show which

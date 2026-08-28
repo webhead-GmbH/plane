@@ -7,10 +7,14 @@ from django.urls import path
 from plane.hr.api.views import (
     HrMeEndpoint,
     HrOverviewEndpoint,
+    HrPeriodApproveEndpoint,
     HrPeriodDaysEndpoint,
     HrPeriodDetailEndpoint,
     HrPeriodListEndpoint,
+    HrPeriodLockEndpoint,
     HrPeriodRecomputeEndpoint,
+    HrPeriodReopenEndpoint,
+    HrPeriodSubmitEndpoint,
 )
 
 urlpatterns = [
@@ -31,5 +35,25 @@ urlpatterns = [
         "workspaces/<str:slug>/periods/<uuid:pk>/recompute/",
         HrPeriodRecomputeEndpoint.as_view(),
         name="hr-period-recompute",
+    ),
+    path(
+        "workspaces/<str:slug>/periods/<uuid:pk>/submit/",
+        HrPeriodSubmitEndpoint.as_view(),
+        name="hr-period-submit",
+    ),
+    path(
+        "workspaces/<str:slug>/periods/<uuid:pk>/approve/",
+        HrPeriodApproveEndpoint.as_view(),
+        name="hr-period-approve",
+    ),
+    path(
+        "workspaces/<str:slug>/periods/<uuid:pk>/lock/",
+        HrPeriodLockEndpoint.as_view(),
+        name="hr-period-lock",
+    ),
+    path(
+        "workspaces/<str:slug>/periods/<uuid:pk>/reopen/",
+        HrPeriodReopenEndpoint.as_view(),
+        name="hr-period-reopen",
     ),
 ]

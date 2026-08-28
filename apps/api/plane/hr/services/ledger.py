@@ -274,6 +274,8 @@ def rebuild_period(profile, year, month, actor=None):
             "holiday_minutes": result.holiday_minutes,
             "actual_minutes": result.actual_minutes,
             "balance_minutes": result.balance_minutes,
+            "leave_minutes": result.leave_minutes,
+            "balance_consumed_minutes": result.balance_consumed_minutes,
             "day_kind": result.day_kind,
             "worklog_ids": current_worklog_ids,
             "time_entry_ids": entry_ids.get(day, []),
@@ -303,6 +305,8 @@ def rebuild_period(profile, year, month, actor=None):
                 "holiday_minutes",
                 "actual_minutes",
                 "balance_minutes",
+                "leave_minutes",
+                "balance_consumed_minutes",
                 "day_kind",
                 "worklog_ids",
                 "time_entry_ids",
@@ -362,6 +366,8 @@ def period_totals(period):
         absence_minutes=Sum("absence_minutes"),
         holiday_minutes=Sum("holiday_minutes"),
         attendance_minutes=Sum("attendance_minutes"),
+        leave_consumed_minutes=Sum("leave_minutes"),
+        balance_consumed_minutes=Sum("balance_consumed_minutes"),
     )
 
 
