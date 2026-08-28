@@ -3,6 +3,7 @@
 # See the LICENSE file for details.
 
 from .base import HrBaseSerializer
+from .billing import HrInvoiceDocumentSerializer, HrRateCardSerializer
 from .records import (
     HrAbsenceSerializer,
     HrAbsenceTypeSerializer,
@@ -28,9 +29,11 @@ __all__ = [
     "HrEmploymentProfileSerializer",
     "HrHolidayCalendarSerializer",
     "HrHolidaySerializer",
+    "HrInvoiceDocumentSerializer",
     "HrLeaveEntitlementSerializer",
     "HrPeriodDaySerializer",
     "HrPeriodSerializer",
+    "HrRateCardSerializer",
     "HrTeamAbsenceSerializer",
     "HrTimeEntrySerializer",
     "HrWorkScheduleSerializer",

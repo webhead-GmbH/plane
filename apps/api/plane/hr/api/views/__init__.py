@@ -3,6 +3,13 @@
 # See the LICENSE file for details.
 
 from .base import HrWorkspaceConfigEndpoint
+from .billing import (
+    HrInvoiceAcceptVarianceEndpoint,
+    HrInvoiceEndpoint,
+    HrInvoiceReconcileEndpoint,
+    HrRateCardEndpoint,
+    HrStatementEndpoint,
+)
 from .master_data import (
     HrAbsenceTypeEndpoint,
     HrContractEndpoint,
@@ -53,6 +60,9 @@ __all__ = [
     "HrImportCommitEndpoint",
     "HrImportEndpoint",
     "HrImportUndoEndpoint",
+    "HrInvoiceAcceptVarianceEndpoint",
+    "HrInvoiceEndpoint",
+    "HrInvoiceReconcileEndpoint",
     "HrLeaveEntitlementEndpoint",
     "HrMeEndpoint",
     "HrMonthExportEndpoint",
@@ -68,6 +78,8 @@ __all__ = [
     "HrPeriodRecomputeEndpoint",
     "HrPeriodReopenEndpoint",
     "HrPeriodSubmitEndpoint",
+    "HrRateCardEndpoint",
+    "HrStatementEndpoint",
     "HrTimeEntryEndpoint",
     "HrWorkScheduleEndpoint",
     "HrWorkspaceBootstrapEndpoint",
