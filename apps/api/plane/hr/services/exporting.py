@@ -18,7 +18,11 @@ from io import BytesIO, StringIO
 
 # Module imports
 from plane.hr.models import HrPeriod, HrPeriodDay
-from plane.hr.services.ledger import period_totals
+from plane.hr.services.ledger import (
+    counted_through_for,
+    period_totals,
+    period_totals_to_date,
+)
 from plane.utils.porters.formatters import CSVFormatter, XLSXFormatter
 
 MONTH_COLUMNS = [
@@ -40,6 +44,14 @@ MONTH_COLUMNS = [
     "leave_consumed_minutes",
     "opening_balance_minutes",
     "closing_balance_minutes",
+    # A month exported before it has ended owes the whole month but has only been
+    # worked so far, so the balance above reads as a shortfall for days nobody has
+    # reached yet. These say how much of the month the figures cover and where the
+    # person actually stands at that point. For a month that has ended they agree
+    # with the columns above, which is the point.
+    "counted_through",
+    "balance_minutes_to_date",
+    "balance_hours_to_date",
 ]
 
 DAY_COLUMNS = [
@@ -54,6 +66,7 @@ DAY_COLUMNS = [
     "balance_minutes",
     "needs_review",
     "note",
+    "has_happened",
 ]
 
 
@@ -90,11 +103,24 @@ def _figures(period):
     )}
 
 
+def _so_far(period):
+    """How much of the month the figures cover, and the balance at that point.
+
+    A closed month is taken from its frozen row rather than recomputed, so the
+    file never reads one month from two places.
+    """
+    if period.state == HrPeriod.State.LOCKED:
+        return period.period_end, period.balance_minutes or 0
+    through = counted_through_for(period)
+    return through, period_totals_to_date(period, through)["balance_minutes"]
+
+
 def month_rows(periods):
     """One row per person, for a month."""
     rows = []
     for period in periods:
         figures = _figures(period)
+        through, balance_to_date = _so_far(period)
         member = period.profile.member
         rows.append(
             {
@@ -116,6 +142,9 @@ def month_rows(periods):
                 "leave_consumed_minutes": figures["leave_consumed_minutes"],
                 "opening_balance_minutes": period.opening_balance_minutes or "",
                 "closing_balance_minutes": period.closing_balance_minutes or "",
+                "counted_through": through.isoformat() if through else "",
+                "balance_minutes_to_date": balance_to_date,
+                "balance_hours_to_date": _hours(balance_to_date),
             }
         )
     return rows
@@ -124,6 +153,7 @@ def month_rows(periods):
 def day_rows(period):
     """One row per day, for a single person's month."""
     days = HrPeriodDay.objects.filter(period_id=period.id).order_by("work_date")
+    through, _ = _so_far(period)
     return [
         {
             "date": day.work_date.isoformat(),
@@ -137,6 +167,9 @@ def day_rows(period):
             "balance_minutes": day.balance_minutes,
             "needs_review": "yes" if day.needs_review else "",
             "note": day.note or "",
+            # Blank rather than "no" for a day still to come, so a reader scanning
+            # the column sees the month stop rather than a run of denials.
+            "has_happened": "yes" if (through is not None and day.work_date <= through) else "",
         }
         for day in days
     ]

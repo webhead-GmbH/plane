@@ -463,8 +463,11 @@ class TestExport:
         assert "hr-2026-03.csv" in response["Content-Disposition"]
 
         rows = list(csv.reader(StringIO(response.content.decode("utf-8"))))
-        # Whatever reads this expects the columns where it was told they would be.
-        assert rows[0] == [
+        # Whatever reads this expects the columns where it was told they would be,
+        # so these keep their positions. Something appended after them is another
+        # matter: a reader taking the columns it knows by index is unaffected, and
+        # requiring exact equality would mean no column could ever be added.
+        assert rows[0][:18] == [
             "Employee",
             "Email",
             "Period Start",
@@ -484,6 +487,24 @@ class TestExport:
             "Opening Balance Minutes",
             "Closing Balance Minutes",
         ]
+
+    def test_a_month_still_running_says_how_far_the_figures_reach(self, workspace, manager):
+        # The balance column owes the whole month while only part of it has been
+        # worked, so on its own it reads as a shortfall for days nobody has
+        # reached. These say how much of the month is actually in the figures.
+        _, profile = employ(workspace, email="bea@example.invalid")
+        rebuild_period(profile, 2026, 3)
+        response = client_for(manager).get(url(workspace, "export/?year=2026&month=3"))
+
+        rows = list(csv.reader(StringIO(response.content.decode("utf-8"))))
+        assert rows[0][18:] == [
+            "Counted Through",
+            "Balance Minutes To Date",
+            "Balance Hours To Date",
+        ]
+        # March 2026 is over, so the two balances agree.
+        assert rows[1][18] == "2026-03-31"
+        assert rows[1][19] == rows[1][9]
 
     def test_hours_go_out_as_both_minutes_and_decimal_hours(self, workspace, manager):
         _, profile = employ(workspace, email="ana@example.invalid")

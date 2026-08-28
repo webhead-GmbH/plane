@@ -9,7 +9,7 @@ import { AlertTriangle, Clock, Timer } from "lucide-react";
 import { cn } from "@plane/utils";
 // local imports
 import { EHrPeriodState, type THrPeriod } from "@/services/hr.service";
-import { balanceTone, formatBalance, formatMinutes, periodStateLabel } from "./utils";
+import { balanceTone, figuresToShow, formatBalance, formatDayLabel, formatMinutes, periodStateLabel } from "./utils";
 
 type TFigureProps = {
   label: string;
@@ -49,28 +49,37 @@ export const HrMonthSummary = ({ period, hasRunningTimer, contractedWeeklyMinute
 
   const needsReview = (period.days ?? []).some((day) => day.needs_review);
   const isFinal = period.state === EHrPeriodState.LOCKED;
+  const shown = figuresToShow(period);
+  const wholeMonthAway = (period.absence_minutes ?? 0) + (period.holiday_minutes ?? 0);
+  const soFarAway = (period.to_date?.absence_minutes ?? 0) + (period.to_date?.holiday_minutes ?? 0);
 
   return (
     <div className="flex flex-col gap-3">
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
         <Figure
           label="Owed"
-          value={formatMinutes(period.target_minutes)}
-          hint={contractedWeeklyMinutes ? `${formatMinutes(contractedWeeklyMinutes)} a week` : undefined}
+          value={formatMinutes(shown.target)}
+          hint={
+            shown.isPartial
+              ? `${formatMinutes(shown.monthTarget)} for the whole month`
+              : contractedWeeklyMinutes
+                ? `${formatMinutes(contractedWeeklyMinutes)} a week`
+                : undefined
+          }
         />
         <Figure
           label="Worked"
-          value={formatMinutes(period.actual_minutes)}
+          value={formatMinutes(shown.actual)}
           hint={
-            period.absence_minutes || period.holiday_minutes
-              ? `includes ${formatMinutes((period.absence_minutes ?? 0) + (period.holiday_minutes ?? 0))} away or on holiday`
+            (shown.isPartial ? soFarAway : wholeMonthAway)
+              ? `includes ${formatMinutes(shown.isPartial ? soFarAway : wholeMonthAway)} away or on holiday`
               : undefined
           }
         />
         <Figure
           label="Balance"
-          value={formatBalance(period.balance_minutes)}
-          tone={balanceTone(period.balance_minutes)}
+          value={formatBalance(shown.balance)}
+          tone={balanceTone(shown.balance)}
           hint={
             period.closing_balance_minutes !== null
               ? `${formatBalance(period.closing_balance_minutes)} carried forward`
@@ -80,6 +89,13 @@ export const HrMonthSummary = ({ period, hasRunningTimer, contractedWeeklyMinute
       </div>
 
       <div className="text-xs text-custom-text-300 flex flex-wrap items-center gap-3">
+        {shown.isPartial ? (
+          <span className="text-custom-text-400">
+            {shown.countedThrough
+              ? `As things stand on ${formatDayLabel(shown.countedThrough)}. The month is not over.`
+              : "This month has not started yet."}
+          </span>
+        ) : null}
         <span
           className={cn(
             "inline-flex items-center gap-1 rounded px-2 py-0.5 font-medium",

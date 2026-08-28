@@ -12,6 +12,7 @@ from decimal import Decimal
 import pytest
 
 # Module imports
+from plane.hr.utils.calendar import counted_through
 from plane.hr.services.computation import (
     AFTERNOON,
     HALF_DAY,
@@ -386,3 +387,39 @@ class TestNoRecordedObligation:
             )
         )
         assert result.balance_minutes == 240
+
+
+class TestCountedThrough:
+    """How far into a month there is anything to report yet.
+
+    The two ends are what matter. On the first of the month the answer must be
+    the first, not the last day of the month before — that mistake empties every
+    figure on the screen and captions them with the wrong month. On the last day
+    it must be the last day, or the balance jumps by a whole working day at
+    midnight for no reason anybody could explain.
+    """
+
+    def test_nothing_has_happened_before_the_month_starts(self):
+        assert counted_through(date(2026, 8, 1), date(2026, 8, 31), date(2026, 7, 31)) is None
+
+    def test_the_first_of_the_month_counts_the_first_of_the_month(self):
+        assert counted_through(date(2026, 8, 1), date(2026, 8, 31), date(2026, 8, 1)) == date(
+            2026, 8, 1
+        )
+
+    def test_today_is_inside_the_window_not_outside_it(self):
+        # A shortfall is worth showing while there is still time to work it off.
+        # Cutting at yesterday hides this morning's hours until tomorrow.
+        assert counted_through(date(2026, 8, 1), date(2026, 8, 31), date(2026, 8, 28)) == date(
+            2026, 8, 28
+        )
+
+    def test_the_last_day_counts_the_whole_month(self):
+        assert counted_through(date(2026, 8, 1), date(2026, 8, 31), date(2026, 8, 31)) == date(
+            2026, 8, 31
+        )
+
+    def test_a_month_that_has_ended_is_never_more_than_itself(self):
+        assert counted_through(date(2026, 8, 1), date(2026, 8, 31), date(2027, 1, 9)) == date(
+            2026, 8, 31
+        )

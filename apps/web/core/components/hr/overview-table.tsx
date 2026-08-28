@@ -10,7 +10,14 @@ import { Button } from "@plane/propel/button";
 import { cn } from "@plane/utils";
 // local imports
 import { EHrPeriodState, type THrOverviewRow } from "@/services/hr.service";
-import { balanceTone, formatBalance, formatDecimalHours, formatMinutes, periodStateLabel } from "./utils";
+import {
+  balanceTone,
+  figuresToShow,
+  formatBalance,
+  formatDecimalHours,
+  formatMinutes,
+  periodStateLabel,
+} from "./utils";
 
 type TProps = {
   rows: THrOverviewRow[];
@@ -71,6 +78,9 @@ export const HrOverviewTable = ({ rows, busyPeriodId, onApprove, onLock, onReope
         <tbody>
           {rows.map((row) => {
             const isBusy = busyPeriodId === row.id;
+            // The same choice the roll-up above makes, so the header is the sum
+            // of the column under it rather than a different question's answer.
+            const shown = figuresToShow(row);
             return (
               <tr key={row.id} className="border-custom-border-200 hover:bg-custom-background-90/60 border-t">
                 <td className="px-4 py-2">
@@ -87,17 +97,20 @@ export const HrOverviewTable = ({ rows, busyPeriodId, onApprove, onLock, onReope
                 <td className="px-4 py-2">
                   <StateChip state={row.state} />
                 </td>
-                <td className="text-custom-text-200 px-4 py-2 text-right tabular-nums">
-                  {formatMinutes(row.target_minutes)}
+                <td
+                  className="text-custom-text-200 px-4 py-2 text-right tabular-nums"
+                  title={shown.isPartial ? `${formatMinutes(shown.monthTarget)} for the whole month` : undefined}
+                >
+                  {formatMinutes(shown.target)}
                 </td>
                 <td className="text-custom-text-100 px-4 py-2 text-right tabular-nums">
-                  {formatMinutes(row.actual_minutes)}
+                  {formatMinutes(shown.actual)}
                 </td>
                 <td className="text-custom-text-300 px-4 py-2 text-right tabular-nums">
-                  {formatDecimalHours(row.actual_minutes)}
+                  {formatDecimalHours(shown.actual)}
                 </td>
-                <td className={cn("px-4 py-2 text-right font-medium tabular-nums", balanceTone(row.balance_minutes))}>
-                  {formatBalance(row.balance_minutes)}
+                <td className={cn("px-4 py-2 text-right font-medium tabular-nums", balanceTone(shown.balance))}>
+                  {formatBalance(shown.balance)}
                 </td>
                 <td className="text-custom-text-300 px-4 py-2 text-right tabular-nums">
                   {formatBalance(row.closing_balance_minutes)}

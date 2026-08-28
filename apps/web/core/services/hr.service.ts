@@ -52,6 +52,24 @@ export type THrPeriodDay = {
   last_rebuilt_at: string | null;
 };
 
+/**
+ * Where somebody stands part-way through a month.
+ *
+ * Present only while a month is still running. Its absence means the month is
+ * its own answer — which is why a screen must check for the block rather than
+ * compare a date, or every finished month reads as one where nothing counted.
+ */
+export type THrPeriodToDate = {
+  counted_through: string | null;
+  target_minutes: number;
+  actual_minutes: number;
+  balance_minutes: number;
+  project_minutes: number;
+  non_project_minutes: number;
+  absence_minutes: number;
+  holiday_minutes: number;
+};
+
 export type THrPeriod = {
   id: string;
   profile: string;
@@ -74,6 +92,7 @@ export type THrPeriod = {
   locked_at: string | null;
   days?: THrPeriodDay[];
   has_running_timer?: boolean;
+  to_date?: THrPeriodToDate;
 };
 
 export type THrEmploymentProfile = {

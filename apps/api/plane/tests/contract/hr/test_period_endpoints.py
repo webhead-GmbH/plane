@@ -80,7 +80,7 @@ def employ(workspace, is_hr_manager=False, records_target=True):
 class TestMe:
     def test_returns_profile_contract_and_schedule_in_one_request(self, workspace):
         user, profile = employ(workspace)
-        response = client_for(user).get(f"/api/hr/me/")
+        response = client_for(user).get("/api/hr/me/")
         assert response.status_code == 200
         body = response.json()
         assert body["profile"]["id"] == str(profile.id)
@@ -91,16 +91,16 @@ class TestMe:
 
     def test_administering_a_workspace_is_not_a_way_in(self, workspace):
         # Employment is what grants access here, not having created a workspace.
-        response = client_for(workspace.owner).get(f"/api/hr/me/")
+        response = client_for(workspace.owner).get("/api/hr/me/")
         assert response.status_code == 403
 
     def test_somebody_who_is_not_employed_here_is_refused(self, workspace):
         outsider = new_user()
-        response = client_for(outsider).get(f"/api/hr/me/")
+        response = client_for(outsider).get("/api/hr/me/")
         assert response.status_code == 403
 
     def test_an_anonymous_caller_is_refused(self, workspace):
-        response = APIClient().get(f"/api/hr/me/")
+        response = APIClient().get("/api/hr/me/")
         assert response.status_code in (401, 403)
 
 
@@ -204,7 +204,7 @@ class TestPeriods:
                 period_start=date(2026, 3, 1),
                 period_end=date(2026, 3, 31),
             )
-        response = client_for(user).get(f"/api/hr/periods/")
+        response = client_for(user).get("/api/hr/periods/")
         assert response.status_code == 200
         body = response.json()
         assert len(body) == 1
@@ -242,14 +242,14 @@ class TestMalformedParameters:
     def test_listing_survives_an_impossible_year(self, workspace):
         user, _ = employ(workspace)
         response = client_for(user).get(
-            f"/api/hr/periods/?year=99999999"
+            "/api/hr/periods/?year=99999999"
         )
         assert response.status_code == 200
 
     def test_a_malformed_person_id_is_not_a_server_error(self, workspace):
         user, _ = employ(workspace)
         response = client_for(user).get(
-            f"/api/hr/periods/?profile_id=not-a-uuid"
+            "/api/hr/periods/?profile_id=not-a-uuid"
         )
         assert response.status_code in (400, 404)
 
@@ -260,7 +260,7 @@ class TestOverview:
         employ(workspace)
         employ(workspace)
         response = client_for(manager_user).get(
-            f"/api/hr/overview/?year=2026&month=3"
+            "/api/hr/overview/?year=2026&month=3"
         )
         assert response.status_code == 200
         body = response.json()
@@ -270,14 +270,14 @@ class TestOverview:
 
     def test_an_employee_cannot_see_the_overview(self, workspace):
         user, _ = employ(workspace)
-        response = client_for(user).get(f"/api/hr/overview/")
+        response = client_for(user).get("/api/hr/overview/")
         assert response.status_code == 403
 
     def test_the_overview_builds_months_that_did_not_exist_yet(self, workspace):
         manager_user, _ = employ(workspace, is_hr_manager=True)
         assert not HrPeriod.objects.exists()
         response = client_for(manager_user).get(
-            f"/api/hr/overview/?year=2026&month=3"
+            "/api/hr/overview/?year=2026&month=3"
         )
         assert response.status_code == 200
         assert HrPeriod.objects.filter(period_start=date(2026, 3, 1)).exists()

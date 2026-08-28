@@ -99,7 +99,11 @@ export const MyTimeRoot = observer(function MyTimeRoot() {
       </div>
     );
 
-  const canHandIn = period && isPeriodEditable(period.state) && !data.has_running_timer;
+  // A month still running cannot be handed in — the server refuses it, because a
+  // submitted month stops being rebuilt and hours logged afterwards would never
+  // be counted. Saying so on the button beats letting it fail on every press.
+  const monthIsRunning = !!period?.to_date;
+  const canHandIn = period && isPeriodEditable(period.state) && !data.has_running_timer && !monthIsRunning;
 
   return (
     <div className="flex flex-col gap-5 p-4">
@@ -142,7 +146,11 @@ export const MyTimeRoot = observer(function MyTimeRoot() {
               disabled={!canHandIn}
               loading={isBusy}
               title={
-                data.has_running_timer ? "Stop the timer that is still running, then hand the month in." : undefined
+                monthIsRunning
+                  ? "The month is not over yet. It can be handed in once it has ended."
+                  : data.has_running_timer
+                    ? "Stop the timer that is still running, then hand the month in."
+                    : undefined
               }
             >
               <Send className="size-3.5" />
@@ -158,7 +166,7 @@ export const MyTimeRoot = observer(function MyTimeRoot() {
         contractedWeeklyMinutes={data.schedule?.weekly_minutes ?? data.contract?.weekly_minutes ?? null}
       />
 
-      <HrDayTable days={days} />
+      <HrDayTable days={days} countedThrough={period?.to_date ? period.to_date.counted_through : undefined} />
     </div>
   );
 });

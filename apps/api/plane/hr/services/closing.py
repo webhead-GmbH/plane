@@ -21,6 +21,9 @@ fact that the month had already been agreed would be the one thing nobody could
 afterwards explain.
 """
 
+# Python imports
+from datetime import timedelta
+
 # Django imports
 from django.db import transaction
 from django.utils import timezone
@@ -37,7 +40,12 @@ from plane.hr.models import (
     HrTimeEntry,
     HrWorkSchedule,
 )
-from plane.hr.services.ledger import has_running_timer, period_totals, rebuild_period
+from plane.hr.services.ledger import (
+    has_running_timer,
+    local_today,
+    period_totals,
+    rebuild_period,
+)
 from plane.hr.utils.resolve import effective, effective_schedule
 
 
@@ -137,10 +145,32 @@ def _snapshot(period, totals):
 
 
 @transaction.atomic
+def _refuse_if_still_running(period):
+    """A month cannot be finished before it has finished happening.
+
+    The figures frozen on closing are the whole month's, so closing one early
+    freezes the target for days nobody has worked yet as a shortfall — and unlike
+    the same error on a screen, this one is carried into every later month by the
+    opening balance and can only be undone by reopening.
+
+    Handing in early is refused for a second reason: a submitted month stops being
+    rebuilt, so hours logged after it would silently never be counted.
+    """
+    today = local_today(period.profile)
+    if today <= period.period_end:
+        raise TransitionRefused(
+            "This month is still running. It can be closed from %s."
+            % (period.period_end + timedelta(days=1)).isoformat(),
+            conflict=False,
+        )
+
+
 def submit(period, actor):
     """The person says their month is complete."""
     if period.state not in (HrPeriod.State.OPEN, HrPeriod.State.REOPENED):
         raise TransitionRefused("Only an open month can be submitted.")
+
+    _refuse_if_still_running(period)
 
     year, month = period.period_start.year, period.period_start.month
     if has_running_timer(period.profile, year, month):
@@ -181,6 +211,10 @@ def lock(period, actor):
     """
     if period.state != HrPeriod.State.APPROVED:
         raise TransitionRefused("Only an approved month can be closed.")
+
+    # Checked again rather than trusted from submit, because this is the step that
+    # makes the figures permanent.
+    _refuse_if_still_running(period)
 
     year, month = period.period_start.year, period.period_start.month
     rebuild_period(period.profile, year, month, actor=actor)

@@ -91,6 +91,27 @@ def month_range(year, month):
     return first, next_first - timedelta(days=1)
 
 
+def counted_through(first, last, today):
+    """The last day of a month there is anything to say about yet.
+
+    A month in flight has two different figures in it: what the contract owes for
+    the whole of it, and how somebody stands so far. Measuring the second against
+    the first charges every day that has not arrived as a shortfall, which on the
+    first of the month is the entire month.
+
+    Today is inside the window rather than outside it. The shortfall worth showing
+    somebody is the one they can still do something about, and excluding today
+    would hide this morning's hours until tomorrow — by which point the day is
+    over and the figure has stopped being actionable.
+
+    Returns None before the month has started, so a caller can tell "nothing has
+    happened yet" from "the whole month has".
+    """
+    if today < first:
+        return None
+    return min(today, last)
+
+
 def iter_days(first, last):
     """Every date from ``first`` to ``last`` inclusive."""
     current = first

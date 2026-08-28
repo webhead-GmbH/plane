@@ -16,7 +16,16 @@ import { Loader } from "@plane/ui";
 import { EHrPeriodState, HrService, type THrOverviewRow } from "@/services/hr.service";
 import { HrOverviewTable } from "./overview-table";
 import { HrReopenModal } from "./reopen-modal";
-import { balanceTone, formatBalance, formatMinutes, formatMonthLabel, nextMonth, previousMonth } from "./utils";
+import {
+  balanceTone,
+  figuresToShow,
+  formatBalance,
+  formatDayLabel,
+  formatMinutes,
+  formatMonthLabel,
+  nextMonth,
+  previousMonth,
+} from "./utils";
 
 const hrService = new HrService();
 
@@ -40,9 +49,13 @@ export const HrTeamMonthRoot = observer(function HrTeamMonthRoot() {
   const rows = data?.rows ?? [];
   const monthLabel = formatMonthLabel(`${year}-${String(month).padStart(2, "0")}-01`);
 
-  const owed = rows.reduce((total, row) => total + (row.target_minutes ?? 0), 0);
-  const worked = rows.reduce((total, row) => total + (row.actual_minutes ?? 0), 0);
-  const balance = rows.reduce((total, row) => total + (row.balance_minutes ?? 0), 0);
+  // Summed from exactly what each row displays, so the tiles are the total of
+  // the table and not a second, differently-scoped answer above it.
+  const shownRows = rows.map((row) => figuresToShow(row));
+  const owed = shownRows.reduce((total, row) => total + (row.target ?? 0), 0);
+  const worked = shownRows.reduce((total, row) => total + (row.actual ?? 0), 0);
+  const balance = shownRows.reduce((total, row) => total + (row.balance ?? 0), 0);
+  const partialThrough = shownRows.find((row) => row.isPartial)?.countedThrough ?? null;
   const outstanding = rows.filter((row) => row.state !== EHrPeriodState.LOCKED).length;
 
   const act = async (row: THrOverviewRow, work: () => Promise<unknown>, done: string) => {
@@ -162,6 +175,9 @@ export const HrTeamMonthRoot = observer(function HrTeamMonthRoot() {
           />
 
           <p className="text-custom-text-400 text-xs">
+            {partialThrough
+              ? `Figures are as things stand on ${formatDayLabel(partialThrough)}; the month is not over. `
+              : ""}
             Everyone&apos;s hours are counted wherever they logged them. Closing a month freezes its figures; nothing
             recorded afterwards changes them.
           </p>

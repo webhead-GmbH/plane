@@ -39,8 +39,10 @@ from plane.hr.permissions import (
 )
 from plane.hr.services.closing import TransitionRefused, approve, lock, reopen, submit
 from plane.hr.services.ledger import (
+    counted_through_for,
     has_running_timer,
     period_totals,
+    period_totals_to_date,
     rebuild_period,
     settle_day,
 )
@@ -97,6 +99,19 @@ def _period_payload(period, include_days=False):
         totals = period_totals(period)
         for key, value in totals.items():
             data[key] = value or 0
+
+        # A month still running is two figures, not one: what the contract owes
+        # for the whole of it, and how the person stands so far. Reporting only
+        # the first charges every day that has not arrived as a shortfall, which
+        # on the first of the month is the entire month. Sent as a separate block
+        # so the whole-month figures keep their meaning and nothing downstream has
+        # to know which of the two it is being handed.
+        through = counted_through_for(period)
+        if through is None or through < period.period_end:
+            data["to_date"] = {
+                "counted_through": through.isoformat() if through else None,
+                **period_totals_to_date(period, through),
+            }
     if include_days:
         days = HrPeriodDay.objects.filter(period_id=period.id).order_by("work_date")
         data["days"] = HrPeriodDaySerializer(days, many=True).data

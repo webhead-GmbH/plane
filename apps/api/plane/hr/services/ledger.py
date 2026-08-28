@@ -56,6 +56,7 @@ from plane.hr.services.computation import (
     minutes_from_seconds,
 )
 from plane.hr.utils.calendar import (
+    counted_through,
     hr_local_date,
     hr_month_bounds_utc,
     iter_days,
@@ -434,26 +435,75 @@ def settle_day(day, actor, note):
     return day
 
 
+# The columns a month is summed over. Named once so the whole-month total and the
+# so-far total cannot drift apart into two answers to the same question.
+_TOTAL_FIELDS = {
+    "target_minutes": "target_minutes",
+    "actual_minutes": "actual_minutes",
+    "balance_minutes": "balance_minutes",
+    "project_minutes": "project_minutes",
+    "non_project_minutes": "non_project_minutes",
+    "absence_minutes": "absence_minutes",
+    "holiday_minutes": "holiday_minutes",
+    "attendance_minutes": "attendance_minutes",
+    "leave_consumed_minutes": "leave_minutes",
+    "balance_consumed_minutes": "balance_consumed_minutes",
+}
+
+
+def _totals(queryset):
+    from django.db.models import Sum
+
+    return queryset.aggregate(
+        **{key: Sum(column) for key, column in _TOTAL_FIELDS.items()}
+    )
+
+
 def period_totals(period):
     """Totals for a month, summed from its days.
 
     Kept out of the period row while the month is open so there is only ever one
     place a figure comes from. They are frozen onto the row when it is closed.
-    """
-    from django.db.models import Sum
 
-    return HrPeriodDay.objects.filter(period_id=period.id).aggregate(
-        target_minutes=Sum("target_minutes"),
-        actual_minutes=Sum("actual_minutes"),
-        balance_minutes=Sum("balance_minutes"),
-        project_minutes=Sum("project_minutes"),
-        non_project_minutes=Sum("non_project_minutes"),
-        absence_minutes=Sum("absence_minutes"),
-        holiday_minutes=Sum("holiday_minutes"),
-        attendance_minutes=Sum("attendance_minutes"),
-        leave_consumed_minutes=Sum("leave_minutes"),
-        balance_consumed_minutes=Sum("balance_consumed_minutes"),
+    Always the whole month, including days that have not happened yet. That is
+    what a month is worth under the contract, and it is what gets frozen on
+    closing, so it must not move with the clock.
+    """
+    return _totals(HrPeriodDay.objects.filter(period_id=period.id))
+
+
+def period_totals_to_date(period, through):
+    """The same totals, but only as far as a given day.
+
+    How somebody stands so far, which is a different question from what the month
+    is worth and has to be asked separately rather than by narrowing the month.
+    """
+    if through is None:
+        return {key: 0 for key in _TOTAL_FIELDS}
+    totals = _totals(
+        HrPeriodDay.objects.filter(period_id=period.id, work_date__lte=through)
     )
+    # A month whose counted days are all still empty aggregates to None rather
+    # than to zero, and a None reaching the screen renders as "no figure" where
+    # the honest answer is "nothing yet".
+    return {key: (value or 0) for key, value in totals.items()}
+
+
+def local_today(profile):
+    """Today's date where this person actually is."""
+    return hr_local_date(timezone.now(), _profile_timezone(profile))
+
+
+def counted_through_for(period, today=None):
+    """How far into this month there is anything to report yet.
+
+    The date is resolved in the subject's zone, never the caller's: on a manager's
+    screen the boundary belongs to the person whose month it is.
+    """
+    profile = period.profile
+    if today is None:
+        today = local_today(profile)
+    return counted_through(period.period_start, period.period_end, today)
 
 
 def has_running_timer(profile, year, month):

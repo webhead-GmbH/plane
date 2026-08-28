@@ -4,7 +4,7 @@
  * See the LICENSE file for details.
  */
 
-import { EHrDayKind, EHrPeriodState } from "@/services/hr.service";
+import { EHrDayKind, EHrPeriodState, type THrPeriod } from "@/services/hr.service";
 
 /**
  * Everything the server sends is minutes. These turn that into something a person
@@ -100,4 +100,37 @@ export function previousMonth(year: number, month: number): [number, number] {
 
 export function nextMonth(year: number, month: number): [number, number] {
   return month === 12 ? [year + 1, 1] : [year, month + 1];
+}
+
+/**
+ * The figures a screen should actually show for a month.
+ *
+ * A month still running has two of them, and every surface has to pick the same
+ * one or the summary above a table stops agreeing with the table below it. That
+ * disagreement is worse than the original wrong number: a reader who adds up a
+ * column and gets something else concludes the whole screen is broken.
+ */
+export function figuresToShow(period: {
+  target_minutes: number | null;
+  actual_minutes: number | null;
+  balance_minutes: number | null;
+  to_date?: THrPeriod["to_date"];
+}) {
+  const soFar = period.to_date;
+  return {
+    isPartial: !!soFar,
+    countedThrough: soFar?.counted_through ?? null,
+    target: soFar ? soFar.target_minutes : period.target_minutes,
+    actual: soFar ? soFar.actual_minutes : period.actual_minutes,
+    balance: soFar ? soFar.balance_minutes : period.balance_minutes,
+    // The whole month stays available, because what the contract owes is still
+    // worth showing next to how far through it somebody is.
+    monthTarget: period.target_minutes,
+  };
+}
+
+/** Whether a day has happened yet, given how far the month has been counted. */
+export function hasHappened(workDate: string, countedThrough: string | null): boolean {
+  if (countedThrough === null) return false;
+  return workDate <= countedThrough;
 }
