@@ -15,6 +15,7 @@ import { Loader } from "@plane/ui";
 // local imports
 import { EHrPeriodState, HrService, type THrOverviewRow } from "@/services/hr.service";
 import { HrOverviewTable } from "./overview-table";
+import { HrReopenModal } from "./reopen-modal";
 import { balanceTone, formatBalance, formatMinutes, formatMonthLabel, nextMonth, previousMonth } from "./utils";
 
 const hrService = new HrService();
@@ -30,6 +31,7 @@ export const HrTeamMonthRoot = observer(function HrTeamMonthRoot() {
   const now = new Date();
   const [[year, month], setMonth] = useState<[number, number]>([now.getFullYear(), now.getMonth() + 1]);
   const [busyPeriodId, setBusyPeriodId] = useState<string | null>(null);
+  const [reopening, setReopening] = useState<THrOverviewRow | null>(null);
 
   const { data, isLoading, error, mutate } = useSWR(`HR_OVERVIEW_${year}_${month}`, () =>
     hrService.overview(year, month)
@@ -60,12 +62,11 @@ export const HrTeamMonthRoot = observer(function HrTeamMonthRoot() {
     }
   };
 
-  const handleReopen = (row: THrOverviewRow) => {
-    // A closed month is evidence, so putting one back into play has to say why.
-    // The reason is kept with the month rather than only in an audit trail.
-    const reason = window.prompt(`Why is ${row.member_display_name}'s ${monthLabel} being reopened?`);
-    if (!reason?.trim()) return;
-    void act(row, () => hrService.reopen(row.id, reason.trim()), "Reopened");
+  const handleReopen = async (reason: string) => {
+    const row = reopening;
+    if (!row) return;
+    await act(row, () => hrService.reopen(row.id, reason), "Reopened");
+    setReopening(null);
   };
 
   return (
@@ -148,7 +149,16 @@ export const HrTeamMonthRoot = observer(function HrTeamMonthRoot() {
             busyPeriodId={busyPeriodId}
             onApprove={(row) => void act(row, () => hrService.approve(row.id), "Agreed")}
             onLock={(row) => void act(row, () => hrService.lock(row.id), "Closed")}
-            onReopen={handleReopen}
+            onReopen={setReopening}
+          />
+
+          <HrReopenModal
+            isOpen={reopening !== null}
+            personName={reopening?.member_display_name ?? ""}
+            monthLabel={monthLabel}
+            isBusy={busyPeriodId === reopening?.id}
+            onClose={() => setReopening(null)}
+            onConfirm={(reason) => void handleReopen(reason)}
           />
 
           <p className="text-custom-text-400 text-xs">
