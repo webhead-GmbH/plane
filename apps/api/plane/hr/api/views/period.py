@@ -132,7 +132,17 @@ class HrMeEndpoint(BaseAPIView):
         contract = effective(contracts, today)
         schedule = effective_schedule(personal, defaults, today)
 
-        period = HrPeriod.objects.filter(profile_id=profile.id, period_start=date(year, month, 1)).first()
+        first = date(year, month, 1)
+        period = HrPeriod.objects.filter(profile_id=profile.id, period_start=first).first()
+        # Bring the month up to date on the way in, the same as the overview does.
+        # Without it somebody opening their own hours for the first time is told
+        # nothing has been worked out yet and has nothing to press — and after
+        # that, the figures would only be as fresh as the last scheduled run.
+        # Rebuilding refuses to touch a month that has been handed in, approved or
+        # closed, so nothing already agreed can move underneath anybody.
+        if period is None or period.state in (HrPeriod.State.OPEN, HrPeriod.State.REOPENED):
+            rebuild_period(profile, year, month, actor=request.user)
+            period = HrPeriod.objects.filter(profile_id=profile.id, period_start=first).first()
 
         return Response(
             {
