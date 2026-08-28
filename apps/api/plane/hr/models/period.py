@@ -274,6 +274,10 @@ class HrOpeningBalance(HrBaseModel):
             models.UniqueConstraint(
                 fields=["profile", "kind", "effective_on"],
                 condition=models.Q(superseded_by__isnull=True),
+                # Only one figure per person, kind and date is ever the current
+                # one. Replacing it therefore has to retire the old row before the
+                # new one is inserted, which is why the replacement's id is chosen
+                # up front — see the endpoint that does it.
                 name="unique_hr_current_opening_balance",
             )
         ]
