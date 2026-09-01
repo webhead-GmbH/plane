@@ -1,0 +1,108 @@
+{
+  "hr": {
+    "my_time": {
+      "title": "Mi tiempo",
+      "everyone": "Todos",
+      "bring_up_to_date": "Poner al día",
+      "hand_in": "Entregar",
+      "no_record": "Aquí no hay ningún registro laboral",
+      "previous_month": "Mes anterior",
+      "next_month": "Mes siguiente",
+      "cannot_hand_in": {
+        "month_running": "El mes aún no ha terminado. Podrá entregarse cuando haya finalizado.",
+        "timer_running": "Detenga el temporizador que sigue en marcha y entregue el mes."
+      },
+      "toasts": {
+        "recomputed": "Puesto al día",
+        "not_recomputed": "No se pudo poner al día",
+        "handed_in": "Entregado",
+        "handed_in_message": "{month} ha pasado a aprobación.",
+        "not_handed_in": "Sin entregar",
+        "try_again": "Vuelva a intentarlo en un momento."
+      }
+    },
+    "team_time": {
+      "title": "Tiempo del equipo",
+      "not_permitted": "No tiene permiso para ver esto",
+      "export_csv": "CSV",
+      "export_excel": "Excel",
+      "still_open": "Aún sin cerrar",
+      "open_count": "{open} de {total}",
+      "counted_anywhere": "Las horas de cada persona se cuentan allí donde las haya registrado. Al cerrar un mes, sus cifras quedan fijadas; nada de lo que se registre después las modifica.",
+      "as_things_stand": "Las cifras reflejan la situación a fecha de {date}; el mes no ha terminado.",
+      "toasts": {
+        "refused": "No se pudo completar",
+        "try_again": "Vuelva a intentarlo.",
+        "agreed": "Aprobado",
+        "closed": "Cerrado",
+        "reopened": "Reabierto"
+      },
+      "earlier": "Anterior",
+      "later": "Siguiente",
+      "not_permitted_detail": "Las horas de cada persona solo puede consultarlas quien se ocupa del equipo. Su propio mes se encuentra en {page}."
+    },
+    "summary": {
+      "owed": "Horas previstas",
+      "worked": "Horas trabajadas",
+      "balance": "Saldo",
+      "whole_month": "{duration} en todo el mes",
+      "per_week": "{duration} a la semana",
+      "includes_away": "incluye {duration} de ausencia o vacaciones",
+      "carried_forward": "{duration} de saldo arrastrado",
+      "as_of": "Situación a fecha de {date}. El mes no ha terminado.",
+      "not_started": "Este mes aún no ha comenzado.",
+      "needs_review": "Hay días que conviene revisar: las horas que antes se contaban ya no están.",
+      "timer_running": "Hay un temporizador en marcha, por lo que este mes todavía no se puede entregar."
+    },
+    "day_table": {
+      "day": "Día",
+      "what_it_was": "Tipo de día",
+      "owed": "Previstas",
+      "work_items": "Elementos de trabajo",
+      "other": "Otras horas",
+      "away": "Ausencia",
+      "worked": "Trabajadas",
+      "balance": "Saldo",
+      "not_yet": "Este día aún no ha llegado.",
+      "needs_review": "Las horas que antes se contaban aquí ya no están"
+    },
+    "overview_table": {
+      "person": "Persona",
+      "state": "Estado",
+      "owed": "Previstas",
+      "worked": "Trabajadas",
+      "hours": "Horas",
+      "balance": "Saldo",
+      "carried": "Arrastrado",
+      "action": "Acción",
+      "not_handed_in": "Sin entregar",
+      "agree": "Aprobar",
+      "close": "Cerrar",
+      "reopen": "Reabrir",
+      "nobody_yet": "Todavía nadie tiene un registro laboral."
+    },
+    "reopen": {
+      "title": "¿Reabrir {month}?",
+      "explanation": "El mes de {name} está cerrado y sus cifras quedaron fijadas. Al reabrirlo, la versión cerrada se conserva y la nueva queda registrada junto a ella, de modo que no se sobrescribe nada de lo aprobado.",
+      "reason_label": "¿Por qué se reabre?",
+      "reason_placeholder": "Tres días de la segunda semana se registraron en el mes equivocado.",
+      "cancel": "Dejarlo cerrado",
+      "confirm": "Reabrir"
+    },
+    "day_kind": {
+      "workday": "Día laborable",
+      "non_working": "Día no laborable",
+      "holiday": "Día festivo",
+      "half_holiday": "Medio día festivo",
+      "absence": "Ausencia",
+      "partial_absence": "Ausencia parcial"
+    },
+    "state": {
+      "open": "Abierto",
+      "submitted": "Entregado",
+      "approved": "Aprobado",
+      "closed": "Cerrado",
+      "reopened": "Reabierto"
+    }
+  }
+}

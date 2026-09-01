@@ -1,0 +1,108 @@
+{
+  "hr": {
+    "my_time": {
+      "title": "Thời gian của tôi",
+      "everyone": "Mọi người",
+      "bring_up_to_date": "Cập nhật số liệu",
+      "hand_in": "Gửi duyệt",
+      "no_record": "Không có hồ sơ lao động ở đây",
+      "previous_month": "Tháng trước",
+      "next_month": "Tháng sau",
+      "cannot_hand_in": {
+        "month_running": "Tháng này chưa kết thúc. Bạn có thể gửi duyệt sau khi tháng kết thúc.",
+        "timer_running": "Hãy dừng bộ đếm giờ vẫn đang chạy, sau đó gửi duyệt tháng này."
+      },
+      "toasts": {
+        "recomputed": "Đã cập nhật số liệu",
+        "not_recomputed": "Không thể cập nhật số liệu",
+        "handed_in": "Đã gửi duyệt",
+        "handed_in_message": "{month} đã được chuyển đi phê duyệt.",
+        "not_handed_in": "Chưa gửi duyệt",
+        "try_again": "Hãy thử lại sau giây lát."
+      }
+    },
+    "team_time": {
+      "title": "Thời gian của nhóm",
+      "not_permitted": "Bạn không có quyền xem nội dung này",
+      "export_csv": "CSV",
+      "export_excel": "Excel",
+      "still_open": "Còn đang mở",
+      "open_count": "{open} trên {total}",
+      "counted_anywhere": "Số giờ của mỗi người đều được tính ở bất kỳ nơi nào họ đã ghi nhận. Việc đóng một tháng sẽ khóa số liệu của tháng đó; những gì ghi nhận sau đó không làm thay đổi số liệu này.",
+      "as_things_stand": "Số liệu tính đến {date}; tháng này chưa kết thúc.",
+      "toasts": {
+        "refused": "Thao tác không thành công",
+        "try_again": "Vui lòng thử lại.",
+        "agreed": "Đã phê duyệt",
+        "closed": "Đã đóng",
+        "reopened": "Đã mở lại"
+      },
+      "earlier": "Trước đó",
+      "later": "Sau đó",
+      "not_permitted_detail": "Số giờ của mọi người chỉ người phụ trách nhóm mới xem được. Tháng của riêng bạn nằm ở {page}."
+    },
+    "summary": {
+      "owed": "Cần làm",
+      "worked": "Đã làm",
+      "balance": "Số dư",
+      "whole_month": "{duration} cho cả tháng",
+      "per_week": "{duration} mỗi tuần",
+      "includes_away": "bao gồm {duration} vắng mặt hoặc nghỉ lễ",
+      "carried_forward": "{duration} chuyển sang từ kỳ trước",
+      "as_of": "Tính đến {date}. Tháng này chưa kết thúc.",
+      "not_started": "Tháng này chưa bắt đầu.",
+      "needs_review": "Có một số ngày cần xem lại — số giờ từng được tính trước đây nay không còn nữa.",
+      "timer_running": "Một bộ đếm giờ vẫn đang chạy, nên chưa thể gửi duyệt tháng này."
+    },
+    "day_table": {
+      "day": "Ngày",
+      "what_it_was": "Loại ngày",
+      "owed": "Cần làm",
+      "work_items": "Mục công việc",
+      "other": "Khác",
+      "away": "Vắng mặt",
+      "worked": "Đã làm",
+      "balance": "Số dư",
+      "not_yet": "Ngày này chưa đến.",
+      "needs_review": "Số giờ từng được tính ở đây nay không còn nữa"
+    },
+    "overview_table": {
+      "person": "Nhân viên",
+      "state": "Trạng thái",
+      "owed": "Cần làm",
+      "worked": "Đã làm",
+      "hours": "Số giờ",
+      "balance": "Số dư",
+      "carried": "Chuyển sang",
+      "action": "Thao tác",
+      "not_handed_in": "Chưa gửi duyệt",
+      "agree": "Phê duyệt",
+      "close": "Đóng",
+      "reopen": "Mở lại",
+      "nobody_yet": "Chưa ai có hồ sơ lao động."
+    },
+    "reopen": {
+      "title": "Mở lại {month}?",
+      "explanation": "Tháng của {name} đã được đóng và số liệu đã bị khóa. Khi mở lại, bản đã đóng vẫn được giữ nguyên và bản mới được ghi thêm bên cạnh, nên không có nội dung nào đã phê duyệt bị ghi đè.",
+      "reason_label": "Vì sao cần mở lại?",
+      "reason_placeholder": "Ba ngày trong tuần thứ hai đã được ghi nhận vào nhầm tháng.",
+      "cancel": "Giữ nguyên trạng thái đóng",
+      "confirm": "Mở lại"
+    },
+    "day_kind": {
+      "workday": "Ngày làm việc",
+      "non_working": "Không phải ngày làm việc",
+      "holiday": "Ngày lễ",
+      "half_holiday": "Nửa ngày lễ",
+      "absence": "Vắng mặt",
+      "partial_absence": "Vắng mặt một phần"
+    },
+    "state": {
+      "open": "Đang mở",
+      "submitted": "Đã gửi duyệt",
+      "approved": "Đã phê duyệt",
+      "closed": "Đã đóng",
+      "reopened": "Đã mở lại"
+    }
+  }
+}

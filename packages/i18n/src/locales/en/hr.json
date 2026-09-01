@@ -1,0 +1,108 @@
+{
+  "hr": {
+    "my_time": {
+      "title": "My time",
+      "everyone": "Everyone",
+      "bring_up_to_date": "Bring up to date",
+      "hand_in": "Hand in",
+      "no_record": "No employment record here",
+      "previous_month": "Previous month",
+      "next_month": "Next month",
+      "cannot_hand_in": {
+        "month_running": "The month is not over yet. It can be handed in once it has ended.",
+        "timer_running": "Stop the timer that is still running, then hand the month in."
+      },
+      "toasts": {
+        "recomputed": "Brought up to date",
+        "not_recomputed": "Could not bring it up to date",
+        "handed_in": "Handed in",
+        "handed_in_message": "{month} has gone for approval.",
+        "not_handed_in": "Not handed in",
+        "try_again": "Try again in a moment."
+      }
+    },
+    "team_time": {
+      "title": "Team time",
+      "not_permitted": "This is not yours to see",
+      "export_csv": "CSV",
+      "export_excel": "Excel",
+      "still_open": "Still open",
+      "open_count": "{open} of {total}",
+      "counted_anywhere": "Everyone's hours are counted wherever they logged them. Closing a month freezes its figures; nothing recorded afterwards changes them.",
+      "as_things_stand": "Figures are as things stand on {date}; the month is not over.",
+      "toasts": {
+        "refused": "That did not go through",
+        "try_again": "Please try again.",
+        "agreed": "Agreed",
+        "closed": "Closed",
+        "reopened": "Reopened"
+      },
+      "earlier": "Earlier",
+      "later": "Later",
+      "not_permitted_detail": "Everyone's hours are only readable by whoever looks after the team. Your own month is on {page}."
+    },
+    "summary": {
+      "owed": "Owed",
+      "worked": "Worked",
+      "balance": "Balance",
+      "whole_month": "{duration} for the whole month",
+      "per_week": "{duration} a week",
+      "includes_away": "includes {duration} away or on holiday",
+      "carried_forward": "{duration} carried forward",
+      "as_of": "As things stand on {date}. The month is not over.",
+      "not_started": "This month has not started yet.",
+      "needs_review": "Some days need looking at — hours that were counted before are no longer there.",
+      "timer_running": "A timer is still running, so this month cannot be handed in yet."
+    },
+    "day_table": {
+      "day": "Day",
+      "what_it_was": "What it was",
+      "owed": "Owed",
+      "work_items": "Work items",
+      "other": "Other",
+      "away": "Away",
+      "worked": "Worked",
+      "balance": "Balance",
+      "not_yet": "This day has not happened yet.",
+      "needs_review": "Hours counted here earlier are no longer there"
+    },
+    "overview_table": {
+      "person": "Person",
+      "state": "State",
+      "owed": "Owed",
+      "worked": "Worked",
+      "hours": "Hours",
+      "balance": "Balance",
+      "carried": "Carried",
+      "action": "Action",
+      "not_handed_in": "Not handed in",
+      "agree": "Agree",
+      "close": "Close",
+      "reopen": "Reopen",
+      "nobody_yet": "Nobody has an employment record yet."
+    },
+    "reopen": {
+      "title": "Reopen {month}?",
+      "explanation": "{name}'s month has been closed and its figures frozen. Reopening keeps the closed version and records this one alongside it, so nothing that was agreed is overwritten.",
+      "reason_label": "Why is it being reopened?",
+      "reason_placeholder": "Three days in the second week were logged against the wrong month.",
+      "cancel": "Leave it closed",
+      "confirm": "Reopen"
+    },
+    "day_kind": {
+      "workday": "Working day",
+      "non_working": "Not a working day",
+      "holiday": "Public holiday",
+      "half_holiday": "Half holiday",
+      "absence": "Away",
+      "partial_absence": "Partly away"
+    },
+    "state": {
+      "open": "Open",
+      "submitted": "Submitted",
+      "approved": "Approved",
+      "closed": "Closed",
+      "reopened": "Reopened"
+    }
+  }
+}

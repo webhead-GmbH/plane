@@ -7,17 +7,11 @@
 import { AlertTriangle, Timer } from "lucide-react";
 // plane imports
 import { Button } from "@plane/propel/button";
+import { useTranslation } from "@plane/i18n";
 import { cn } from "@plane/utils";
 // local imports
 import { EHrPeriodState, type THrOverviewRow } from "@/services/hr.service";
-import {
-  balanceTone,
-  figuresToShow,
-  formatBalance,
-  formatDecimalHours,
-  formatMinutes,
-  periodStateLabel,
-} from "./utils";
+import { balanceTone, figuresToShow, formatBalance, formatDecimalHours, formatMinutes, periodStateKey } from "./utils";
 
 type TProps = {
   rows: THrOverviewRow[];
@@ -27,22 +21,25 @@ type TProps = {
   onReopen: (row: THrOverviewRow) => void;
 };
 
-const StateChip = ({ state }: { state: EHrPeriodState }) => (
-  <span
-    className={cn(
-      "text-xs inline-flex rounded px-2 py-0.5 font-medium whitespace-nowrap",
-      state === EHrPeriodState.LOCKED
-        ? "bg-custom-background-80 text-custom-text-200"
-        : state === EHrPeriodState.APPROVED
-          ? "bg-green-500/10 text-green-600"
-          : state === EHrPeriodState.SUBMITTED
-            ? "bg-custom-primary-100/10 text-custom-primary-100"
-            : "bg-custom-background-90 text-custom-text-300"
-    )}
-  >
-    {periodStateLabel(state)}
-  </span>
-);
+const StateChip = ({ state }: { state: EHrPeriodState }) => {
+  const { t } = useTranslation();
+  return (
+    <span
+      className={cn(
+        "text-xs inline-flex rounded px-2 py-0.5 font-medium whitespace-nowrap",
+        state === EHrPeriodState.LOCKED
+          ? "bg-custom-background-80 text-custom-text-200"
+          : state === EHrPeriodState.APPROVED
+            ? "bg-green-500/10 text-green-600"
+            : state === EHrPeriodState.SUBMITTED
+              ? "bg-custom-primary-100/10 text-custom-primary-100"
+              : "bg-custom-background-90 text-custom-text-300"
+      )}
+    >
+      {t(periodStateKey(state))}
+    </span>
+  );
+};
 
 /**
  * Everybody's month, one row each.
@@ -53,10 +50,12 @@ const StateChip = ({ state }: { state: EHrPeriodState }) => (
  * ends up transcribed wrong.
  */
 export const HrOverviewTable = ({ rows, busyPeriodId, onApprove, onLock, onReopen }: TProps) => {
+  const { t } = useTranslation();
+
   if (rows.length === 0)
     return (
       <div className="border-custom-border-200 bg-custom-background-90 text-sm text-custom-text-300 rounded-md border px-4 py-6">
-        Nobody has an employment record yet.
+        {t("hr.overview_table.nobody_yet")}
       </div>
     );
 
@@ -65,14 +64,14 @@ export const HrOverviewTable = ({ rows, busyPeriodId, onApprove, onLock, onReope
       <table className="text-sm w-full min-w-[54rem]">
         <thead className="bg-custom-background-90 text-custom-text-400 text-xs tracking-wide uppercase">
           <tr>
-            <th className="px-4 py-2 text-left font-medium">Person</th>
-            <th className="px-4 py-2 text-left font-medium">State</th>
-            <th className="px-4 py-2 text-right font-medium">Owed</th>
-            <th className="px-4 py-2 text-right font-medium">Worked</th>
-            <th className="px-4 py-2 text-right font-medium">Hours</th>
-            <th className="px-4 py-2 text-right font-medium">Balance</th>
-            <th className="px-4 py-2 text-right font-medium">Carried</th>
-            <th className="px-4 py-2 text-right font-medium">Action</th>
+            <th className="px-4 py-2 text-left font-medium">{t("hr.overview_table.person")}</th>
+            <th className="px-4 py-2 text-left font-medium">{t("hr.overview_table.state")}</th>
+            <th className="px-4 py-2 text-right font-medium">{t("hr.overview_table.owed")}</th>
+            <th className="px-4 py-2 text-right font-medium">{t("hr.overview_table.worked")}</th>
+            <th className="px-4 py-2 text-right font-medium">{t("hr.overview_table.hours")}</th>
+            <th className="px-4 py-2 text-right font-medium">{t("hr.overview_table.balance")}</th>
+            <th className="px-4 py-2 text-right font-medium">{t("hr.overview_table.carried")}</th>
+            <th className="px-4 py-2 text-right font-medium">{t("hr.overview_table.action")}</th>
           </tr>
         </thead>
         <tbody>
@@ -99,7 +98,11 @@ export const HrOverviewTable = ({ rows, busyPeriodId, onApprove, onLock, onReope
                 </td>
                 <td
                   className="text-custom-text-200 px-4 py-2 text-right tabular-nums"
-                  title={shown.isPartial ? `${formatMinutes(shown.monthTarget)} for the whole month` : undefined}
+                  title={
+                    shown.isPartial
+                      ? t("hr.summary.whole_month", { duration: formatMinutes(shown.monthTarget) })
+                      : undefined
+                  }
                 >
                   {formatMinutes(shown.target)}
                 </td>
@@ -118,18 +121,18 @@ export const HrOverviewTable = ({ rows, busyPeriodId, onApprove, onLock, onReope
                 <td className="px-4 py-2 text-right">
                   {row.state === EHrPeriodState.SUBMITTED ? (
                     <Button variant="primary" size="sm" loading={isBusy} onClick={() => onApprove(row)}>
-                      Agree
+                      {t("hr.overview_table.agree")}
                     </Button>
                   ) : row.state === EHrPeriodState.APPROVED ? (
                     <Button variant="primary" size="sm" loading={isBusy} onClick={() => onLock(row)}>
-                      Close
+                      {t("hr.overview_table.close")}
                     </Button>
                   ) : row.state === EHrPeriodState.LOCKED ? (
                     <Button variant="link" size="sm" loading={isBusy} onClick={() => onReopen(row)}>
-                      Reopen
+                      {t("hr.overview_table.reopen")}
                     </Button>
                   ) : (
-                    <span className="text-custom-text-400 text-xs">Not handed in</span>
+                    <span className="text-custom-text-400 text-xs">{t("hr.overview_table.not_handed_in")}</span>
                   )}
                 </td>
               </tr>

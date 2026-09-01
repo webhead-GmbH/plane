@@ -40,29 +40,32 @@ export function balanceTone(minutes: number | null | undefined): string {
   return minutes > 0 ? "text-custom-primary-100" : "text-red-500";
 }
 
-const DAY_KIND_LABEL: Record<EHrDayKind, string> = {
-  [EHrDayKind.WORKDAY]: "Working day",
-  [EHrDayKind.NON_WORKING]: "Not a working day",
-  [EHrDayKind.HOLIDAY]: "Public holiday",
-  [EHrDayKind.HALF_HOLIDAY]: "Half holiday",
-  [EHrDayKind.ABSENCE]: "Away",
-  [EHrDayKind.PARTIAL_ABSENCE]: "Partly away",
+// These map to translation keys rather than to text, because the mapping is
+// wanted from plain functions that have no hook to reach the translator with.
+// The caller has one and does the lookup.
+const DAY_KIND_KEY: Record<EHrDayKind, string> = {
+  [EHrDayKind.WORKDAY]: "hr.day_kind.workday",
+  [EHrDayKind.NON_WORKING]: "hr.day_kind.non_working",
+  [EHrDayKind.HOLIDAY]: "hr.day_kind.holiday",
+  [EHrDayKind.HALF_HOLIDAY]: "hr.day_kind.half_holiday",
+  [EHrDayKind.ABSENCE]: "hr.day_kind.absence",
+  [EHrDayKind.PARTIAL_ABSENCE]: "hr.day_kind.partial_absence",
 };
 
-export function dayKindLabel(kind: EHrDayKind): string {
-  return DAY_KIND_LABEL[kind] ?? "Working day";
+export function dayKindKey(kind: EHrDayKind): string {
+  return DAY_KIND_KEY[kind] ?? "hr.day_kind.workday";
 }
 
-const PERIOD_STATE_LABEL: Record<EHrPeriodState, string> = {
-  [EHrPeriodState.OPEN]: "Open",
-  [EHrPeriodState.SUBMITTED]: "Submitted",
-  [EHrPeriodState.APPROVED]: "Approved",
-  [EHrPeriodState.LOCKED]: "Closed",
-  [EHrPeriodState.REOPENED]: "Reopened",
+const PERIOD_STATE_KEY: Record<EHrPeriodState, string> = {
+  [EHrPeriodState.OPEN]: "hr.state.open",
+  [EHrPeriodState.SUBMITTED]: "hr.state.submitted",
+  [EHrPeriodState.APPROVED]: "hr.state.approved",
+  [EHrPeriodState.LOCKED]: "hr.state.closed",
+  [EHrPeriodState.REOPENED]: "hr.state.reopened",
 };
 
-export function periodStateLabel(state: EHrPeriodState): string {
-  return PERIOD_STATE_LABEL[state] ?? "Open";
+export function periodStateKey(state: EHrPeriodState): string {
+  return PERIOD_STATE_KEY[state] ?? "hr.state.open";
 }
 
 /** A month can only be changed while it is open or has been reopened. */
@@ -71,16 +74,16 @@ export function isPeriodEditable(state: EHrPeriodState): boolean {
 }
 
 /** `2026-03-02` as `Mon 2 Mar`, without pulling in a date library. */
-export function formatDayLabel(isoDate: string): string {
+export function formatDayLabel(isoDate: string, locale?: string): string {
   const date = new Date(`${isoDate}T00:00:00`);
   if (Number.isNaN(date.getTime())) return isoDate;
-  return date.toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" });
+  return date.toLocaleDateString(locale, { weekday: "short", day: "numeric", month: "short" });
 }
 
-export function formatMonthLabel(isoDate: string): string {
+export function formatMonthLabel(isoDate: string, locale?: string): string {
   const date = new Date(`${isoDate}T00:00:00`);
   if (Number.isNaN(date.getTime())) return isoDate;
-  return date.toLocaleDateString(undefined, { month: "long", year: "numeric" });
+  return date.toLocaleDateString(locale, { month: "long", year: "numeric" });
 }
 
 /** Whether a date string is today, so the current day can be marked in a list. */

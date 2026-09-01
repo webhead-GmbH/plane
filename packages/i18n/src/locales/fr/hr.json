@@ -1,0 +1,108 @@
+{
+  "hr": {
+    "my_time": {
+      "title": "Mon temps",
+      "everyone": "Tout le monde",
+      "bring_up_to_date": "Mettre à jour",
+      "hand_in": "Soumettre",
+      "no_record": "Aucun contrat de travail ici",
+      "previous_month": "Mois précédent",
+      "next_month": "Mois suivant",
+      "cannot_hand_in": {
+        "month_running": "Le mois n’est pas encore terminé. Vous pourrez le soumettre une fois qu’il sera écoulé.",
+        "timer_running": "Arrêtez le chronomètre encore en cours, puis soumettez le mois."
+      },
+      "toasts": {
+        "recomputed": "Mise à jour effectuée",
+        "not_recomputed": "Mise à jour impossible",
+        "handed_in": "Soumis",
+        "handed_in_message": "{month} a été transmis pour approbation.",
+        "not_handed_in": "Non soumis",
+        "try_again": "Réessayez dans un instant."
+      }
+    },
+    "team_time": {
+      "title": "Temps de l’équipe",
+      "not_permitted": "Vous n’avez pas accès à ces informations",
+      "export_csv": "CSV",
+      "export_excel": "Excel",
+      "still_open": "Encore ouverts",
+      "open_count": "{open} sur {total}",
+      "counted_anywhere": "Les heures de chacun sont comptées quel que soit l’endroit où elles ont été enregistrées. La clôture d’un mois fige ses chiffres ; rien de ce qui est enregistré ensuite ne les modifie.",
+      "as_things_stand": "Chiffres arrêtés au {date} ; le mois n’est pas terminé.",
+      "toasts": {
+        "refused": "L’opération n’a pas abouti",
+        "try_again": "Veuillez réessayer.",
+        "agreed": "Approuvé",
+        "closed": "Clôturé",
+        "reopened": "Rouvert"
+      },
+      "earlier": "Plus tôt",
+      "later": "Plus tard",
+      "not_permitted_detail": "Les heures de chacun ne sont consultables que par le responsable de l’équipe. Votre propre mois se trouve sur {page}."
+    },
+    "summary": {
+      "owed": "Théorique",
+      "worked": "Réalisé",
+      "balance": "Solde",
+      "whole_month": "{duration} pour le mois entier",
+      "per_week": "{duration} par semaine",
+      "includes_away": "dont {duration} d’absence ou de jours fériés",
+      "carried_forward": "{duration} de report",
+      "as_of": "Chiffres arrêtés au {date}. Le mois n’est pas terminé.",
+      "not_started": "Ce mois n’a pas encore commencé.",
+      "needs_review": "Certains jours sont à vérifier — des heures comptées auparavant n’y figurent plus.",
+      "timer_running": "Un chronomètre est encore en cours, ce mois ne peut donc pas encore être soumis."
+    },
+    "day_table": {
+      "day": "Jour",
+      "what_it_was": "Nature du jour",
+      "owed": "Théorique",
+      "work_items": "Éléments de travail",
+      "other": "Autre",
+      "away": "Absence",
+      "worked": "Réalisé",
+      "balance": "Solde",
+      "not_yet": "Cette journée n’a pas encore eu lieu.",
+      "needs_review": "Des heures comptées ici auparavant n’y figurent plus"
+    },
+    "overview_table": {
+      "person": "Personne",
+      "state": "État",
+      "owed": "Théorique",
+      "worked": "Réalisé",
+      "hours": "Heures",
+      "balance": "Solde",
+      "carried": "Report",
+      "action": "Action",
+      "not_handed_in": "Non soumis",
+      "agree": "Approuver",
+      "close": "Clôturer",
+      "reopen": "Rouvrir",
+      "nobody_yet": "Personne n’a encore de contrat de travail."
+    },
+    "reopen": {
+      "title": "Rouvrir {month} ?",
+      "explanation": "Le mois de {name} a été clôturé et ses chiffres figés. La réouverture conserve la version clôturée et enregistre celle-ci à côté, afin que rien de ce qui a été approuvé ne soit écrasé.",
+      "reason_label": "Pourquoi ce mois est-il rouvert ?",
+      "reason_placeholder": "Trois jours de la deuxième semaine ont été enregistrés sur le mauvais mois.",
+      "cancel": "Laisser clôturé",
+      "confirm": "Rouvrir"
+    },
+    "day_kind": {
+      "workday": "Jour ouvré",
+      "non_working": "Jour non ouvré",
+      "holiday": "Jour férié",
+      "half_holiday": "Demi-journée fériée",
+      "absence": "Absence",
+      "partial_absence": "Absence partielle"
+    },
+    "state": {
+      "open": "Ouvert",
+      "submitted": "Soumis",
+      "approved": "Approuvé",
+      "closed": "Clôturé",
+      "reopened": "Rouvert"
+    }
+  }
+}

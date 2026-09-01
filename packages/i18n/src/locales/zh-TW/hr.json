@@ -1,0 +1,108 @@
+{
+  "hr": {
+    "my_time": {
+      "title": "我的工時",
+      "everyone": "所有人",
+      "bring_up_to_date": "重新計算",
+      "hand_in": "送出審核",
+      "no_record": "此處查無任職紀錄",
+      "previous_month": "上個月",
+      "next_month": "下個月",
+      "cannot_hand_in": {
+        "month_running": "此月份尚未結束，結束後才能送出審核。",
+        "timer_running": "請先停止仍在執行的計時器，再送出此月份。"
+      },
+      "toasts": {
+        "recomputed": "已重新計算",
+        "not_recomputed": "無法重新計算",
+        "handed_in": "已送出",
+        "handed_in_message": "{month} 已送出審核。",
+        "not_handed_in": "未送出",
+        "try_again": "請稍後再試。"
+      }
+    },
+    "team_time": {
+      "title": "團隊工時",
+      "not_permitted": "您沒有權限檢視此頁面",
+      "export_csv": "CSV",
+      "export_excel": "Excel",
+      "still_open": "尚未結算",
+      "open_count": "{open} 人／共 {total} 人",
+      "counted_anywhere": "無論在何處記錄，每個人的工時都會一併計入。月份結算後數字即凍結，之後記錄的工時不會再改變這些數字。",
+      "as_things_stand": "數字為 {date} 當下的狀況；此月份尚未結束。",
+      "toasts": {
+        "refused": "操作未完成",
+        "try_again": "請再試一次。",
+        "agreed": "已核准",
+        "closed": "已結算",
+        "reopened": "已重新開啟"
+      },
+      "earlier": "更早",
+      "later": "更晚",
+      "not_permitted_detail": "所有人的工時僅限負責管理團隊的人檢視。您個人的月份工時可在「{page}」中查看。"
+    },
+    "summary": {
+      "owed": "應工時",
+      "worked": "實際工時",
+      "balance": "工時結餘",
+      "whole_month": "整個月共 {duration}",
+      "per_week": "每週 {duration}",
+      "includes_away": "其中 {duration} 為請假或假日",
+      "carried_forward": "前期結轉 {duration}",
+      "as_of": "以上為 {date} 當下的狀況。此月份尚未結束。",
+      "not_started": "此月份尚未開始。",
+      "needs_review": "有幾天需要檢查：先前計入的工時已不存在。",
+      "timer_running": "仍有計時器在執行中，因此此月份尚無法送出審核。"
+    },
+    "day_table": {
+      "day": "日期",
+      "what_it_was": "當日類型",
+      "owed": "應工時",
+      "work_items": "工作事項",
+      "other": "其他",
+      "away": "請假",
+      "worked": "實際工時",
+      "balance": "工時結餘",
+      "not_yet": "此日期尚未到來。",
+      "needs_review": "先前計入此處的工時已不存在"
+    },
+    "overview_table": {
+      "person": "人員",
+      "state": "狀態",
+      "owed": "應工時",
+      "worked": "實際工時",
+      "hours": "時數",
+      "balance": "工時結餘",
+      "carried": "前期結轉",
+      "action": "操作",
+      "not_handed_in": "尚未送出",
+      "agree": "核准",
+      "close": "結算",
+      "reopen": "重新開啟",
+      "nobody_yet": "目前還沒有任何人有任職紀錄。"
+    },
+    "reopen": {
+      "title": "要重新開啟 {month} 嗎？",
+      "explanation": "{name} 的這個月份已結算，數字也已凍結。重新開啟會保留已結算的版本，並將這次的版本一併記錄下來，因此已核准的內容不會被覆寫。",
+      "reason_label": "為什麼要重新開啟？",
+      "reason_placeholder": "第二週有三天的工時記錄到錯誤的月份。",
+      "cancel": "維持結算狀態",
+      "confirm": "重新開啟"
+    },
+    "day_kind": {
+      "workday": "工作日",
+      "non_working": "非工作日",
+      "holiday": "國定假日",
+      "half_holiday": "半天國定假日",
+      "absence": "請假",
+      "partial_absence": "部分請假"
+    },
+    "state": {
+      "open": "開放中",
+      "submitted": "已送出",
+      "approved": "已核准",
+      "closed": "已結算",
+      "reopened": "已重新開啟"
+    }
+  }
+}

@@ -1,0 +1,108 @@
+{
+  "hr": {
+    "my_time": {
+      "title": "自分の勤怠",
+      "everyone": "全員",
+      "bring_up_to_date": "最新の状態に更新",
+      "hand_in": "提出",
+      "no_record": "ここには雇用記録がありません",
+      "previous_month": "前の月",
+      "next_month": "次の月",
+      "cannot_hand_in": {
+        "month_running": "この月はまだ終わっていません。月が終わってから提出できます。",
+        "timer_running": "実行中のタイマーを停止してから、月を提出してください。"
+      },
+      "toasts": {
+        "recomputed": "最新の状態にしました",
+        "not_recomputed": "最新の状態に更新できませんでした",
+        "handed_in": "提出しました",
+        "handed_in_message": "{month}を承認へ回しました。",
+        "not_handed_in": "提出できませんでした",
+        "try_again": "しばらくしてからもう一度お試しください。"
+      }
+    },
+    "team_time": {
+      "title": "チームの勤怠",
+      "not_permitted": "このページを表示する権限がありません",
+      "export_csv": "CSV",
+      "export_excel": "Excel",
+      "still_open": "未確定",
+      "open_count": "{total}人中{open}人",
+      "counted_anywhere": "各メンバーの時間は、記録した場所にかかわらずすべて集計されます。月を確定すると数値は固定され、その後に記録された内容は反映されません。",
+      "as_things_stand": "数値は{date}時点のものです。月はまだ終わっていません。",
+      "toasts": {
+        "refused": "処理できませんでした",
+        "try_again": "もう一度お試しください。",
+        "agreed": "承認しました",
+        "closed": "確定しました",
+        "reopened": "再オープンしました"
+      },
+      "earlier": "前の月",
+      "later": "次の月",
+      "not_permitted_detail": "全員の時間を閲覧できるのは、チームを管理する担当者のみです。自分の月は「{page}」で確認できます。"
+    },
+    "summary": {
+      "owed": "所定時間",
+      "worked": "実働時間",
+      "balance": "過不足",
+      "whole_month": "月全体で{duration}",
+      "per_week": "週{duration}",
+      "includes_away": "うち{duration}は休暇・祝日",
+      "carried_forward": "{duration}を繰り越し",
+      "as_of": "{date}時点の数値です。月はまだ終わっていません。",
+      "not_started": "この月はまだ始まっていません。",
+      "needs_review": "確認が必要な日があります。以前計上されていた時間が見つかりません。",
+      "timer_running": "タイマーが実行中のため、この月はまだ提出できません。"
+    },
+    "day_table": {
+      "day": "日付",
+      "what_it_was": "区分",
+      "owed": "所定時間",
+      "work_items": "作業項目",
+      "other": "その他",
+      "away": "休暇",
+      "worked": "実働時間",
+      "balance": "過不足",
+      "not_yet": "この日はまだ来ていません。",
+      "needs_review": "以前ここに計上されていた時間が見つかりません"
+    },
+    "overview_table": {
+      "person": "メンバー",
+      "state": "ステータス",
+      "owed": "所定時間",
+      "worked": "実働時間",
+      "hours": "時間数",
+      "balance": "過不足",
+      "carried": "繰越",
+      "action": "操作",
+      "not_handed_in": "未提出",
+      "agree": "承認",
+      "close": "確定",
+      "reopen": "再オープン",
+      "nobody_yet": "雇用記録が登録されているメンバーはまだいません。"
+    },
+    "reopen": {
+      "title": "{month}を再オープンしますか？",
+      "explanation": "{name}さんの月はすでに確定し、数値は固定されています。再オープンしても確定済みの記録はそのまま保持され、今回の記録はそれとは別に残るため、承認済みの内容が上書きされることはありません。",
+      "reason_label": "再オープンする理由",
+      "reason_placeholder": "第2週の3日分が誤った月に記録されていました。",
+      "cancel": "確定のままにする",
+      "confirm": "再オープン"
+    },
+    "day_kind": {
+      "workday": "稼働日",
+      "non_working": "非稼働日",
+      "holiday": "祝日",
+      "half_holiday": "半日祝日",
+      "absence": "休暇",
+      "partial_absence": "一部休暇"
+    },
+    "state": {
+      "open": "オープン",
+      "submitted": "提出済み",
+      "approved": "承認済み",
+      "closed": "確定済み",
+      "reopened": "再オープン済み"
+    }
+  }
+}

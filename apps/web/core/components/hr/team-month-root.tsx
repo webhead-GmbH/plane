@@ -10,6 +10,7 @@ import { ChevronLeft, ChevronRight, Download } from "lucide-react";
 import useSWR from "swr";
 // plane imports
 import { Button } from "@plane/propel/button";
+import { useTranslation } from "@plane/i18n";
 import { setToast, TOAST_TYPE } from "@plane/propel/toast";
 import { Loader } from "@plane/ui";
 // local imports
@@ -42,12 +43,13 @@ export const HrTeamMonthRoot = observer(function HrTeamMonthRoot() {
   const [busyPeriodId, setBusyPeriodId] = useState<string | null>(null);
   const [reopening, setReopening] = useState<THrOverviewRow | null>(null);
 
+  const { t, currentLocale } = useTranslation();
   const { data, isLoading, error, mutate } = useSWR(`HR_OVERVIEW_${year}_${month}`, () =>
     hrService.overview(year, month)
   );
 
   const rows = data?.rows ?? [];
-  const monthLabel = formatMonthLabel(`${year}-${String(month).padStart(2, "0")}-01`);
+  const monthLabel = formatMonthLabel(`${year}-${String(month).padStart(2, "0")}-01`, currentLocale);
 
   // Summed from exactly what each row displays, so the tiles are the total of
   // the table and not a second, differently-scoped answer above it.
@@ -67,8 +69,8 @@ export const HrTeamMonthRoot = observer(function HrTeamMonthRoot() {
     } catch (failure) {
       setToast({
         type: TOAST_TYPE.ERROR,
-        title: "That did not go through",
-        message: (failure as { error?: string })?.error ?? "Please try again.",
+        title: t("hr.team_time.toasts.refused"),
+        message: (failure as { error?: string })?.error ?? t("hr.team_time.toasts.try_again"),
       });
     } finally {
       setBusyPeriodId(null);
@@ -78,7 +80,7 @@ export const HrTeamMonthRoot = observer(function HrTeamMonthRoot() {
   const handleReopen = async (reason: string) => {
     const row = reopening;
     if (!row) return;
-    await act(row, () => hrService.reopen(row.id, reason), "Reopened");
+    await act(row, () => hrService.reopen(row.id, reason), t("hr.team_time.toasts.reopened"));
     setReopening(null);
   };
 
@@ -92,7 +94,7 @@ export const HrTeamMonthRoot = observer(function HrTeamMonthRoot() {
             prependIcon={<ChevronLeft className="size-4" />}
             onClick={() => setMonth(previousMonth(year, month))}
           >
-            Earlier
+            {t("hr.team_time.earlier")}
           </Button>
           <h1 className="text-custom-text-100 text-lg min-w-44 text-center font-semibold">{monthLabel}</h1>
           <Button
@@ -101,19 +103,19 @@ export const HrTeamMonthRoot = observer(function HrTeamMonthRoot() {
             appendIcon={<ChevronRight className="size-4" />}
             onClick={() => setMonth(nextMonth(year, month))}
           >
-            Later
+            {t("hr.team_time.later")}
           </Button>
         </div>
 
         <div className="flex items-center gap-2">
           <a href={hrService.monthExportUrl(year, month, "csv")} download>
             <Button variant="secondary" size="sm" prependIcon={<Download className="size-4" />}>
-              CSV
+              {t("hr.team_time.export_csv")}
             </Button>
           </a>
           <a href={hrService.monthExportUrl(year, month, "xlsx")} download>
             <Button variant="secondary" size="sm" prependIcon={<Download className="size-4" />}>
-              Excel
+              {t("hr.team_time.export_excel")}
             </Button>
           </a>
         </div>
@@ -126,33 +128,40 @@ export const HrTeamMonthRoot = observer(function HrTeamMonthRoot() {
         </Loader>
       ) : error ? (
         <div className="border-custom-border-200 bg-custom-background-90 rounded-md border px-4 py-6">
-          <p className="text-custom-text-200 text-sm font-medium">This is not yours to see</p>
+          <p className="text-custom-text-200 text-sm font-medium">{t("hr.team_time.not_permitted")}</p>
           <p className="text-custom-text-300 text-sm mt-1">
-            Everyone&apos;s hours are only readable by whoever looks after the team. Your own month is on{" "}
-            <span className="font-medium">My time</span>.
+            {t("hr.team_time.not_permitted_detail", { page: t("hr.my_time.title") })}
           </p>
         </div>
       ) : (
         <>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             <div className="border-custom-border-200 bg-custom-background-100 flex flex-col gap-0.5 rounded-md border px-4 py-3">
-              <span className="text-custom-text-400 text-xs font-medium tracking-wide uppercase">Owed</span>
+              <span className="text-custom-text-400 text-xs font-medium tracking-wide uppercase">
+                {t("hr.summary.owed")}
+              </span>
               <span className="text-custom-text-100 text-2xl font-semibold tabular-nums">{formatMinutes(owed)}</span>
             </div>
             <div className="border-custom-border-200 bg-custom-background-100 flex flex-col gap-0.5 rounded-md border px-4 py-3">
-              <span className="text-custom-text-400 text-xs font-medium tracking-wide uppercase">Worked</span>
+              <span className="text-custom-text-400 text-xs font-medium tracking-wide uppercase">
+                {t("hr.summary.worked")}
+              </span>
               <span className="text-custom-text-100 text-2xl font-semibold tabular-nums">{formatMinutes(worked)}</span>
             </div>
             <div className="border-custom-border-200 bg-custom-background-100 flex flex-col gap-0.5 rounded-md border px-4 py-3">
-              <span className="text-custom-text-400 text-xs font-medium tracking-wide uppercase">Balance</span>
+              <span className="text-custom-text-400 text-xs font-medium tracking-wide uppercase">
+                {t("hr.summary.balance")}
+              </span>
               <span className={`text-2xl font-semibold tabular-nums ${balanceTone(balance)}`}>
                 {formatBalance(balance)}
               </span>
             </div>
             <div className="border-custom-border-200 bg-custom-background-100 flex flex-col gap-0.5 rounded-md border px-4 py-3">
-              <span className="text-custom-text-400 text-xs font-medium tracking-wide uppercase">Still open</span>
+              <span className="text-custom-text-400 text-xs font-medium tracking-wide uppercase">
+                {t("hr.team_time.still_open")}
+              </span>
               <span className="text-custom-text-100 text-2xl font-semibold tabular-nums">
-                {outstanding} of {rows.length}
+                {t("hr.team_time.open_count", { open: outstanding, total: rows.length })}
               </span>
             </div>
           </div>
@@ -160,8 +169,8 @@ export const HrTeamMonthRoot = observer(function HrTeamMonthRoot() {
           <HrOverviewTable
             rows={rows}
             busyPeriodId={busyPeriodId}
-            onApprove={(row) => void act(row, () => hrService.approve(row.id), "Agreed")}
-            onLock={(row) => void act(row, () => hrService.lock(row.id), "Closed")}
+            onApprove={(row) => void act(row, () => hrService.approve(row.id), t("hr.team_time.toasts.agreed"))}
+            onLock={(row) => void act(row, () => hrService.lock(row.id), t("hr.team_time.toasts.closed"))}
             onReopen={setReopening}
           />
 
@@ -176,10 +185,9 @@ export const HrTeamMonthRoot = observer(function HrTeamMonthRoot() {
 
           <p className="text-custom-text-400 text-xs">
             {partialThrough
-              ? `Figures are as things stand on ${formatDayLabel(partialThrough)}; the month is not over. `
+              ? `${t("hr.team_time.as_things_stand", { date: formatDayLabel(partialThrough, currentLocale) })} `
               : ""}
-            Everyone&apos;s hours are counted wherever they logged them. Closing a month freezes its figures; nothing
-            recorded afterwards changes them.
+            {t("hr.team_time.counted_anywhere")}
           </p>
         </>
       )}

@@ -1,0 +1,108 @@
+{
+  "hr": {
+    "my_time": {
+      "title": "나의 근무 시간",
+      "everyone": "전체 구성원",
+      "bring_up_to_date": "최신 상태로 갱신",
+      "hand_in": "제출",
+      "no_record": "여기에는 고용 기록이 없습니다",
+      "previous_month": "이전 달",
+      "next_month": "다음 달",
+      "cannot_hand_in": {
+        "month_running": "해당 월이 아직 끝나지 않았습니다. 월이 종료된 후에 제출할 수 있습니다.",
+        "timer_running": "아직 실행 중인 타이머를 중지한 다음 해당 월을 제출하세요."
+      },
+      "toasts": {
+        "recomputed": "최신 상태로 갱신되었습니다",
+        "not_recomputed": "최신 상태로 갱신하지 못했습니다",
+        "handed_in": "제출되었습니다",
+        "handed_in_message": "{month} 승인 요청이 전달되었습니다.",
+        "not_handed_in": "제출되지 않았습니다",
+        "try_again": "잠시 후 다시 시도해 주세요."
+      }
+    },
+    "team_time": {
+      "title": "팀 근무 시간",
+      "not_permitted": "이 페이지를 볼 권한이 없습니다",
+      "export_csv": "CSV",
+      "export_excel": "Excel",
+      "still_open": "미마감",
+      "open_count": "{total}명 중 {open}명",
+      "counted_anywhere": "모든 구성원의 시간은 어디에 기록했든 모두 합산됩니다. 월을 마감하면 수치가 고정되며, 그 이후에 기록된 내용은 수치를 바꾸지 않습니다.",
+      "as_things_stand": "{date} 기준 수치이며, 해당 월은 아직 끝나지 않았습니다.",
+      "toasts": {
+        "refused": "처리되지 않았습니다",
+        "try_again": "다시 시도해 주세요.",
+        "agreed": "승인되었습니다",
+        "closed": "마감되었습니다",
+        "reopened": "다시 열렸습니다"
+      },
+      "earlier": "이전 달",
+      "later": "다음 달",
+      "not_permitted_detail": "모든 구성원의 시간은 팀을 관리하는 담당자만 볼 수 있습니다. 본인의 월별 기록은 {page} 페이지에서 확인할 수 있습니다."
+    },
+    "summary": {
+      "owed": "소정 시간",
+      "worked": "실근무 시간",
+      "balance": "차이",
+      "whole_month": "해당 월 전체 {duration}",
+      "per_week": "주당 {duration}",
+      "includes_away": "부재 또는 휴일 {duration} 포함",
+      "carried_forward": "{duration} 이월됨",
+      "as_of": "{date} 기준입니다. 해당 월은 아직 끝나지 않았습니다.",
+      "not_started": "해당 월은 아직 시작되지 않았습니다.",
+      "needs_review": "확인이 필요한 날이 있습니다. 이전에 집계되었던 시간이 지금은 없습니다.",
+      "timer_running": "타이머가 아직 실행 중이므로 해당 월은 아직 제출할 수 없습니다."
+    },
+    "day_table": {
+      "day": "날짜",
+      "what_it_was": "구분",
+      "owed": "소정 시간",
+      "work_items": "작업 항목",
+      "other": "기타",
+      "away": "부재",
+      "worked": "실근무 시간",
+      "balance": "차이",
+      "not_yet": "아직 지나지 않은 날입니다.",
+      "needs_review": "이전에 여기에 집계되었던 시간이 더 이상 없습니다"
+    },
+    "overview_table": {
+      "person": "구성원",
+      "state": "상태",
+      "owed": "소정 시간",
+      "worked": "실근무 시간",
+      "hours": "시간 수",
+      "balance": "차이",
+      "carried": "이월",
+      "action": "처리",
+      "not_handed_in": "미제출",
+      "agree": "승인",
+      "close": "마감",
+      "reopen": "다시 열기",
+      "nobody_yet": "아직 고용 기록이 있는 사람이 없습니다."
+    },
+    "reopen": {
+      "title": "{month}을(를) 다시 여시겠습니까?",
+      "explanation": "{name}님의 해당 월은 마감되어 수치가 고정된 상태입니다. 다시 열어도 마감된 버전은 그대로 보존되고 이번 기록이 그 옆에 함께 저장되므로, 이미 승인된 내용은 덮어쓰이지 않습니다.",
+      "reason_label": "다시 여는 사유는 무엇입니까?",
+      "reason_placeholder": "둘째 주 3일치가 잘못된 월에 기록되었습니다.",
+      "cancel": "마감 상태로 유지",
+      "confirm": "다시 열기"
+    },
+    "day_kind": {
+      "workday": "근무일",
+      "non_working": "비근무일",
+      "holiday": "공휴일",
+      "half_holiday": "반일 휴일",
+      "absence": "부재",
+      "partial_absence": "부분 부재"
+    },
+    "state": {
+      "open": "열림",
+      "submitted": "제출됨",
+      "approved": "승인됨",
+      "closed": "마감됨",
+      "reopened": "다시 열림"
+    }
+  }
+}

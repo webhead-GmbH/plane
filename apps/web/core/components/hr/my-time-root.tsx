@@ -11,6 +11,7 @@ import { ChevronLeft, ChevronRight, RefreshCw, Send, Users } from "lucide-react"
 import useSWR from "swr";
 // plane imports
 import { Button } from "@plane/propel/button";
+import { useTranslation } from "@plane/i18n";
 import { setToast, TOAST_TYPE } from "@plane/propel/toast";
 import { Loader } from "@plane/ui";
 // local imports
@@ -28,11 +29,12 @@ export const MyTimeRoot = observer(function MyTimeRoot() {
   const [[year, month], setMonth] = useState<[number, number]>([now.getFullYear(), now.getMonth() + 1]);
   const [isBusy, setIsBusy] = useState(false);
 
+  const { t, currentLocale } = useTranslation();
   const { data, isLoading, mutate } = useSWR(`HR_ME_${year}_${month}`, () => hrService.me(year, month));
 
   const period = data?.period ?? null;
   const days = period?.days ?? [];
-  const monthLabel = formatMonthLabel(`${year}-${String(month).padStart(2, "0")}-01`);
+  const monthLabel = formatMonthLabel(`${year}-${String(month).padStart(2, "0")}-01`, currentLocale);
 
   const handleRecompute = async () => {
     if (!period) return;
@@ -40,12 +42,12 @@ export const MyTimeRoot = observer(function MyTimeRoot() {
     try {
       await hrService.recompute(period.id);
       await mutate();
-      setToast({ type: TOAST_TYPE.SUCCESS, title: "Brought up to date" });
+      setToast({ type: TOAST_TYPE.SUCCESS, title: t("hr.my_time.toasts.recomputed") });
     } catch (error) {
       setToast({
         type: TOAST_TYPE.ERROR,
-        title: "Could not bring it up to date",
-        message: (error as { error?: string })?.error ?? "Try again in a moment.",
+        title: t("hr.my_time.toasts.not_recomputed"),
+        message: (error as { error?: string })?.error ?? t("hr.my_time.toasts.try_again"),
       });
     } finally {
       setIsBusy(false);
@@ -60,14 +62,14 @@ export const MyTimeRoot = observer(function MyTimeRoot() {
       await mutate();
       setToast({
         type: TOAST_TYPE.SUCCESS,
-        title: "Handed in",
-        message: `${monthLabel} has gone for approval.`,
+        title: t("hr.my_time.toasts.handed_in"),
+        message: t("hr.my_time.toasts.handed_in_message", { month: monthLabel }),
       });
     } catch (error) {
       setToast({
         type: TOAST_TYPE.ERROR,
-        title: "Not handed in",
-        message: (error as { error?: string })?.error ?? "Try again in a moment.",
+        title: t("hr.my_time.toasts.not_handed_in"),
+        message: (error as { error?: string })?.error ?? t("hr.my_time.toasts.try_again"),
       });
     } finally {
       setIsBusy(false);
@@ -90,7 +92,7 @@ export const MyTimeRoot = observer(function MyTimeRoot() {
     return (
       <div className="p-4">
         <div className="border-custom-border-200 bg-custom-background-90 rounded-md border px-4 py-6">
-          <p className="text-sm text-custom-text-200 font-medium">No employment record here</p>
+          <p className="text-sm text-custom-text-200 font-medium">{t("hr.my_time.no_record")}</p>
           <p className="text-sm text-custom-text-300 mt-1">
             Your hours are not being tracked in this workspace. If they should be, ask whoever looks after the team to
             set you up.
@@ -113,12 +115,17 @@ export const MyTimeRoot = observer(function MyTimeRoot() {
             variant="ghost"
             size="sm"
             onClick={() => setMonth(previousMonth(year, month))}
-            aria-label="Previous month"
+            aria-label={t("hr.my_time.previous_month")}
           >
             <ChevronLeft className="size-4" />
           </Button>
           <span className="text-sm text-custom-text-100 min-w-[10rem] text-center font-medium">{monthLabel}</span>
-          <Button variant="ghost" size="sm" onClick={() => setMonth(nextMonth(year, month))} aria-label="Next month">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setMonth(nextMonth(year, month))}
+            aria-label={t("hr.my_time.next_month")}
+          >
             <ChevronRight className="size-4" />
           </Button>
         </div>
@@ -128,14 +135,14 @@ export const MyTimeRoot = observer(function MyTimeRoot() {
             <Link to={`/${workspaceSlug}/team-time`}>
               <Button variant="secondary" size="sm">
                 <Users className="size-3.5" />
-                Everyone
+                {t("hr.my_time.everyone")}
               </Button>
             </Link>
           ) : null}
           {period && isPeriodEditable(period.state) ? (
             <Button variant="secondary" size="sm" onClick={handleRecompute} loading={isBusy}>
               <RefreshCw className="size-3.5" />
-              Bring up to date
+              {t("hr.my_time.bring_up_to_date")}
             </Button>
           ) : null}
           {period && period.state !== EHrPeriodState.LOCKED ? (
@@ -147,14 +154,14 @@ export const MyTimeRoot = observer(function MyTimeRoot() {
               loading={isBusy}
               title={
                 monthIsRunning
-                  ? "The month is not over yet. It can be handed in once it has ended."
+                  ? t("hr.my_time.cannot_hand_in.month_running")
                   : data.has_running_timer
-                    ? "Stop the timer that is still running, then hand the month in."
+                    ? t("hr.my_time.cannot_hand_in.timer_running")
                     : undefined
               }
             >
               <Send className="size-3.5" />
-              Hand in
+              {t("hr.my_time.hand_in")}
             </Button>
           ) : null}
         </div>

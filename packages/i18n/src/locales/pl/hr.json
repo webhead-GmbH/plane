@@ -1,0 +1,108 @@
+{
+  "hr": {
+    "my_time": {
+      "title": "Mój czas",
+      "everyone": "Wszyscy",
+      "bring_up_to_date": "Przelicz ponownie",
+      "hand_in": "Przekaż do zatwierdzenia",
+      "no_record": "Brak danych o zatrudnieniu",
+      "previous_month": "Poprzedni miesiąc",
+      "next_month": "Następny miesiąc",
+      "cannot_hand_in": {
+        "month_running": "Miesiąc jeszcze się nie zakończył. Można go przekazać po jego zakończeniu.",
+        "timer_running": "Należy zatrzymać wciąż działający licznik, a następnie przekazać miesiąc do zatwierdzenia."
+      },
+      "toasts": {
+        "recomputed": "Przeliczono ponownie",
+        "not_recomputed": "Nie udało się przeliczyć ponownie",
+        "handed_in": "Przekazano",
+        "handed_in_message": "{month} został przekazany do zatwierdzenia.",
+        "not_handed_in": "Nie przekazano",
+        "try_again": "Proszę spróbować ponownie za chwilę."
+      }
+    },
+    "team_time": {
+      "title": "Czas zespołu",
+      "not_permitted": "Brak uprawnień do wglądu",
+      "export_csv": "CSV",
+      "export_excel": "Excel",
+      "still_open": "Nadal otwarte",
+      "open_count": "{open} z {total}",
+      "counted_anywhere": "Godziny każdej osoby są liczone niezależnie od tego, gdzie zostały zarejestrowane. Zamknięcie miesiąca zamraża jego wartości; nic zarejestrowanego później już ich nie zmieni.",
+      "as_things_stand": "Wartości według stanu na {date}; miesiąc jeszcze się nie zakończył.",
+      "toasts": {
+        "refused": "Nie powiodło się",
+        "try_again": "Proszę spróbować ponownie.",
+        "agreed": "Zatwierdzono",
+        "closed": "Zamknięto",
+        "reopened": "Otwarto ponownie"
+      },
+      "earlier": "Wcześniej",
+      "later": "Później",
+      "not_permitted_detail": "Godziny wszystkich osób może przeglądać wyłącznie osoba odpowiedzialna za zespół. Własny miesiąc znajduje się na stronie {page}."
+    },
+    "summary": {
+      "owed": "Norma",
+      "worked": "Przepracowano",
+      "balance": "Saldo",
+      "whole_month": "{duration} w całym miesiącu",
+      "per_week": "{duration} tygodniowo",
+      "includes_away": "w tym {duration} nieobecności lub świąt",
+      "carried_forward": "{duration} z przeniesienia",
+      "as_of": "Stan na {date}. Miesiąc jeszcze się nie zakończył.",
+      "not_started": "Ten miesiąc jeszcze się nie rozpoczął.",
+      "needs_review": "Niektóre dni wymagają sprawdzenia – godzin liczonych wcześniej już nie ma.",
+      "timer_running": "Licznik nadal działa, więc tego miesiąca nie można jeszcze przekazać do zatwierdzenia."
+    },
+    "day_table": {
+      "day": "Dzień",
+      "what_it_was": "Rodzaj dnia",
+      "owed": "Norma",
+      "work_items": "Elementy pracy",
+      "other": "Inne",
+      "away": "Nieobecność",
+      "worked": "Przepracowano",
+      "balance": "Saldo",
+      "not_yet": "Ten dzień jeszcze nie nastąpił.",
+      "needs_review": "Godzin liczonych tu wcześniej już nie ma"
+    },
+    "overview_table": {
+      "person": "Osoba",
+      "state": "Stan",
+      "owed": "Norma",
+      "worked": "Przepracowano",
+      "hours": "Godziny",
+      "balance": "Saldo",
+      "carried": "Z przeniesienia",
+      "action": "Akcja",
+      "not_handed_in": "Nieprzekazany",
+      "agree": "Zatwierdź",
+      "close": "Zamknij",
+      "reopen": "Otwórz ponownie",
+      "nobody_yet": "Nikt nie ma jeszcze danych o zatrudnieniu."
+    },
+    "reopen": {
+      "title": "Otworzyć ponownie {month}?",
+      "explanation": "Miesiąc osoby {name} został zamknięty, a jego wartości zamrożone. Ponowne otwarcie zachowuje zamkniętą wersję i zapisuje obok niej nową, więc nic, co zostało zatwierdzone, nie zostaje nadpisane.",
+      "reason_label": "Dlaczego miesiąc zostaje ponownie otwarty?",
+      "reason_placeholder": "Trzy dni z drugiego tygodnia zostały zarejestrowane w niewłaściwym miesiącu.",
+      "cancel": "Pozostaw zamknięty",
+      "confirm": "Otwórz ponownie"
+    },
+    "day_kind": {
+      "workday": "Dzień roboczy",
+      "non_working": "Dzień wolny",
+      "holiday": "Święto",
+      "half_holiday": "Święto (pół dnia)",
+      "absence": "Nieobecność",
+      "partial_absence": "Częściowa nieobecność"
+    },
+    "state": {
+      "open": "Otwarty",
+      "submitted": "Przekazany",
+      "approved": "Zatwierdzony",
+      "closed": "Zamknięty",
+      "reopened": "Otwarty ponownie"
+    }
+  }
+}

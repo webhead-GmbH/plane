@@ -6,10 +6,11 @@
 
 import { AlertTriangle, Clock, Timer } from "lucide-react";
 // plane imports
+import { useTranslation } from "@plane/i18n";
 import { cn } from "@plane/utils";
 // local imports
 import { EHrPeriodState, type THrPeriod } from "@/services/hr.service";
-import { balanceTone, figuresToShow, formatBalance, formatDayLabel, formatMinutes, periodStateLabel } from "./utils";
+import { balanceTone, figuresToShow, formatBalance, formatDayLabel, formatMinutes, periodStateKey } from "./utils";
 
 type TFigureProps = {
   label: string;
@@ -49,6 +50,7 @@ export const HrMonthSummary = ({ period, hasRunningTimer, contractedWeeklyMinute
 
   const needsReview = (period.days ?? []).some((day) => day.needs_review);
   const isFinal = period.state === EHrPeriodState.LOCKED;
+  const { t, currentLocale } = useTranslation();
   const shown = figuresToShow(period);
   const wholeMonthAway = (period.absence_minutes ?? 0) + (period.holiday_minutes ?? 0);
   const soFarAway = (period.to_date?.absence_minutes ?? 0) + (period.to_date?.holiday_minutes ?? 0);
@@ -57,32 +59,34 @@ export const HrMonthSummary = ({ period, hasRunningTimer, contractedWeeklyMinute
     <div className="flex flex-col gap-3">
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
         <Figure
-          label="Owed"
+          label={t("hr.summary.owed")}
           value={formatMinutes(shown.target)}
           hint={
             shown.isPartial
-              ? `${formatMinutes(shown.monthTarget)} for the whole month`
+              ? t("hr.summary.whole_month", { duration: formatMinutes(shown.monthTarget) })
               : contractedWeeklyMinutes
-                ? `${formatMinutes(contractedWeeklyMinutes)} a week`
+                ? t("hr.summary.per_week", { duration: formatMinutes(contractedWeeklyMinutes) })
                 : undefined
           }
         />
         <Figure
-          label="Worked"
+          label={t("hr.summary.worked")}
           value={formatMinutes(shown.actual)}
           hint={
             (shown.isPartial ? soFarAway : wholeMonthAway)
-              ? `includes ${formatMinutes(shown.isPartial ? soFarAway : wholeMonthAway)} away or on holiday`
+              ? t("hr.summary.includes_away", {
+                  duration: formatMinutes(shown.isPartial ? soFarAway : wholeMonthAway),
+                })
               : undefined
           }
         />
         <Figure
-          label="Balance"
+          label={t("hr.summary.balance")}
           value={formatBalance(shown.balance)}
           tone={balanceTone(shown.balance)}
           hint={
             period.closing_balance_minutes !== null
-              ? `${formatBalance(period.closing_balance_minutes)} carried forward`
+              ? t("hr.summary.carried_forward", { duration: formatBalance(period.closing_balance_minutes) })
               : undefined
           }
         />
@@ -92,8 +96,8 @@ export const HrMonthSummary = ({ period, hasRunningTimer, contractedWeeklyMinute
         {shown.isPartial ? (
           <span className="text-custom-text-400">
             {shown.countedThrough
-              ? `As things stand on ${formatDayLabel(shown.countedThrough)}. The month is not over.`
-              : "This month has not started yet."}
+              ? t("hr.summary.as_of", { date: formatDayLabel(shown.countedThrough, currentLocale) })
+              : t("hr.summary.not_started")}
           </span>
         ) : null}
         <span
@@ -105,19 +109,20 @@ export const HrMonthSummary = ({ period, hasRunningTimer, contractedWeeklyMinute
           )}
         >
           <Clock className="size-3" />
-          {periodStateLabel(period.state)}
+          {t(periodStateKey(period.state))}
         </span>
 
         {hasRunningTimer ? (
           <span className="text-custom-text-300 inline-flex items-center gap-1">
-            <Timer className="size-3" />A timer is still running, so this month cannot be handed in yet.
+            <Timer className="size-3" />
+            {t("hr.summary.timer_running")}
           </span>
         ) : null}
 
         {needsReview ? (
           <span className="text-amber-600 inline-flex items-center gap-1">
             <AlertTriangle className="size-3" />
-            Some days need looking at — hours that were counted before are no longer there.
+            {t("hr.summary.needs_review")}
           </span>
         ) : null}
       </div>

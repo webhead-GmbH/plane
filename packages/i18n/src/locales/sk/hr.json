@@ -1,0 +1,108 @@
+{
+  "hr": {
+    "my_time": {
+      "title": "Môj čas",
+      "everyone": "Všetci",
+      "bring_up_to_date": "Aktualizovať",
+      "hand_in": "Odovzdať",
+      "no_record": "Žiadny záznam o pracovnom pomere",
+      "previous_month": "Predchádzajúci mesiac",
+      "next_month": "Nasledujúci mesiac",
+      "cannot_hand_in": {
+        "month_running": "Mesiac sa ešte neskončil. Odovzdať ho môžete až po jeho skončení.",
+        "timer_running": "Zastavte časovač, ktorý stále beží, a potom mesiac odovzdajte."
+      },
+      "toasts": {
+        "recomputed": "Aktualizované",
+        "not_recomputed": "Nepodarilo sa aktualizovať",
+        "handed_in": "Odovzdané",
+        "handed_in_message": "Mesiac {month} bol odoslaný na schválenie.",
+        "not_handed_in": "Neodovzdané",
+        "try_again": "Skúste to o chvíľu znova."
+      }
+    },
+    "team_time": {
+      "title": "Čas tímu",
+      "not_permitted": "Nemáte oprávnenie toto zobraziť",
+      "export_csv": "CSV",
+      "export_excel": "Excel",
+      "still_open": "Ešte otvorené",
+      "open_count": "{open} z {total}",
+      "counted_anywhere": "Hodiny každého sa počítajú bez ohľadu na to, kde ich zaznamenal. Uzavretím mesiaca sa jeho čísla uzamknú; nič, čo sa zaznamená neskôr, ich už nezmení.",
+      "as_things_stand": "Čísla platia k tomuto dňu: {date}; mesiac ešte neskončil.",
+      "toasts": {
+        "refused": "Nepodarilo sa to",
+        "try_again": "Skúste to prosím znova.",
+        "agreed": "Schválené",
+        "closed": "Uzavreté",
+        "reopened": "Znovu otvorené"
+      },
+      "earlier": "Staršie",
+      "later": "Novšie",
+      "not_permitted_detail": "Hodiny celého tímu si môže pozrieť len ten, kto tím vedie. Váš vlastný mesiac nájdete na stránke {page}."
+    },
+    "summary": {
+      "owed": "Predpísané",
+      "worked": "Odpracované",
+      "balance": "Saldo",
+      "whole_month": "{duration} za celý mesiac",
+      "per_week": "{duration} týždenne",
+      "includes_away": "zahŕňa {duration} neprítomnosti alebo sviatkov",
+      "carried_forward": "Prenesené z minulých mesiacov: {duration}",
+      "as_of": "Stav k tomuto dňu: {date}. Mesiac ešte neskončil.",
+      "not_started": "Tento mesiac sa ešte nezačal.",
+      "needs_review": "Niektoré dni treba skontrolovať – hodiny, ktoré tu boli započítané predtým, už tu nie sú.",
+      "timer_running": "Časovač stále beží, takže tento mesiac sa zatiaľ nedá odovzdať."
+    },
+    "day_table": {
+      "day": "Deň",
+      "what_it_was": "Druh dňa",
+      "owed": "Predpísané",
+      "work_items": "Pracovné položky",
+      "other": "Iné",
+      "away": "Neprítomnosť",
+      "worked": "Odpracované",
+      "balance": "Saldo",
+      "not_yet": "Tento deň ešte nenastal.",
+      "needs_review": "Hodiny, ktoré tu boli započítané predtým, už tu nie sú"
+    },
+    "overview_table": {
+      "person": "Osoba",
+      "state": "Stav",
+      "owed": "Predpísané",
+      "worked": "Odpracované",
+      "hours": "Hodiny",
+      "balance": "Saldo",
+      "carried": "Prenesené",
+      "action": "Akcia",
+      "not_handed_in": "Neodovzdané",
+      "agree": "Schváliť",
+      "close": "Uzavrieť",
+      "reopen": "Znovu otvoriť",
+      "nobody_yet": "Zatiaľ nikto nemá záznam o pracovnom pomere."
+    },
+    "reopen": {
+      "title": "Znovu otvoriť {month}?",
+      "explanation": "Mesiac používateľa {name} bol uzavretý a jeho čísla uzamknuté. Opätovné otvorenie zachová uzavretú verziu a túto uloží popri nej, takže nič, čo bolo schválené, sa neprepíše.",
+      "reason_label": "Prečo sa znovu otvára?",
+      "reason_placeholder": "Tri dni v druhom týždni boli zaznamenané do nesprávneho mesiaca.",
+      "cancel": "Ponechať uzavreté",
+      "confirm": "Znovu otvoriť"
+    },
+    "day_kind": {
+      "workday": "Pracovný deň",
+      "non_working": "Nepracovný deň",
+      "holiday": "Štátny sviatok",
+      "half_holiday": "Polovičný sviatok",
+      "absence": "Neprítomnosť",
+      "partial_absence": "Čiastočná neprítomnosť"
+    },
+    "state": {
+      "open": "Otvorené",
+      "submitted": "Odovzdané",
+      "approved": "Schválené",
+      "closed": "Uzavreté",
+      "reopened": "Znovu otvorené"
+    }
+  }
+}

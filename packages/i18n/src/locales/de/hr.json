@@ -1,0 +1,108 @@
+{
+  "hr": {
+    "my_time": {
+      "title": "Meine Zeit",
+      "everyone": "Alle",
+      "bring_up_to_date": "Neu berechnen",
+      "hand_in": "Einreichen",
+      "no_record": "Hier ist kein Dienstverhältnis hinterlegt",
+      "previous_month": "Vorheriger Monat",
+      "next_month": "Nächster Monat",
+      "cannot_hand_in": {
+        "month_running": "Der Monat läuft noch. Einreichen ist möglich, sobald er zu Ende ist.",
+        "timer_running": "Stoppen Sie den noch laufenden Timer, dann können Sie den Monat einreichen."
+      },
+      "toasts": {
+        "recomputed": "Neu berechnet",
+        "not_recomputed": "Neuberechnung nicht möglich",
+        "handed_in": "Eingereicht",
+        "handed_in_message": "{month} wurde zur Genehmigung weitergeleitet.",
+        "not_handed_in": "Nicht eingereicht",
+        "try_again": "Bitte versuchen Sie es in einem Moment erneut."
+      }
+    },
+    "team_time": {
+      "title": "Teamzeit",
+      "not_permitted": "Sie haben keine Berechtigung für diese Ansicht",
+      "export_csv": "CSV",
+      "export_excel": "Excel",
+      "still_open": "Noch offen",
+      "open_count": "{open} von {total}",
+      "counted_anywhere": "Die Stunden aller Personen werden gezählt, unabhängig davon, wo sie erfasst wurden. Mit dem Abschluss eines Monats werden dessen Werte eingefroren; spätere Erfassungen ändern sie nicht mehr.",
+      "as_things_stand": "Werte mit Stand {date}; der Monat läuft noch.",
+      "toasts": {
+        "refused": "Nicht durchgeführt",
+        "try_again": "Bitte versuchen Sie es erneut.",
+        "agreed": "Genehmigt",
+        "closed": "Abgeschlossen",
+        "reopened": "Wieder geöffnet"
+      },
+      "earlier": "Früher",
+      "later": "Später",
+      "not_permitted_detail": "Die Stunden aller Personen können nur von der Person eingesehen werden, die das Team betreut. Ihren eigenen Monat finden Sie unter {page}."
+    },
+    "summary": {
+      "owed": "Soll",
+      "worked": "Ist",
+      "balance": "Saldo",
+      "whole_month": "{duration} für den ganzen Monat",
+      "per_week": "{duration} pro Woche",
+      "includes_away": "enthält {duration} für Abwesenheit oder Feiertage",
+      "carried_forward": "{duration} Übertrag",
+      "as_of": "Der Monat ist noch nicht zu Ende. Stand: {date}",
+      "not_started": "Dieser Monat hat noch nicht begonnen.",
+      "needs_review": "Einige Tage sollten geprüft werden – früher gezählte Stunden sind nicht mehr vorhanden.",
+      "timer_running": "Ein Timer läuft noch, daher kann dieser Monat noch nicht eingereicht werden."
+    },
+    "day_table": {
+      "day": "Tag",
+      "what_it_was": "Art des Tages",
+      "owed": "Soll",
+      "work_items": "Arbeitselemente",
+      "other": "Sonstiges",
+      "away": "Abwesend",
+      "worked": "Ist",
+      "balance": "Saldo",
+      "not_yet": "Dieser Tag liegt noch in der Zukunft.",
+      "needs_review": "Früher gezählte Stunden sind hier nicht mehr vorhanden"
+    },
+    "overview_table": {
+      "person": "Person",
+      "state": "Status",
+      "owed": "Soll",
+      "worked": "Ist",
+      "hours": "Stunden",
+      "balance": "Saldo",
+      "carried": "Übertrag",
+      "action": "Aktion",
+      "not_handed_in": "Nicht eingereicht",
+      "agree": "Genehmigen",
+      "close": "Abschließen",
+      "reopen": "Wieder öffnen",
+      "nobody_yet": "Für niemanden ist bisher ein Dienstverhältnis hinterlegt."
+    },
+    "reopen": {
+      "title": "{month} wieder öffnen?",
+      "explanation": "Der Monat von {name} ist abgeschlossen und seine Werte sind eingefroren. Beim Wiederöffnen bleibt die abgeschlossene Fassung erhalten und die neue wird daneben festgehalten, damit nichts Genehmigtes überschrieben wird.",
+      "reason_label": "Warum wird der Monat wieder geöffnet?",
+      "reason_placeholder": "Drei Tage in der zweiten Woche wurden im falschen Monat erfasst.",
+      "cancel": "Abgeschlossen lassen",
+      "confirm": "Wieder öffnen"
+    },
+    "day_kind": {
+      "workday": "Arbeitstag",
+      "non_working": "Kein Arbeitstag",
+      "holiday": "Feiertag",
+      "half_holiday": "Halber Feiertag",
+      "absence": "Abwesend",
+      "partial_absence": "Teilweise abwesend"
+    },
+    "state": {
+      "open": "Offen",
+      "submitted": "Eingereicht",
+      "approved": "Genehmigt",
+      "closed": "Abgeschlossen",
+      "reopened": "Wieder geöffnet"
+    }
+  }
+}

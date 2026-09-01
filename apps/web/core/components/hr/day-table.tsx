@@ -6,10 +6,11 @@
 
 import { AlertTriangle } from "lucide-react";
 // plane imports
+import { useTranslation } from "@plane/i18n";
 import { cn } from "@plane/utils";
 // local imports
 import { EHrDayKind, type THrPeriodDay } from "@/services/hr.service";
-import { balanceTone, dayKindLabel, formatBalance, formatDayLabel, formatMinutes, hasHappened, isToday } from "./utils";
+import { balanceTone, dayKindKey, formatBalance, formatDayLabel, formatMinutes, hasHappened, isToday } from "./utils";
 
 type TProps = {
   days: THrPeriodDay[];
@@ -32,6 +33,8 @@ const QUIET_KINDS = new Set([EHrDayKind.NON_WORKING, EHrDayKind.HOLIDAY, EHrDayK
  * needs to see that a gap was a Saturday and not a day they forgot.
  */
 export const HrDayTable = ({ days, countedThrough }: TProps) => {
+  const { t, currentLocale } = useTranslation();
+
   if (!days.length)
     return (
       <div className="border-custom-border-200 text-sm text-custom-text-300 rounded-md border px-4 py-6">
@@ -44,25 +47,29 @@ export const HrDayTable = ({ days, countedThrough }: TProps) => {
       <table className="text-sm w-full min-w-[42rem]">
         <thead>
           <tr className="border-custom-border-200 bg-custom-background-90 border-b text-left">
-            <th className="text-xs text-custom-text-400 px-3 py-2 font-medium tracking-wide uppercase">Day</th>
-            <th className="text-xs text-custom-text-400 px-3 py-2 font-medium tracking-wide uppercase">What it was</th>
-            <th className="text-xs text-custom-text-400 px-3 py-2 text-right font-medium tracking-wide uppercase">
-              Owed
+            <th className="text-xs text-custom-text-400 px-3 py-2 font-medium tracking-wide uppercase">
+              {t("hr.day_table.day")}
+            </th>
+            <th className="text-xs text-custom-text-400 px-3 py-2 font-medium tracking-wide uppercase">
+              {t("hr.day_table.what_it_was")}
             </th>
             <th className="text-xs text-custom-text-400 px-3 py-2 text-right font-medium tracking-wide uppercase">
-              Work items
+              {t("hr.day_table.owed")}
             </th>
             <th className="text-xs text-custom-text-400 px-3 py-2 text-right font-medium tracking-wide uppercase">
-              Other
+              {t("hr.day_table.work_items")}
             </th>
             <th className="text-xs text-custom-text-400 px-3 py-2 text-right font-medium tracking-wide uppercase">
-              Away
+              {t("hr.day_table.other")}
             </th>
             <th className="text-xs text-custom-text-400 px-3 py-2 text-right font-medium tracking-wide uppercase">
-              Worked
+              {t("hr.day_table.away")}
             </th>
             <th className="text-xs text-custom-text-400 px-3 py-2 text-right font-medium tracking-wide uppercase">
-              Balance
+              {t("hr.day_table.worked")}
+            </th>
+            <th className="text-xs text-custom-text-400 px-3 py-2 text-right font-medium tracking-wide uppercase">
+              {t("hr.day_table.balance")}
             </th>
           </tr>
         </thead>
@@ -85,17 +92,14 @@ export const HrDayTable = ({ days, countedThrough }: TProps) => {
               >
                 <td className="px-3 py-1.5 whitespace-nowrap">
                   <span className={cn(isToday(day.work_date) && "text-custom-primary-100 font-medium")}>
-                    {formatDayLabel(day.work_date)}
+                    {formatDayLabel(day.work_date, currentLocale)}
                   </span>
                 </td>
                 <td className="text-custom-text-300 px-3 py-1.5">
                   <span className="inline-flex items-center gap-1.5">
-                    {dayKindLabel(day.day_kind)}
+                    {t(dayKindKey(day.day_kind))}
                     {day.needs_review ? (
-                      <AlertTriangle
-                        className="text-amber-600 size-3.5"
-                        aria-label="Hours counted here earlier are no longer there"
-                      />
+                      <AlertTriangle className="text-amber-600 size-3.5" aria-label={t("hr.day_table.needs_review")} />
                     ) : null}
                   </span>
                 </td>
@@ -109,7 +113,7 @@ export const HrDayTable = ({ days, countedThrough }: TProps) => {
                     "px-3 py-1.5 text-right tabular-nums",
                     stillToCome ? "text-custom-text-400" : balanceTone(day.balance_minutes)
                   )}
-                  title={stillToCome ? "This day has not happened yet." : undefined}
+                  title={stillToCome ? t("hr.day_table.not_yet") : undefined}
                 >
                   {stillToCome ? "—" : formatBalance(day.balance_minutes)}
                 </td>

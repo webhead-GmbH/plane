@@ -1,0 +1,108 @@
+{
+  "hr": {
+    "my_time": {
+      "title": "Zamanım",
+      "everyone": "Herkes",
+      "bring_up_to_date": "Güncelle",
+      "hand_in": "Teslim et",
+      "no_record": "Burada istihdam kaydı yok",
+      "previous_month": "Önceki ay",
+      "next_month": "Sonraki ay",
+      "cannot_hand_in": {
+        "month_running": "Ay henüz bitmedi. Ancak sona erdikten sonra teslim edilebilir.",
+        "timer_running": "Hâlâ çalışan zamanlayıcıyı durdurun, ardından ayı teslim edin."
+      },
+      "toasts": {
+        "recomputed": "Güncellendi",
+        "not_recomputed": "Güncellenemedi",
+        "handed_in": "Teslim edildi",
+        "handed_in_message": "{month} onaya gönderildi.",
+        "not_handed_in": "Teslim edilmedi",
+        "try_again": "Birazdan tekrar deneyin."
+      }
+    },
+    "team_time": {
+      "title": "Ekip zamanı",
+      "not_permitted": "Bunu görüntüleme yetkiniz yok",
+      "export_csv": "CSV",
+      "export_excel": "Excel",
+      "still_open": "Hâlâ açık",
+      "open_count": "{total} içinden {open}",
+      "counted_anywhere": "Herkesin saatleri, nerede kaydedilmiş olurlarsa olsun sayılır. Bir ay kapatıldığında rakamları dondurulur; sonrasında kaydedilen hiçbir şey bu rakamları değiştirmez.",
+      "as_things_stand": "Rakamlar {date} tarihindeki durumu yansıtır; ay henüz bitmedi.",
+      "toasts": {
+        "refused": "İşlem gerçekleşmedi",
+        "try_again": "Lütfen tekrar deneyin.",
+        "agreed": "Onaylandı",
+        "closed": "Kapatıldı",
+        "reopened": "Yeniden açıldı"
+      },
+      "earlier": "Önceki",
+      "later": "Sonraki",
+      "not_permitted_detail": "Herkesin saatlerini yalnızca ekipten sorumlu olan kişi görebilir. Kendi ayınız {page} sayfasında."
+    },
+    "summary": {
+      "owed": "Gereken",
+      "worked": "Çalışılan",
+      "balance": "Bakiye",
+      "whole_month": "Tüm ay için {duration}",
+      "per_week": "Haftada {duration}",
+      "includes_away": "{duration} izin veya tatil dahil",
+      "carried_forward": "devreden {duration}",
+      "as_of": "{date} tarihindeki durum. Ay henüz bitmedi.",
+      "not_started": "Bu ay henüz başlamadı.",
+      "needs_review": "Bazı günlerin gözden geçirilmesi gerekiyor — daha önce sayılan saatler artık yok.",
+      "timer_running": "Bir zamanlayıcı hâlâ çalışıyor, bu nedenle bu ay henüz teslim edilemez."
+    },
+    "day_table": {
+      "day": "Gün",
+      "what_it_was": "Gün türü",
+      "owed": "Gereken",
+      "work_items": "İş öğeleri",
+      "other": "Diğer",
+      "away": "İzin",
+      "worked": "Çalışılan",
+      "balance": "Bakiye",
+      "not_yet": "Bu gün henüz gelmedi.",
+      "needs_review": "Daha önce burada sayılan saatler artık yok"
+    },
+    "overview_table": {
+      "person": "Kişi",
+      "state": "Durum",
+      "owed": "Gereken",
+      "worked": "Çalışılan",
+      "hours": "Saatler",
+      "balance": "Bakiye",
+      "carried": "Devir",
+      "action": "Eylem",
+      "not_handed_in": "Teslim edilmedi",
+      "agree": "Onayla",
+      "close": "Kapat",
+      "reopen": "Yeniden aç",
+      "nobody_yet": "Henüz kimsenin istihdam kaydı yok."
+    },
+    "reopen": {
+      "title": "{month} yeniden açılsın mı?",
+      "explanation": "{name} adlı kişinin ayı kapatıldı ve rakamları donduruldu. Yeniden açmak, kapatılan sürümü korur ve bu sürümü onun yanına kaydeder; böylece onaylanmış hiçbir şeyin üzerine yazılmaz.",
+      "reason_label": "Neden yeniden açılıyor?",
+      "reason_placeholder": "İkinci haftadaki üç gün yanlış aya kaydedilmiş.",
+      "cancel": "Kapalı kalsın",
+      "confirm": "Yeniden aç"
+    },
+    "day_kind": {
+      "workday": "Çalışma günü",
+      "non_working": "Çalışma günü değil",
+      "holiday": "Resmi tatil",
+      "half_holiday": "Yarım tatil",
+      "absence": "İzinli",
+      "partial_absence": "Kısmen izinli"
+    },
+    "state": {
+      "open": "Açık",
+      "submitted": "Teslim edildi",
+      "approved": "Onaylandı",
+      "closed": "Kapatıldı",
+      "reopened": "Yeniden açıldı"
+    }
+  }
+}

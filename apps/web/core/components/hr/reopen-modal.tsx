@@ -7,6 +7,7 @@
 import { useEffect, useRef, useState } from "react";
 import { AlertTriangle } from "lucide-react";
 // plane imports
+import { useTranslation } from "@plane/i18n";
 import { Button } from "@plane/propel/button";
 import { EModalPosition, EModalWidth, ModalCore } from "@plane/ui";
 
@@ -28,6 +29,7 @@ type TProps = {
  * something to record alongside it.
  */
 export const HrReopenModal = ({ isOpen, personName, monthLabel, isBusy, onClose, onConfirm }: TProps) => {
+  const { t } = useTranslation();
   const [reason, setReason] = useState("");
   const field = useRef<HTMLTextAreaElement>(null);
 
@@ -49,17 +51,14 @@ export const HrReopenModal = ({ isOpen, personName, monthLabel, isBusy, onClose,
             <AlertTriangle className="text-amber-600 size-4" />
           </span>
           <div className="flex flex-col gap-1">
-            <h3 className="text-custom-text-100 text-lg font-medium">Reopen {monthLabel}?</h3>
-            <p className="text-custom-text-300 text-sm">
-              {personName}&apos;s month has been closed and its figures frozen. Reopening keeps the closed version and
-              records this one alongside it — nothing that was agreed is overwritten.
-            </p>
+            <h3 className="text-custom-text-100 text-lg font-medium">{t("hr.reopen.title", { month: monthLabel })}</h3>
+            <p className="text-custom-text-300 text-sm">{t("hr.reopen.explanation", { name: personName })}</p>
           </div>
         </div>
 
         <div className="flex flex-col gap-1.5">
           <label htmlFor="hr-reopen-reason" className="text-custom-text-200 text-sm font-medium">
-            Why is it being reopened?
+            {t("hr.reopen.reason_label")}
           </label>
           <textarea
             id="hr-reopen-reason"
@@ -67,14 +66,14 @@ export const HrReopenModal = ({ isOpen, personName, monthLabel, isBusy, onClose,
             value={reason}
             onChange={(event) => setReason(event.target.value)}
             rows={3}
-            placeholder="Three days in the second week were logged against the wrong month."
+            placeholder={t("hr.reopen.reason_placeholder")}
             className="border-custom-border-200 bg-custom-background-100 text-custom-text-100 placeholder:text-custom-text-400 focus:border-custom-primary-100 text-sm w-full resize-none rounded-md border px-3 py-2 outline-none"
           />
         </div>
 
         <div className="flex items-center justify-end gap-2">
           <Button variant="secondary" size="sm" onClick={onClose}>
-            Leave it closed
+            {t("hr.reopen.cancel")}
           </Button>
           <Button
             variant="primary"
@@ -83,7 +82,7 @@ export const HrReopenModal = ({ isOpen, personName, monthLabel, isBusy, onClose,
             loading={isBusy}
             onClick={() => onConfirm(reason.trim())}
           >
-            Reopen
+            {t("hr.reopen.confirm")}
           </Button>
         </div>
       </div>

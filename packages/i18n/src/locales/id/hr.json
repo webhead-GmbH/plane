@@ -1,0 +1,108 @@
+{
+  "hr": {
+    "my_time": {
+      "title": "Waktu saya",
+      "everyone": "Semua orang",
+      "bring_up_to_date": "Perbarui",
+      "hand_in": "Serahkan",
+      "no_record": "Tidak ada catatan kepegawaian di sini",
+      "previous_month": "Bulan sebelumnya",
+      "next_month": "Bulan berikutnya",
+      "cannot_hand_in": {
+        "month_running": "Bulan ini belum berakhir. Anda dapat menyerahkannya setelah bulan berakhir.",
+        "timer_running": "Hentikan pengatur waktu yang masih berjalan, lalu serahkan bulan ini."
+      },
+      "toasts": {
+        "recomputed": "Sudah diperbarui",
+        "not_recomputed": "Tidak dapat memperbarui",
+        "handed_in": "Diserahkan",
+        "handed_in_message": "{month} telah dikirim untuk persetujuan.",
+        "not_handed_in": "Belum diserahkan",
+        "try_again": "Silakan coba lagi dalam beberapa saat."
+      }
+    },
+    "team_time": {
+      "title": "Waktu tim",
+      "not_permitted": "Anda tidak memiliki izin untuk melihat ini",
+      "export_csv": "CSV",
+      "export_excel": "Excel",
+      "still_open": "Masih terbuka",
+      "open_count": "{open} dari {total}",
+      "counted_anywhere": "Jam setiap orang dihitung di mana pun mereka mencatatnya. Menutup bulan akan membekukan angkanya; pencatatan setelah itu tidak lagi mengubahnya.",
+      "as_things_stand": "Angka menunjukkan keadaan per {date}; bulan ini belum berakhir.",
+      "toasts": {
+        "refused": "Tindakan itu tidak berhasil",
+        "try_again": "Silakan coba lagi.",
+        "agreed": "Disetujui",
+        "closed": "Ditutup",
+        "reopened": "Dibuka kembali"
+      },
+      "earlier": "Sebelumnya",
+      "later": "Berikutnya",
+      "not_permitted_detail": "Jam semua orang hanya dapat dilihat oleh orang yang mengelola tim. Bulan Anda sendiri ada di halaman {page}."
+    },
+    "summary": {
+      "owed": "Jam wajib",
+      "worked": "Jam tercatat",
+      "balance": "Saldo",
+      "whole_month": "{duration} untuk satu bulan penuh",
+      "per_week": "{duration} per minggu",
+      "includes_away": "termasuk {duration} tidak hadir atau libur",
+      "carried_forward": "{duration} dibawa dari bulan sebelumnya",
+      "as_of": "Keadaan per {date}. Bulan ini belum berakhir.",
+      "not_started": "Bulan ini belum dimulai.",
+      "needs_review": "Ada hari yang perlu diperiksa — jam yang sebelumnya dihitung kini sudah tidak ada.",
+      "timer_running": "Pengatur waktu masih berjalan, sehingga bulan ini belum dapat diserahkan."
+    },
+    "day_table": {
+      "day": "Hari",
+      "what_it_was": "Jenis hari",
+      "owed": "Jam wajib",
+      "work_items": "Item kerja",
+      "other": "Lainnya",
+      "away": "Tidak hadir",
+      "worked": "Jam tercatat",
+      "balance": "Saldo",
+      "not_yet": "Hari tersebut belum terjadi.",
+      "needs_review": "Jam yang sebelumnya dihitung di sini kini sudah tidak ada"
+    },
+    "overview_table": {
+      "person": "Orang",
+      "state": "Status",
+      "owed": "Jam wajib",
+      "worked": "Jam tercatat",
+      "hours": "Jam",
+      "balance": "Saldo",
+      "carried": "Saldo awal",
+      "action": "Tindakan",
+      "not_handed_in": "Belum diserahkan",
+      "agree": "Setujui",
+      "close": "Tutup",
+      "reopen": "Buka kembali",
+      "nobody_yet": "Belum ada seorang pun yang memiliki catatan kepegawaian."
+    },
+    "reopen": {
+      "title": "Buka kembali {month}?",
+      "explanation": "Bulan milik {name} sudah ditutup dan angkanya dibekukan. Membuka kembali akan mempertahankan versi yang ditutup dan mencatat versi ini di sampingnya, sehingga tidak ada hal yang telah disetujui yang akan tertimpa.",
+      "reason_label": "Mengapa bulan ini dibuka kembali?",
+      "reason_placeholder": "Tiga hari di minggu kedua tercatat pada bulan yang salah.",
+      "cancel": "Biarkan tetap tertutup",
+      "confirm": "Buka kembali"
+    },
+    "day_kind": {
+      "workday": "Hari kerja",
+      "non_working": "Bukan hari kerja",
+      "holiday": "Hari libur nasional",
+      "half_holiday": "Setengah hari libur",
+      "absence": "Tidak hadir",
+      "partial_absence": "Sebagian tidak hadir"
+    },
+    "state": {
+      "open": "Terbuka",
+      "submitted": "Diserahkan",
+      "approved": "Disetujui",
+      "closed": "Ditutup",
+      "reopened": "Dibuka kembali"
+    }
+  }
+}

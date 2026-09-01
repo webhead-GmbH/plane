@@ -1,0 +1,108 @@
+{
+  "hr": {
+    "my_time": {
+      "title": "Timpul meu",
+      "everyone": "Toată lumea",
+      "bring_up_to_date": "Aduceți la zi",
+      "hand_in": "Predați luna",
+      "no_record": "Nicio fișă de angajare aici",
+      "previous_month": "Luna anterioară",
+      "next_month": "Luna următoare",
+      "cannot_hand_in": {
+        "month_running": "Luna nu s-a încheiat încă. Poate fi predată după ce se termină.",
+        "timer_running": "Opriți cronometrul care încă rulează, apoi predați luna."
+      },
+      "toasts": {
+        "recomputed": "Adus la zi",
+        "not_recomputed": "Nu s-a putut aduce la zi",
+        "handed_in": "Predată",
+        "handed_in_message": "{month} a fost trimisă spre aprobare.",
+        "not_handed_in": "Nepredată",
+        "try_again": "Încercați din nou peste un moment."
+      }
+    },
+    "team_time": {
+      "title": "Timpul echipei",
+      "not_permitted": "Nu aveți permisiunea de a vedea această pagină",
+      "export_csv": "CSV",
+      "export_excel": "Excel",
+      "still_open": "Încă deschise",
+      "open_count": "{open} din {total}",
+      "counted_anywhere": "Orele fiecărei persoane sunt luate în calcul indiferent unde au fost înregistrate. Închiderea unei luni îi îngheață cifrele; nimic din ce se înregistrează ulterior nu le mai modifică.",
+      "as_things_stand": "Cifrele sunt cele de la {date}; luna nu s-a încheiat.",
+      "toasts": {
+        "refused": "Acțiunea nu a reușit",
+        "try_again": "Vă rugăm să încercați din nou.",
+        "agreed": "Aprobată",
+        "closed": "Închisă",
+        "reopened": "Redeschisă"
+      },
+      "earlier": "Mai devreme",
+      "later": "Mai târziu",
+      "not_permitted_detail": "Orele tuturor pot fi văzute doar de cine se ocupă de echipă. Luna dumneavoastră se află pe {page}."
+    },
+    "summary": {
+      "owed": "De lucrat",
+      "worked": "Lucrate",
+      "balance": "Sold",
+      "whole_month": "{duration} pentru toată luna",
+      "per_week": "{duration} pe săptămână",
+      "includes_away": "include {duration} de absență sau concediu",
+      "carried_forward": "{duration} reportate",
+      "as_of": "Situația la {date}. Luna nu s-a încheiat.",
+      "not_started": "Această lună nu a început încă.",
+      "needs_review": "Unele zile trebuie verificate — ore care au fost luate în calcul anterior nu mai există.",
+      "timer_running": "Un cronometru încă rulează, așa că luna nu poate fi predată încă."
+    },
+    "day_table": {
+      "day": "Zi",
+      "what_it_was": "Ce fel de zi",
+      "owed": "De lucrat",
+      "work_items": "Activități",
+      "other": "Altele",
+      "away": "Absență",
+      "worked": "Lucrate",
+      "balance": "Sold",
+      "not_yet": "Această zi nu a sosit încă.",
+      "needs_review": "Orele luate în calcul aici anterior nu mai există"
+    },
+    "overview_table": {
+      "person": "Persoană",
+      "state": "Stare",
+      "owed": "De lucrat",
+      "worked": "Lucrate",
+      "hours": "Ore",
+      "balance": "Sold",
+      "carried": "Report",
+      "action": "Acțiune",
+      "not_handed_in": "Nepredată",
+      "agree": "Aprobați",
+      "close": "Închideți",
+      "reopen": "Redeschideți",
+      "nobody_yet": "Nimeni nu are încă o fișă de angajare."
+    },
+    "reopen": {
+      "title": "Redeschideți {month}?",
+      "explanation": "Luna pentru {name} a fost închisă, iar cifrele ei au fost înghețate. Redeschiderea păstrează versiunea închisă și o înregistrează pe aceasta alături de ea, astfel încât nimic din ce a fost aprobat nu este suprascris.",
+      "reason_label": "De ce se redeschide?",
+      "reason_placeholder": "Trei zile din a doua săptămână au fost înregistrate în luna greșită.",
+      "cancel": "Lăsați-o închisă",
+      "confirm": "Redeschideți"
+    },
+    "day_kind": {
+      "workday": "Zi lucrătoare",
+      "non_working": "Zi nelucrătoare",
+      "holiday": "Sărbătoare legală",
+      "half_holiday": "Jumătate de zi de sărbătoare",
+      "absence": "Absență",
+      "partial_absence": "Absență parțială"
+    },
+    "state": {
+      "open": "Deschisă",
+      "submitted": "Predată",
+      "approved": "Aprobată",
+      "closed": "Închisă",
+      "reopened": "Redeschisă"
+    }
+  }
+}

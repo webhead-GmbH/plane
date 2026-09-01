@@ -1,0 +1,108 @@
+{
+  "hr": {
+    "my_time": {
+      "title": "Minhas horas",
+      "everyone": "Todos",
+      "bring_up_to_date": "Atualizar números",
+      "hand_in": "Enviar",
+      "no_record": "Nenhum registro de vínculo empregatício aqui",
+      "previous_month": "Mês anterior",
+      "next_month": "Próximo mês",
+      "cannot_hand_in": {
+        "month_running": "O mês ainda não terminou. Ele pode ser enviado assim que terminar.",
+        "timer_running": "Pare o cronômetro que ainda está ativo e depois envie o mês."
+      },
+      "toasts": {
+        "recomputed": "Números atualizados",
+        "not_recomputed": "Não foi possível atualizar os números",
+        "handed_in": "Enviado",
+        "handed_in_message": "{month} foi enviado para aprovação.",
+        "not_handed_in": "Não enviado",
+        "try_again": "Tente novamente em instantes."
+      }
+    },
+    "team_time": {
+      "title": "Horas da equipe",
+      "not_permitted": "Você não tem permissão para ver isto",
+      "export_csv": "CSV",
+      "export_excel": "Excel",
+      "still_open": "Ainda em aberto",
+      "open_count": "{open} de {total}",
+      "counted_anywhere": "As horas de cada pessoa são contadas onde quer que tenham sido registradas. Fechar um mês congela os números dele; nada registrado depois disso os altera.",
+      "as_things_stand": "Os números refletem a situação em {date}; o mês ainda não terminou.",
+      "toasts": {
+        "refused": "A ação não foi concluída",
+        "try_again": "Por favor, tente novamente.",
+        "agreed": "Aprovado",
+        "closed": "Fechado",
+        "reopened": "Reaberto"
+      },
+      "earlier": "Anterior",
+      "later": "Próximo",
+      "not_permitted_detail": "As horas de cada pessoa só podem ser vistas por quem cuida da equipe. O seu próprio mês está em {page}."
+    },
+    "summary": {
+      "owed": "Previstas",
+      "worked": "Trabalhadas",
+      "balance": "Saldo",
+      "whole_month": "{duration} no mês inteiro",
+      "per_week": "{duration} por semana",
+      "includes_away": "inclui {duration} de ausência ou feriado",
+      "carried_forward": "{duration} de saldo anterior",
+      "as_of": "Situação em {date}. O mês ainda não terminou.",
+      "not_started": "Este mês ainda não começou.",
+      "needs_review": "Alguns dias precisam de atenção: as horas contabilizadas antes não existem mais.",
+      "timer_running": "Um cronômetro ainda está ativo, portanto este mês ainda não pode ser enviado."
+    },
+    "day_table": {
+      "day": "Dia",
+      "what_it_was": "Tipo de dia",
+      "owed": "Previstas",
+      "work_items": "Itens de trabalho",
+      "other": "Outros",
+      "away": "Ausência",
+      "worked": "Trabalhadas",
+      "balance": "Saldo",
+      "not_yet": "Este dia ainda não chegou.",
+      "needs_review": "As horas contabilizadas aqui antes não existem mais"
+    },
+    "overview_table": {
+      "person": "Pessoa",
+      "state": "Estado",
+      "owed": "Previstas",
+      "worked": "Trabalhadas",
+      "hours": "Horas",
+      "balance": "Saldo",
+      "carried": "Saldo anterior",
+      "action": "Ação",
+      "not_handed_in": "Não enviado",
+      "agree": "Aprovar",
+      "close": "Fechar",
+      "reopen": "Reabrir",
+      "nobody_yet": "Ninguém tem registro de vínculo empregatício ainda."
+    },
+    "reopen": {
+      "title": "Reabrir {month}?",
+      "explanation": "O mês de {name} foi fechado e seus números foram congelados. Ao reabrir, a versão fechada é mantida e esta fica registrada ao lado dela, de modo que nada do que foi aprovado é sobrescrito.",
+      "reason_label": "Por que ele está sendo reaberto?",
+      "reason_placeholder": "Três dias da segunda semana foram registrados no mês errado.",
+      "cancel": "Manter fechado",
+      "confirm": "Reabrir"
+    },
+    "day_kind": {
+      "workday": "Dia útil",
+      "non_working": "Dia não útil",
+      "holiday": "Feriado",
+      "half_holiday": "Meio feriado",
+      "absence": "Ausência",
+      "partial_absence": "Ausência parcial"
+    },
+    "state": {
+      "open": "Em aberto",
+      "submitted": "Enviado",
+      "approved": "Aprovado",
+      "closed": "Fechado",
+      "reopened": "Reaberto"
+    }
+  }
+}

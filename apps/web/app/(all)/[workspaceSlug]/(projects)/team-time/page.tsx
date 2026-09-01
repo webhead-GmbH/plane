@@ -5,13 +5,16 @@
  */
 
 // components
+import { useTranslation } from "@plane/i18n";
 import { PageHead } from "@/components/core/page-title";
 import { HrTeamMonthRoot } from "@/components/hr";
 
 export default function TeamTimePage() {
+  const { t } = useTranslation();
+
   return (
     <>
-      <PageHead title="Team time" />
+      <PageHead title={t("hr.team_time.title")} />
       <div className="relative h-full w-full overflow-hidden overflow-y-auto">
         <HrTeamMonthRoot />
       </div>
