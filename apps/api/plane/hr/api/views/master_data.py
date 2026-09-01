@@ -9,6 +9,9 @@ for months that are still open, which is why the endpoints refuse to touch
 anything a closed month depends on.
 """
 
+# Django imports
+from django.utils import timezone
+
 # Third-party imports
 from rest_framework import status
 from rest_framework.response import Response
@@ -266,6 +269,42 @@ class HrLeaveEntitlementEndpoint(BaseAPIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+def _seed_holidays(workspace, calendar, span=5):
+    """Fill in the public holidays around now, leaving any already there alone.
+
+    Idempotent, and safe to re-run to extend the range: a day somebody has edited
+    or removed by hand is not put back, because the calendar is theirs to correct.
+    """
+    from plane.hr.utils.holidays import austrian_holidays
+
+    if calendar.country_code != "AT":
+        return 0
+
+    this_year = timezone.now().year
+    years = range(this_year - span, this_year + span + 1)
+    known = set(
+        HrHoliday.objects.filter(calendar=calendar)
+        .values_list("date", flat=True)
+    )
+
+    fresh = [
+        HrHoliday(
+            workspace=workspace,
+            calendar=calendar,
+            date=day,
+            name_de=name_de,
+            name_en=name_en,
+            day_fraction=fraction,
+            is_statutory=is_statutory,
+        )
+        for year in years
+        for day, name_de, name_en, fraction, is_statutory in austrian_holidays(year)
+        if day not in known
+    ]
+    HrHoliday.objects.bulk_create(fresh)
+    return len(fresh)
+
+
 class HrSetupEndpoint(BaseAPIView):
     """Create the records a workspace needs before anybody can be set up.
 
@@ -325,11 +364,21 @@ class HrSetupEndpoint(BaseAPIView):
             )
             created["absence_types"] = HrAbsenceType.objects.count()
 
-        if not HrHolidayCalendar.objects.exists():
-            HrHolidayCalendar.objects.create(
+        calendar = HrHolidayCalendar.objects.filter(is_default=True).first()
+        if calendar is None:
+            calendar = HrHolidayCalendar.objects.create(
                 workspace=workspace, name="Österreich", country_code="AT", is_default=True
             )
             created["holiday_calendar"] = "AT"
+
+        # An empty calendar is not a neutral starting point: every public holiday
+        # would read as an ordinary working day and show as a full day's shortfall
+        # against somebody who was legally off. Seeded generously either side of
+        # now, because past months are entered by hand from the old records and a
+        # year that runs out brings the same fault back silently.
+        added = _seed_holidays(workspace, calendar)
+        if added:
+            created["holidays"] = added
 
         if not HrWorkSchedule.objects.filter(profile__isnull=True).exists():
             # The collective agreement week rather than forty hours, because that
