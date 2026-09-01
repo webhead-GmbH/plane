@@ -169,6 +169,37 @@
       "onsite_part_time": "Vor Ort, Teilzeit",
       "remote_full_time_invoicing": "Remote, Vollzeit, auf Honorarbasis",
       "remote_part_time_invoicing": "Remote, Teilzeit, auf Honorarbasis"
+    },
+    "entries": {
+      "hint": "Stunden an diesem Tag, die keinem Arbeitselement zugeordnet sind. Auch Monate aus der Zeit vor der Nutzung von Plane werden hier erfasst.",
+      "none_yet": "An diesem Tag ist noch nichts erfasst.",
+      "day_total": "An diesem Tag",
+      "how_long": "Dauer",
+      "what_it_was": "Art",
+      "note": "Notiz",
+      "note_placeholder": "Wofür diese Zeit aufgewendet wurde",
+      "add": "Hinzufügen",
+      "done": "Fertig",
+      "remove": "Entfernen",
+      "imported": "Importiert",
+      "month_closed": "Dieser Monat ist abgeschlossen, seine Stunden können daher nicht mehr geändert werden. Öffnen Sie ihn zuerst wieder, wenn etwas zu korrigieren ist.",
+      "category": {
+        "meeting": "Interne Besprechung",
+        "training": "Schulung",
+        "admin": "Verwaltung",
+        "travel": "Reisezeit",
+        "on_call": "Rufbereitschaft",
+        "correction": "Korrektur",
+        "imported": "Importiert"
+      },
+      "errors": {
+        "bad_duration": "Die Dauer fehlt. Geben Sie 1:30 oder 1,5 ein."
+      },
+      "toasts": {
+        "added": "Hinzugefügt",
+        "refused": "Nicht durchgeführt",
+        "try_again": "Bitte versuchen Sie es erneut."
+      }
     }
   }
 }

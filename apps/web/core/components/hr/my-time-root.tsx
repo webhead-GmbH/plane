@@ -17,6 +17,7 @@ import { Loader } from "@plane/ui";
 // local imports
 import { EHrPeriodState, HrService } from "@/services/hr.service";
 import { HrDayTable } from "./day-table";
+import { HrDayEntriesModal } from "./day-entries-modal";
 import { HrMonthSummary } from "./month-summary";
 import { formatMonthLabel, isPeriodEditable, nextMonth, previousMonth } from "./utils";
 
@@ -28,6 +29,7 @@ export const MyTimeRoot = observer(function MyTimeRoot() {
   const now = new Date();
   const [[year, month], setMonth] = useState<[number, number]>([now.getFullYear(), now.getMonth() + 1]);
   const [isBusy, setIsBusy] = useState(false);
+  const [openDay, setOpenDay] = useState<string | null>(null);
 
   const { t, currentLocale } = useTranslation();
   const { data, isLoading, mutate } = useSWR(`HR_ME_${year}_${month}`, () => hrService.me(year, month));
@@ -173,7 +175,19 @@ export const MyTimeRoot = observer(function MyTimeRoot() {
         contractedWeeklyMinutes={data.schedule?.weekly_minutes ?? data.contract?.weekly_minutes ?? null}
       />
 
-      <HrDayTable days={days} countedThrough={period?.to_date ? period.to_date.counted_through : undefined} />
+      <HrDayTable
+        days={days}
+        countedThrough={period?.to_date ? period.to_date.counted_through : undefined}
+        onPickDay={setOpenDay}
+      />
+
+      <HrDayEntriesModal
+        workDate={openDay}
+        profileId={data.profile?.id ?? null}
+        isLocked={!period || !isPeriodEditable(period.state)}
+        onClose={() => setOpenDay(null)}
+        onChanged={() => void mutate()}
+      />
     </div>
   );
 });

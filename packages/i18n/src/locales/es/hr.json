@@ -169,6 +169,37 @@
       "onsite_part_time": "Presencial, jornada parcial",
       "remote_full_time_invoicing": "En remoto, jornada completa, por factura propia",
       "remote_part_time_invoicing": "En remoto, jornada parcial, por factura propia"
+    },
+    "entries": {
+      "hint": "Horas de este día que no corresponden a ningún elemento de trabajo. Aquí se introducen también los meses anteriores a que la empresa usara Plane.",
+      "none_yet": "Todavía no hay nada registrado en este día.",
+      "day_total": "En este día",
+      "how_long": "Duración",
+      "what_it_was": "Tipo",
+      "note": "Nota",
+      "note_placeholder": "En qué se empleó este tiempo",
+      "add": "Añadir",
+      "done": "Listo",
+      "remove": "Quitar",
+      "imported": "Importado",
+      "month_closed": "Este mes está cerrado, por lo que sus horas ya no se pueden modificar. Reábralo primero si hay algo que corregir.",
+      "category": {
+        "meeting": "Reunión interna",
+        "training": "Formación",
+        "admin": "Administración",
+        "travel": "Viaje",
+        "on_call": "Guardia",
+        "correction": "Corrección",
+        "imported": "Importado"
+      },
+      "errors": {
+        "bad_duration": "Indique cuánto duró. Escriba 1:30 o 1,5."
+      },
+      "toasts": {
+        "added": "Añadido",
+        "refused": "No se pudo completar",
+        "try_again": "Vuelva a intentarlo."
+      }
     }
   }
 }

@@ -169,6 +169,37 @@
       "onsite_part_time": "Na pracovisku, čiastočný úväzok",
       "remote_full_time_invoicing": "Na diaľku, plný úväzok, na faktúru",
       "remote_part_time_invoicing": "Na diaľku, čiastočný úväzok, na faktúru"
+    },
+    "entries": {
+      "hint": "Hodiny v tomto dni, ku ktorým sa neviaže žiadna pracovná položka. Zadávajú sa sem aj mesiace z obdobia, keď firma ešte nepoužívala Plane.",
+      "none_yet": "V tomto dni zatiaľ nie je nič zaznamenané.",
+      "day_total": "Za tento deň",
+      "how_long": "Ako dlho",
+      "what_it_was": "Druh činnosti",
+      "note": "Poznámka",
+      "note_placeholder": "Na čo bol tento čas vynaložený",
+      "add": "Pridať",
+      "done": "Hotovo",
+      "remove": "Odstrániť",
+      "imported": "Importované",
+      "month_closed": "Tento mesiac je uzavretý, takže jeho hodiny sa už nedajú meniť. Ak treba niečo opraviť, najprv ho znovu otvorte.",
+      "category": {
+        "meeting": "Interná porada",
+        "training": "Školenie",
+        "admin": "Administratíva",
+        "travel": "Cestovanie",
+        "on_call": "Pohotovosť",
+        "correction": "Oprava",
+        "imported": "Importované"
+      },
+      "errors": {
+        "bad_duration": "Uveďte, ako dlho to trvalo. Zadajte 1:30 alebo 1,5."
+      },
+      "toasts": {
+        "added": "Pridané",
+        "refused": "Nepodarilo sa to",
+        "try_again": "Skúste to prosím znova."
+      }
     }
   }
 }

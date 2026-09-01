@@ -169,6 +169,37 @@
       "onsite_part_time": "Presencial, meio período",
       "remote_full_time_invoicing": "Remoto, tempo integral, com emissão de nota fiscal",
       "remote_part_time_invoicing": "Remoto, meio período, com emissão de nota fiscal"
+    },
+    "entries": {
+      "hint": "Horas deste dia que nenhum item de trabalho contabiliza. Os meses anteriores ao uso do Plane pela empresa também são registrados aqui.",
+      "none_yet": "Nada registrado neste dia ainda.",
+      "day_total": "Neste dia",
+      "how_long": "Duração",
+      "what_it_was": "Tipo",
+      "note": "Observação",
+      "note_placeholder": "Em que esse tempo foi usado",
+      "add": "Adicionar",
+      "done": "Pronto",
+      "remove": "Remover",
+      "imported": "Importado",
+      "month_closed": "Este mês foi fechado, portanto as horas dele não podem mais ser alteradas. Reabra o mês primeiro se algo precisar de correção.",
+      "category": {
+        "meeting": "Reunião interna",
+        "training": "Treinamento",
+        "admin": "Administrativo",
+        "travel": "Viagem",
+        "on_call": "Sobreaviso",
+        "correction": "Correção",
+        "imported": "Importado"
+      },
+      "errors": {
+        "bad_duration": "Informe a duração. Digite 1:30 ou 1,5."
+      },
+      "toasts": {
+        "added": "Adicionado",
+        "refused": "A ação não foi concluída",
+        "try_again": "Por favor, tente novamente."
+      }
     }
   }
 }

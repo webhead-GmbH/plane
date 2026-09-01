@@ -169,6 +169,37 @@
       "onsite_part_time": "La sediu, normă parțială",
       "remote_full_time_invoicing": "La distanță, normă întreagă, cu facturare proprie",
       "remote_part_time_invoicing": "La distanță, normă parțială, cu facturare proprie"
+    },
+    "entries": {
+      "hint": "Orele din această zi care nu sunt acoperite de nicio activitate. Tot aici se introduc și lunile de dinainte ca compania să folosească Plane.",
+      "none_yet": "Nu s-a înregistrat încă nimic în această zi.",
+      "day_total": "În această zi",
+      "how_long": "Cât timp",
+      "what_it_was": "Ce a fost",
+      "note": "Notă",
+      "note_placeholder": "Pe ce s-a folosit acest timp",
+      "add": "Adăugați",
+      "done": "Gata",
+      "remove": "Eliminați",
+      "imported": "Importat",
+      "month_closed": "Această lună a fost închisă, așa că orele ei nu mai pot fi modificate. Redeschideți-o mai întâi dacă trebuie corectat ceva.",
+      "category": {
+        "meeting": "Ședință internă",
+        "training": "Instruire",
+        "admin": "Administrare",
+        "travel": "Deplasare",
+        "on_call": "Permanență",
+        "correction": "Corecție",
+        "imported": "Importat"
+      },
+      "errors": {
+        "bad_duration": "Precizați cât a durat. Scrieți 1:30 sau 1,5."
+      },
+      "toasts": {
+        "added": "Adăugată",
+        "refused": "Acțiunea nu a reușit",
+        "try_again": "Vă rugăm să încercați din nou."
+      }
     }
   }
 }

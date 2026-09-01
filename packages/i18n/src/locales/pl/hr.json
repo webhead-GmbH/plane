@@ -165,10 +165,41 @@
       }
     },
     "arrangement": {
-      "onsite_full_time": "onsite_full_time: \"Na miejscu, pełny wymiar godzin\" — onsite_part_time: \"Na miejscu, niepełny wymiar godzin\" (remote_* already use this wording and stay unchanged)",
-      "onsite_part_time": "Na miejscu, niepełny etat",
+      "onsite_full_time": "Na miejscu, pełny wymiar godzin",
+      "onsite_part_time": "Na miejscu, niepełny wymiar godzin",
       "remote_full_time_invoicing": "Zdalnie, pełny wymiar godzin, na własną fakturę",
       "remote_part_time_invoicing": "Zdalnie, niepełny wymiar godzin, na własną fakturę"
+    },
+    "entries": {
+      "hint": "Godziny w tym dniu, których nie obejmuje żaden element pracy. Tutaj wprowadza się również miesiące sprzed rozpoczęcia korzystania z Plane w firmie.",
+      "none_yet": "W tym dniu nie zarejestrowano jeszcze niczego.",
+      "day_total": "W tym dniu",
+      "how_long": "Ile czasu",
+      "what_it_was": "Rodzaj",
+      "note": "Notatka",
+      "note_placeholder": "Na co poświęcono ten czas",
+      "add": "Dodaj",
+      "done": "Gotowe",
+      "remove": "Usuń",
+      "imported": "Zaimportowane",
+      "month_closed": "Ten miesiąc został zamknięty, więc jego godzin nie można już zmieniać. Jeśli coś wymaga poprawy, należy go najpierw otworzyć ponownie.",
+      "category": {
+        "meeting": "Spotkanie wewnętrzne",
+        "training": "Szkolenie",
+        "admin": "Administracja",
+        "travel": "Podróż",
+        "on_call": "Dyżur",
+        "correction": "Korekta",
+        "imported": "Zaimportowane"
+      },
+      "errors": {
+        "bad_duration": "Proszę podać, jak długo to trwało. Należy wpisać 1:30 lub 1,5."
+      },
+      "toasts": {
+        "added": "Dodano",
+        "refused": "Nie powiodło się",
+        "try_again": "Proszę spróbować ponownie."
+      }
     }
   }
 }

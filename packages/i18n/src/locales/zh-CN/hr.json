@@ -169,6 +169,37 @@
       "onsite_part_time": "现场办公，兼职",
       "remote_full_time_invoicing": "远程办公，全职，自行开票",
       "remote_part_time_invoicing": "远程办公，兼职，自行开票"
+    },
+    "entries": {
+      "hint": "这一天没有对应工作项的工时。公司启用 Plane 之前的月份也在此处录入。",
+      "none_yet": "这一天还没有任何记录。",
+      "day_total": "当天合计",
+      "how_long": "时长",
+      "what_it_was": "类型",
+      "note": "备注",
+      "note_placeholder": "这段时间用于做什么",
+      "add": "添加",
+      "done": "完成",
+      "remove": "删除",
+      "imported": "已导入",
+      "month_closed": "该月已关闭，其工时不能再更改。如需更正，请先重新打开该月。",
+      "category": {
+        "meeting": "内部会议",
+        "training": "培训",
+        "admin": "行政事务",
+        "travel": "差旅",
+        "on_call": "待命",
+        "correction": "更正",
+        "imported": "已导入"
+      },
+      "errors": {
+        "bad_duration": "请填写时长。可输入 1:30 或 1.5。"
+      },
+      "toasts": {
+        "added": "已添加",
+        "refused": "操作未成功",
+        "try_again": "请重试。"
+      }
     }
   }
 }

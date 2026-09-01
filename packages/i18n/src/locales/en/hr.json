@@ -169,6 +169,37 @@
       "onsite_part_time": "On site, part time",
       "remote_full_time_invoicing": "Remote, full time, self-invoicing",
       "remote_part_time_invoicing": "Remote, part time, self-invoicing"
+    },
+    "entries": {
+      "hint": "Hours on this day that no work item accounts for. Months that happened before the company used Plane are entered here too.",
+      "none_yet": "Nothing recorded on this day yet.",
+      "day_total": "On this day",
+      "how_long": "How long",
+      "what_it_was": "What it was",
+      "note": "Note",
+      "note_placeholder": "What this time was spent on",
+      "add": "Add",
+      "done": "Done",
+      "remove": "Remove",
+      "imported": "Imported",
+      "month_closed": "This month has been closed, so its hours can no longer be changed. Reopen it first if something needs correcting.",
+      "category": {
+        "meeting": "Internal meeting",
+        "training": "Training",
+        "admin": "Administration",
+        "travel": "Travel",
+        "on_call": "On call",
+        "correction": "Correction",
+        "imported": "Imported"
+      },
+      "errors": {
+        "bad_duration": "Say how long it was. Type 1:30 or 1.5."
+      },
+      "toasts": {
+        "added": "Added",
+        "refused": "That did not go through",
+        "try_again": "Please try again."
+      }
     }
   }
 }

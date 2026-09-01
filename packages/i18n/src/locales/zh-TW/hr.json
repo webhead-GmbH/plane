@@ -169,6 +169,37 @@
       "onsite_part_time": "現場辦公，兼職",
       "remote_full_time_invoicing": "遠距辦公，全職，自行開立發票",
       "remote_part_time_invoicing": "遠距辦公，兼職，自行開立發票"
+    },
+    "entries": {
+      "hint": "這一天沒有對應到任何工作事項的工時。公司開始使用 Plane 之前的月份，工時也是在這裡輸入。",
+      "none_yet": "這一天還沒有任何記錄。",
+      "day_total": "當日合計",
+      "how_long": "時數",
+      "what_it_was": "類型",
+      "note": "備註",
+      "note_placeholder": "這段時間做了什麼",
+      "add": "新增",
+      "done": "完成",
+      "remove": "移除",
+      "imported": "已匯入",
+      "month_closed": "此月份已結算，工時無法再變更。若有需要修正的地方，請先重新開啟此月份。",
+      "category": {
+        "meeting": "內部會議",
+        "training": "教育訓練",
+        "admin": "行政作業",
+        "travel": "差旅",
+        "on_call": "待命",
+        "correction": "修正",
+        "imported": "已匯入"
+      },
+      "errors": {
+        "bad_duration": "請填寫這段時間有多長。可輸入 1:30 或 1.5。"
+      },
+      "toasts": {
+        "added": "已新增",
+        "refused": "操作未完成",
+        "try_again": "請再試一次。"
+      }
     }
   }
 }

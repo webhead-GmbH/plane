@@ -169,6 +169,37 @@
       "onsite_part_time": "사무실 근무, 파트타임",
       "remote_full_time_invoicing": "원격 근무, 풀타임, 직접 청구",
       "remote_part_time_invoicing": "원격 근무, 파트타임, 직접 청구"
+    },
+    "entries": {
+      "hint": "어떤 작업 항목에도 해당하지 않는 이날의 근무 시간입니다. 회사가 Plane을 사용하기 전의 월도 여기에 입력합니다.",
+      "none_yet": "이날 기록된 내용이 아직 없습니다.",
+      "day_total": "이날 합계",
+      "how_long": "시간",
+      "what_it_was": "구분",
+      "note": "메모",
+      "note_placeholder": "이 시간에 무엇을 했는지",
+      "add": "추가",
+      "done": "닫기",
+      "remove": "삭제",
+      "imported": "가져옴",
+      "month_closed": "해당 월은 마감되어 기록된 시간을 더 이상 변경할 수 없습니다. 수정할 내용이 있으면 먼저 월을 다시 여세요.",
+      "category": {
+        "meeting": "내부 회의",
+        "training": "교육",
+        "admin": "행정 업무",
+        "travel": "이동",
+        "on_call": "대기 근무",
+        "correction": "정정",
+        "imported": "가져옴"
+      },
+      "errors": {
+        "bad_duration": "얼마나 걸렸는지 입력해 주세요. 1:30 또는 1.5 형식으로 입력하세요."
+      },
+      "toasts": {
+        "added": "추가되었습니다",
+        "refused": "처리되지 않았습니다",
+        "try_again": "다시 시도해 주세요."
+      }
     }
   }
 }

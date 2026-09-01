@@ -13,3 +13,4 @@ export * from "./team-month-root";
 export * from "./utils";
 export * from "./add-person-modal";
 export * from "./people-root";
+export * from "./day-entries-modal";

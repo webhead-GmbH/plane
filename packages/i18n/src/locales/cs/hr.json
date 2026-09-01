@@ -169,6 +169,37 @@
       "onsite_part_time": "Na pracovišti, částečný úvazek",
       "remote_full_time_invoicing": "Na dálku, plný úvazek, vlastní fakturace",
       "remote_part_time_invoicing": "Na dálku, částečný úvazek, vlastní fakturace"
+    },
+    "entries": {
+      "hint": "Hodiny v tomto dni, které nepatří k žádné pracovní položce. Zadávají se sem i měsíce z doby, kdy firma ještě nepoužívala Plane.",
+      "none_yet": "V tomto dni zatím není nic zaznamenáno.",
+      "day_total": "V tomto dni",
+      "how_long": "Jak dlouho",
+      "what_it_was": "O co šlo",
+      "note": "Poznámka",
+      "note_placeholder": "Čemu byl tento čas věnován",
+      "add": "Přidat",
+      "done": "Hotovo",
+      "remove": "Odebrat",
+      "imported": "Importováno",
+      "month_closed": "Tento měsíc je uzavřený, a jeho hodiny proto už nelze měnit. Pokud je třeba něco opravit, nejprve jej znovu otevřete.",
+      "category": {
+        "meeting": "Interní schůzka",
+        "training": "Školení",
+        "admin": "Administrativa",
+        "travel": "Cestování",
+        "on_call": "Pohotovost",
+        "correction": "Oprava",
+        "imported": "Importováno"
+      },
+      "errors": {
+        "bad_duration": "Uveďte, jak dlouho to trvalo. Zadejte 1:30 nebo 1,5."
+      },
+      "toasts": {
+        "added": "Přidáno",
+        "refused": "Akce neproběhla",
+        "try_again": "Zkuste to prosím znovu."
+      }
     }
   }
 }

@@ -169,6 +169,37 @@
       "onsite_part_time": "出社・パートタイム",
       "remote_full_time_invoicing": "リモート・フルタイム・本人請求",
       "remote_part_time_invoicing": "リモート・パートタイム・本人請求"
+    },
+    "entries": {
+      "hint": "この日の時間のうち、どの作業項目にも紐づかないものです。会社がPlaneを使い始める前の月も、ここに入力します。",
+      "none_yet": "この日にはまだ何も記録されていません。",
+      "day_total": "この日の合計",
+      "how_long": "時間",
+      "what_it_was": "区分",
+      "note": "メモ",
+      "note_placeholder": "この時間で何をしていたか",
+      "add": "追加",
+      "done": "閉じる",
+      "remove": "削除",
+      "imported": "インポート済み",
+      "month_closed": "この月は確定済みのため、時間を変更できません。修正が必要な場合は、先に再オープンしてください。",
+      "category": {
+        "meeting": "社内ミーティング",
+        "training": "研修",
+        "admin": "事務作業",
+        "travel": "移動",
+        "on_call": "オンコール",
+        "correction": "修正",
+        "imported": "インポート済み"
+      },
+      "errors": {
+        "bad_duration": "時間の長さを入力してください。1:30または1.5のように入力します。"
+      },
+      "toasts": {
+        "added": "追加しました",
+        "refused": "処理できませんでした",
+        "try_again": "もう一度お試しください。"
+      }
     }
   }
 }

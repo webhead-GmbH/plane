@@ -504,3 +504,56 @@ class TestCandidates:
     def test_an_employee_cannot_see_the_list(self, workspace):
         user, _ = employ(workspace)
         assert client_for(user).get(url(workspace, "candidates/")).status_code == 403
+
+
+class TestTimeEntryScoping:
+    """Whose hours come back when a day is asked for.
+
+    A manager may see everybody, which is right for a report and wrong for a
+    screen showing one person's day: unscoped, it would list — and offer to
+    delete — a colleague's hours under somebody else's name.
+    """
+
+    def _hours(self, profile, day, minutes, note):
+        return HrTimeEntry.objects.create(
+            workspace=profile.workspace,
+            profile=profile,
+            entry_date=day,
+            minutes=minutes,
+            note=note,
+        )
+
+    def test_asking_for_one_person_returns_only_theirs(self, workspace):
+        manager, manager_profile = employ(workspace, is_hr_manager=True)
+        _, colleague = employ(workspace)
+        day = date(2026, 8, 20)
+        self._hours(manager_profile, day, 60, "mine")
+        self._hours(colleague, day, 120, "theirs")
+
+        response = client_for(manager).get(
+            url(workspace, f"time-entries/?from={day}&to={day}&profile_id={manager_profile.id}")
+        )
+        assert response.status_code == 200
+        assert [row["note"] for row in response.json()] == ["mine"]
+
+    def test_a_manager_asking_for_nobody_in_particular_sees_everybody(self, workspace):
+        # The wider answer stays available; it is simply not what a day view asks.
+        manager, manager_profile = employ(workspace, is_hr_manager=True)
+        _, colleague = employ(workspace)
+        day = date(2026, 8, 20)
+        self._hours(manager_profile, day, 60, "mine")
+        self._hours(colleague, day, 120, "theirs")
+
+        rows = client_for(manager).get(url(workspace, f"time-entries/?from={day}&to={day}")).json()
+        assert sorted(row["note"] for row in rows) == ["mine", "theirs"]
+
+    def test_one_person_cannot_ask_for_a_colleagues_day(self, workspace):
+        user, _ = employ(workspace)
+        _, colleague = employ(workspace)
+        day = date(2026, 8, 20)
+        self._hours(colleague, day, 120, "theirs")
+
+        rows = client_for(user).get(
+            url(workspace, f"time-entries/?from={day}&to={day}&profile_id={colleague.id}")
+        ).json()
+        assert rows == []

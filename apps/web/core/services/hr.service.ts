@@ -201,6 +201,24 @@ export type THrStatement = {
   has_rate: boolean;
 };
 
+/** What an hour with no work item behind it was spent on. */
+export enum EHrTimeCategory {
+  MEETING = 10,
+  TRAINING = 20,
+  ADMIN = 30,
+  TRAVEL = 40,
+  ON_CALL = 50,
+  CORRECTION = 60,
+  IMPORTED = 70,
+}
+
+/** Where a record came from, which is what tells hand-entered from imported. */
+export enum EHrTimeSource {
+  MANUAL = 10,
+  IMPORT = 20,
+  SYSTEM = 30,
+}
+
 export type THrTimeEntry = {
   id: string;
   profile: string;
@@ -318,6 +336,14 @@ export class HrService extends APIService {
       });
   }
 
+  async updateTimeEntry(entryId: string, data: Partial<THrTimeEntry>) {
+    return this.patch(`${this.base}/time-entries/${entryId}/`, data)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
   async deleteTimeEntry(entryId: string) {
     return this.delete(`${this.base}/time-entries/${entryId}/`)
       .then((response) => response?.data)
@@ -326,8 +352,15 @@ export class HrService extends APIService {
       });
   }
 
-  async timeEntries(from: string, to: string): Promise<THrTimeEntry[]> {
-    return this.get(`${this.base}/time-entries/?from=${from}&to=${to}`)
+  /**
+   * Non-project hours in a date window.
+   *
+   * Always ask for one person. Left unscoped this returns everyone the caller may
+   * see, which for a manager is the whole company — so a screen showing one
+   * person's day would quietly list, and offer to delete, their colleagues' hours.
+   */
+  async timeEntries(from: string, to: string, profileId: string): Promise<THrTimeEntry[]> {
+    return this.get(`${this.base}/time-entries/?from=${from}&to=${to}&profile_id=${profileId}`)
       .then((response) => response?.data)
       .catch((error) => {
         throw error?.response?.data;

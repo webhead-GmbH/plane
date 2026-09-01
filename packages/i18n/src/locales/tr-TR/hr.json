@@ -169,6 +169,37 @@
       "onsite_part_time": "İş yerinde, yarı zamanlı",
       "remote_full_time_invoicing": "Uzaktan, tam zamanlı, kendi faturasını kesen",
       "remote_part_time_invoicing": "Uzaktan, yarı zamanlı, kendi faturasını kesen"
+    },
+    "entries": {
+      "hint": "Bu güne ait, hiçbir iş öğesine karşılık gelmeyen saatler. Şirket Plane kullanmaya başlamadan önceki aylar da buraya girilir.",
+      "none_yet": "Bu güne henüz bir şey kaydedilmedi.",
+      "day_total": "Bu günde",
+      "how_long": "Süre",
+      "what_it_was": "Tür",
+      "note": "Not",
+      "note_placeholder": "Bu süre neye harcandı",
+      "add": "Ekle",
+      "done": "Bitti",
+      "remove": "Kaldır",
+      "imported": "İçe aktarıldı",
+      "month_closed": "Bu ay kapatıldı, bu nedenle saatleri artık değiştirilemez. Düzeltilmesi gereken bir şey varsa önce ayı yeniden açın.",
+      "category": {
+        "meeting": "Şirket içi toplantı",
+        "training": "Eğitim",
+        "admin": "İdari işler",
+        "travel": "Seyahat",
+        "on_call": "Nöbet",
+        "correction": "Düzeltme",
+        "imported": "İçe aktarıldı"
+      },
+      "errors": {
+        "bad_duration": "Ne kadar sürdüğünü belirtin. 1:30 veya 1,5 yazın."
+      },
+      "toasts": {
+        "added": "Eklendi",
+        "refused": "İşlem gerçekleşmedi",
+        "try_again": "Lütfen tekrar deneyin."
+      }
     }
   }
 }

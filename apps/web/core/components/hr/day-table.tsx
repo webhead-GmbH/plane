@@ -21,6 +21,8 @@ type TProps = {
    * nothing has happened.
    */
   countedThrough?: string | null;
+  /** Opens a day for editing. Absent when the month cannot be changed. */
+  onPickDay?: (workDate: string) => void;
 };
 
 const QUIET_KINDS = new Set([EHrDayKind.NON_WORKING, EHrDayKind.HOLIDAY, EHrDayKind.HALF_HOLIDAY]);
@@ -32,7 +34,7 @@ const QUIET_KINDS = new Set([EHrDayKind.NON_WORKING, EHrDayKind.HOLIDAY, EHrDayK
  * would make the list shorter, but somebody scanning for where their hours went
  * needs to see that a gap was a Saturday and not a day they forgot.
  */
-export const HrDayTable = ({ days, countedThrough }: TProps) => {
+export const HrDayTable = ({ days, countedThrough, onPickDay }: TProps) => {
   const { t, currentLocale } = useTranslation();
 
   if (!days.length)
@@ -83,7 +85,9 @@ export const HrDayTable = ({ days, countedThrough }: TProps) => {
             return (
               <tr
                 key={day.id}
+                onClick={onPickDay ? () => onPickDay(day.work_date) : undefined}
                 className={cn(
+                  onPickDay && "hover:bg-custom-background-80 cursor-pointer",
                   "border-custom-border-100 border-b last:border-b-0",
                   quiet && "bg-custom-background-90/40 text-custom-text-400",
                   stillToCome && "text-custom-text-400 opacity-60",

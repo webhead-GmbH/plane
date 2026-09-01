@@ -169,6 +169,37 @@
       "onsite_part_time": "Tại văn phòng, bán thời gian",
       "remote_full_time_invoicing": "Từ xa, toàn thời gian, tự xuất hóa đơn",
       "remote_part_time_invoicing": "Từ xa, bán thời gian, tự xuất hóa đơn"
+    },
+    "entries": {
+      "hint": "Số giờ trong ngày này không thuộc về mục công việc nào. Những tháng diễn ra trước khi công ty dùng Plane cũng được nhập ở đây.",
+      "none_yet": "Chưa có gì được ghi nhận trong ngày này.",
+      "day_total": "Trong ngày này",
+      "how_long": "Thời lượng",
+      "what_it_was": "Loại",
+      "note": "Ghi chú",
+      "note_placeholder": "Khoảng thời gian này dùng vào việc gì",
+      "add": "Thêm",
+      "done": "Xong",
+      "remove": "Xóa",
+      "imported": "Đã nhập dữ liệu",
+      "month_closed": "Tháng này đã được đóng, nên không thể thay đổi số giờ nữa. Nếu cần sửa lại điều gì, trước tiên hãy mở lại tháng này.",
+      "category": {
+        "meeting": "Họp nội bộ",
+        "training": "Đào tạo",
+        "admin": "Hành chính",
+        "travel": "Đi công tác",
+        "on_call": "Trực ca",
+        "correction": "Điều chỉnh",
+        "imported": "Nhập dữ liệu"
+      },
+      "errors": {
+        "bad_duration": "Hãy cho biết việc đó kéo dài bao lâu. Nhập 1:30 hoặc 1,5."
+      },
+      "toasts": {
+        "added": "Đã thêm",
+        "refused": "Thao tác không thành công",
+        "try_again": "Vui lòng thử lại."
+      }
     }
   }
 }

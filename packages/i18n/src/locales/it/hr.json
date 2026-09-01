@@ -169,6 +169,37 @@
       "onsite_part_time": "In sede, tempo parziale",
       "remote_full_time_invoicing": "Da remoto, tempo pieno, a fattura",
       "remote_part_time_invoicing": "Da remoto, tempo parziale, a fattura"
+    },
+    "entries": {
+      "hint": "Ore di questo giorno non riconducibili ad alcun elemento di lavoro. Qui vengono inseriti anche i mesi precedenti all'adozione di Plane in azienda.",
+      "none_yet": "Ancora nessuna registrazione per questo giorno.",
+      "day_total": "In questo giorno",
+      "how_long": "Durata",
+      "what_it_was": "Tipo di attività",
+      "note": "Nota",
+      "note_placeholder": "Come è stato impiegato questo tempo",
+      "add": "Aggiungi",
+      "done": "Fine",
+      "remove": "Rimuovi",
+      "imported": "Importato",
+      "month_closed": "Questo mese è stato chiuso, perciò le sue ore non possono più essere modificate. Lo riapra prima, se occorre correggere qualcosa.",
+      "category": {
+        "meeting": "Riunione interna",
+        "training": "Formazione",
+        "admin": "Amministrazione",
+        "travel": "Trasferta",
+        "on_call": "Reperibilità",
+        "correction": "Correzione",
+        "imported": "Importato"
+      },
+      "errors": {
+        "bad_duration": "Indichi la durata. Digiti 1:30 oppure 1,5."
+      },
+      "toasts": {
+        "added": "Aggiunto",
+        "refused": "Operazione non riuscita",
+        "try_again": "Riprovi, per favore."
+      }
     }
   }
 }

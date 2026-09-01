@@ -169,6 +169,37 @@
       "onsite_part_time": "Di kantor, paruh waktu",
       "remote_full_time_invoicing": "Jarak jauh, penuh waktu, penagihan mandiri",
       "remote_part_time_invoicing": "Jarak jauh, paruh waktu, penagihan mandiri"
+    },
+    "entries": {
+      "hint": "Jam pada hari ini yang tidak tercakup oleh item kerja mana pun. Bulan-bulan yang berlalu sebelum perusahaan menggunakan Plane juga dimasukkan di sini.",
+      "none_yet": "Belum ada yang tercatat pada hari ini.",
+      "day_total": "Pada hari ini",
+      "how_long": "Durasi",
+      "what_it_was": "Jenis",
+      "note": "Catatan",
+      "note_placeholder": "Untuk apa waktu ini digunakan",
+      "add": "Tambahkan",
+      "done": "Selesai",
+      "remove": "Hapus",
+      "imported": "Diimpor",
+      "month_closed": "Bulan ini sudah ditutup, sehingga jamnya tidak dapat diubah lagi. Buka kembali bulan ini terlebih dahulu jika ada yang perlu diperbaiki.",
+      "category": {
+        "meeting": "Rapat internal",
+        "training": "Pelatihan",
+        "admin": "Administrasi",
+        "travel": "Perjalanan",
+        "on_call": "Siaga",
+        "correction": "Koreksi",
+        "imported": "Diimpor"
+      },
+      "errors": {
+        "bad_duration": "Sebutkan berapa lama waktunya. Ketik 1:30 atau 1,5."
+      },
+      "toasts": {
+        "added": "Ditambahkan",
+        "refused": "Tindakan itu tidak berhasil",
+        "try_again": "Silakan coba lagi."
+      }
     }
   }
 }

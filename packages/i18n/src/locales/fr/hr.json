@@ -169,6 +169,37 @@
       "onsite_part_time": "Sur site, temps partiel",
       "remote_full_time_invoicing": "À distance, temps plein, sur facture",
       "remote_part_time_invoicing": "À distance, temps partiel, sur facture"
+    },
+    "entries": {
+      "hint": "Heures de cette journée qui ne relèvent d’aucun élément de travail. Les mois antérieurs à l’utilisation de Plane par l’entreprise se saisissent également ici.",
+      "none_yet": "Rien n’est encore enregistré pour cette journée.",
+      "day_total": "Sur cette journée",
+      "how_long": "Durée",
+      "what_it_was": "Nature",
+      "note": "Note",
+      "note_placeholder": "À quoi ce temps a été consacré",
+      "add": "Ajouter",
+      "done": "Terminé",
+      "remove": "Supprimer",
+      "imported": "Importé",
+      "month_closed": "Ce mois a été clôturé, ses heures ne peuvent donc plus être modifiées. Rouvrez-le d’abord si une correction est nécessaire.",
+      "category": {
+        "meeting": "Réunion interne",
+        "training": "Formation",
+        "admin": "Administration",
+        "travel": "Déplacement",
+        "on_call": "Astreinte",
+        "correction": "Correction",
+        "imported": "Importé"
+      },
+      "errors": {
+        "bad_duration": "Indiquez la durée. Saisissez 1:30 ou 1,5."
+      },
+      "toasts": {
+        "added": "Ajouté",
+        "refused": "L’opération n’a pas abouti",
+        "try_again": "Veuillez réessayer."
+      }
     }
   }
 }
