@@ -57,9 +57,9 @@ class HrInvoiceEndpoint(BaseAPIView):
     """The invoice somebody sends for their own hours."""
 
     def _visible(self, request):
-        return HrInvoiceDocument.objects.filter(
-            profile__in=visible_profiles(request)
-        ).select_related("profile__member", "period")
+        return HrInvoiceDocument.objects.filter(profile__in=visible_profiles(request)).select_related(
+            "profile__member", "period"
+        )
 
     @hr_permission(SELF)
     def get(self, request, pk=None):
@@ -87,9 +87,7 @@ class HrInvoiceEndpoint(BaseAPIView):
         if profile is None:
             return Response({"error": "Not found."}, status=status.HTTP_404_NOT_FOUND)
 
-        period = HrPeriod.objects.filter(
-            pk=request.data.get("period"), profile_id=profile.id
-        ).first()
+        period = HrPeriod.objects.filter(pk=request.data.get("period"), profile_id=profile.id).first()
         if period is None:
             return Response(
                 {"error": "Say which month this invoice is for."},
@@ -112,10 +110,7 @@ class HrInvoiceEndpoint(BaseAPIView):
         row = self._visible(request).filter(pk=pk).first()
         if row is None:
             return Response({"error": "Not found."}, status=status.HTTP_404_NOT_FOUND)
-        if (
-            not request.hr_is_manager
-            and row.reconciliation_state != HrInvoiceDocument.ReconciliationState.PENDING
-        ):
+        if not request.hr_is_manager and row.reconciliation_state != HrInvoiceDocument.ReconciliationState.PENDING:
             return Response(
                 {"error": "This invoice has already been looked at. Ask for it to be changed."},
                 status=status.HTTP_409_CONFLICT,
@@ -133,9 +128,7 @@ class HrInvoiceReconcileEndpoint(BaseAPIView):
     @hr_permission(MANAGER)
     def post(self, request, pk):
         invoice = (
-            HrInvoiceDocument.objects.filter(
-                pk=pk, profile__in=visible_profiles(request)
-            )
+            HrInvoiceDocument.objects.filter(pk=pk, profile__in=visible_profiles(request))
             .select_related("period")
             .first()
         )
@@ -156,9 +149,7 @@ class HrInvoiceAcceptVarianceEndpoint(BaseAPIView):
 
     @hr_permission(MANAGER)
     def post(self, request, pk):
-        invoice = HrInvoiceDocument.objects.filter(
-            pk=pk, profile__in=visible_profiles(request)
-        ).first()
+        invoice = HrInvoiceDocument.objects.filter(pk=pk, profile__in=visible_profiles(request)).first()
         if invoice is None:
             return Response({"error": "Not found."}, status=status.HTTP_404_NOT_FOUND)
 

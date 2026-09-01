@@ -60,9 +60,7 @@ class HrAbsenceType(HrBaseModel):
         verbose_name_plural = "HR Absence Types"
         db_table = "hr_absence_types"
         ordering = ("code",)
-        constraints = [
-            models.UniqueConstraint(fields=["workspace", "code"], name="unique_hr_absence_type_code")
-        ]
+        constraints = [models.UniqueConstraint(fields=["workspace", "code"], name="unique_hr_absence_type_code")]
 
 
 class HrAbsence(HrBaseModel):

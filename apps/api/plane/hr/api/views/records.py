@@ -34,12 +34,7 @@ from plane.hr.permissions import (
 )
 from plane.hr.services.absences import resolve_total_minutes
 
-_LOCKED = {
-    "error": (
-        "The month this belongs to has been closed. Reopen it if the record "
-        "genuinely needs to change."
-    )
-}
+_LOCKED = {"error": ("The month this belongs to has been closed. Reopen it if the record genuinely needs to change.")}
 
 
 def _date_window(request, queryset, start_field, end_field=None):
@@ -58,9 +53,9 @@ class HrAbsenceEndpoint(BaseAPIView):
 
     @hr_permission(SELF)
     def get(self, request, pk=None):
-        rows = HrAbsence.objects.filter(
-            profile__in=visible_profiles(request)
-        ).select_related("absence_type", "profile__member")
+        rows = HrAbsence.objects.filter(profile__in=visible_profiles(request)).select_related(
+            "absence_type", "profile__member"
+        )
 
         if pk is not None:
             row = rows.filter(pk=pk).first()
@@ -92,12 +87,8 @@ class HrAbsenceEndpoint(BaseAPIView):
 
         # A manager recording an agreed absence does not need to request it from
         # themselves; anybody else is asking.
-        state = (
-            HrAbsence.State.APPROVED if request.hr_is_manager else HrAbsence.State.REQUESTED
-        )
-        absence = serializer.save(
-            workspace_id=profile.workspace_id, profile=profile, state=state
-        )
+        state = HrAbsence.State.APPROVED if request.hr_is_manager else HrAbsence.State.REQUESTED
+        absence = serializer.save(workspace_id=profile.workspace_id, profile=profile, state=state)
         _settle_minutes(absence)
         if state == HrAbsence.State.APPROVED:
             absence.approved_by = request.user
@@ -149,9 +140,7 @@ class HrAbsenceDecisionEndpoint(BaseAPIView):
     """Agreeing to, refusing, or withdrawing a request."""
 
     def _row(self, request, pk):
-        return HrAbsence.objects.filter(
-            profile__in=visible_profiles(request), pk=pk
-        ).select_related("profile").first()
+        return HrAbsence.objects.filter(profile__in=visible_profiles(request), pk=pk).select_related("profile").first()
 
     @hr_permission(SELF)
     def post(self, request, pk, decision):
@@ -212,7 +201,7 @@ class HrAbsenceCalendarEndpoint(BaseAPIView):
     @hr_permission(SELF)
     def get(self, request):
         rows = HrAbsence.objects.filter(
-                        state=HrAbsence.State.APPROVED,
+            state=HrAbsence.State.APPROVED,
         ).select_related("profile__member")
         rows = _date_window(request, rows, "start_date", "end_date")
         return Response(

@@ -178,9 +178,7 @@ def compute_day(day_input):
     )
     # No obligation, no surplus and no shortfall. Anything else accrues a balance
     # nobody agreed to and that grows by the whole of every month.
-    result.balance_minutes = (
-        result.actual_minutes - result.target_minutes if day_input.records_target else 0
-    )
+    result.balance_minutes = result.actual_minutes - result.target_minutes if day_input.records_target else 0
     result.day_kind = _classify(day_input, result)
     return result
 

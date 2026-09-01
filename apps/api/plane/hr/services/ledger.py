@@ -179,11 +179,7 @@ def _attendance_by_day(profile, first, last):
 def _holiday_lookup(profile, first, last):
     calendar_id = profile.holiday_calendar_id
     if calendar_id is None:
-        default = (
-            HrHolidayCalendar.objects.filter(is_default=True)
-            .values_list("id", flat=True)
-            .first()
-        )
+        default = HrHolidayCalendar.objects.filter(is_default=True).values_list("id", flat=True).first()
         calendar_id = default
     if calendar_id is None:
         return HolidayLookup([])
@@ -249,9 +245,7 @@ def rebuild_period(profile, year, month, actor=None):
 
     contracts = list(HrContract.objects.filter(profile_id=profile.id))
     personal_schedules = list(HrWorkSchedule.objects.filter(profile_id=profile.id))
-    default_schedules = list(
-        HrWorkSchedule.objects.filter(profile__isnull=True)
-    )
+    default_schedules = list(HrWorkSchedule.objects.filter(profile__isnull=True))
     holidays = _holiday_lookup(profile, first, last)
     absences = _absence_lookup(profile, first, last)
 
@@ -263,9 +257,7 @@ def rebuild_period(profile, year, month, actor=None):
 
     # Compared across the month as a whole: an entry moved to another date is a
     # correction, not a loss.
-    seen_before = {
-        str(identifier) for row in existing.values() for identifier in (row.worklog_ids or [])
-    }
+    seen_before = {str(identifier) for row in existing.values() for identifier in (row.worklog_ids or [])}
     seen_now = {str(identifier) for ids in worklog_ids.values() for identifier in ids}
     vanished = seen_before - seen_now
 
@@ -309,11 +301,7 @@ def rebuild_period(profile, year, month, actor=None):
 
         current_worklog_ids = worklog_ids.get(day, [])
         row = existing.get(day)
-        gone = [
-            identifier
-            for identifier in (row.worklog_ids or [] if row else [])
-            if str(identifier) in vanished
-        ]
+        gone = [identifier for identifier in (row.worklog_ids or [] if row else []) if str(identifier) in vanished]
         if gone:
             disappearances.append((day, gone))
 
@@ -454,9 +442,7 @@ _TOTAL_FIELDS = {
 def _totals(queryset):
     from django.db.models import Sum
 
-    return queryset.aggregate(
-        **{key: Sum(column) for key, column in _TOTAL_FIELDS.items()}
-    )
+    return queryset.aggregate(**{key: Sum(column) for key, column in _TOTAL_FIELDS.items()})
 
 
 def period_totals(period):
@@ -480,9 +466,7 @@ def period_totals_to_date(period, through):
     """
     if through is None:
         return {key: 0 for key in _TOTAL_FIELDS}
-    totals = _totals(
-        HrPeriodDay.objects.filter(period_id=period.id, work_date__lte=through)
-    )
+    totals = _totals(HrPeriodDay.objects.filter(period_id=period.id, work_date__lte=through))
     # A month whose counted days are all still empty aggregates to None rather
     # than to zero, and a None reaching the screen renders as "no figure" where
     # the honest answer is "nothing yet".

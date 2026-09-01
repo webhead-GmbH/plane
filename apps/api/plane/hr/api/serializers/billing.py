@@ -40,13 +40,9 @@ class HrRateCardSerializer(HrBaseSerializer):
         monthly = data.get("monthly_amount", getattr(self.instance, "monthly_amount", None))
 
         if basis == HrRateCard.Basis.HOURLY and hourly is None:
-            raise serializers.ValidationError(
-                {"hourly_rate": "An hourly rate needs an hourly figure."}
-            )
+            raise serializers.ValidationError({"hourly_rate": "An hourly rate needs an hourly figure."})
         if basis != HrRateCard.Basis.HOURLY and monthly is None:
-            raise serializers.ValidationError(
-                {"monthly_amount": "A monthly rate needs a monthly figure."}
-            )
+            raise serializers.ValidationError({"monthly_amount": "A monthly rate needs a monthly figure."})
 
         valid_from = data.get("valid_from", getattr(self.instance, "valid_from", None))
         valid_to = data.get("valid_to", getattr(self.instance, "valid_to", None))

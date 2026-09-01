@@ -135,15 +135,11 @@ class HrMeEndpoint(BaseAPIView):
             )
 
         year, month = _requested_month(request, profile)
-        today = hr_local_date(
-            timezone.now(), profile.timezone or getattr(profile.workspace, "timezone", "") or None
-        )
+        today = hr_local_date(timezone.now(), profile.timezone or getattr(profile.workspace, "timezone", "") or None)
 
         contracts = list(HrContract.objects.filter(profile_id=profile.id))
         personal = list(HrWorkSchedule.objects.filter(profile_id=profile.id))
-        defaults = list(
-            HrWorkSchedule.objects.filter(profile__isnull=True)
-        )
+        defaults = list(HrWorkSchedule.objects.filter(profile__isnull=True))
         contract = effective(contracts, today)
         schedule = effective_schedule(personal, defaults, today)
 
@@ -175,8 +171,7 @@ class HrMeEndpoint(BaseAPIView):
 class HrPeriodListEndpoint(BaseAPIView):
     @hr_permission(SELF)
     def get(self, request):
-        profile = readable_profile_or_none(request, request.query_params.get("profile_id") or None
-        )
+        profile = readable_profile_or_none(request, request.query_params.get("profile_id") or None)
         if profile is None:
             return Response({"error": "No such person, or not yours to read."}, status=status.HTTP_404_NOT_FOUND)
 
@@ -250,9 +245,7 @@ class HrPeriodDaySettleEndpoint(BaseAPIView):
 
     @hr_permission(MANAGER)
     def post(self, request, pk, day_id):
-        day = HrPeriodDay.objects.filter(
-            pk=day_id, period_id=pk, profile__in=visible_profiles(request)
-        ).first()
+        day = HrPeriodDay.objects.filter(pk=day_id, period_id=pk, profile__in=visible_profiles(request)).first()
         if day is None:
             return Response({"error": "No such day."}, status=status.HTTP_404_NOT_FOUND)
         try:
@@ -347,9 +340,7 @@ class HrOverviewEndpoint(BaseAPIView):
 
             payload = _period_payload(period)
             payload["member_display_name"] = profile.member.display_name
-            payload["needs_review"] = HrPeriodDay.objects.filter(
-                period_id=period.id, needs_review=True
-            ).exists()
+            payload["needs_review"] = HrPeriodDay.objects.filter(period_id=period.id, needs_review=True).exists()
             payload["has_running_timer"] = has_running_timer(profile, year, month)
             rows.append(payload)
 

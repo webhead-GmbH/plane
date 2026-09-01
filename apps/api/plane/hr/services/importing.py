@@ -160,9 +160,7 @@ class _Loader:
         key = str(email).strip().lower()
         if key not in self._profiles:
             self._profiles[key] = (
-                HrEmploymentProfile.objects.filter(
-                    workspace=self.workspace, member__email__iexact=key
-                )
+                HrEmploymentProfile.objects.filter(workspace=self.workspace, member__email__iexact=key)
                 .select_related("member")
                 .first()
             )
@@ -191,9 +189,7 @@ class TimeEntryLoader(_Loader):
             minutes = _as_minutes(*_length_column(row))
 
             if profile is None:
-                results.append(
-                    RowResult(index, ERROR, f"Nobody here logs in as {email or '(blank)'}.", row)
-                )
+                results.append(RowResult(index, ERROR, f"Nobody here logs in as {email or '(blank)'}.", row))
             elif day is None:
                 results.append(RowResult(index, ERROR, "The date could not be read.", row))
             elif minutes is None or minutes == 0:
@@ -201,9 +197,7 @@ class TimeEntryLoader(_Loader):
             elif abs(minutes) > 1440:
                 results.append(RowResult(index, ERROR, "More than a day in a single day.", row))
             elif self.month_is_closed(profile, day):
-                results.append(
-                    RowResult(index, SKIP, "That month has been closed already.", row)
-                )
+                results.append(RowResult(index, SKIP, "That month has been closed already.", row))
             else:
                 results.append(
                     RowResult(
@@ -273,9 +267,7 @@ class OpeningBalanceLoader(_Loader):
             basis = (row.get("basis") or row.get("grundlage") or "").strip()
 
             if profile is None:
-                results.append(
-                    RowResult(index, ERROR, f"Nobody here logs in as {email or '(blank)'}.", row)
-                )
+                results.append(RowResult(index, ERROR, f"Nobody here logs in as {email or '(blank)'}.", row))
             elif day is None:
                 results.append(RowResult(index, ERROR, "The date could not be read.", row))
             elif minutes is None:
@@ -352,9 +344,7 @@ class AbsenceLoader(_Loader):
             absence_type = self._types.get(code)
 
             if profile is None:
-                results.append(
-                    RowResult(index, ERROR, f"Nobody here logs in as {email or '(blank)'}.", row)
-                )
+                results.append(RowResult(index, ERROR, f"Nobody here logs in as {email or '(blank)'}.", row))
             elif start is None:
                 results.append(RowResult(index, ERROR, "The start date could not be read.", row))
             elif end < start:
@@ -438,8 +428,7 @@ def commit(batch):
 
     loader = LOADERS[batch.kind](batch.workspace)
     results = [
-        RowResult(row["row"], row["verdict"], row["message"], row["data"])
-        for row in batch.preview.get("rows", [])
+        RowResult(row["row"], row["verdict"], row["message"], row["data"]) for row in batch.preview.get("rows", [])
     ]
     written = loader.write(batch, results)
 
@@ -464,8 +453,7 @@ def undo(batch, actor, reason):
 
     if HrTimeEntry.objects.filter(import_batch=batch, locked_period__isnull=False).exists():
         raise ValueError(
-            "Some of these hours have been counted into a month that is now closed. "
-            "Reopen the month first."
+            "Some of these hours have been counted into a month that is now closed. Reopen the month first."
         )
 
     loader = LOADERS[batch.kind](batch.workspace)

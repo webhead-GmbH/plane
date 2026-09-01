@@ -189,9 +189,7 @@ class HrMonthExportEndpoint(BaseAPIView):
 
         file_format = _requested_format(request)
         periods = (
-            HrPeriod.objects.filter(
-                profile__in=visible_profiles(request), period_start=first
-            )
+            HrPeriod.objects.filter(profile__in=visible_profiles(request), period_start=first)
             .select_related("profile__member")
             .order_by("profile__member__email")
         )
@@ -203,9 +201,7 @@ class HrMonthExportEndpoint(BaseAPIView):
             return Response({"error": str(invalid)}, status=status.HTTP_400_BAD_REQUEST)
 
         response = HttpResponse(payload, content_type=content_type)
-        response["Content-Disposition"] = (
-            f'attachment; filename="hr-{year}-{month:02d}.{file_format}"'
-        )
+        response["Content-Disposition"] = f'attachment; filename="hr-{year}-{month:02d}.{file_format}"'
         return response
 
 
@@ -224,9 +220,7 @@ class HrPeriodExportEndpoint(BaseAPIView):
 
         file_format = _requested_format(request)
         try:
-            payload, content_type = exporting.render(
-                exporting.day_rows(period), exporting.DAY_COLUMNS, file_format
-            )
+            payload, content_type = exporting.render(exporting.day_rows(period), exporting.DAY_COLUMNS, file_format)
         except ValueError as invalid:
             return Response({"error": str(invalid)}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -316,16 +310,12 @@ class HrOpeningBalanceEndpoint(BaseAPIView):
         if not basis:
             # A figure nobody can account for is one nobody can defend when the
             # person it belongs to disagrees with it.
-            return Response(
-                {"error": "Say what this figure is based on."}, status=status.HTTP_400_BAD_REQUEST
-            )
+            return Response({"error": "Say what this figure is based on."}, status=status.HTTP_400_BAD_REQUEST)
         try:
             minutes = int(request.data.get("minutes"))
             kind = int(request.data.get("kind", HrOpeningBalance.Kind.TIME_BALANCE))
         except (TypeError, ValueError):
-            return Response(
-                {"error": "The balance could not be read."}, status=status.HTTP_400_BAD_REQUEST
-            )
+            return Response({"error": "The balance could not be read."}, status=status.HTTP_400_BAD_REQUEST)
 
         row = HrOpeningBalance.objects.create(
             workspace_id=profile.workspace_id,
@@ -333,9 +323,7 @@ class HrOpeningBalanceEndpoint(BaseAPIView):
             effective_on=request.data.get("effective_on"),
             kind=kind,
             minutes=minutes,
-            confidence=int(
-                request.data.get("confidence", HrOpeningBalance.Confidence.AGREED)
-            ),
+            confidence=int(request.data.get("confidence", HrOpeningBalance.Confidence.AGREED)),
             basis=basis,
         )
         return Response({"id": str(row.id)}, status=status.HTTP_201_CREATED)
@@ -361,9 +349,7 @@ class HrOpeningBalanceEndpoint(BaseAPIView):
         try:
             minutes = int(request.data.get("minutes"))
         except (TypeError, ValueError):
-            return Response(
-                {"error": "The balance could not be read."}, status=status.HTTP_400_BAD_REQUEST
-            )
+            return Response({"error": "The balance could not be read."}, status=status.HTTP_400_BAD_REQUEST)
 
         # Only one figure per person, kind and date may be the current one, so the
         # old row has to stop being current before the new one exists. Its id is

@@ -88,9 +88,7 @@ class HrContractSerializer(HrBaseSerializer):
 
         profile = self.context.get("profile") or getattr(self.instance, "profile", None)
         if profile is not None and valid_from is not None:
-            overlapping = HrContract.objects.filter(profile=profile).exclude(
-                pk=getattr(self.instance, "pk", None)
-            )
+            overlapping = HrContract.objects.filter(profile=profile).exclude(pk=getattr(self.instance, "pk", None))
             for other in overlapping:
                 if other.valid_to is not None and other.valid_to < valid_from:
                     continue
@@ -232,9 +230,7 @@ class HrAbsenceSerializer(HrBaseSerializer):
         granularity = data.get("granularity", getattr(self.instance, "granularity", None))
         minutes = data.get("minutes_per_day", getattr(self.instance, "minutes_per_day", None))
         if granularity == HrAbsence.Granularity.HOURS and not minutes:
-            raise serializers.ValidationError(
-                {"minutes_per_day": "Say how many minutes a day this absence covers."}
-            )
+            raise serializers.ValidationError({"minutes_per_day": "Say how many minutes a day this absence covers."})
         return data
 
 

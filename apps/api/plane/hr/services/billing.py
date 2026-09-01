@@ -32,9 +32,7 @@ def rate_for(profile, day):
     found = effective(personal, day)
     if found is not None:
         return found
-    defaults = list(
-        HrRateCard.objects.filter(profile__isnull=True)
-    )
+    defaults = list(HrRateCard.objects.filter(profile__isnull=True))
     return effective(defaults, day)
 
 
@@ -65,9 +63,7 @@ def statement_for(period):
     expected = None
     if rate is not None:
         if rate.basis == HrRateCard.Basis.HOURLY and rate.hourly_rate is not None:
-            expected = (Decimal(minutes) / Decimal(60) * rate.hourly_rate).quantize(
-                CENTS, rounding=ROUND_HALF_UP
-            )
+            expected = (Decimal(minutes) / Decimal(60) * rate.hourly_rate).quantize(CENTS, rounding=ROUND_HALF_UP)
         elif rate.monthly_amount is not None:
             expected = Decimal(rate.monthly_amount).quantize(CENTS, rounding=ROUND_HALF_UP)
 

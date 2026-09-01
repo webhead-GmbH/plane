@@ -62,11 +62,7 @@ def resolve_hr_context(request):
     # Somebody who has left is marked inactive rather than removed, because the
     # months they worked still have to be readable by a manager. Their own way in
     # closes here: an inactive record is history, not an account.
-    profile = (
-        HrEmploymentProfile.objects.filter(member=user, is_active=True)
-        .select_related("member")
-        .first()
-    )
+    profile = HrEmploymentProfile.objects.filter(member=user, is_active=True).select_related("member").first()
     is_manager = bool(profile and profile.is_hr_manager) or is_instance_admin(user)
     return profile, is_manager
 

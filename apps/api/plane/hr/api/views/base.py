@@ -69,9 +69,7 @@ class HrWorkspaceConfigEndpoint(BaseAPIView):
     @hr_permission(MANAGER)
     def post(self, request):
         workspace = hr_home_workspace()
-        serializer = self.serializer_class(
-            data=request.data, context=self._serializer_context(request)
-        )
+        serializer = self.serializer_class(data=request.data, context=self._serializer_context(request))
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         serializer.save(workspace=workspace)

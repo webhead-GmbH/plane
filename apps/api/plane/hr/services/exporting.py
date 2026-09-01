@@ -91,16 +91,19 @@ def _figures(period):
             "leave_consumed_minutes": period.leave_consumed_minutes or 0,
         }
     totals = period_totals(period)
-    return {key: (totals.get(key) or 0) for key in (
-        "target_minutes",
-        "actual_minutes",
-        "balance_minutes",
-        "project_minutes",
-        "non_project_minutes",
-        "absence_minutes",
-        "holiday_minutes",
-        "leave_consumed_minutes",
-    )}
+    return {
+        key: (totals.get(key) or 0)
+        for key in (
+            "target_minutes",
+            "actual_minutes",
+            "balance_minutes",
+            "project_minutes",
+            "non_project_minutes",
+            "absence_minutes",
+            "holiday_minutes",
+            "leave_consumed_minutes",
+        )
+    }
 
 
 def _so_far(period):

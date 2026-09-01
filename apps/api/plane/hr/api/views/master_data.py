@@ -158,9 +158,7 @@ class HrContractEndpoint(BaseAPIView):
         row = HrContract.objects.filter(profile_id=profile.id, pk=pk).first()
         if row is None:
             return Response({"error": "Not found."}, status=status.HTTP_404_NOT_FOUND)
-        serializer = HrContractSerializer(
-            row, data=request.data, partial=True, context={"profile": profile}
-        )
+        serializer = HrContractSerializer(row, data=request.data, partial=True, context={"profile": profile})
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         serializer.save()
@@ -249,9 +247,7 @@ class HrHolidayEndpoint(HrWorkspaceConfigEndpoint):
             if row is None:
                 return Response({"error": "Not found."}, status=status.HTTP_404_NOT_FOUND)
             return Response(self.serializer_class(row).data, status=status.HTTP_200_OK)
-        return Response(
-            self.serializer_class(rows.order_by("date"), many=True).data, status=status.HTTP_200_OK
-        )
+        return Response(self.serializer_class(rows.order_by("date"), many=True).data, status=status.HTTP_200_OK)
 
 
 class HrAbsenceTypeEndpoint(HrWorkspaceConfigEndpoint):
@@ -322,10 +318,7 @@ def _seed_holidays(workspace, calendar, span=5):
 
     this_year = timezone.now().year
     years = range(this_year - span, this_year + span + 1)
-    known = set(
-        HrHoliday.objects.filter(calendar=calendar)
-        .values_list("date", flat=True)
-    )
+    known = set(HrHoliday.objects.filter(calendar=calendar).values_list("date", flat=True))
 
     fresh = [
         HrHoliday(

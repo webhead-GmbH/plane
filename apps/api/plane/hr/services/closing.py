@@ -118,9 +118,7 @@ def _snapshot(period, totals):
     profile = period.profile
     contracts = list(HrContract.objects.filter(profile_id=profile.id))
     personal = list(HrWorkSchedule.objects.filter(profile_id=profile.id))
-    defaults = list(
-        HrWorkSchedule.objects.filter(profile__isnull=True)
-    )
+    defaults = list(HrWorkSchedule.objects.filter(profile__isnull=True))
     contract = effective(contracts, period.period_start)
     schedule = effective_schedule(personal, defaults, period.period_start)
 
@@ -176,9 +174,7 @@ def submit(period, actor):
     if has_running_timer(period.profile, year, month):
         # An entry with no end has no length, so any total including it would be
         # out of date the moment it was read.
-        raise TransitionRefused(
-            "A timer is still running in this month. Stop it, then submit.", conflict=False
-        )
+        raise TransitionRefused("A timer is still running in this month. Stop it, then submit.", conflict=False)
 
     rebuild_period(period.profile, year, month, actor=actor)
     period.state = HrPeriod.State.SUBMITTED
