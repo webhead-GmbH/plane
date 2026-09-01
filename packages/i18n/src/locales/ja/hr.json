@@ -103,6 +103,72 @@
       "approved": "承認済み",
       "closed": "確定済み",
       "reopened": "再オープン済み"
+    },
+    "people": {
+      "title": "メンバー",
+      "subtitle": "会社が雇用しているメンバーと、それぞれが働く条件です。",
+      "add": "メンバーを追加",
+      "back_to_month": "月の勤怠",
+      "edit": "編集",
+      "remove": "退職として記録",
+      "manager": "チーム管理担当",
+      "employee": "従業員",
+      "left": "退職済み",
+      "nobody_yet": "雇用記録が登録されているメンバーはまだいません。メンバーを追加すると、その人の時間の集計が始まります。",
+      "footnote": "退職したメンバーは削除せず退職として記録するため、そのメンバーが勤務した月の記録は引き続き閲覧できます。",
+      "not_permitted_detail": "誰を雇用し、どのような条件で働くかを変更できるのは、チームを管理する担当者のみです。",
+      "column_person": "メンバー",
+      "column_since": "開始日",
+      "column_week": "週の所定時間",
+      "column_role": "役割",
+      "column_action": "操作",
+      "add_title": "メンバーを追加",
+      "add_hint": "この記録で時間を集計するアカウントを選んでください。",
+      "add_confirm": "追加",
+      "search_placeholder": "名前またはメールアドレスで検索",
+      "nobody_matches": "該当するメンバーがいません。",
+      "everybody_added": "全員にすでに雇用記録があります。",
+      "modal_hint": "雇用条件と週の勤務パターンによってこのメンバーの月の集計が決まるため、まとめて設定します。",
+      "section_person": "対象のメンバー",
+      "section_terms": "雇用条件",
+      "section_schedule": "週の勤務パターン",
+      "hire_date": "入社日",
+      "timezone": "タイムゾーン",
+      "is_manager": "チームを管理する担当者にする（全員の時間を閲覧できます）",
+      "arrangement": "勤務形態",
+      "valid_from": "適用開始日",
+      "records_target": "所定時間と過不足を記録する",
+      "records_target_hint": "本人が請求書を発行する勤務形態ではオフにします。会社は実働時間のみを記録し、日ごとの所定時間は設けません。",
+      "schedule_hint": "各曜日の所定時間です。7:42または7.7のように入力し、勤務しない曜日は空欄にします。",
+      "week_total": "週{duration}",
+      "cancel": "キャンセル",
+      "save": "保存",
+      "weekday": {
+        "monday": "月",
+        "tuesday": "火",
+        "wednesday": "水",
+        "thursday": "木",
+        "friday": "金",
+        "saturday": "土",
+        "sunday": "日"
+      },
+      "errors": {
+        "bad_duration": "時間として読み取れない曜日があります。7:42または7.7のように入力するか、空欄にしてください。",
+        "hire_date_required": "最初の月をどこから数えるか決まるよう、入社日を入力してください。"
+      },
+      "toasts": {
+        "added": "追加しました",
+        "saved": "保存しました",
+        "removed": "退職として記録しました",
+        "refused": "処理できませんでした",
+        "try_again": "もう一度お試しください。"
+      }
+    },
+    "arrangement": {
+      "onsite_full_time": "出社・フルタイム",
+      "onsite_part_time": "出社・パートタイム",
+      "remote_full_time_invoicing": "リモート・フルタイム・本人請求",
+      "remote_part_time_invoicing": "リモート・パートタイム・本人請求"
     }
   }
 }

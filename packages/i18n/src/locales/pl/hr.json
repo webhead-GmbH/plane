@@ -103,6 +103,72 @@
       "approved": "Zatwierdzony",
       "closed": "Zamknięty",
       "reopened": "Otwarty ponownie"
+    },
+    "people": {
+      "title": "Osoby",
+      "subtitle": "Kogo firma zatrudnia i na jakich warunkach pracuje każda z tych osób.",
+      "add": "Dodaj osobę",
+      "back_to_month": "Miesiąc",
+      "edit": "Edytuj",
+      "remove": "Oznacz odejście",
+      "manager": "Odpowiada za zespół",
+      "employee": "Pracownik",
+      "left": "już nie pracuje",
+      "nobody_yet": "Nikt nie ma jeszcze danych o zatrudnieniu. Dodanie osoby rozpocznie liczenie jej godzin.",
+      "footnote": "Osoba, która odchodzi, zostaje oznaczona jako już niepracująca, zamiast zostać usunięta, dzięki czemu przepracowane przez nią miesiące pozostają dostępne do wglądu.",
+      "not_permitted_detail": "Tylko osoba odpowiedzialna za zespół może zmieniać, kto jest zatrudniony i na jakich warunkach.",
+      "column_person": "Osoba",
+      "column_since": "Od",
+      "column_week": "Tydzień",
+      "column_role": "Rola",
+      "column_action": "Akcja",
+      "add_title": "Dodaj osobę",
+      "add_hint": "Proszę wybrać konto, którego godziny będą liczone w tych danych.",
+      "add_confirm": "Dodaj",
+      "search_placeholder": "Szukaj według imienia lub adresu e-mail",
+      "nobody_matches": "Nikt nie pasuje do tego wyszukiwania.",
+      "everybody_added": "Wszyscy mają już dane o zatrudnieniu.",
+      "modal_hint": "Warunki i tydzień pracy decydują o tym, ile wyniesie miesiąc tej osoby, dlatego ustawia się je razem.",
+      "section_person": "Osoba",
+      "section_terms": "Warunki",
+      "section_schedule": "Tydzień pracy",
+      "hire_date": "Rozpoczęcie pracy",
+      "timezone": "Strefa czasowa",
+      "is_manager": "Odpowiada za zespół i może przeglądać godziny wszystkich osób",
+      "arrangement": "Forma współpracy",
+      "valid_from": "Obowiązuje od",
+      "records_target": "Rejestrowanie normy godzin i bieżącego salda",
+      "records_target_hint": "Wyłączone przy formach współpracy na własną fakturę, gdzie firma rejestruje przepracowany czas, a dzienna norma nie obowiązuje.",
+      "schedule_hint": "Norma godzin na każdy dzień. Należy wpisać 7:42 lub 7,7, a dzień niepracujący pozostawić pusty.",
+      "week_total": "{duration} tygodniowo",
+      "cancel": "Anuluj",
+      "save": "Zapisz",
+      "weekday": {
+        "monday": "Pon",
+        "tuesday": "Wt",
+        "wednesday": "Śr",
+        "thursday": "Czw",
+        "friday": "Pt",
+        "saturday": "Sob",
+        "sunday": "Niedz"
+      },
+      "errors": {
+        "bad_duration": "Jeden z dni nie zawiera poprawnej długości czasu. Należy wpisać 7:42 lub 7,7 albo pozostawić pole puste.",
+        "hire_date_required": "Proszę podać datę rozpoczęcia pracy tej osoby, aby wiadomo było, od kiedy liczyć jej pierwszy miesiąc."
+      },
+      "toasts": {
+        "added": "Dodano",
+        "saved": "Zapisano",
+        "removed": "Oznaczono odejście",
+        "refused": "Nie powiodło się",
+        "try_again": "Proszę spróbować ponownie."
+      }
+    },
+    "arrangement": {
+      "onsite_full_time": "onsite_full_time: \"Na miejscu, pełny wymiar godzin\" — onsite_part_time: \"Na miejscu, niepełny wymiar godzin\" (remote_* already use this wording and stay unchanged)",
+      "onsite_part_time": "Na miejscu, niepełny etat",
+      "remote_full_time_invoicing": "Zdalnie, pełny wymiar godzin, na własną fakturę",
+      "remote_part_time_invoicing": "Zdalnie, niepełny wymiar godzin, na własną fakturę"
     }
   }
 }

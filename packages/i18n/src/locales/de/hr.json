@@ -103,6 +103,72 @@
       "approved": "Genehmigt",
       "closed": "Abgeschlossen",
       "reopened": "Wieder geöffnet"
+    },
+    "people": {
+      "title": "Personen",
+      "subtitle": "Wer im Unternehmen beschäftigt ist und zu welchen Bedingungen die einzelnen Personen arbeiten.",
+      "add": "Person hinzufügen",
+      "back_to_month": "Der Monat",
+      "edit": "Bearbeiten",
+      "remove": "Als ausgetreten markieren",
+      "manager": "Betreut das Team",
+      "employee": "Mitarbeiter",
+      "left": "Ausgetreten",
+      "nobody_yet": "Für niemanden ist bisher ein Dienstverhältnis hinterlegt. Fügen Sie eine Person hinzu, damit deren Stunden gezählt werden.",
+      "footnote": "Wer das Unternehmen verlässt, wird als ausgetreten markiert und nicht entfernt, damit die bereits gearbeiteten Monate lesbar bleiben.",
+      "not_permitted_detail": "Nur die Person, die das Team betreut, kann ändern, wer zu welchen Bedingungen beschäftigt ist.",
+      "column_person": "Person",
+      "column_since": "Seit",
+      "column_week": "Woche",
+      "column_role": "Rolle",
+      "column_action": "Aktion",
+      "add_title": "Person hinzufügen",
+      "add_hint": "Wählen Sie das Konto aus, dessen Stunden mit diesem Dienstverhältnis gezählt werden.",
+      "add_confirm": "Hinzufügen",
+      "search_placeholder": "Nach Name oder E-Mail suchen",
+      "nobody_matches": "Dazu passt niemand.",
+      "everybody_added": "Für alle ist bereits ein Dienstverhältnis hinterlegt.",
+      "modal_hint": "Bedingungen und Arbeitswoche bestimmen, was der Monat dieser Person ergibt; deshalb werden sie gemeinsam festgelegt.",
+      "section_person": "Die Person",
+      "section_terms": "Bedingungen",
+      "section_schedule": "Die Arbeitswoche",
+      "hire_date": "Eintritt am",
+      "timezone": "Zeitzone",
+      "is_manager": "Betreut das Team und kann die Stunden aller Personen einsehen",
+      "arrangement": "Beschäftigungsform",
+      "valid_from": "Gültig ab",
+      "records_target": "Soll-Stunden und laufenden Saldo führen",
+      "records_target_hint": "Für Beschäftigungsformen auf Honorarbasis deaktiviert: Dann erfasst das Unternehmen nur die geleisteten Stunden, und pro Tag entsteht kein Soll.",
+      "schedule_hint": "Soll-Stunden für jeden Tag. Geben Sie 7:42 oder 7,7 ein und lassen Sie einen Tag leer, wenn er nicht gearbeitet wird.",
+      "week_total": "{duration} pro Woche",
+      "cancel": "Abbrechen",
+      "save": "Speichern",
+      "weekday": {
+        "monday": "Mo",
+        "tuesday": "Di",
+        "wednesday": "Mi",
+        "thursday": "Do",
+        "friday": "Fr",
+        "saturday": "Sa",
+        "sunday": "So"
+      },
+      "errors": {
+        "bad_duration": "Einer der Tage enthält keine Zeitangabe. Geben Sie 7:42 oder 7,7 ein oder lassen Sie das Feld leer.",
+        "hire_date_required": "Geben Sie an, wann diese Person eingetreten ist, damit ihr erster Monat den richtigen Startpunkt hat."
+      },
+      "toasts": {
+        "added": "Hinzugefügt",
+        "saved": "Gespeichert",
+        "removed": "Als ausgetreten markiert",
+        "refused": "Nicht durchgeführt",
+        "try_again": "Bitte versuchen Sie es erneut."
+      }
+    },
+    "arrangement": {
+      "onsite_full_time": "Vor Ort, Vollzeit",
+      "onsite_part_time": "Vor Ort, Teilzeit",
+      "remote_full_time_invoicing": "Remote, Vollzeit, auf Honorarbasis",
+      "remote_part_time_invoicing": "Remote, Teilzeit, auf Honorarbasis"
     }
   }
 }

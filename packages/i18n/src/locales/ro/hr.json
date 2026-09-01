@@ -103,6 +103,72 @@
       "approved": "Aprobată",
       "closed": "Închisă",
       "reopened": "Redeschisă"
+    },
+    "people": {
+      "title": "Persoane",
+      "subtitle": "Pe cine angajează compania și condițiile în care lucrează fiecare.",
+      "add": "Adăugați o persoană",
+      "back_to_month": "Luna",
+      "edit": "Modificați",
+      "remove": "Marcați plecarea",
+      "manager": "Se ocupă de echipă",
+      "employee": "Angajat",
+      "left": "a plecat",
+      "nobody_yet": "Nimeni nu are încă o fișă de angajare. Adăugați o persoană pentru a începe să îi numărați orele.",
+      "footnote": "Cine pleacă este marcat ca plecat, nu șters, astfel încât lunile în care a lucrat rămân disponibile pentru consultare.",
+      "not_permitted_detail": "Doar cine se ocupă de echipă poate schimba cine este angajat și în ce condiții.",
+      "column_person": "Persoană",
+      "column_since": "Din",
+      "column_week": "Săptămână",
+      "column_role": "Rol",
+      "column_action": "Acțiune",
+      "add_title": "Adăugați o persoană",
+      "add_hint": "Alegeți contul ale cărui ore vor fi numărate de această fișă.",
+      "add_confirm": "Adăugați",
+      "search_placeholder": "Căutați după nume sau e-mail",
+      "nobody_matches": "Nu corespunde nimeni.",
+      "everybody_added": "Toată lumea are deja o fișă de angajare.",
+      "modal_hint": "Condițiile și săptămâna de lucru stabilesc la cât se ridică luna acestei persoane, așa că se configurează împreună.",
+      "section_person": "Persoana",
+      "section_terms": "Condiții",
+      "section_schedule": "Săptămâna de lucru",
+      "hire_date": "Data începerii",
+      "timezone": "Fus orar",
+      "is_manager": "Se ocupă de echipă și poate vedea orele tuturor",
+      "arrangement": "Regim de lucru",
+      "valid_from": "În vigoare din",
+      "records_target": "Se înregistrează orele de lucrat și un sold curent",
+      "records_target_hint": "Dezactivat pentru regimurile cu facturare proprie, unde compania înregistrează ce s-a lucrat și nu se stabilesc ore de lucrat pe zi.",
+      "schedule_hint": "Orele de lucrat în fiecare zi. Scrieți 7:42 sau 7,7 și lăsați ziua goală când nu se lucrează.",
+      "week_total": "{duration} pe săptămână",
+      "cancel": "Anulați",
+      "save": "Salvați",
+      "weekday": {
+        "monday": "Lun",
+        "tuesday": "Mar",
+        "wednesday": "Mie",
+        "thursday": "Joi",
+        "friday": "Vin",
+        "saturday": "Sâm",
+        "sunday": "Dum"
+      },
+      "errors": {
+        "bad_duration": "Una dintre zile nu conține o durată. Scrieți 7:42 sau 7,7 ori lăsați câmpul gol.",
+        "hire_date_required": "Precizați când a început această persoană, ca prima ei lună să știe de unde să pornească."
+      },
+      "toasts": {
+        "added": "Adăugată",
+        "saved": "Salvată",
+        "removed": "Plecare marcată",
+        "refused": "Acțiunea nu a reușit",
+        "try_again": "Vă rugăm să încercați din nou."
+      }
+    },
+    "arrangement": {
+      "onsite_full_time": "La sediu, normă întreagă",
+      "onsite_part_time": "La sediu, normă parțială",
+      "remote_full_time_invoicing": "La distanță, normă întreagă, cu facturare proprie",
+      "remote_part_time_invoicing": "La distanță, normă parțială, cu facturare proprie"
     }
   }
 }

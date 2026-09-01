@@ -103,6 +103,72 @@
       "approved": "Aprobado",
       "closed": "Cerrado",
       "reopened": "Reabierto"
+    },
+    "people": {
+      "title": "Personas",
+      "subtitle": "A quién emplea la empresa y las condiciones bajo las que trabaja cada persona.",
+      "add": "Añadir a alguien",
+      "back_to_month": "El mes",
+      "edit": "Editar",
+      "remove": "Marcar como baja",
+      "manager": "Se ocupa del equipo",
+      "employee": "Empleado",
+      "left": "ha dejado la empresa",
+      "nobody_yet": "Todavía nadie tiene un registro laboral. Añada a alguien para empezar a contar sus horas.",
+      "footnote": "Quien deja la empresa se marca como baja en lugar de eliminarse, para que los meses que trabajó sigan pudiendo consultarse.",
+      "not_permitted_detail": "Solo quien se ocupa del equipo puede cambiar a quién se emplea y en qué condiciones.",
+      "column_person": "Persona",
+      "column_since": "Desde",
+      "column_week": "Semana",
+      "column_role": "Rol",
+      "column_action": "Acción",
+      "add_title": "Añadir a alguien",
+      "add_hint": "Elija la cuenta cuyas horas contará este registro.",
+      "add_confirm": "Añadir",
+      "search_placeholder": "Buscar por nombre o correo electrónico",
+      "nobody_matches": "No hay nadie que coincida.",
+      "everybody_added": "Todo el mundo tiene ya un registro laboral.",
+      "modal_hint": "Las condiciones y la semana laboral determinan a cuánto asciende el mes de esta persona, por eso se definen juntas.",
+      "section_person": "La persona",
+      "section_terms": "Condiciones",
+      "section_schedule": "La semana laboral",
+      "hire_date": "Fecha de incorporación",
+      "timezone": "Zona horaria",
+      "is_manager": "Se ocupa del equipo y puede ver las horas de todo el mundo",
+      "arrangement": "Modalidad",
+      "valid_from": "En vigor desde",
+      "records_target": "Registrar las horas previstas y un saldo acumulado",
+      "records_target_hint": "Desactivado en las modalidades por factura propia, en las que la empresa registra lo trabajado y no hay horas previstas por día.",
+      "schedule_hint": "Horas previstas cada día. Escriba 7:42 o 7,7, y deje el día en blanco cuando no se trabaje.",
+      "week_total": "{duration} a la semana",
+      "cancel": "Cancelar",
+      "save": "Guardar",
+      "weekday": {
+        "monday": "Lun",
+        "tuesday": "Mar",
+        "wednesday": "Mié",
+        "thursday": "Jue",
+        "friday": "Vie",
+        "saturday": "Sáb",
+        "sunday": "Dom"
+      },
+      "errors": {
+        "bad_duration": "Uno de los días no es una duración. Escriba 7:42 o 7,7, o déjelo en blanco.",
+        "hire_date_required": "Indique cuándo empezó esta persona, para que su primer mes sepa desde dónde contar."
+      },
+      "toasts": {
+        "added": "Añadido",
+        "saved": "Guardado",
+        "removed": "Marcado como baja",
+        "refused": "No se pudo completar",
+        "try_again": "Vuelva a intentarlo."
+      }
+    },
+    "arrangement": {
+      "onsite_full_time": "Presencial, jornada completa",
+      "onsite_part_time": "Presencial, jornada parcial",
+      "remote_full_time_invoicing": "En remoto, jornada completa, por factura propia",
+      "remote_part_time_invoicing": "En remoto, jornada parcial, por factura propia"
     }
   }
 }

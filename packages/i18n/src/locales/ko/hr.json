@@ -103,6 +103,72 @@
       "approved": "승인됨",
       "closed": "마감됨",
       "reopened": "다시 열림"
+    },
+    "people": {
+      "title": "구성원",
+      "subtitle": "회사가 고용한 사람과 각자에게 적용되는 근무 조건입니다.",
+      "add": "구성원 추가",
+      "back_to_month": "월별 현황",
+      "edit": "편집",
+      "remove": "퇴사 처리",
+      "manager": "팀 관리 담당",
+      "employee": "직원",
+      "left": "퇴사함",
+      "nobody_yet": "아직 고용 기록이 있는 사람이 없습니다. 구성원을 추가하면 그 사람의 시간이 집계되기 시작합니다.",
+      "footnote": "퇴사한 사람은 삭제하지 않고 퇴사 처리하므로, 그 사람이 근무한 월의 기록은 그대로 확인할 수 있습니다.",
+      "not_permitted_detail": "누가 고용되어 있고 어떤 조건으로 일하는지는 팀을 관리하는 담당자만 변경할 수 있습니다.",
+      "column_person": "구성원",
+      "column_since": "입사일",
+      "column_week": "주당 시간",
+      "column_role": "역할",
+      "column_action": "처리",
+      "add_title": "구성원 추가",
+      "add_hint": "이 기록으로 시간을 집계할 계정을 선택하세요.",
+      "add_confirm": "추가",
+      "search_placeholder": "이름 또는 이메일로 검색",
+      "nobody_matches": "일치하는 사람이 없습니다.",
+      "everybody_added": "이미 모든 사람에게 고용 기록이 있습니다.",
+      "modal_hint": "근무 조건과 주간 근무 일정에 따라 이 구성원의 월별 집계가 정해지므로, 두 가지를 함께 설정합니다.",
+      "section_person": "구성원",
+      "section_terms": "근무 조건",
+      "section_schedule": "주간 근무 일정",
+      "hire_date": "입사일",
+      "timezone": "시간대",
+      "is_manager": "팀을 관리하며, 모든 구성원의 시간을 볼 수 있습니다",
+      "arrangement": "근무 형태",
+      "valid_from": "적용 시작일",
+      "records_target": "소정 시간과 누적 차이를 기록",
+      "records_target_hint": "직접 청구 형태에서는 꺼 둡니다. 이 경우 회사는 실근무 시간만 기록하고 날짜별 소정 시간은 두지 않습니다.",
+      "schedule_hint": "요일별 소정 시간입니다. 7:42 또는 7.7 형식으로 입력하고, 근무하지 않는 요일은 비워 두세요.",
+      "week_total": "주당 {duration}",
+      "cancel": "취소",
+      "save": "저장",
+      "weekday": {
+        "monday": "월",
+        "tuesday": "화",
+        "wednesday": "수",
+        "thursday": "목",
+        "friday": "금",
+        "saturday": "토",
+        "sunday": "일"
+      },
+      "errors": {
+        "bad_duration": "시간 형식이 아닌 요일이 있습니다. 7:42 또는 7.7 형식으로 입력하거나 비워 두세요.",
+        "hire_date_required": "첫 달을 어디서부터 집계할지 알 수 있도록 입사일을 입력해 주세요."
+      },
+      "toasts": {
+        "added": "추가되었습니다",
+        "saved": "저장되었습니다",
+        "removed": "퇴사 처리되었습니다",
+        "refused": "처리되지 않았습니다",
+        "try_again": "다시 시도해 주세요."
+      }
+    },
+    "arrangement": {
+      "onsite_full_time": "사무실 근무, 풀타임",
+      "onsite_part_time": "사무실 근무, 파트타임",
+      "remote_full_time_invoicing": "원격 근무, 풀타임, 직접 청구",
+      "remote_part_time_invoicing": "원격 근무, 파트타임, 직접 청구"
     }
   }
 }

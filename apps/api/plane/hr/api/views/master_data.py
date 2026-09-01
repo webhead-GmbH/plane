@@ -27,6 +27,7 @@ from plane.hr.api.serializers.records import (
     HrLeaveEntitlementSerializer,
     HrWorkScheduleSerializer,
 )
+from plane.db.models import User
 from plane.hr.api.views.base import HrWorkspaceConfigEndpoint
 from plane.hr.models import (
     HrAbsenceType,
@@ -46,6 +47,45 @@ from plane.hr.permissions import (
     readable_profile_or_none,
     visible_profiles,
 )
+
+
+class HrCandidateEndpoint(BaseAPIView):
+    """People who could be given an employment record but do not have one.
+
+    Drawn from workspace membership across the whole installation rather than
+    from whichever workspace the manager happens to be looking at, because
+    employment is with the company: somebody working only in another workspace
+    is still a colleague who needs a month.
+    """
+
+    @hr_permission(MANAGER)
+    def get(self, request):
+        employed = HrEmploymentProfile.objects.values_list("member_id", flat=True)
+        candidates = (
+            User.objects.filter(
+                member_workspace__is_active=True,
+                is_active=True,
+                # Bots hold workspace membership so they can act through the API.
+                # Nobody is going to pay one, and offering them here would make
+                # the list of colleagues something to read past rather than pick from.
+                is_bot=False,
+            )
+            .exclude(id__in=employed)
+            .distinct()
+            .order_by("display_name", "email")
+        )
+        return Response(
+            [
+                {
+                    "id": str(person.id),
+                    "display_name": person.display_name or "",
+                    "email": person.email or "",
+                    "avatar_url": person.avatar_url or "",
+                }
+                for person in candidates
+            ],
+            status=status.HTTP_200_OK,
+        )
 
 
 class HrEmploymentProfileEndpoint(HrWorkspaceConfigEndpoint):

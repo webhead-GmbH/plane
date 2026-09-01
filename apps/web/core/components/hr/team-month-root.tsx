@@ -6,7 +6,8 @@
 
 import { useState } from "react";
 import { observer } from "mobx-react";
-import { ChevronLeft, ChevronRight, Download } from "lucide-react";
+import { Link, useParams } from "react-router";
+import { ChevronLeft, ChevronRight, Download, UserCog } from "lucide-react";
 import useSWR from "swr";
 // plane imports
 import { Button } from "@plane/propel/button";
@@ -44,6 +45,7 @@ export const HrTeamMonthRoot = observer(function HrTeamMonthRoot() {
   const [reopening, setReopening] = useState<THrOverviewRow | null>(null);
 
   const { t, currentLocale } = useTranslation();
+  const { workspaceSlug } = useParams();
   const { data, isLoading, error, mutate } = useSWR(`HR_OVERVIEW_${year}_${month}`, () =>
     hrService.overview(year, month)
   );
@@ -108,6 +110,11 @@ export const HrTeamMonthRoot = observer(function HrTeamMonthRoot() {
         </div>
 
         <div className="flex items-center gap-2">
+          <Link to={`/${workspaceSlug}/team-time/people`}>
+            <Button variant="secondary" size="sm" prependIcon={<UserCog className="size-4" />}>
+              {t("hr.people.title")}
+            </Button>
+          </Link>
           <a href={hrService.monthExportUrl(year, month, "csv")} download>
             <Button variant="secondary" size="sm" prependIcon={<Download className="size-4" />}>
               {t("hr.team_time.export_csv")}

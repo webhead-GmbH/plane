@@ -103,6 +103,72 @@
       "approved": "Approved",
       "closed": "Closed",
       "reopened": "Reopened"
+    },
+    "people": {
+      "title": "People",
+      "subtitle": "Who the company employs, and the terms each of them works under.",
+      "add": "Add someone",
+      "back_to_month": "The month",
+      "edit": "Edit",
+      "remove": "Mark as left",
+      "manager": "Looks after the team",
+      "employee": "Employee",
+      "left": "has left",
+      "nobody_yet": "Nobody has an employment record yet. Add someone to start counting their hours.",
+      "footnote": "Somebody who leaves is marked as having left rather than removed, so the months they worked stay readable.",
+      "not_permitted_detail": "Only whoever looks after the team can change who is employed and on what terms.",
+      "column_person": "Person",
+      "column_since": "Since",
+      "column_week": "Week",
+      "column_role": "Role",
+      "column_action": "Action",
+      "add_title": "Add someone",
+      "add_hint": "Pick the account whose hours this record will count.",
+      "add_confirm": "Add",
+      "search_placeholder": "Search by name or email",
+      "nobody_matches": "Nobody matches that.",
+      "everybody_added": "Everybody already has an employment record.",
+      "modal_hint": "Terms and a working week decide what this person's month comes to, so they are set together.",
+      "section_person": "The person",
+      "section_terms": "Terms",
+      "section_schedule": "The working week",
+      "hire_date": "Started on",
+      "timezone": "Timezone",
+      "is_manager": "Looks after the team, and can see everyone's hours",
+      "arrangement": "Arrangement",
+      "valid_from": "In force from",
+      "records_target": "Record hours owed and a running balance",
+      "records_target_hint": "Off for self-invoicing arrangements, where the company records what was worked and nothing is owed by the day.",
+      "schedule_hint": "Hours owed on each day. Type 7:42 or 7.7, and leave a day blank when it is not worked.",
+      "week_total": "{duration} a week",
+      "cancel": "Cancel",
+      "save": "Save",
+      "weekday": {
+        "monday": "Mon",
+        "tuesday": "Tue",
+        "wednesday": "Wed",
+        "thursday": "Thu",
+        "friday": "Fri",
+        "saturday": "Sat",
+        "sunday": "Sun"
+      },
+      "errors": {
+        "bad_duration": "One of the days is not a length of time. Type 7:42 or 7.7, or leave it blank.",
+        "hire_date_required": "Say when this person started, so their first month knows where to begin."
+      },
+      "toasts": {
+        "added": "Added",
+        "saved": "Saved",
+        "removed": "Marked as having left",
+        "refused": "That did not go through",
+        "try_again": "Please try again."
+      }
+    },
+    "arrangement": {
+      "onsite_full_time": "On site, full time",
+      "onsite_part_time": "On site, part time",
+      "remote_full_time_invoicing": "Remote, full time, self-invoicing",
+      "remote_part_time_invoicing": "Remote, part time, self-invoicing"
     }
   }
 }

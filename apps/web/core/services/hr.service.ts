@@ -95,6 +95,28 @@ export type THrPeriod = {
   to_date?: THrPeriodToDate;
 };
 
+/** The four arrangements the company actually employs people under. */
+export enum EHrArrangement {
+  REMOTE_FULL_TIME_INVOICING = "remote_full_time_invoicing",
+  REMOTE_PART_TIME_INVOICING = "remote_part_time_invoicing",
+  ONSITE_PART_TIME = "onsite_part_time",
+  ONSITE_FULL_TIME = "onsite_full_time",
+}
+
+export enum EHrLegalForm {
+  EMPLOYEE = "employee",
+  FREE_SERVICE = "free_service",
+  CONTRACT_FOR_WORK = "contract_for_work",
+}
+
+/** Somebody who could be given an employment record but has none. */
+export type THrCandidate = {
+  id: string;
+  display_name: string;
+  email: string;
+  avatar_url: string;
+};
+
 export type THrEmploymentProfile = {
   id: string;
   member: string;
@@ -102,16 +124,20 @@ export type THrEmploymentProfile = {
   member_email: string;
   member_avatar_url: string;
   timezone: string;
+  holiday_calendar: string | null;
   hire_date: string | null;
+  exit_date: string | null;
   is_hr_manager: boolean;
   is_active: boolean;
 };
 
 export type THrContract = {
   id: string;
+  profile: string;
   valid_from: string;
   valid_to: string | null;
-  arrangement: string;
+  arrangement: EHrArrangement;
+  legal_form: EHrLegalForm | null;
   records_target_hours: boolean;
   records_attendance: boolean;
   records_leave_account: boolean;
@@ -121,8 +147,11 @@ export type THrContract = {
 
 export type THrWorkSchedule = {
   id: string;
+  /** Null for the company default that applies to anyone without one of their own. */
+  profile: string | null;
   name: string;
   valid_from: string;
+  valid_to: string | null;
   monday_minutes: number;
   tuesday_minutes: number;
   wednesday_minutes: number;
@@ -132,6 +161,7 @@ export type THrWorkSchedule = {
   sunday_minutes: number;
   weekly_minutes: number;
   is_flexible: boolean;
+  notional_daily_minutes: number | null;
 };
 
 /** Everything the personal view needs, in one response. */
@@ -298,6 +328,116 @@ export class HrService extends APIService {
 
   async timeEntries(from: string, to: string): Promise<THrTimeEntry[]> {
     return this.get(`${this.base}/time-entries/?from=${from}&to=${to}`)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  // ---------------------------------------------------------------------------
+  // Master data. Company-wide like everything else here, and only reachable by
+  // whoever looks after the team.
+  // ---------------------------------------------------------------------------
+
+  async candidates(): Promise<THrCandidate[]> {
+    return this.get(`${this.base}/candidates/`)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  async employees(): Promise<THrEmploymentProfile[]> {
+    return this.get(`${this.base}/employees/`)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  async createEmployee(payload: Partial<THrEmploymentProfile>): Promise<THrEmploymentProfile> {
+    return this.post(`${this.base}/employees/`, payload)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  async updateEmployee(profileId: string, payload: Partial<THrEmploymentProfile>): Promise<THrEmploymentProfile> {
+    return this.patch(`${this.base}/employees/${profileId}/`, payload)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  /** Marks somebody as having left. Their closed months stay readable. */
+  async removeEmployee(profileId: string) {
+    return this.delete(`${this.base}/employees/${profileId}/`)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  async contracts(profileId: string): Promise<THrContract[]> {
+    return this.get(`${this.base}/employees/${profileId}/contracts/`)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  async createContract(profileId: string, payload: Partial<THrContract>): Promise<THrContract> {
+    return this.post(`${this.base}/employees/${profileId}/contracts/`, payload)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  async updateContract(profileId: string, contractId: string, payload: Partial<THrContract>): Promise<THrContract> {
+    return this.patch(`${this.base}/employees/${profileId}/contracts/${contractId}/`, payload)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  async deleteContract(profileId: string, contractId: string) {
+    return this.delete(`${this.base}/employees/${profileId}/contracts/${contractId}/`)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  async schedules(): Promise<THrWorkSchedule[]> {
+    return this.get(`${this.base}/schedules/`)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  async createSchedule(payload: Partial<THrWorkSchedule>): Promise<THrWorkSchedule> {
+    return this.post(`${this.base}/schedules/`, payload)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  async updateSchedule(scheduleId: string, payload: Partial<THrWorkSchedule>): Promise<THrWorkSchedule> {
+    return this.patch(`${this.base}/schedules/${scheduleId}/`, payload)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  async deleteSchedule(scheduleId: string) {
+    return this.delete(`${this.base}/schedules/${scheduleId}/`)
       .then((response) => response?.data)
       .catch((error) => {
         throw error?.response?.data;

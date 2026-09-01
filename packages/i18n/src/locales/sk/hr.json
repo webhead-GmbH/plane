@@ -103,6 +103,72 @@
       "approved": "Schválené",
       "closed": "Uzavreté",
       "reopened": "Znovu otvorené"
+    },
+    "people": {
+      "title": "Ľudia",
+      "subtitle": "Koho firma zamestnáva a za akých podmienok každý z nich pracuje.",
+      "add": "Pridať osobu",
+      "back_to_month": "Mesiac",
+      "edit": "Upraviť",
+      "remove": "Zaznamenať odchod",
+      "manager": "Vedie tím",
+      "employee": "Zamestnanec",
+      "left": "už nepracuje",
+      "nobody_yet": "Zatiaľ nikto nemá záznam o pracovnom pomere. Pridajte osobu, aby sa jej hodiny začali počítať.",
+      "footnote": "Kto odíde, označí sa ako odídený a jeho záznam sa neodstráni, takže mesiace, ktoré odpracoval, zostávajú čitateľné.",
+      "not_permitted_detail": "Meniť, kto je zamestnaný a za akých podmienok, môže len ten, kto tím vedie.",
+      "column_person": "Osoba",
+      "column_since": "Od",
+      "column_week": "Týždeň",
+      "column_role": "Rola",
+      "column_action": "Akcia",
+      "add_title": "Pridať osobu",
+      "add_hint": "Vyberte účet, ktorého hodiny bude tento záznam počítať.",
+      "add_confirm": "Pridať",
+      "search_placeholder": "Hľadať podľa mena alebo e-mailu",
+      "nobody_matches": "Tomu nezodpovedá nikto.",
+      "everybody_added": "Záznam o pracovnom pomere už má každý.",
+      "modal_hint": "Podmienky a pracovný týždeň určujú, ako mesiac tejto osoby dopadne, preto sa nastavujú spolu.",
+      "section_person": "Osoba",
+      "section_terms": "Podmienky",
+      "section_schedule": "Pracovný týždeň",
+      "hire_date": "Dátum nástupu",
+      "timezone": "Časové pásmo",
+      "is_manager": "Vedie tím a vidí hodiny všetkých",
+      "arrangement": "Forma spolupráce",
+      "valid_from": "Platí od",
+      "records_target": "Evidovať predpísané hodiny a priebežné saldo",
+      "records_target_hint": "Vypnuté pri spolupráci na faktúru, kde firma eviduje, čo sa odpracovalo, a na deň nie je predpísané nič.",
+      "schedule_hint": "Hodiny predpísané na jednotlivé dni. Zadajte 7:42 alebo 7,7 a deň, ktorý sa nepracuje, nechajte prázdny.",
+      "week_total": "{duration} týždenne",
+      "cancel": "Zrušiť",
+      "save": "Uložiť",
+      "weekday": {
+        "monday": "Po",
+        "tuesday": "Ut",
+        "wednesday": "St",
+        "thursday": "Št",
+        "friday": "Pi",
+        "saturday": "So",
+        "sunday": "Ne"
+      },
+      "errors": {
+        "bad_duration": "Jeden z dní neobsahuje časový údaj. Zadajte 7:42 alebo 7,7, prípadne ho nechajte prázdny.",
+        "hire_date_required": "Uveďte, kedy táto osoba nastúpila, aby jej prvý mesiac vedel, kde začať."
+      },
+      "toasts": {
+        "added": "Pridané",
+        "saved": "Uložené",
+        "removed": "Odchod zaznamenaný",
+        "refused": "Nepodarilo sa to",
+        "try_again": "Skúste to prosím znova."
+      }
+    },
+    "arrangement": {
+      "onsite_full_time": "Na pracovisku, plný úväzok",
+      "onsite_part_time": "Na pracovisku, čiastočný úväzok",
+      "remote_full_time_invoicing": "Na diaľku, plný úväzok, na faktúru",
+      "remote_part_time_invoicing": "Na diaľku, čiastočný úväzok, na faktúru"
     }
   }
 }

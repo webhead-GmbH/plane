@@ -103,6 +103,72 @@
       "approved": "Approuvé",
       "closed": "Clôturé",
       "reopened": "Rouvert"
+    },
+    "people": {
+      "title": "Personnes",
+      "subtitle": "Les personnes employées par l’entreprise et les conditions de travail de chacune.",
+      "add": "Ajouter une personne",
+      "back_to_month": "Le mois",
+      "edit": "Modifier",
+      "remove": "Marquer le départ",
+      "manager": "Responsable de l’équipe",
+      "employee": "Employé",
+      "left": "a quitté l’entreprise",
+      "nobody_yet": "Personne n’a encore de contrat de travail. Ajoutez une personne pour commencer à compter ses heures.",
+      "footnote": "Une personne qui s’en va est marquée comme ayant quitté l’entreprise plutôt que supprimée, afin que les mois qu’elle a travaillés restent consultables.",
+      "not_permitted_detail": "Seul le responsable de l’équipe peut modifier qui est employé et à quelles conditions.",
+      "column_person": "Personne",
+      "column_since": "Depuis",
+      "column_week": "Semaine",
+      "column_role": "Rôle",
+      "column_action": "Action",
+      "add_title": "Ajouter une personne",
+      "add_hint": "Choisissez le compte dont ce contrat de travail comptera les heures.",
+      "add_confirm": "Ajouter",
+      "search_placeholder": "Rechercher par nom ou e-mail",
+      "nobody_matches": "Personne ne correspond.",
+      "everybody_added": "Tout le monde a déjà un contrat de travail.",
+      "modal_hint": "Les conditions et la semaine de travail déterminent le résultat du mois de cette personne ; elles se définissent donc ensemble.",
+      "section_person": "La personne",
+      "section_terms": "Conditions",
+      "section_schedule": "La semaine de travail",
+      "hire_date": "Date d’entrée",
+      "timezone": "Fuseau horaire",
+      "is_manager": "Responsable de l’équipe, avec accès aux heures de chacun",
+      "arrangement": "Régime de travail",
+      "valid_from": "En vigueur à partir du",
+      "records_target": "Enregistrer les heures théoriques et un solde courant",
+      "records_target_hint": "Désactivé pour les régimes sur facture, où l’entreprise enregistre le temps réalisé sans heures théoriques par jour.",
+      "schedule_hint": "Heures théoriques pour chaque jour. Saisissez 7:42 ou 7,7, et laissez un jour vide s’il n’est pas travaillé.",
+      "week_total": "{duration} par semaine",
+      "cancel": "Annuler",
+      "save": "Enregistrer",
+      "weekday": {
+        "monday": "lun.",
+        "tuesday": "mar.",
+        "wednesday": "mer.",
+        "thursday": "jeu.",
+        "friday": "ven.",
+        "saturday": "sam.",
+        "sunday": "dim."
+      },
+      "errors": {
+        "bad_duration": "L’un des jours ne correspond pas à une durée. Saisissez 7:42 ou 7,7, ou laissez le champ vide.",
+        "hire_date_required": "Indiquez la date d’entrée de cette personne, afin que son premier mois parte du bon jour."
+      },
+      "toasts": {
+        "added": "Personne ajoutée",
+        "saved": "Enregistré",
+        "removed": "Départ enregistré",
+        "refused": "L’opération n’a pas abouti",
+        "try_again": "Veuillez réessayer."
+      }
+    },
+    "arrangement": {
+      "onsite_full_time": "Sur site, temps plein",
+      "onsite_part_time": "Sur site, temps partiel",
+      "remote_full_time_invoicing": "À distance, temps plein, sur facture",
+      "remote_part_time_invoicing": "À distance, temps partiel, sur facture"
     }
   }
 }

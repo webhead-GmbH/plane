@@ -103,6 +103,72 @@
       "approved": "Disetujui",
       "closed": "Ditutup",
       "reopened": "Dibuka kembali"
+    },
+    "people": {
+      "title": "Orang",
+      "subtitle": "Siapa saja yang dipekerjakan perusahaan, dan ketentuan kerja masing-masing.",
+      "add": "Tambahkan orang",
+      "back_to_month": "Bulan ini",
+      "edit": "Ubah",
+      "remove": "Tandai telah keluar",
+      "manager": "Mengelola tim",
+      "employee": "Karyawan",
+      "left": "telah keluar",
+      "nobody_yet": "Belum ada seorang pun yang memiliki catatan kepegawaian. Tambahkan orang untuk mulai menghitung jamnya.",
+      "footnote": "Orang yang keluar ditandai telah keluar, bukan dihapus, sehingga bulan-bulan yang pernah dikerjakannya tetap dapat dibaca.",
+      "not_permitted_detail": "Hanya orang yang mengelola tim yang dapat mengubah siapa yang dipekerjakan dan dengan ketentuan apa.",
+      "column_person": "Orang",
+      "column_since": "Sejak",
+      "column_week": "Minggu",
+      "column_role": "Peran",
+      "column_action": "Tindakan",
+      "add_title": "Tambahkan orang",
+      "add_hint": "Pilih akun yang jamnya akan dihitung oleh catatan ini.",
+      "add_confirm": "Tambahkan",
+      "search_placeholder": "Cari berdasarkan nama atau email",
+      "nobody_matches": "Tidak ada yang cocok.",
+      "everybody_added": "Semua orang sudah memiliki catatan kepegawaian.",
+      "modal_hint": "Ketentuan dan minggu kerja menentukan hasil bulan orang ini, jadi keduanya diatur bersamaan.",
+      "section_person": "Orang",
+      "section_terms": "Ketentuan",
+      "section_schedule": "Minggu kerja",
+      "hire_date": "Mulai bekerja pada",
+      "timezone": "Zona waktu",
+      "is_manager": "Mengelola tim, dan dapat melihat jam semua orang",
+      "arrangement": "Skema kerja",
+      "valid_from": "Berlaku sejak",
+      "records_target": "Catat jam wajib dan saldo berjalan",
+      "records_target_hint": "Nonaktif untuk skema penagihan mandiri, ketika perusahaan mencatat jam yang dikerjakan dan tidak ada jam wajib per hari.",
+      "schedule_hint": "Jam wajib pada setiap hari. Ketik 7:42 atau 7,7, dan kosongkan hari yang tidak dikerjakan.",
+      "week_total": "{duration} per minggu",
+      "cancel": "Batal",
+      "save": "Simpan",
+      "weekday": {
+        "monday": "Sen",
+        "tuesday": "Sel",
+        "wednesday": "Rab",
+        "thursday": "Kam",
+        "friday": "Jum",
+        "saturday": "Sab",
+        "sunday": "Min"
+      },
+      "errors": {
+        "bad_duration": "Salah satu hari bukan berupa durasi waktu. Ketik 7:42 atau 7,7, atau kosongkan.",
+        "hire_date_required": "Sebutkan kapan orang ini mulai bekerja, agar bulan pertamanya punya titik awal."
+      },
+      "toasts": {
+        "added": "Ditambahkan",
+        "saved": "Disimpan",
+        "removed": "Ditandai telah keluar",
+        "refused": "Tindakan itu tidak berhasil",
+        "try_again": "Silakan coba lagi."
+      }
+    },
+    "arrangement": {
+      "onsite_full_time": "Di kantor, penuh waktu",
+      "onsite_part_time": "Di kantor, paruh waktu",
+      "remote_full_time_invoicing": "Jarak jauh, penuh waktu, penagihan mandiri",
+      "remote_part_time_invoicing": "Jarak jauh, paruh waktu, penagihan mandiri"
     }
   }
 }

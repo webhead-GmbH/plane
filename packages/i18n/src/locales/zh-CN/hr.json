@@ -103,6 +103,72 @@
       "approved": "已批准",
       "closed": "已关闭",
       "reopened": "已重新打开"
+    },
+    "people": {
+      "title": "成员",
+      "subtitle": "公司雇佣了哪些人，以及每个人各自适用的雇佣条件。",
+      "add": "添加成员",
+      "back_to_month": "月度工时",
+      "edit": "编辑",
+      "remove": "标记为已离职",
+      "manager": "团队负责人",
+      "employee": "员工",
+      "left": "已离职",
+      "nobody_yet": "还没有人拥有雇佣记录。添加成员后即可开始统计其工时。",
+      "footnote": "离职的成员会被标记为已离职，而不是被删除，因此其已工作月份的记录仍然可以查看。",
+      "not_permitted_detail": "只有团队负责人才能更改雇佣人员及其雇佣条件。",
+      "column_person": "成员",
+      "column_since": "入职日期",
+      "column_week": "每周工时",
+      "column_role": "角色",
+      "column_action": "操作",
+      "add_title": "添加成员",
+      "add_hint": "选择要为其统计工时的账户。",
+      "add_confirm": "添加",
+      "search_placeholder": "按姓名或邮箱搜索",
+      "nobody_matches": "没有符合条件的成员。",
+      "everybody_added": "所有人都已拥有雇佣记录。",
+      "modal_hint": "雇佣条件与每周工作安排共同决定该成员的月度工时，因此需要一并设置。",
+      "section_person": "成员",
+      "section_terms": "雇佣条件",
+      "section_schedule": "每周工作安排",
+      "hire_date": "入职日期",
+      "timezone": "时区",
+      "is_manager": "担任团队负责人，可以查看所有人的工时",
+      "arrangement": "用工方式",
+      "valid_from": "生效日期",
+      "records_target": "记录应工作工时与累计结余",
+      "records_target_hint": "自行开票的用工方式需要关闭此项：公司只记录已工作的工时，不按天核算应工作工时。",
+      "schedule_hint": "每天的应工作工时。可输入 7:42 或 7.7；不工作的日期请留空。",
+      "week_total": "每周 {duration}",
+      "cancel": "取消",
+      "save": "保存",
+      "weekday": {
+        "monday": "周一",
+        "tuesday": "周二",
+        "wednesday": "周三",
+        "thursday": "周四",
+        "friday": "周五",
+        "saturday": "周六",
+        "sunday": "周日"
+      },
+      "errors": {
+        "bad_duration": "其中有一天填写的不是时长。请输入 7:42 或 7.7，或者留空。",
+        "hire_date_required": "请填写该成员的入职日期，第一个月才知道从哪天开始计算。"
+      },
+      "toasts": {
+        "added": "已添加",
+        "saved": "已保存",
+        "removed": "已标记为离职",
+        "refused": "操作未成功",
+        "try_again": "请重试。"
+      }
+    },
+    "arrangement": {
+      "onsite_full_time": "现场办公，全职",
+      "onsite_part_time": "现场办公，兼职",
+      "remote_full_time_invoicing": "远程办公，全职，自行开票",
+      "remote_part_time_invoicing": "远程办公，兼职，自行开票"
     }
   }
 }

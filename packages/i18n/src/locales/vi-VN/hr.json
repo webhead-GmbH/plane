@@ -103,6 +103,72 @@
       "approved": "Đã phê duyệt",
       "closed": "Đã đóng",
       "reopened": "Đã mở lại"
+    },
+    "people": {
+      "title": "Nhân sự",
+      "subtitle": "Những ai công ty đang thuê, và điều khoản làm việc của từng người.",
+      "add": "Thêm người",
+      "back_to_month": "Tháng",
+      "edit": "Sửa",
+      "remove": "Đánh dấu đã nghỉ việc",
+      "manager": "Phụ trách nhóm",
+      "employee": "Nhân viên",
+      "left": "đã nghỉ việc",
+      "nobody_yet": "Chưa ai có hồ sơ lao động. Hãy thêm một người để bắt đầu tính giờ cho họ.",
+      "footnote": "Người nghỉ việc được đánh dấu là đã nghỉ chứ không bị xóa, nên những tháng họ đã làm vẫn xem được.",
+      "not_permitted_detail": "Chỉ người phụ trách nhóm mới thay đổi được ai đang làm việc và theo điều khoản nào.",
+      "column_person": "Nhân viên",
+      "column_since": "Từ ngày",
+      "column_week": "Tuần",
+      "column_role": "Vai trò",
+      "column_action": "Thao tác",
+      "add_title": "Thêm người",
+      "add_hint": "Hãy chọn tài khoản mà hồ sơ này sẽ tính giờ.",
+      "add_confirm": "Thêm",
+      "search_placeholder": "Tìm theo tên hoặc email",
+      "nobody_matches": "Không có ai khớp.",
+      "everybody_added": "Mọi người đều đã có hồ sơ lao động.",
+      "modal_hint": "Điều khoản và tuần làm việc quyết định số liệu tháng của người này, nên hai phần được đặt cùng nhau.",
+      "section_person": "Nhân viên",
+      "section_terms": "Điều khoản",
+      "section_schedule": "Tuần làm việc",
+      "hire_date": "Bắt đầu từ ngày",
+      "timezone": "Múi giờ",
+      "is_manager": "Phụ trách nhóm, và xem được số giờ của mọi người",
+      "arrangement": "Hình thức làm việc",
+      "valid_from": "Áp dụng từ ngày",
+      "records_target": "Ghi nhận số giờ cần làm và số dư lũy kế",
+      "records_target_hint": "Tắt với các hình thức tự xuất hóa đơn, khi công ty chỉ ghi nhận số giờ đã làm và không tính giờ cần làm theo ngày.",
+      "schedule_hint": "Số giờ cần làm mỗi ngày. Hãy nhập 7:42 hoặc 7,7, và để trống những ngày không làm việc.",
+      "week_total": "{duration} mỗi tuần",
+      "cancel": "Hủy",
+      "save": "Lưu",
+      "weekday": {
+        "monday": "T2",
+        "tuesday": "T3",
+        "wednesday": "T4",
+        "thursday": "T5",
+        "friday": "T6",
+        "saturday": "T7",
+        "sunday": "CN"
+      },
+      "errors": {
+        "bad_duration": "Một trong các ngày không phải là một khoảng thời gian. Hãy nhập 7:42 hoặc 7,7, hoặc để trống.",
+        "hire_date_required": "Hãy cho biết người này bắt đầu từ ngày nào, để tháng đầu tiên của họ biết tính từ đâu."
+      },
+      "toasts": {
+        "added": "Đã thêm",
+        "saved": "Đã lưu",
+        "removed": "Đã đánh dấu là đã nghỉ việc",
+        "refused": "Thao tác không thành công",
+        "try_again": "Vui lòng thử lại."
+      }
+    },
+    "arrangement": {
+      "onsite_full_time": "Tại văn phòng, toàn thời gian",
+      "onsite_part_time": "Tại văn phòng, bán thời gian",
+      "remote_full_time_invoicing": "Từ xa, toàn thời gian, tự xuất hóa đơn",
+      "remote_part_time_invoicing": "Từ xa, bán thời gian, tự xuất hóa đơn"
     }
   }
 }

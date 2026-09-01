@@ -103,6 +103,72 @@
       "approved": "已核准",
       "closed": "已結算",
       "reopened": "已重新開啟"
+    },
+    "people": {
+      "title": "人員",
+      "subtitle": "公司聘用了哪些人，以及每個人適用的任職條件。",
+      "add": "新增人員",
+      "back_to_month": "月份工時",
+      "edit": "編輯",
+      "remove": "標記為已離職",
+      "manager": "負責管理團隊",
+      "employee": "員工",
+      "left": "已離職",
+      "nobody_yet": "目前還沒有任何人有任職紀錄。新增人員後即可開始計算其工時。",
+      "footnote": "離職的人只會被標記為已離職，而不會被刪除，因此他們任職期間的月份工時仍可查閱。",
+      "not_permitted_detail": "只有負責管理團隊的人才能變更聘用名單與任職條件。",
+      "column_person": "人員",
+      "column_since": "起始日",
+      "column_week": "每週工時",
+      "column_role": "角色",
+      "column_action": "操作",
+      "add_title": "新增人員",
+      "add_hint": "請選擇這筆紀錄要計算哪個帳號的工時。",
+      "add_confirm": "新增",
+      "search_placeholder": "以姓名或電子郵件搜尋",
+      "nobody_matches": "找不到符合的人員。",
+      "everybody_added": "所有人都已經有任職紀錄了。",
+      "modal_hint": "任職條件與每週工時安排決定這個人的月份工時結果，因此要一併設定。",
+      "section_person": "人員",
+      "section_terms": "任職條件",
+      "section_schedule": "每週工時安排",
+      "hire_date": "到職日",
+      "timezone": "時區",
+      "is_manager": "負責管理團隊，可檢視所有人的工時",
+      "arrangement": "工作型態",
+      "valid_from": "生效日",
+      "records_target": "記錄應工時與累計結餘",
+      "records_target_hint": "自行開立發票的工作型態請關閉此項；公司只記錄實際工時，不逐日計算應工時。",
+      "schedule_hint": "每天的應工時。可輸入 7:42 或 7.7；不上班的日子請留空。",
+      "week_total": "每週 {duration}",
+      "cancel": "取消",
+      "save": "儲存",
+      "weekday": {
+        "monday": "週一",
+        "tuesday": "週二",
+        "wednesday": "週三",
+        "thursday": "週四",
+        "friday": "週五",
+        "saturday": "週六",
+        "sunday": "週日"
+      },
+      "errors": {
+        "bad_duration": "其中有一天填的不是時間長度。請輸入 7:42 或 7.7，或是留空。",
+        "hire_date_required": "請填寫這個人的到職日，第一個月才知道要從哪天開始計算。"
+      },
+      "toasts": {
+        "added": "已新增",
+        "saved": "已儲存",
+        "removed": "已標記為離職",
+        "refused": "操作未完成",
+        "try_again": "請再試一次。"
+      }
+    },
+    "arrangement": {
+      "onsite_full_time": "現場辦公，全職",
+      "onsite_part_time": "現場辦公，兼職",
+      "remote_full_time_invoicing": "遠距辦公，全職，自行開立發票",
+      "remote_part_time_invoicing": "遠距辦公，兼職，自行開立發票"
     }
   }
 }

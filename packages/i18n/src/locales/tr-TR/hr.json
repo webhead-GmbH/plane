@@ -103,6 +103,72 @@
       "approved": "Onaylandı",
       "closed": "Kapatıldı",
       "reopened": "Yeniden açıldı"
+    },
+    "people": {
+      "title": "Kişiler",
+      "subtitle": "Şirketin kimleri istihdam ettiği ve her birinin hangi koşullarla çalıştığı.",
+      "add": "Kişi ekle",
+      "back_to_month": "Ay",
+      "edit": "Düzenle",
+      "remove": "Ayrıldı olarak işaretle",
+      "manager": "Ekipten sorumlu",
+      "employee": "Çalışan",
+      "left": "ayrıldı",
+      "nobody_yet": "Henüz kimsenin istihdam kaydı yok. Saatleri sayılmaya başlansın diye bir kişi ekleyin.",
+      "footnote": "Ayrılan kişi silinmez, ayrıldı olarak işaretlenir; böylece çalıştığı aylar okunabilir kalır.",
+      "not_permitted_detail": "Kimin istihdam edildiğini ve hangi koşullarla çalıştığını yalnızca ekipten sorumlu olan kişi değiştirebilir.",
+      "column_person": "Kişi",
+      "column_since": "Başlangıç",
+      "column_week": "Hafta",
+      "column_role": "Rol",
+      "column_action": "Eylem",
+      "add_title": "Kişi ekle",
+      "add_hint": "Bu kaydın saatlerini sayacağı hesabı seçin.",
+      "add_confirm": "Ekle",
+      "search_placeholder": "Ada veya e-postaya göre arayın",
+      "nobody_matches": "Buna uyan kimse yok.",
+      "everybody_added": "Herkesin zaten bir istihdam kaydı var.",
+      "modal_hint": "Koşullar ve çalışma haftası, bu kişinin ayının neye karşılık geleceğini belirler; bu nedenle birlikte ayarlanır.",
+      "section_person": "Kişi",
+      "section_terms": "Koşullar",
+      "section_schedule": "Çalışma haftası",
+      "hire_date": "İşe başlama tarihi",
+      "timezone": "Saat dilimi",
+      "is_manager": "Ekipten sorumludur ve herkesin saatlerini görebilir",
+      "arrangement": "Çalışma düzeni",
+      "valid_from": "Geçerlilik başlangıcı",
+      "records_target": "Gereken saatler ve güncel bakiye kaydedilsin",
+      "records_target_hint": "Kendi faturasını kesen düzenlerde kapalıdır; bu düzenlerde şirket yalnızca çalışılanı kaydeder, günlük olarak bir saat gerekmez.",
+      "schedule_hint": "Her gün için gereken saatler. 7:42 veya 7,7 yazın, çalışılmayan günü boş bırakın.",
+      "week_total": "Haftada {duration}",
+      "cancel": "İptal",
+      "save": "Kaydet",
+      "weekday": {
+        "monday": "Pzt",
+        "tuesday": "Sal",
+        "wednesday": "Çar",
+        "thursday": "Per",
+        "friday": "Cum",
+        "saturday": "Cmt",
+        "sunday": "Paz"
+      },
+      "errors": {
+        "bad_duration": "Günlerden biri bir zaman uzunluğu değil. 7:42 veya 7,7 yazın ya da boş bırakın.",
+        "hire_date_required": "Bu kişinin ne zaman başladığını belirtin ki ilk ayı nereden başlayacağını bilsin."
+      },
+      "toasts": {
+        "added": "Eklendi",
+        "saved": "Kaydedildi",
+        "removed": "Ayrıldı olarak işaretlendi",
+        "refused": "İşlem gerçekleşmedi",
+        "try_again": "Lütfen tekrar deneyin."
+      }
+    },
+    "arrangement": {
+      "onsite_full_time": "İş yerinde, tam zamanlı",
+      "onsite_part_time": "İş yerinde, yarı zamanlı",
+      "remote_full_time_invoicing": "Uzaktan, tam zamanlı, kendi faturasını kesen",
+      "remote_part_time_invoicing": "Uzaktan, yarı zamanlı, kendi faturasını kesen"
     }
   }
 }

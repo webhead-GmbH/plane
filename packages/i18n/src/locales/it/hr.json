@@ -103,6 +103,72 @@
       "approved": "Approvato",
       "closed": "Chiuso",
       "reopened": "Riaperto"
+    },
+    "people": {
+      "title": "Persone",
+      "subtitle": "Chi l'azienda impiega e le condizioni di lavoro di ciascuno.",
+      "add": "Aggiungi una persona",
+      "back_to_month": "Il mese",
+      "edit": "Modifica",
+      "remove": "Registra l'uscita",
+      "manager": "Si occupa del team",
+      "employee": "Dipendente",
+      "left": "ha lasciato l'azienda",
+      "nobody_yet": "Nessuno ha ancora un rapporto di lavoro. Aggiunga una persona per iniziare a conteggiarne le ore.",
+      "footnote": "Chi lascia l'azienda non viene rimosso: se ne registra l'uscita, così i mesi già lavorati restano consultabili.",
+      "not_permitted_detail": "Solo chi si occupa del team può modificare chi è impiegato e a quali condizioni.",
+      "column_person": "Persona",
+      "column_since": "Dal",
+      "column_week": "Settimana",
+      "column_role": "Ruolo",
+      "column_action": "Azione",
+      "add_title": "Aggiungi una persona",
+      "add_hint": "Scelga l'account di cui questo rapporto conteggerà le ore.",
+      "add_confirm": "Aggiungi",
+      "search_placeholder": "Cerca per nome o email",
+      "nobody_matches": "Nessuna corrispondenza.",
+      "everybody_added": "Tutti hanno già un rapporto di lavoro.",
+      "modal_hint": "Le condizioni e la settimana lavorativa determinano a quanto ammonta il mese di questa persona, perciò si impostano insieme.",
+      "section_person": "La persona",
+      "section_terms": "Condizioni",
+      "section_schedule": "La settimana lavorativa",
+      "hire_date": "Data di inizio",
+      "timezone": "Fuso orario",
+      "is_manager": "Si occupa del team e può vedere le ore di tutti",
+      "arrangement": "Modalità di lavoro",
+      "valid_from": "In vigore dal",
+      "records_target": "Registrare le ore dovute e un saldo progressivo",
+      "records_target_hint": "Disattivato per le modalità a fattura, in cui l'azienda registra quanto è stato lavorato e non sono dovute ore per giornata.",
+      "schedule_hint": "Ore dovute per ciascun giorno. Digiti 7:42 oppure 7,7 e lasci vuoto un giorno che non viene lavorato.",
+      "week_total": "{duration} a settimana",
+      "cancel": "Annulla",
+      "save": "Salva",
+      "weekday": {
+        "monday": "Lun",
+        "tuesday": "Mar",
+        "wednesday": "Mer",
+        "thursday": "Gio",
+        "friday": "Ven",
+        "saturday": "Sab",
+        "sunday": "Dom"
+      },
+      "errors": {
+        "bad_duration": "Uno dei giorni non contiene una durata valida. Digiti 7:42 oppure 7,7, oppure lasci il campo vuoto.",
+        "hire_date_required": "Indichi quando questa persona ha iniziato, così il suo primo mese sappia da dove partire."
+      },
+      "toasts": {
+        "added": "Persona aggiunta",
+        "saved": "Salvato",
+        "removed": "Uscita registrata",
+        "refused": "Operazione non riuscita",
+        "try_again": "Riprovi, per favore."
+      }
+    },
+    "arrangement": {
+      "onsite_full_time": "In sede, tempo pieno",
+      "onsite_part_time": "In sede, tempo parziale",
+      "remote_full_time_invoicing": "Da remoto, tempo pieno, a fattura",
+      "remote_part_time_invoicing": "Da remoto, tempo parziale, a fattura"
     }
   }
 }

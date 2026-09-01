@@ -18,6 +18,7 @@ from plane.hr.api.views import (
     HrAbsenceDecisionEndpoint,
     HrAbsenceEndpoint,
     HrAbsenceTypeEndpoint,
+    HrCandidateEndpoint,
     HrContractEndpoint,
     HrEmploymentProfileEndpoint,
     HrHolidayCalendarEndpoint,
@@ -78,6 +79,7 @@ urlpatterns = [
     path("imports/<uuid:pk>/commit/", HrImportCommitEndpoint.as_view(), name="hr-import-commit"),
     path("imports/<uuid:pk>/undo/", HrImportUndoEndpoint.as_view(), name="hr-import-undo"),
     # People and their terms
+    path("candidates/", HrCandidateEndpoint.as_view(), name="hr-candidates"),
     path("employees/", HrEmploymentProfileEndpoint.as_view(), name="hr-employees"),
     path("employees/<uuid:pk>/", HrEmploymentProfileEndpoint.as_view(), name="hr-employee-detail"),
     path("employees/<uuid:profile_id>/contracts/", HrContractEndpoint.as_view(), name="hr-contracts"),

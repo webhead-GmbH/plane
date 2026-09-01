@@ -103,6 +103,72 @@
       "approved": "Aprovado",
       "closed": "Fechado",
       "reopened": "Reaberto"
+    },
+    "people": {
+      "title": "Pessoas",
+      "subtitle": "Quem a empresa emprega e em que condições cada pessoa trabalha.",
+      "add": "Adicionar pessoa",
+      "back_to_month": "O mês",
+      "edit": "Editar",
+      "remove": "Registrar desligamento",
+      "manager": "Cuida da equipe",
+      "employee": "Funcionário",
+      "left": "desligado",
+      "nobody_yet": "Ninguém tem registro de vínculo empregatício ainda. Adicione uma pessoa para começar a contar as horas dela.",
+      "footnote": "Quem sai da empresa é marcado como desligado em vez de ser excluído, para que os meses já trabalhados continuem legíveis.",
+      "not_permitted_detail": "Só quem cuida da equipe pode alterar quem está empregado e em que condições.",
+      "column_person": "Pessoa",
+      "column_since": "Desde",
+      "column_week": "Semana",
+      "column_role": "Função",
+      "column_action": "Ação",
+      "add_title": "Adicionar pessoa",
+      "add_hint": "Escolha a conta cujas horas este registro vai contar.",
+      "add_confirm": "Adicionar",
+      "search_placeholder": "Buscar por nome ou e-mail",
+      "nobody_matches": "Ninguém corresponde a essa busca.",
+      "everybody_added": "Todas as pessoas já têm registro de vínculo empregatício.",
+      "modal_hint": "As condições e a semana de trabalho determinam o resultado do mês desta pessoa, por isso são definidas juntas.",
+      "section_person": "A pessoa",
+      "section_terms": "Condições",
+      "section_schedule": "A semana de trabalho",
+      "hire_date": "Começou em",
+      "timezone": "Fuso horário",
+      "is_manager": "Cuida da equipe e pode ver as horas de todas as pessoas",
+      "arrangement": "Regime de trabalho",
+      "valid_from": "Em vigor a partir de",
+      "records_target": "Registrar horas previstas e saldo acumulado",
+      "records_target_hint": "Desativado nos regimes com emissão de nota fiscal, em que a empresa registra o que foi trabalhado e não há horas previstas por dia.",
+      "schedule_hint": "Horas previstas em cada dia. Digite 7:42 ou 7,7 e deixe o dia em branco quando não for trabalhado.",
+      "week_total": "{duration} por semana",
+      "cancel": "Cancelar",
+      "save": "Salvar",
+      "weekday": {
+        "monday": "Seg",
+        "tuesday": "Ter",
+        "wednesday": "Qua",
+        "thursday": "Qui",
+        "friday": "Sex",
+        "saturday": "Sáb",
+        "sunday": "Dom"
+      },
+      "errors": {
+        "bad_duration": "Um dos dias não contém uma duração válida. Digite 7:42 ou 7,7, ou deixe em branco.",
+        "hire_date_required": "Informe quando esta pessoa começou, para que o primeiro mês dela tenha um ponto de partida."
+      },
+      "toasts": {
+        "added": "Adicionado",
+        "saved": "Salvo",
+        "removed": "Desligamento registrado",
+        "refused": "A ação não foi concluída",
+        "try_again": "Por favor, tente novamente."
+      }
+    },
+    "arrangement": {
+      "onsite_full_time": "Presencial, tempo integral",
+      "onsite_part_time": "Presencial, meio período",
+      "remote_full_time_invoicing": "Remoto, tempo integral, com emissão de nota fiscal",
+      "remote_part_time_invoicing": "Remoto, meio período, com emissão de nota fiscal"
     }
   }
 }

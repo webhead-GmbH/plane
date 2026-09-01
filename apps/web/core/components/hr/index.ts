@@ -11,3 +11,5 @@ export * from "./reopen-modal";
 export * from "./my-time-root";
 export * from "./team-month-root";
 export * from "./utils";
+export * from "./add-person-modal";
+export * from "./people-root";

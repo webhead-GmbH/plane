@@ -109,6 +109,12 @@ export const coreRoutes: RouteConfigEntry[] = [
         layout("./(all)/[workspaceSlug]/(projects)/my-time/layout.tsx", [
           route(":workspaceSlug/my-time", "./(all)/[workspaceSlug]/(projects)/my-time/page.tsx"),
         ]),
+        layout("./(all)/[workspaceSlug]/(projects)/team-time/people/layout.tsx", [
+          route(
+            ":workspaceSlug/team-time/people",
+            "./(all)/[workspaceSlug]/(projects)/team-time/people/page.tsx"
+          ),
+        ]),
         layout("./(all)/[workspaceSlug]/(projects)/team-time/layout.tsx", [
           route(":workspaceSlug/team-time", "./(all)/[workspaceSlug]/(projects)/team-time/page.tsx"),
         ]),

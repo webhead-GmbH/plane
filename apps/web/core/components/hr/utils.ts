@@ -137,3 +137,30 @@ export function hasHappened(workDate: string, countedThrough: string | null): bo
   if (countedThrough === null) return false;
   return workDate <= countedThrough;
 }
+
+/**
+ * Read a length of time somebody typed, in minutes.
+ *
+ * Accepts "7:42" and "7.7" and "462m", because the screens show h:mm and people
+ * copy figures out of contracts written either way. Returns null for anything it
+ * cannot read, so a typo is refused rather than silently becoming zero — a zero
+ * here is a real instruction that the day is not worked.
+ */
+export function parseDuration(input: string): number | null {
+  const text = input.trim().toLowerCase();
+  if (!text) return null;
+
+  const clock = /^(\d{1,3}):([0-5]?\d)$/.exec(text);
+  if (clock) return Number(clock[1]) * 60 + Number(clock[2]);
+
+  const minutes = /^(\d{1,5})\s*m(in)?$/.exec(text);
+  if (minutes) return Number(minutes[1]);
+
+  const hours = /^(\d{1,3})([.,](\d{1,4}))?\s*h?$/.exec(text);
+  if (hours) {
+    const whole = Number(hours[1]);
+    const fraction = hours[3] ? Number(`0.${hours[3]}`) : 0;
+    return Math.round((whole + fraction) * 60);
+  }
+  return null;
+}

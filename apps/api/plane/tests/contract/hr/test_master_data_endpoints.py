@@ -447,3 +447,60 @@ class TestTimeEntries:
         )
         response = client_for(user).get(url(workspace, "time-entries/"))
         assert response.json() == []
+
+
+class TestCandidates:
+    """Who can still be given an employment record."""
+
+    def test_it_offers_somebody_not_yet_employed(self, workspace):
+        manager, _ = employ(workspace, is_hr_manager=True)
+        newcomer = new_user()
+        WorkspaceMemberFactory(workspace=workspace, member=newcomer, role=ROLE.MEMBER.value)
+
+        response = client_for(manager).get(url(workspace, "candidates/"))
+        assert response.status_code == 200
+        assert str(newcomer.id) in [row["id"] for row in response.json()]
+
+    def test_it_leaves_out_people_who_already_have_a_record(self, workspace):
+        manager, _ = employ(workspace, is_hr_manager=True)
+        colleague, _ = employ(workspace)
+
+        offered = [row["id"] for row in client_for(manager).get(url(workspace, "candidates/")).json()]
+        assert str(colleague.id) not in offered
+        assert str(manager.id) not in offered
+
+    def test_it_reaches_across_workspaces(self, workspace):
+        # Employment is with the company. Somebody working only in another
+        # workspace is still a colleague who needs a month.
+        manager, _ = employ(workspace, is_hr_manager=True)
+        elsewhere = WorkspaceFactory(owner=new_user())
+        stranger = new_user()
+        WorkspaceMemberFactory(workspace=elsewhere, member=stranger, role=ROLE.MEMBER.value)
+
+        offered = [row["id"] for row in client_for(manager).get(url(workspace, "candidates/")).json()]
+        assert str(stranger.id) in offered
+
+    def test_it_leaves_out_bots(self, workspace):
+        # They hold membership so they can act through the API; nobody pays one.
+        manager, _ = employ(workspace, is_hr_manager=True)
+        bot = new_user()
+        bot.is_bot = True
+        bot.save()
+        WorkspaceMemberFactory(workspace=workspace, member=bot, role=ROLE.MEMBER.value)
+
+        offered = [row["id"] for row in client_for(manager).get(url(workspace, "candidates/")).json()]
+        assert str(bot.id) not in offered
+
+    def test_it_leaves_out_somebody_removed_from_every_workspace(self, workspace):
+        manager, _ = employ(workspace, is_hr_manager=True)
+        gone = new_user()
+        membership = WorkspaceMemberFactory(workspace=workspace, member=gone, role=ROLE.MEMBER.value)
+        membership.is_active = False
+        membership.save()
+
+        offered = [row["id"] for row in client_for(manager).get(url(workspace, "candidates/")).json()]
+        assert str(gone.id) not in offered
+
+    def test_an_employee_cannot_see_the_list(self, workspace):
+        user, _ = employ(workspace)
+        assert client_for(user).get(url(workspace, "candidates/")).status_code == 403

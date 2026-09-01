@@ -12,6 +12,7 @@ from .billing import (
 )
 from .master_data import (
     HrAbsenceTypeEndpoint,
+    HrCandidateEndpoint,
     HrContractEndpoint,
     HrEmploymentProfileEndpoint,
     HrHolidayCalendarEndpoint,
@@ -53,6 +54,7 @@ __all__ = [
     "HrAbsenceDecisionEndpoint",
     "HrAbsenceEndpoint",
     "HrAbsenceTypeEndpoint",
+    "HrCandidateEndpoint",
     "HrContractEndpoint",
     "HrEmploymentProfileEndpoint",
     "HrHolidayCalendarEndpoint",
