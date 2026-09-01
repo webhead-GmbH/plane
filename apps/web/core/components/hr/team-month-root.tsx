@@ -7,7 +7,7 @@
 import { useState } from "react";
 import { observer } from "mobx-react";
 import { Link, useParams } from "react-router";
-import { ChevronLeft, ChevronRight, Download, UserCog } from "lucide-react";
+import { ChevronLeft, ChevronRight, Download, Upload, UserCog } from "lucide-react";
 import useSWR from "swr";
 // plane imports
 import { Button } from "@plane/propel/button";
@@ -17,7 +17,7 @@ import { Loader } from "@plane/ui";
 // local imports
 import { EHrPeriodState, HrService, type THrOverviewRow } from "@/services/hr.service";
 import { HrOverviewTable } from "./overview-table";
-import { HrReopenModal } from "./reopen-modal";
+import { HrReasonModal } from "./reason-modal";
 import {
   balanceTone,
   figuresToShow,
@@ -110,6 +110,11 @@ export const HrTeamMonthRoot = observer(function HrTeamMonthRoot() {
         </div>
 
         <div className="flex items-center gap-2">
+          <Link to={`/${workspaceSlug}/team-time/import`}>
+            <Button variant="secondary" size="sm" prependIcon={<Upload className="size-4" />}>
+              {t("hr.imports.title")}
+            </Button>
+          </Link>
           <Link to={`/${workspaceSlug}/team-time/people`}>
             <Button variant="secondary" size="sm" prependIcon={<UserCog className="size-4" />}>
               {t("hr.people.title")}
@@ -181,10 +186,14 @@ export const HrTeamMonthRoot = observer(function HrTeamMonthRoot() {
             onReopen={setReopening}
           />
 
-          <HrReopenModal
+          <HrReasonModal
             isOpen={reopening !== null}
-            personName={reopening?.member_display_name ?? ""}
-            monthLabel={monthLabel}
+            title={t("hr.reopen.title", { month: monthLabel })}
+            body={t("hr.reopen.body", { person: reopening?.member_display_name ?? "" })}
+            label={t("hr.reopen.label")}
+            placeholder={t("hr.reopen.placeholder")}
+            confirmLabel={t("hr.reopen.confirm")}
+            cancelLabel={t("hr.reopen.cancel")}
             isBusy={busyPeriodId === reopening?.id}
             onClose={() => setReopening(null)}
             onConfirm={(reason) => void handleReopen(reason)}

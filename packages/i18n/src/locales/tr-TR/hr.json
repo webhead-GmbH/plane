@@ -83,11 +83,11 @@
     },
     "reopen": {
       "title": "{month} yeniden açılsın mı?",
-      "explanation": "{name} adlı kişinin ayı kapatıldı ve rakamları donduruldu. Yeniden açmak, kapatılan sürümü korur ve bu sürümü onun yanına kaydeder; böylece onaylanmış hiçbir şeyin üzerine yazılmaz.",
-      "reason_label": "Neden yeniden açılıyor?",
-      "reason_placeholder": "İkinci haftadaki üç gün yanlış aya kaydedilmiş.",
-      "cancel": "Kapalı kalsın",
-      "confirm": "Yeniden aç"
+      "body": "{person} adlı kişinin ayı kapatıldı ve rakamları donduruldu. Yeniden açmak, kapatılan sürümü korur ve bu sürümü onun yanına kaydeder; böylece onaylanmış hiçbir şeyin üzerine yazılmaz.",
+      "label": "Neden yeniden açılıyor?",
+      "placeholder": "İkinci haftadaki üç gün yanlış aya kaydedilmiş.",
+      "confirm": "Yeniden aç",
+      "cancel": "Kapalı kalsın"
     },
     "day_kind": {
       "workday": "Çalışma günü",
@@ -197,6 +197,65 @@
       },
       "toasts": {
         "added": "Eklendi",
+        "refused": "İşlem gerçekleşmedi",
+        "try_again": "Lütfen tekrar deneyin."
+      }
+    },
+    "imports": {
+      "title": "Saatleri içe aktarma",
+      "subtitle": "Başka bir yerde kaydedilmiş aylar; bir hesap tablosundan okunur ve hiçbir şey yazılmadan önce denetlenir.",
+      "not_permitted_detail": "Saatleri yalnızca ekipten sorumlu olan kişi içe aktarabilir.",
+      "what_kind": "Dosyanın içeriği",
+      "choose_file": "Dosya seç",
+      "kind": {
+        "time_entries": "Saatler",
+        "absences": "İzinler",
+        "opening_balances": "Açılış bakiyeleri"
+      },
+      "columns": {
+        "time_entries": "Sütunlar: email, date, bir de hours ya da minutes — başlıklar tam olarak böyle yazılmalı. Varsa note sütunu da korunur. 7:42, 7,7 ve 462 aynı zaman uzunluğu olarak okunur.",
+        "absences": "Sütunlar: email, start_date, end_date ve type — başlıklar tam olarak böyle yazılmalı. Tek günlük bir izinde end_date sütununu hiç eklemeyin.",
+        "opening_balances": "Sütunlar: email, bakiyenin geçerli olmaya başladığı günü taşıyan effective_on, bir de bakiyenin kendisini taşıyan hours ya da minutes — başlıklar tam olarak böyle yazılmalı."
+      },
+      "preview_title": "{filename}, uygulanacağı hâliyle",
+      "preview_hint": "Henüz hiçbir şey yazılmadı. Aşağıdaki satırları denetleyin, sonra uygulayın.",
+      "will_write": "yazılacak",
+      "cannot_read": "okunamıyor",
+      "skipped": "atlandı",
+      "apply": "{count} satırı uygula",
+      "discard": "Vazgeç",
+      "column_row": "Satır",
+      "column_verdict": "Sonuç",
+      "column_detail": "Ayrıntı",
+      "verdict": {
+        "ok": "Yazılacak",
+        "error": "Okunamıyor",
+        "skip": "Atlandı"
+      },
+      "past": "Daha önce içe aktarılan dosyalar",
+      "none_yet": "Henüz hiçbir şey içe aktarılmadı.",
+      "row_summary": "{total} satır içinden {valid}",
+      "state": {
+        "10": "Yüklendi",
+        "20": "Denetleniyor",
+        "30": "Uygulanmayı bekliyor",
+        "40": "Yazılıyor",
+        "50": "Uygulandı",
+        "60": "Okunamadı",
+        "70": "Geri alındı"
+      },
+      "undo": "Geri al",
+      "undo_title": "{filename} geri alınsın mı?",
+      "undo_body": "Bu dosyanın yazdığı her saat kaldırılır, başka hiçbir şeye dokunulmaz. Bu arada kapatılmış bir aydaki saatler olduğu yerde kalır.",
+      "undo_label": "Neden geri alınıyor?",
+      "undo_placeholder": "Dosyada mart iki kez yer alıyordu.",
+      "undo_confirm": "Geri al",
+      "undo_cancel": "Olduğu gibi kalsın",
+      "toasts": {
+        "applied": "Uygulandı",
+        "written": "{count} satır yazıldı",
+        "undone": "Geri alındı",
+        "removed": "{count} satır kaldırıldı",
         "refused": "İşlem gerçekleşmedi",
         "try_again": "Lütfen tekrar deneyin."
       }

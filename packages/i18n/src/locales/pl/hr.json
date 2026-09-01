@@ -83,11 +83,11 @@
     },
     "reopen": {
       "title": "Otworzyć ponownie {month}?",
-      "explanation": "Miesiąc osoby {name} został zamknięty, a jego wartości zamrożone. Ponowne otwarcie zachowuje zamkniętą wersję i zapisuje obok niej nową, więc nic, co zostało zatwierdzone, nie zostaje nadpisane.",
-      "reason_label": "Dlaczego miesiąc zostaje ponownie otwarty?",
-      "reason_placeholder": "Trzy dni z drugiego tygodnia zostały zarejestrowane w niewłaściwym miesiącu.",
-      "cancel": "Pozostaw zamknięty",
-      "confirm": "Otwórz ponownie"
+      "body": "Miesiąc osoby {person} został zamknięty, a jego wartości zamrożone. Ponowne otwarcie zachowuje zamkniętą wersję i zapisuje obok niej nową, więc nic, co zostało zatwierdzone, nie zostaje nadpisane.",
+      "label": "Dlaczego miesiąc zostaje ponownie otwarty?",
+      "placeholder": "Trzy dni z drugiego tygodnia zostały zarejestrowane w niewłaściwym miesiącu.",
+      "confirm": "Otwórz ponownie",
+      "cancel": "Pozostaw zamknięty"
     },
     "day_kind": {
       "workday": "Dzień roboczy",
@@ -197,6 +197,65 @@
       },
       "toasts": {
         "added": "Dodano",
+        "refused": "Nie powiodło się",
+        "try_again": "Proszę spróbować ponownie."
+      }
+    },
+    "imports": {
+      "title": "Import godzin",
+      "subtitle": "Miesiące zarejestrowane w innym miejscu, wczytane z arkusza kalkulacyjnego i sprawdzone, zanim cokolwiek zostanie zapisane.",
+      "not_permitted_detail": "Tylko osoba odpowiedzialna za zespół może importować godziny.",
+      "what_kind": "Zawartość pliku",
+      "choose_file": "Wybierz plik",
+      "kind": {
+        "time_entries": "Godziny",
+        "absences": "Nieobecności",
+        "opening_balances": "Salda początkowe"
+      },
+      "columns": {
+        "time_entries": "Kolumny: email, date oraz hours albo minutes — dokładnie takie nagłówki. Kolumna note zostaje zachowana, jeśli plik ją zawiera. Zapisy 7:42, 7,7 i 462 oznaczają tę samą długość czasu.",
+        "absences": "Kolumny: email, start_date, end_date oraz type — dokładnie takie nagłówki. Przy pojedynczym dniu kolumnę end_date należy pominąć.",
+        "opening_balances": "Kolumny: email, effective_on z dniem, od którego saldo obowiązuje, oraz hours albo minutes z samym saldem — dokładnie takie nagłówki."
+      },
+      "preview_title": "{filename} – tak jak zostałby zastosowany",
+      "preview_hint": "Nic nie zostało jeszcze zapisane. Proszę sprawdzić poniższe wiersze, a następnie je zastosować.",
+      "will_write": "do zapisania",
+      "cannot_read": "nie do odczytania",
+      "skipped": "do pominięcia",
+      "apply": "Zastosuj wiersze: {count}",
+      "discard": "Odrzuć",
+      "column_row": "Wiersz",
+      "column_verdict": "Wynik",
+      "column_detail": "Szczegóły",
+      "verdict": {
+        "ok": "Zostanie zapisany",
+        "error": "Nie do odczytania",
+        "skip": "Pominięty"
+      },
+      "past": "Wcześniej zaimportowane pliki",
+      "none_yet": "Nie zaimportowano jeszcze niczego.",
+      "row_summary": "{valid} z {total} wierszy",
+      "state": {
+        "10": "Przesłany",
+        "20": "Sprawdzanie",
+        "30": "Oczekuje na zastosowanie",
+        "40": "Zapisywanie",
+        "50": "Zastosowany",
+        "60": "Nie udało się odczytać",
+        "70": "Cofnięty"
+      },
+      "undo": "Cofnij",
+      "undo_title": "Cofnąć {filename}?",
+      "undo_body": "Wszystkie godziny zapisane przez ten plik zostają usunięte i nic poza tym nie zostaje zmienione. Godziny w miesiącu, który został od tego czasu zamknięty, pozostają na swoim miejscu.",
+      "undo_label": "Dlaczego import zostaje cofnięty?",
+      "undo_placeholder": "Plik zawierał marzec dwukrotnie.",
+      "undo_confirm": "Cofnij import",
+      "undo_cancel": "Pozostaw bez zmian",
+      "toasts": {
+        "applied": "Zastosowano",
+        "written": "Zapisane wiersze: {count}",
+        "undone": "Cofnięto",
+        "removed": "Usunięte wiersze: {count}",
         "refused": "Nie powiodło się",
         "try_again": "Proszę spróbować ponownie."
       }

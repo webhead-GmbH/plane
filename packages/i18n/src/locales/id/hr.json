@@ -83,11 +83,11 @@
     },
     "reopen": {
       "title": "Buka kembali {month}?",
-      "explanation": "Bulan milik {name} sudah ditutup dan angkanya dibekukan. Membuka kembali akan mempertahankan versi yang ditutup dan mencatat versi ini di sampingnya, sehingga tidak ada hal yang telah disetujui yang akan tertimpa.",
-      "reason_label": "Mengapa bulan ini dibuka kembali?",
-      "reason_placeholder": "Tiga hari di minggu kedua tercatat pada bulan yang salah.",
-      "cancel": "Biarkan tetap tertutup",
-      "confirm": "Buka kembali"
+      "body": "Bulan milik {person} sudah ditutup dan angkanya dibekukan. Membuka kembali akan mempertahankan versi yang ditutup dan mencatat versi ini di sampingnya, sehingga tidak ada hal yang telah disetujui yang akan tertimpa.",
+      "label": "Mengapa bulan ini dibuka kembali?",
+      "placeholder": "Tiga hari di minggu kedua tercatat pada bulan yang salah.",
+      "confirm": "Buka kembali",
+      "cancel": "Biarkan tetap tertutup"
     },
     "day_kind": {
       "workday": "Hari kerja",
@@ -197,6 +197,65 @@
       },
       "toasts": {
         "added": "Ditambahkan",
+        "refused": "Tindakan itu tidak berhasil",
+        "try_again": "Silakan coba lagi."
+      }
+    },
+    "imports": {
+      "title": "Impor jam",
+      "subtitle": "Bulan-bulan yang tercatat di tempat lain, dibaca dari spreadsheet dan diperiksa sebelum ada yang ditulis.",
+      "not_permitted_detail": "Hanya orang yang mengelola tim yang dapat mengimpor jam.",
+      "what_kind": "Isi file",
+      "choose_file": "Pilih file",
+      "kind": {
+        "time_entries": "Jam",
+        "absences": "Ketidakhadiran",
+        "opening_balances": "Saldo awal"
+      },
+      "columns": {
+        "time_entries": "Kolom: email, date, dan salah satu dari hours atau minutes — judul kolomnya harus persis seperti itu. Kolom note ikut disimpan jika ada. 7:42, 7,7, dan 462 sama-sama terbaca sebagai durasi yang sama.",
+        "absences": "Kolom: email, start_date, end_date, dan type — judul kolomnya harus persis seperti itu. Untuk ketidakhadiran satu hari saja, kolom end_date tidak perlu disertakan.",
+        "opening_balances": "Kolom: email, effective_on untuk hari saat saldo mulai berlaku, dan salah satu dari hours atau minutes untuk saldonya sendiri — judul kolomnya harus persis seperti itu."
+      },
+      "preview_title": "{filename}, seperti yang akan diterapkan",
+      "preview_hint": "Belum ada apa pun yang ditulis. Periksa baris di bawah, lalu terapkan.",
+      "will_write": "akan ditulis",
+      "cannot_read": "tidak dapat dibaca",
+      "skipped": "dilewati",
+      "apply": "Terapkan {count} baris",
+      "discard": "Buang",
+      "column_row": "Baris",
+      "column_verdict": "Hasil",
+      "column_detail": "Keterangan",
+      "verdict": {
+        "ok": "Akan ditulis",
+        "error": "Tidak dapat dibaca",
+        "skip": "Dilewati"
+      },
+      "past": "File yang pernah diimpor",
+      "none_yet": "Belum ada yang diimpor.",
+      "row_summary": "{valid} dari {total} baris",
+      "state": {
+        "10": "Diunggah",
+        "20": "Sedang diperiksa",
+        "30": "Menunggu diterapkan",
+        "40": "Sedang ditulis",
+        "50": "Diterapkan",
+        "60": "Tidak dapat dibaca",
+        "70": "Diurungkan"
+      },
+      "undo": "Urungkan",
+      "undo_title": "Urungkan {filename}?",
+      "undo_body": "Setiap jam yang ditulis file ini akan dihapus, dan tidak ada hal lain yang tersentuh. Jam pada bulan yang sejak itu sudah ditutup tetap berada di tempatnya.",
+      "undo_label": "Mengapa impor ini diurungkan?",
+      "undo_placeholder": "File ini memuat bulan Maret dua kali.",
+      "undo_confirm": "Urungkan",
+      "undo_cancel": "Biarkan apa adanya",
+      "toasts": {
+        "applied": "Diterapkan",
+        "written": "{count} baris ditulis",
+        "undone": "Diurungkan",
+        "removed": "{count} baris dihapus",
         "refused": "Tindakan itu tidak berhasil",
         "try_again": "Silakan coba lagi."
       }

@@ -83,11 +83,11 @@
     },
     "reopen": {
       "title": "Rouvrir {month} ?",
-      "explanation": "Le mois de {name} a été clôturé et ses chiffres figés. La réouverture conserve la version clôturée et enregistre celle-ci à côté, afin que rien de ce qui a été approuvé ne soit écrasé.",
-      "reason_label": "Pourquoi ce mois est-il rouvert ?",
-      "reason_placeholder": "Trois jours de la deuxième semaine ont été enregistrés sur le mauvais mois.",
-      "cancel": "Laisser clôturé",
-      "confirm": "Rouvrir"
+      "body": "Le mois de {person} a été clôturé et ses chiffres figés. La réouverture conserve la version clôturée et enregistre celle-ci à côté, afin que rien de ce qui a été approuvé ne soit écrasé.",
+      "label": "Pourquoi ce mois est-il rouvert ?",
+      "placeholder": "Trois jours de la deuxième semaine ont été enregistrés sur le mauvais mois.",
+      "confirm": "Rouvrir",
+      "cancel": "Laisser clôturé"
     },
     "day_kind": {
       "workday": "Jour ouvré",
@@ -197,6 +197,65 @@
       },
       "toasts": {
         "added": "Ajouté",
+        "refused": "L’opération n’a pas abouti",
+        "try_again": "Veuillez réessayer."
+      }
+    },
+    "imports": {
+      "title": "Importer des heures",
+      "subtitle": "Des mois enregistrés ailleurs, lus depuis une feuille de calcul et vérifiés avant que quoi que ce soit ne soit écrit.",
+      "not_permitted_detail": "Seul le responsable de l’équipe peut importer des heures.",
+      "what_kind": "Contenu du fichier",
+      "choose_file": "Choisir un fichier",
+      "kind": {
+        "time_entries": "Heures",
+        "absences": "Absences",
+        "opening_balances": "Soldes initiaux"
+      },
+      "columns": {
+        "time_entries": "Colonnes : email, date, et hours ou minutes — exactement ces intitulés de colonnes. Une colonne note est conservée s’il y en a une. 7:42, 7,7 et 462 correspondent tous à la même durée.",
+        "absences": "Colonnes : email, start_date, end_date et type — exactement ces intitulés de colonnes. Pour une seule journée, omettez end_date.",
+        "opening_balances": "Colonnes : email, effective_on pour le jour à partir duquel le solde s’applique, et hours ou minutes pour le solde lui-même — exactement ces intitulés de colonnes."
+      },
+      "preview_title": "{filename}, tel qu’il serait appliqué",
+      "preview_hint": "Rien n’a encore été écrit. Vérifiez les lignes ci-dessous, puis appliquez.",
+      "will_write": "à écrire",
+      "cannot_read": "illisibles",
+      "skipped": "ignorées",
+      "apply": "Appliquer {count} lignes",
+      "discard": "Abandonner",
+      "column_row": "Ligne",
+      "column_verdict": "Résultat",
+      "column_detail": "Détail",
+      "verdict": {
+        "ok": "Sera écrite",
+        "error": "Illisible",
+        "skip": "Ignorée"
+      },
+      "past": "Fichiers déjà importés",
+      "none_yet": "Rien n’a encore été importé.",
+      "row_summary": "{valid} lignes sur {total}",
+      "state": {
+        "10": "Téléversé",
+        "20": "Vérification en cours",
+        "30": "En attente d’application",
+        "40": "Écriture en cours",
+        "50": "Appliqué",
+        "60": "Lecture impossible",
+        "70": "Annulé"
+      },
+      "undo": "Annuler",
+      "undo_title": "Annuler {filename} ?",
+      "undo_body": "Toutes les heures écrites par ce fichier sont retirées, et rien d’autre n’est modifié. Les heures d’un mois clôturé depuis restent en place.",
+      "undo_label": "Pourquoi cet import est-il annulé ?",
+      "undo_placeholder": "Le fichier contenait deux fois le mois de mars.",
+      "undo_confirm": "Annuler l’import",
+      "undo_cancel": "Laisser tel quel",
+      "toasts": {
+        "applied": "Appliqué",
+        "written": "{count} lignes écrites",
+        "undone": "Annulé",
+        "removed": "{count} lignes retirées",
         "refused": "L’opération n’a pas abouti",
         "try_again": "Veuillez réessayer."
       }

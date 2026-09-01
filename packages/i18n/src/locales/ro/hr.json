@@ -83,11 +83,11 @@
     },
     "reopen": {
       "title": "Redeschideți {month}?",
-      "explanation": "Luna pentru {name} a fost închisă, iar cifrele ei au fost înghețate. Redeschiderea păstrează versiunea închisă și o înregistrează pe aceasta alături de ea, astfel încât nimic din ce a fost aprobat nu este suprascris.",
-      "reason_label": "De ce se redeschide?",
-      "reason_placeholder": "Trei zile din a doua săptămână au fost înregistrate în luna greșită.",
-      "cancel": "Lăsați-o închisă",
-      "confirm": "Redeschideți"
+      "body": "Luna pentru {person} a fost închisă, iar cifrele ei au fost înghețate. Redeschiderea păstrează versiunea închisă și o înregistrează pe aceasta alături de ea, astfel încât nimic din ce a fost aprobat nu este suprascris.",
+      "label": "De ce se redeschide?",
+      "placeholder": "Trei zile din a doua săptămână au fost înregistrate în luna greșită.",
+      "confirm": "Redeschideți",
+      "cancel": "Lăsați-o închisă"
     },
     "day_kind": {
       "workday": "Zi lucrătoare",
@@ -197,6 +197,65 @@
       },
       "toasts": {
         "added": "Adăugată",
+        "refused": "Acțiunea nu a reușit",
+        "try_again": "Vă rugăm să încercați din nou."
+      }
+    },
+    "imports": {
+      "title": "Import de ore",
+      "subtitle": "Luni înregistrate în altă parte, citite dintr-o foaie de calcul și verificate înainte ca ceva să fie scris.",
+      "not_permitted_detail": "Doar cine se ocupă de echipă poate importa ore.",
+      "what_kind": "Ce conține fișierul",
+      "choose_file": "Alegeți un fișier",
+      "kind": {
+        "time_entries": "Ore",
+        "absences": "Absențe",
+        "opening_balances": "Solduri inițiale"
+      },
+      "columns": {
+        "time_entries": "Coloane: email, date și fie hours, fie minutes — exact aceste titluri de coloană. O coloană note este preluată dacă există. 7:42, 7,7 și 462 se citesc toate ca aceeași durată.",
+        "absences": "Coloane: email, start_date, end_date și type — exact aceste titluri de coloană. Pentru o singură zi, omiteți end_date.",
+        "opening_balances": "Coloane: email, effective_on pentru ziua din care se aplică soldul și fie hours, fie minutes pentru soldul propriu-zis — exact aceste titluri de coloană."
+      },
+      "preview_title": "{filename}, așa cum ar fi aplicat",
+      "preview_hint": "Nu s-a scris încă nimic. Verificați rândurile de mai jos, apoi aplicați.",
+      "will_write": "vor fi scrise",
+      "cannot_read": "nu pot fi citite",
+      "skipped": "omise",
+      "apply": "Aplicați {count} rânduri",
+      "discard": "Renunțați",
+      "column_row": "Rând",
+      "column_verdict": "Rezultat",
+      "column_detail": "Detalii",
+      "verdict": {
+        "ok": "Va fi scris",
+        "error": "Nu poate fi citit",
+        "skip": "Omis"
+      },
+      "past": "Fișiere importate anterior",
+      "none_yet": "Nu s-a importat încă nimic.",
+      "row_summary": "{valid} din {total} rânduri",
+      "state": {
+        "10": "Încărcat",
+        "20": "În curs de verificare",
+        "30": "În așteptarea aplicării",
+        "40": "În curs de scriere",
+        "50": "Aplicat",
+        "60": "Nu a putut fi citit",
+        "70": "Anulat"
+      },
+      "undo": "Anulați",
+      "undo_title": "Anulați importul {filename}?",
+      "undo_body": "Fiecare oră scrisă de acest fișier este eliminată și nimic altceva nu este atins. Orele dintr-o lună închisă între timp rămân acolo unde sunt.",
+      "undo_label": "De ce se anulează?",
+      "undo_placeholder": "Fișierul conținea luna martie de două ori.",
+      "undo_confirm": "Anulați importul",
+      "undo_cancel": "Lăsați lucrurile așa",
+      "toasts": {
+        "applied": "Aplicat",
+        "written": "{count} rânduri scrise",
+        "undone": "Anulat",
+        "removed": "{count} rânduri eliminate",
         "refused": "Acțiunea nu a reușit",
         "try_again": "Vă rugăm să încercați din nou."
       }

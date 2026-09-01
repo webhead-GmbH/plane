@@ -83,11 +83,11 @@
     },
     "reopen": {
       "title": "{month} wieder öffnen?",
-      "explanation": "Der Monat von {name} ist abgeschlossen und seine Werte sind eingefroren. Beim Wiederöffnen bleibt die abgeschlossene Fassung erhalten und die neue wird daneben festgehalten, damit nichts Genehmigtes überschrieben wird.",
-      "reason_label": "Warum wird der Monat wieder geöffnet?",
-      "reason_placeholder": "Drei Tage in der zweiten Woche wurden im falschen Monat erfasst.",
-      "cancel": "Abgeschlossen lassen",
-      "confirm": "Wieder öffnen"
+      "body": "Der Monat von {person} ist abgeschlossen und seine Werte sind eingefroren. Beim Wiederöffnen bleibt die abgeschlossene Fassung erhalten und die neue wird daneben festgehalten, damit nichts Genehmigtes überschrieben wird.",
+      "label": "Warum wird der Monat wieder geöffnet?",
+      "placeholder": "Drei Tage in der zweiten Woche wurden im falschen Monat erfasst.",
+      "confirm": "Wieder öffnen",
+      "cancel": "Abgeschlossen lassen"
     },
     "day_kind": {
       "workday": "Arbeitstag",
@@ -197,6 +197,65 @@
       },
       "toasts": {
         "added": "Hinzugefügt",
+        "refused": "Nicht durchgeführt",
+        "try_again": "Bitte versuchen Sie es erneut."
+      }
+    },
+    "imports": {
+      "title": "Stunden importieren",
+      "subtitle": "Monate, die anderswo erfasst wurden: aus einer Tabelle eingelesen und geprüft, bevor etwas geschrieben wird.",
+      "not_permitted_detail": "Nur die Person, die das Team betreut, kann Stunden importieren.",
+      "what_kind": "Inhalt der Datei",
+      "choose_file": "Datei auswählen",
+      "kind": {
+        "time_entries": "Stunden",
+        "absences": "Abwesenheiten",
+        "opening_balances": "Anfangssalden"
+      },
+      "columns": {
+        "time_entries": "Spalten: email, date und entweder hours oder minutes — genau so als Spaltenüberschrift schreiben (auf Deutsch auch stunden, std, minuten). Eine Spalte note (oder notiz) wird übernommen, sofern vorhanden. 7:42, 7,7 und 462 stehen alle für dieselbe Dauer.",
+        "absences": "Spalten: email, start_date, end_date und type — genau so als Spaltenüberschrift schreiben (auf Deutsch auch von, bis, art). Für einen einzelnen Tag end_date weglassen.",
+        "opening_balances": "Spalten: email, effective_on für den Tag, ab dem der Saldo gilt, und entweder hours oder minutes für den Saldo selbst — genau so als Spaltenüberschrift schreiben."
+      },
+      "preview_title": "{filename}, so wie die Datei übernommen würde",
+      "preview_hint": "Es wurde noch nichts geschrieben. Prüfen Sie die Zeilen unten und übernehmen Sie sie erst dann.",
+      "will_write": "werden geschrieben",
+      "cannot_read": "können nicht gelesen werden",
+      "skipped": "übersprungen",
+      "apply": "{count} Zeilen übernehmen",
+      "discard": "Verwerfen",
+      "column_row": "Zeile",
+      "column_verdict": "Ergebnis",
+      "column_detail": "Details",
+      "verdict": {
+        "ok": "Wird geschrieben",
+        "error": "Kann nicht gelesen werden",
+        "skip": "Übersprungen"
+      },
+      "past": "Früher importierte Dateien",
+      "none_yet": "Es wurde noch nichts importiert.",
+      "row_summary": "{valid} von {total} Zeilen",
+      "state": {
+        "10": "Hochgeladen",
+        "20": "Wird geprüft",
+        "30": "Wartet auf Übernahme",
+        "40": "Wird geschrieben",
+        "50": "Übernommen",
+        "60": "Konnte nicht gelesen werden",
+        "70": "Zurückgenommen"
+      },
+      "undo": "Zurücknehmen",
+      "undo_title": "{filename} zurücknehmen?",
+      "undo_body": "Alle Stunden, die diese Datei geschrieben hat, werden entfernt; sonst wird nichts verändert. Stunden in einem Monat, der inzwischen abgeschlossen ist, bleiben unverändert.",
+      "undo_label": "Warum wird der Import zurückgenommen?",
+      "undo_placeholder": "Die Datei hat den März doppelt enthalten.",
+      "undo_confirm": "Zurücknehmen",
+      "undo_cancel": "Unverändert lassen",
+      "toasts": {
+        "applied": "Übernommen",
+        "written": "{count} Zeilen geschrieben",
+        "undone": "Zurückgenommen",
+        "removed": "{count} Zeilen entfernt",
         "refused": "Nicht durchgeführt",
         "try_again": "Bitte versuchen Sie es erneut."
       }

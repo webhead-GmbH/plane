@@ -83,11 +83,11 @@
     },
     "reopen": {
       "title": "¿Reabrir {month}?",
-      "explanation": "El mes de {name} está cerrado y sus cifras quedaron fijadas. Al reabrirlo, la versión cerrada se conserva y la nueva queda registrada junto a ella, de modo que no se sobrescribe nada de lo aprobado.",
-      "reason_label": "¿Por qué se reabre?",
-      "reason_placeholder": "Tres días de la segunda semana se registraron en el mes equivocado.",
-      "cancel": "Dejarlo cerrado",
-      "confirm": "Reabrir"
+      "body": "El mes de {person} está cerrado y sus cifras quedaron fijadas. Al reabrirlo, la versión cerrada se conserva y la nueva queda registrada junto a ella, de modo que no se sobrescribe nada de lo aprobado.",
+      "label": "¿Por qué se reabre?",
+      "placeholder": "Tres días de la segunda semana se registraron en el mes equivocado.",
+      "confirm": "Reabrir",
+      "cancel": "Dejarlo cerrado"
     },
     "day_kind": {
       "workday": "Día laborable",
@@ -197,6 +197,65 @@
       },
       "toasts": {
         "added": "Añadido",
+        "refused": "No se pudo completar",
+        "try_again": "Vuelva a intentarlo."
+      }
+    },
+    "imports": {
+      "title": "Importar horas",
+      "subtitle": "Meses registrados en otro sitio, leídos desde una hoja de cálculo y comprobados antes de escribir nada.",
+      "not_permitted_detail": "Solo quien se ocupa del equipo puede importar horas.",
+      "what_kind": "Qué contiene el archivo",
+      "choose_file": "Elegir un archivo",
+      "kind": {
+        "time_entries": "Horas",
+        "absences": "Ausencias",
+        "opening_balances": "Saldos iniciales"
+      },
+      "columns": {
+        "time_entries": "Columnas: email, date y, o bien hours, o bien minutes — exactamente esos encabezados. Si hay una columna note, se conserva. 7:42, 7,7 y 462 se leen como la misma duración.",
+        "absences": "Columnas: email, start_date, end_date y type — exactamente esos encabezados. Para un solo día, omita end_date.",
+        "opening_balances": "Columnas: email, effective_on para el día desde el que se aplica el saldo, y hours o minutes para el saldo en sí — exactamente esos encabezados."
+      },
+      "preview_title": "{filename}, tal como se aplicaría",
+      "preview_hint": "Todavía no se ha escrito nada. Revise las filas de abajo y aplique después.",
+      "will_write": "se escribirán",
+      "cannot_read": "no se pueden leer",
+      "skipped": "omitidas",
+      "apply": "Aplicar {count} filas",
+      "discard": "Descartar",
+      "column_row": "Fila",
+      "column_verdict": "Resultado",
+      "column_detail": "Detalle",
+      "verdict": {
+        "ok": "Se escribirá",
+        "error": "No se puede leer",
+        "skip": "Omitida"
+      },
+      "past": "Archivos importados anteriormente",
+      "none_yet": "Todavía no se ha importado nada.",
+      "row_summary": "{valid} de {total} filas",
+      "state": {
+        "10": "Subido",
+        "20": "En comprobación",
+        "30": "Pendiente de aplicar",
+        "40": "Escribiendo",
+        "50": "Aplicado",
+        "60": "No se pudo leer",
+        "70": "Deshecho"
+      },
+      "undo": "Deshacer",
+      "undo_title": "¿Deshacer {filename}?",
+      "undo_body": "Se eliminan todas las horas que escribió este archivo y no se toca nada más. Las horas de un mes que se haya cerrado desde entonces se quedan donde están.",
+      "undo_label": "¿Por qué se deshace?",
+      "undo_placeholder": "El archivo incluía marzo dos veces.",
+      "undo_confirm": "Deshacerlo",
+      "undo_cancel": "Dejarlo como está",
+      "toasts": {
+        "applied": "Aplicado",
+        "written": "{count} filas escritas",
+        "undone": "Deshecho",
+        "removed": "{count} filas eliminadas",
         "refused": "No se pudo completar",
         "try_again": "Vuelva a intentarlo."
       }

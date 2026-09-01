@@ -230,6 +230,45 @@ export type THrTimeEntry = {
   locked_period: string | null;
 };
 
+/** What a file being brought in holds. */
+export enum EHrImportKind {
+  TIME_ENTRIES = 10,
+  ABSENCES = 20,
+  OPENING_BALANCES = 30,
+}
+
+export enum EHrImportState {
+  UPLOADED = 10,
+  VALIDATING = 20,
+  PREVIEW_READY = 30,
+  COMMITTING = 40,
+  COMMITTED = 50,
+  FAILED = 60,
+  ROLLED_BACK = 70,
+}
+
+export type THrImportRow = {
+  row: number;
+  verdict: "ok" | "error" | "skip";
+  message: string;
+  data: Record<string, unknown>;
+};
+
+export type THrImportBatch = {
+  id: string;
+  kind: EHrImportKind;
+  state: EHrImportState;
+  filename: string;
+  row_count: number;
+  valid_count: number;
+  error_count: number;
+  skipped_count: number;
+  preview: THrImportRow[];
+  committed_at: string | null;
+  rolled_back_at: string | null;
+  rollback_reason: string | null;
+};
+
 export class HrService extends APIService {
   constructor() {
     super(API_BASE_URL);
@@ -471,6 +510,48 @@ export class HrService extends APIService {
 
   async deleteSchedule(scheduleId: string) {
     return this.delete(`${this.base}/schedules/${scheduleId}/`)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  // ---------------------------------------------------------------------------
+  // Bringing months in from whatever recorded them before.
+  // ---------------------------------------------------------------------------
+
+  async imports(): Promise<THrImportBatch[]> {
+    return this.get(`${this.base}/imports/`)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  /** Uploads a file and returns what it WOULD do. Nothing is written yet. */
+  async checkImport(file: File, kind: EHrImportKind): Promise<THrImportBatch> {
+    const body = new FormData();
+    body.append("file", file);
+    body.append("kind", String(kind));
+    // The boundary is axios's to set from the FormData; naming the content type
+    // here would send one without it and the file would arrive unreadable.
+    return this.post(`${this.base}/imports/`, body)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  async applyImport(batchId: string): Promise<THrImportBatch & { written: number }> {
+    return this.post(`${this.base}/imports/${batchId}/commit/`)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  async undoImport(batchId: string, reason: string): Promise<THrImportBatch & { removed: number }> {
+    return this.post(`${this.base}/imports/${batchId}/undo/`, { reason })
       .then((response) => response?.data)
       .catch((error) => {
         throw error?.response?.data;

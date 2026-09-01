@@ -83,11 +83,11 @@
     },
     "reopen": {
       "title": "Reabrir {month}?",
-      "explanation": "O mês de {name} foi fechado e seus números foram congelados. Ao reabrir, a versão fechada é mantida e esta fica registrada ao lado dela, de modo que nada do que foi aprovado é sobrescrito.",
-      "reason_label": "Por que ele está sendo reaberto?",
-      "reason_placeholder": "Três dias da segunda semana foram registrados no mês errado.",
-      "cancel": "Manter fechado",
-      "confirm": "Reabrir"
+      "body": "O mês de {person} foi fechado e seus números foram congelados. Ao reabrir, a versão fechada é mantida e esta fica registrada ao lado dela, de modo que nada do que foi aprovado é sobrescrito.",
+      "label": "Por que ele está sendo reaberto?",
+      "placeholder": "Três dias da segunda semana foram registrados no mês errado.",
+      "confirm": "Reabrir",
+      "cancel": "Manter fechado"
     },
     "day_kind": {
       "workday": "Dia útil",
@@ -197,6 +197,65 @@
       },
       "toasts": {
         "added": "Adicionado",
+        "refused": "A ação não foi concluída",
+        "try_again": "Por favor, tente novamente."
+      }
+    },
+    "imports": {
+      "title": "Importar horas",
+      "subtitle": "Meses registrados em outro lugar, lidos de uma planilha e conferidos antes que qualquer coisa seja gravada.",
+      "not_permitted_detail": "Só quem cuida da equipe pode importar horas.",
+      "what_kind": "O que o arquivo contém",
+      "choose_file": "Escolher um arquivo",
+      "kind": {
+        "time_entries": "Horas",
+        "absences": "Ausências",
+        "opening_balances": "Saldos iniciais"
+      },
+      "columns": {
+        "time_entries": "Colunas: email, date e hours ou minutes — exatamente esses títulos de coluna. Uma coluna note é mantida, se houver. 7:42, 7,7 e 462 são lidos como a mesma duração.",
+        "absences": "Colunas: email, start_date, end_date e type — exatamente esses títulos de coluna. Para um único dia, deixe end_date de fora.",
+        "opening_balances": "Colunas: email, effective_on para o dia a partir do qual o saldo vale e hours ou minutes para o próprio saldo — exatamente esses títulos de coluna."
+      },
+      "preview_title": "{filename}, como seria aplicado",
+      "preview_hint": "Nada foi gravado ainda. Confira as linhas abaixo e depois aplique.",
+      "will_write": "serão gravadas",
+      "cannot_read": "não podem ser lidas",
+      "skipped": "ignoradas",
+      "apply": "Aplicar {count} linhas",
+      "discard": "Descartar",
+      "column_row": "Linha",
+      "column_verdict": "Resultado",
+      "column_detail": "Detalhe",
+      "verdict": {
+        "ok": "Será gravada",
+        "error": "Não pode ser lida",
+        "skip": "Ignorada"
+      },
+      "past": "Arquivos importados anteriormente",
+      "none_yet": "Nada foi importado ainda.",
+      "row_summary": "{valid} de {total} linhas",
+      "state": {
+        "10": "Carregado",
+        "20": "Em conferência",
+        "30": "Aguardando aplicação",
+        "40": "Em gravação",
+        "50": "Aplicado",
+        "60": "Não foi possível ler",
+        "70": "Desfeito"
+      },
+      "undo": "Desfazer",
+      "undo_title": "Desfazer {filename}?",
+      "undo_body": "Todas as horas gravadas por este arquivo são removidas, e nada mais é alterado. As horas de um mês que tenha sido fechado desde então permanecem como estão.",
+      "undo_label": "Por que ele está sendo desfeito?",
+      "undo_placeholder": "O arquivo listou março duas vezes.",
+      "undo_confirm": "Desfazer a importação",
+      "undo_cancel": "Deixar como está",
+      "toasts": {
+        "applied": "Aplicado",
+        "written": "{count} linhas gravadas",
+        "undone": "Desfeito",
+        "removed": "{count} linhas removidas",
         "refused": "A ação não foi concluída",
         "try_again": "Por favor, tente novamente."
       }

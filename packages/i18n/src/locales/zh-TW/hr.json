@@ -83,11 +83,11 @@
     },
     "reopen": {
       "title": "要重新開啟 {month} 嗎？",
-      "explanation": "{name} 的這個月份已結算，數字也已凍結。重新開啟會保留已結算的版本，並將這次的版本一併記錄下來，因此已核准的內容不會被覆寫。",
-      "reason_label": "為什麼要重新開啟？",
-      "reason_placeholder": "第二週有三天的工時記錄到錯誤的月份。",
-      "cancel": "維持結算狀態",
-      "confirm": "重新開啟"
+      "body": "{person} 的這個月份已結算，數字也已凍結。重新開啟會保留已結算的版本，並將這次的版本一併記錄下來，因此已核准的內容不會被覆寫。",
+      "label": "為什麼要重新開啟？",
+      "placeholder": "第二週有三天的工時記錄到錯誤的月份。",
+      "confirm": "重新開啟",
+      "cancel": "維持結算狀態"
     },
     "day_kind": {
       "workday": "工作日",
@@ -197,6 +197,65 @@
       },
       "toasts": {
         "added": "已新增",
+        "refused": "操作未完成",
+        "try_again": "請再試一次。"
+      }
+    },
+    "imports": {
+      "title": "匯入工時",
+      "subtitle": "在別處記錄的月份工時，從試算表讀取並逐列檢查，確認之後才會寫入。",
+      "not_permitted_detail": "只有負責管理團隊的人才能匯入工時。",
+      "what_kind": "檔案內容類型",
+      "choose_file": "選擇檔案",
+      "kind": {
+        "time_entries": "工時",
+        "absences": "請假",
+        "opening_balances": "期初結餘"
+      },
+      "columns": {
+        "time_entries": "欄位標題必須原樣寫成 email、date，以及 hours 或 minutes 其中一欄。若有 note 欄位也會一併保留。7:42、7.7 與 462 都會讀成相同的時間長度。",
+        "absences": "欄位標題必須原樣寫成 email、start_date、end_date 與 type。若只有一天，請省略 end_date。",
+        "opening_balances": "欄位標題必須原樣寫成 email、填寫生效日的 effective_on，以及填寫結餘本身的 hours 或 minutes 其中一欄。"
+      },
+      "preview_title": "{filename} 套用後的結果預覽",
+      "preview_hint": "目前尚未寫入任何資料。請先確認下列各列內容，再進行套用。",
+      "will_write": "將寫入",
+      "cannot_read": "無法讀取",
+      "skipped": "已略過",
+      "apply": "套用 {count} 列",
+      "discard": "捨棄",
+      "column_row": "列",
+      "column_verdict": "判定結果",
+      "column_detail": "詳細說明",
+      "verdict": {
+        "ok": "將寫入",
+        "error": "無法讀取",
+        "skip": "已略過"
+      },
+      "past": "先前匯入的檔案",
+      "none_yet": "目前尚未匯入任何檔案。",
+      "row_summary": "{valid} 列／共 {total} 列",
+      "state": {
+        "10": "已上傳",
+        "20": "檢查中",
+        "30": "等待套用",
+        "40": "寫入中",
+        "50": "已套用",
+        "60": "無法讀取",
+        "70": "已復原"
+      },
+      "undo": "復原",
+      "undo_title": "要復原 {filename} 嗎？",
+      "undo_body": "這個檔案寫入的每一筆工時都會被移除，其他資料則不受影響。若某個月份在那之後已結算，該月份的工時會維持原狀。",
+      "undo_label": "為什麼要復原？",
+      "undo_placeholder": "這個檔案把三月列了兩次。",
+      "undo_confirm": "確定復原",
+      "undo_cancel": "維持現狀",
+      "toasts": {
+        "applied": "已套用",
+        "written": "已寫入 {count} 列",
+        "undone": "已復原",
+        "removed": "已移除 {count} 列",
         "refused": "操作未完成",
         "try_again": "請再試一次。"
       }

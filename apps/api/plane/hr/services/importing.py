@@ -19,7 +19,7 @@ have no work item, which the mirror cannot see.
 # Python imports
 import hashlib
 from datetime import datetime
-from decimal import Decimal, InvalidOperation
+from decimal import ROUND_HALF_UP, Decimal, InvalidOperation
 
 # Django imports
 from django.db import transaction
@@ -76,8 +76,37 @@ def _as_date(value):
     return None
 
 
-def _as_minutes(value):
-    """Minutes from a cell that might hold minutes, or hours, or ``7:42``."""
+# Which column a length of time came from decides what a bare number in it means.
+# The same "7.7" is seven and a half hours under one heading and seven minutes
+# under another, and nothing in the value itself says which.
+_MINUTE_COLUMNS = ("minutes", "minuten")
+_HOUR_COLUMNS = ("hours", "stunden", "std")
+
+
+def _length_column(row):
+    """The cell holding a length of time, and the unit its heading implies.
+
+    Returns ``(value, unit)`` where unit is "minutes" or "hours". A heading
+    naming minutes wins over one naming hours, so a sheet carrying both is read
+    the precise way rather than the rounded one.
+    """
+    for name in _MINUTE_COLUMNS:
+        if row.get(name) not in (None, ""):
+            return row.get(name), "minutes"
+    for name in _HOUR_COLUMNS:
+        if row.get(name) not in (None, ""):
+            return row.get(name), "hours"
+    return None, "minutes"
+
+
+def _as_minutes(value, unit="minutes"):
+    """Minutes from a cell holding ``7:42``, or a number in the given unit.
+
+    ``7:42`` says what it is and is read the same way under either heading.
+    A bare number cannot say, so the caller supplies the unit from the column
+    heading — reading an hours column as minutes would divide every imported
+    month by sixty, and nothing downstream would notice.
+    """
     if value in (None, ""):
         return None
     raw = str(value).strip().replace(",", ".")
@@ -89,9 +118,14 @@ def _as_minutes(value):
         except (TypeError, ValueError):
             return None
     try:
-        return int(Decimal(raw))
+        amount = Decimal(raw)
     except (InvalidOperation, TypeError, ValueError):
         return None
+    if unit == "hours":
+        # Rounded, not truncated: 7.7 hours is 462 minutes, and dropping the
+        # remainder would quietly shorten most rows in a decimal-hours sheet.
+        return int((amount * 60).to_integral_value(rounding=ROUND_HALF_UP))
+    return int(amount)
 
 
 class RowResult:
@@ -154,7 +188,7 @@ class TimeEntryLoader(_Loader):
             email = row.get("email") or row.get("e_mail")
             profile = self.profile_for(email)
             day = _as_date(row.get("date") or row.get("datum"))
-            minutes = _as_minutes(row.get("minutes") or row.get("hours") or row.get("stunden"))
+            minutes = _as_minutes(*_length_column(row))
 
             if profile is None:
                 results.append(
@@ -234,7 +268,7 @@ class OpeningBalanceLoader(_Loader):
             email = row.get("email")
             profile = self.profile_for(email)
             day = _as_date(row.get("effective_on") or row.get("date"))
-            minutes = _as_minutes(row.get("minutes") or row.get("hours"))
+            minutes = _as_minutes(*_length_column(row))
             kind = self.KINDS.get(str(row.get("kind") or "time").strip().lower())
             basis = (row.get("basis") or row.get("grundlage") or "").strip()
 

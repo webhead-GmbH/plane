@@ -83,11 +83,11 @@
     },
     "reopen": {
       "title": "Znovu otevřít měsíc {month}?",
-      "explanation": "{name} má tento měsíc uzavřený a jeho čísla zafixovaná. Při opětovném otevření zůstane uzavřená verze zachována a nová se zaznamená vedle ní, takže nic, co bylo schváleno, se nepřepíše.",
-      "reason_label": "Proč se měsíc znovu otevírá?",
-      "reason_placeholder": "Tři dny ve druhém týdnu byly zaznamenány do nesprávného měsíce.",
-      "cancel": "Ponechat uzavřený",
-      "confirm": "Znovu otevřít"
+      "body": "{person} má tento měsíc uzavřený a jeho čísla zafixovaná. Při opětovném otevření zůstane uzavřená verze zachována a nová se zaznamená vedle ní, takže nic, co bylo schváleno, se nepřepíše.",
+      "label": "Proč se měsíc znovu otevírá?",
+      "placeholder": "Tři dny ve druhém týdnu byly zaznamenány do nesprávného měsíce.",
+      "confirm": "Znovu otevřít",
+      "cancel": "Ponechat uzavřený"
     },
     "day_kind": {
       "workday": "Pracovní den",
@@ -197,6 +197,65 @@
       },
       "toasts": {
         "added": "Přidáno",
+        "refused": "Akce neproběhla",
+        "try_again": "Zkuste to prosím znovu."
+      }
+    },
+    "imports": {
+      "title": "Import hodin",
+      "subtitle": "Měsíce zaznamenané jinde – načtou se z tabulky a zkontrolují dříve, než se cokoli zapíše.",
+      "not_permitted_detail": "Hodiny může importovat jen ten, kdo vede tým.",
+      "what_kind": "Co soubor obsahuje",
+      "choose_file": "Vyberte soubor",
+      "kind": {
+        "time_entries": "Hodiny",
+        "absences": "Nepřítomnosti",
+        "opening_balances": "Počáteční salda"
+      },
+      "columns": {
+        "time_entries": "Sloupce: email, date a buď hours, nebo minutes — přesně tyto názvy záhlaví. Sloupec note se převezme, pokud v souboru je. Hodnoty 7:42, 7,7 a 462 se čtou jako stejně dlouhá doba.",
+        "absences": "Sloupce: email, start_date, end_date a type — přesně tyto názvy záhlaví. U jednodenní nepřítomnosti sloupec end_date vynechte.",
+        "opening_balances": "Sloupce: email, effective_on se dnem, od kterého saldo platí, a buď hours, nebo minutes se samotným saldem — přesně tyto názvy záhlaví."
+      },
+      "preview_title": "{filename} – jak by se soubor použil",
+      "preview_hint": "Zatím nebylo nic zapsáno. Zkontrolujte řádky níže a poté je použijte.",
+      "will_write": "bude zapsáno",
+      "cannot_read": "nelze přečíst",
+      "skipped": "přeskočeno",
+      "apply": "Použít řádky ({count})",
+      "discard": "Zahodit",
+      "column_row": "Řádek",
+      "column_verdict": "Výsledek",
+      "column_detail": "Podrobnosti",
+      "verdict": {
+        "ok": "Bude zapsáno",
+        "error": "Nelze přečíst",
+        "skip": "Přeskočeno"
+      },
+      "past": "Dříve importované soubory",
+      "none_yet": "Zatím nebylo nic importováno.",
+      "row_summary": "{valid} z {total} řádků",
+      "state": {
+        "10": "Nahráno",
+        "20": "Kontroluje se",
+        "30": "Čeká na použití",
+        "40": "Zapisuje se",
+        "50": "Použito",
+        "60": "Nepodařilo se přečíst",
+        "70": "Vráceno zpět"
+      },
+      "undo": "Vrátit zpět",
+      "undo_title": "Vrátit zpět soubor {filename}?",
+      "undo_body": "Odeberou se všechny hodiny, které tento soubor zapsal, a ničeho jiného se to nedotkne. Hodiny v měsíci, který byl mezitím uzavřen, zůstanou beze změny.",
+      "undo_label": "Proč se import vrací zpět?",
+      "undo_placeholder": "Soubor obsahoval březen dvakrát.",
+      "undo_confirm": "Vrátit zpět",
+      "undo_cancel": "Ponechat beze změny",
+      "toasts": {
+        "applied": "Použito",
+        "written": "Zapsáno řádků: {count}",
+        "undone": "Vráceno zpět",
+        "removed": "Odebráno řádků: {count}",
         "refused": "Akce neproběhla",
         "try_again": "Zkuste to prosím znovu."
       }

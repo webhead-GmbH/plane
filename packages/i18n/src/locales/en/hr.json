@@ -83,11 +83,11 @@
     },
     "reopen": {
       "title": "Reopen {month}?",
-      "explanation": "{name}'s month has been closed and its figures frozen. Reopening keeps the closed version and records this one alongside it, so nothing that was agreed is overwritten.",
-      "reason_label": "Why is it being reopened?",
-      "reason_placeholder": "Three days in the second week were logged against the wrong month.",
-      "cancel": "Leave it closed",
-      "confirm": "Reopen"
+      "body": "{person}'s month has been closed and its figures frozen. Reopening keeps the closed version and records this one alongside it — nothing that was agreed is overwritten.",
+      "label": "Why is it being reopened?",
+      "placeholder": "Three days in the second week were logged against the wrong month.",
+      "confirm": "Reopen",
+      "cancel": "Leave it closed"
     },
     "day_kind": {
       "workday": "Working day",
@@ -197,6 +197,65 @@
       },
       "toasts": {
         "added": "Added",
+        "refused": "That did not go through",
+        "try_again": "Please try again."
+      }
+    },
+    "imports": {
+      "title": "Bring hours in",
+      "subtitle": "Months recorded somewhere else, read from a spreadsheet and checked before anything is written.",
+      "not_permitted_detail": "Only whoever looks after the team can bring hours in.",
+      "what_kind": "What the file holds",
+      "choose_file": "Choose a file",
+      "kind": {
+        "time_entries": "Hours",
+        "absences": "Absences",
+        "opening_balances": "Opening balances"
+      },
+      "columns": {
+        "time_entries": "Columns: email, date, and either hours or minutes — those exact headings. A note column is kept if there is one. 7:42, 7.7 and 462 all read as the same length of time.",
+        "absences": "Columns: email, start_date, end_date and type — those exact headings. Leave end_date out for a single day.",
+        "opening_balances": "Columns: email, effective_on for the day it applies from, and either hours or minutes for the balance itself — those exact headings."
+      },
+      "preview_title": "{filename}, as it would be applied",
+      "preview_hint": "Nothing has been written yet. Check the rows below, then apply.",
+      "will_write": "will be written",
+      "cannot_read": "cannot be read",
+      "skipped": "skipped",
+      "apply": "Apply {count} rows",
+      "discard": "Discard",
+      "column_row": "Row",
+      "column_verdict": "Verdict",
+      "column_detail": "Detail",
+      "verdict": {
+        "ok": "Will be written",
+        "error": "Cannot be read",
+        "skip": "Skipped"
+      },
+      "past": "Files brought in before",
+      "none_yet": "Nothing has been brought in yet.",
+      "row_summary": "{valid} of {total} rows",
+      "state": {
+        "10": "Uploaded",
+        "20": "Being checked",
+        "30": "Waiting to be applied",
+        "40": "Being written",
+        "50": "Applied",
+        "60": "Could not be read",
+        "70": "Undone"
+      },
+      "undo": "Undo",
+      "undo_title": "Undo {filename}?",
+      "undo_body": "Every hour this file wrote is removed, and nothing else is touched. Hours in a month that has since been closed stay where they are.",
+      "undo_label": "Why is it being undone?",
+      "undo_placeholder": "The file listed March twice.",
+      "undo_confirm": "Undo it",
+      "undo_cancel": "Leave it as it is",
+      "toasts": {
+        "applied": "Applied",
+        "written": "{count} rows written",
+        "undone": "Undone",
+        "removed": "{count} rows removed",
         "refused": "That did not go through",
         "try_again": "Please try again."
       }

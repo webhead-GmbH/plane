@@ -83,11 +83,11 @@
     },
     "reopen": {
       "title": "Mở lại {month}?",
-      "explanation": "Tháng của {name} đã được đóng và số liệu đã bị khóa. Khi mở lại, bản đã đóng vẫn được giữ nguyên và bản mới được ghi thêm bên cạnh, nên không có nội dung nào đã phê duyệt bị ghi đè.",
-      "reason_label": "Vì sao cần mở lại?",
-      "reason_placeholder": "Ba ngày trong tuần thứ hai đã được ghi nhận vào nhầm tháng.",
-      "cancel": "Giữ nguyên trạng thái đóng",
-      "confirm": "Mở lại"
+      "body": "Tháng của {person} đã được đóng và số liệu đã bị khóa. Khi mở lại, bản đã đóng vẫn được giữ nguyên và bản mới được ghi thêm bên cạnh, nên không có nội dung nào đã phê duyệt bị ghi đè.",
+      "label": "Vì sao cần mở lại?",
+      "placeholder": "Ba ngày trong tuần thứ hai đã được ghi nhận vào nhầm tháng.",
+      "confirm": "Mở lại",
+      "cancel": "Giữ nguyên trạng thái đóng"
     },
     "day_kind": {
       "workday": "Ngày làm việc",
@@ -197,6 +197,65 @@
       },
       "toasts": {
         "added": "Đã thêm",
+        "refused": "Thao tác không thành công",
+        "try_again": "Vui lòng thử lại."
+      }
+    },
+    "imports": {
+      "title": "Nhập số giờ vào",
+      "subtitle": "Những tháng đã được ghi nhận ở nơi khác, đọc từ một bảng tính và kiểm tra trước khi ghi bất cứ điều gì.",
+      "not_permitted_detail": "Chỉ người phụ trách nhóm mới nhập số giờ vào được.",
+      "what_kind": "Nội dung của tệp",
+      "choose_file": "Chọn tệp",
+      "kind": {
+        "time_entries": "Số giờ",
+        "absences": "Vắng mặt",
+        "opening_balances": "Số dư đầu kỳ"
+      },
+      "columns": {
+        "time_entries": "Các cột: email, date, và một trong hai cột hours hoặc minutes — tiêu đề cột phải đúng như vậy. Nếu có cột note thì cột đó được giữ lại. 7:42, 7,7 và 462 đều được hiểu là cùng một khoảng thời gian.",
+        "absences": "Các cột: email, start_date, end_date và type — tiêu đề cột phải đúng như vậy. Nếu chỉ vắng một ngày thì bỏ cột end_date đi.",
+        "opening_balances": "Các cột: email, effective_on cho ngày số dư bắt đầu áp dụng, và một trong hai cột hours hoặc minutes cho chính số dư — tiêu đề cột phải đúng như vậy."
+      },
+      "preview_title": "{filename}, khi được áp dụng sẽ như sau",
+      "preview_hint": "Chưa có gì được ghi. Hãy kiểm tra các dòng bên dưới, sau đó áp dụng.",
+      "will_write": "sẽ được ghi",
+      "cannot_read": "không đọc được",
+      "skipped": "đã bỏ qua",
+      "apply": "Áp dụng {count} dòng",
+      "discard": "Loại bỏ",
+      "column_row": "Dòng",
+      "column_verdict": "Kết luận",
+      "column_detail": "Chi tiết",
+      "verdict": {
+        "ok": "Sẽ được ghi",
+        "error": "Không đọc được",
+        "skip": "Đã bỏ qua"
+      },
+      "past": "Các tệp đã nhập trước đây",
+      "none_yet": "Chưa có gì được nhập vào.",
+      "row_summary": "{valid} trên {total} dòng",
+      "state": {
+        "10": "Đã tải lên",
+        "20": "Đang kiểm tra",
+        "30": "Đang chờ áp dụng",
+        "40": "Đang ghi",
+        "50": "Đã áp dụng",
+        "60": "Không đọc được",
+        "70": "Đã hoàn tác"
+      },
+      "undo": "Hoàn tác",
+      "undo_title": "Hoàn tác {filename}?",
+      "undo_body": "Mọi giờ mà tệp này đã ghi đều được gỡ bỏ, và không có gì khác bị đụng đến. Số giờ nằm trong tháng mà từ đó đến nay đã được đóng thì vẫn giữ nguyên.",
+      "undo_label": "Vì sao cần hoàn tác?",
+      "undo_placeholder": "Tệp này liệt kê tháng Ba hai lần.",
+      "undo_confirm": "Hoàn tác",
+      "undo_cancel": "Giữ nguyên như hiện tại",
+      "toasts": {
+        "applied": "Đã áp dụng",
+        "written": "Đã ghi {count} dòng",
+        "undone": "Đã hoàn tác",
+        "removed": "Đã gỡ bỏ {count} dòng",
         "refused": "Thao tác không thành công",
         "try_again": "Vui lòng thử lại."
       }

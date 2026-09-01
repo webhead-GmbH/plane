@@ -83,11 +83,11 @@
     },
     "reopen": {
       "title": "重新打开{month}？",
-      "explanation": "{name} 的该月已关闭，数据已冻结。重新打开会保留已关闭的版本，并将本次版本与其一并记录，因此此前批准的内容不会被覆盖。",
-      "reason_label": "为什么要重新打开？",
-      "reason_placeholder": "第二周有三天的工时记到了错误的月份。",
-      "cancel": "保持关闭",
-      "confirm": "重新打开"
+      "body": "{person} 的该月已关闭，数据已冻结。重新打开会保留已关闭的版本，并将本次版本与其一并记录，因此此前批准的内容不会被覆盖。",
+      "label": "为什么要重新打开？",
+      "placeholder": "第二周有三天的工时记到了错误的月份。",
+      "confirm": "重新打开",
+      "cancel": "保持关闭"
     },
     "day_kind": {
       "workday": "工作日",
@@ -197,6 +197,65 @@
       },
       "toasts": {
         "added": "已添加",
+        "refused": "操作未成功",
+        "try_again": "请重试。"
+      }
+    },
+    "imports": {
+      "title": "导入工时",
+      "subtitle": "在别处记录的月份，从电子表格读取，并在写入任何数据之前先行核对。",
+      "not_permitted_detail": "只有团队负责人才能导入工时。",
+      "what_kind": "文件内容",
+      "choose_file": "选择文件",
+      "kind": {
+        "time_entries": "工时",
+        "absences": "缺勤",
+        "opening_balances": "期初结余"
+      },
+      "columns": {
+        "time_entries": "表头必须原样写成 email、date，以及 hours 或 minutes 其中之一。如果有 note 列，也会一并保留。7:42、7.7 和 462 表示的时长相同。",
+        "absences": "表头必须原样写成 email、start_date、end_date 和 type。只有一天时，省略 end_date。",
+        "opening_balances": "表头必须原样写成 email、填写生效日期的 effective_on，以及填写结余本身的 hours 或 minutes 其中之一。"
+      },
+      "preview_title": "{filename}：应用后的结果预览",
+      "preview_hint": "目前尚未写入任何数据。请先核对下面的行，然后再应用。",
+      "will_write": "将写入",
+      "cannot_read": "无法读取",
+      "skipped": "已跳过",
+      "apply": "应用 {count} 行",
+      "discard": "放弃",
+      "column_row": "行",
+      "column_verdict": "结果",
+      "column_detail": "说明",
+      "verdict": {
+        "ok": "将写入",
+        "error": "无法读取",
+        "skip": "已跳过"
+      },
+      "past": "以往导入的文件",
+      "none_yet": "还没有导入任何内容。",
+      "row_summary": "{valid} / {total} 行",
+      "state": {
+        "10": "已上传",
+        "20": "核对中",
+        "30": "待应用",
+        "40": "写入中",
+        "50": "已应用",
+        "60": "无法读取",
+        "70": "已撤销"
+      },
+      "undo": "撤销",
+      "undo_title": "撤销 {filename}？",
+      "undo_body": "该文件写入的每一条工时都会被删除，其他内容不受影响。若某个月此后已关闭，该月的工时将保持不变。",
+      "undo_label": "为什么要撤销？",
+      "undo_placeholder": "该文件把三月列了两次。",
+      "undo_confirm": "确认撤销",
+      "undo_cancel": "保持现状",
+      "toasts": {
+        "applied": "已应用",
+        "written": "已写入 {count} 行",
+        "undone": "已撤销",
+        "removed": "已删除 {count} 行",
         "refused": "操作未成功",
         "try_again": "请重试。"
       }

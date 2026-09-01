@@ -83,11 +83,11 @@
     },
     "reopen": {
       "title": "{month}을(를) 다시 여시겠습니까?",
-      "explanation": "{name}님의 해당 월은 마감되어 수치가 고정된 상태입니다. 다시 열어도 마감된 버전은 그대로 보존되고 이번 기록이 그 옆에 함께 저장되므로, 이미 승인된 내용은 덮어쓰이지 않습니다.",
-      "reason_label": "다시 여는 사유는 무엇입니까?",
-      "reason_placeholder": "둘째 주 3일치가 잘못된 월에 기록되었습니다.",
-      "cancel": "마감 상태로 유지",
-      "confirm": "다시 열기"
+      "body": "{person}님의 해당 월은 마감되어 수치가 고정된 상태입니다. 다시 열어도 마감된 버전은 그대로 보존되고 이번 기록이 그 옆에 함께 저장되므로, 이미 승인된 내용은 덮어쓰이지 않습니다.",
+      "label": "다시 여는 사유는 무엇입니까?",
+      "placeholder": "둘째 주 3일치가 잘못된 월에 기록되었습니다.",
+      "confirm": "다시 열기",
+      "cancel": "마감 상태로 유지"
     },
     "day_kind": {
       "workday": "근무일",
@@ -197,6 +197,65 @@
       },
       "toasts": {
         "added": "추가되었습니다",
+        "refused": "처리되지 않았습니다",
+        "try_again": "다시 시도해 주세요."
+      }
+    },
+    "imports": {
+      "title": "근무 시간 가져오기",
+      "subtitle": "다른 곳에 기록된 월을 스프레드시트에서 읽어 들여, 아무것도 기록하기 전에 먼저 확인합니다.",
+      "not_permitted_detail": "근무 시간은 팀을 관리하는 담당자만 가져올 수 있습니다.",
+      "what_kind": "파일에 담긴 내용",
+      "choose_file": "파일 선택",
+      "kind": {
+        "time_entries": "근무 시간",
+        "absences": "부재",
+        "opening_balances": "기초 누적 차이"
+      },
+      "columns": {
+        "time_entries": "열 머리글은 email, date, 그리고 hours 또는 minutes 중 하나이며, 반드시 이 표기 그대로여야 합니다. note 열이 있으면 함께 가져옵니다. 7:42, 7.7, 462는 모두 같은 길이의 시간으로 읽힙니다.",
+        "absences": "열 머리글은 email, start_date, end_date, type 네 가지이며, 반드시 이 표기 그대로여야 합니다. 하루뿐인 부재에는 end_date 열이 필요하지 않습니다.",
+        "opening_balances": "열 머리글은 email, 적용이 시작되는 날짜를 담는 effective_on, 그리고 차이 자체를 담는 hours 또는 minutes 중 하나이며, 반드시 이 표기 그대로여야 합니다."
+      },
+      "preview_title": "{filename}을(를) 적용했을 때의 결과",
+      "preview_hint": "아직 아무것도 기록되지 않았습니다. 아래 행을 확인한 다음 적용하세요.",
+      "will_write": "기록 예정",
+      "cannot_read": "읽을 수 없음",
+      "skipped": "건너뜀",
+      "apply": "{count}개 행 적용",
+      "discard": "버리기",
+      "column_row": "행",
+      "column_verdict": "판정",
+      "column_detail": "상세",
+      "verdict": {
+        "ok": "기록됩니다",
+        "error": "읽을 수 없습니다",
+        "skip": "건너뜁니다"
+      },
+      "past": "이전에 가져온 파일",
+      "none_yet": "아직 가져온 것이 없습니다.",
+      "row_summary": "{total}개 행 중 {valid}개",
+      "state": {
+        "10": "업로드됨",
+        "20": "확인 중",
+        "30": "적용 대기 중",
+        "40": "기록 중",
+        "50": "적용됨",
+        "60": "읽을 수 없음",
+        "70": "되돌림"
+      },
+      "undo": "되돌리기",
+      "undo_title": "{filename}을(를) 되돌리시겠습니까?",
+      "undo_body": "이 파일이 기록한 시간은 모두 삭제되며, 그 밖의 내용은 그대로 유지됩니다. 그 사이에 마감된 월에 있는 시간은 삭제되지 않고 그대로 남습니다.",
+      "undo_label": "되돌리는 사유는 무엇입니까?",
+      "undo_placeholder": "파일에 3월이 두 번 들어 있었습니다.",
+      "undo_confirm": "되돌리기",
+      "undo_cancel": "그대로 유지",
+      "toasts": {
+        "applied": "적용되었습니다",
+        "written": "{count}개 행이 기록되었습니다",
+        "undone": "되돌렸습니다",
+        "removed": "{count}개 행이 삭제되었습니다",
         "refused": "처리되지 않았습니다",
         "try_again": "다시 시도해 주세요."
       }

@@ -83,11 +83,11 @@
     },
     "reopen": {
       "title": "{month}を再オープンしますか？",
-      "explanation": "{name}さんの月はすでに確定し、数値は固定されています。再オープンしても確定済みの記録はそのまま保持され、今回の記録はそれとは別に残るため、承認済みの内容が上書きされることはありません。",
-      "reason_label": "再オープンする理由",
-      "reason_placeholder": "第2週の3日分が誤った月に記録されていました。",
-      "cancel": "確定のままにする",
-      "confirm": "再オープン"
+      "body": "{person}さんの月はすでに確定し、数値は固定されています。再オープンしても確定済みの記録はそのまま保持され、今回の記録はそれとは別に残るため、承認済みの内容が上書きされることはありません。",
+      "label": "再オープンする理由",
+      "placeholder": "第2週の3日分が誤った月に記録されていました。",
+      "confirm": "再オープン",
+      "cancel": "確定のままにする"
     },
     "day_kind": {
       "workday": "稼働日",
@@ -197,6 +197,65 @@
       },
       "toasts": {
         "added": "追加しました",
+        "refused": "処理できませんでした",
+        "try_again": "もう一度お試しください。"
+      }
+    },
+    "imports": {
+      "title": "時間数の取り込み",
+      "subtitle": "他の場所で記録した月の勤怠をスプレッドシートから読み込み、書き込む前に内容を確認します。",
+      "not_permitted_detail": "時間数を取り込めるのは、チームを管理する担当者のみです。",
+      "what_kind": "ファイルの内容",
+      "choose_file": "ファイルを選択",
+      "kind": {
+        "time_entries": "時間数",
+        "absences": "休暇",
+        "opening_balances": "開始時の過不足"
+      },
+      "columns": {
+        "time_entries": "見出しはemail、date、およびhoursかminutesのいずれかで、この表記のまま入力してください。note列があればそのまま取り込みます。7:42、7.7、462はいずれも同じ長さの時間として読み取られます。",
+        "absences": "見出しはemail、start_date、end_date、typeで、この表記のまま入力してください。1日だけの休暇はend_dateを省略します。",
+        "opening_balances": "見出しはemail、適用開始日を表すeffective_on、過不足そのものを表すhoursかminutesのいずれかで、この表記のまま入力してください。"
+      },
+      "preview_title": "{filename}を適用した場合の内容",
+      "preview_hint": "まだ何も書き込まれていません。下の行を確認してから適用してください。",
+      "will_write": "書き込み予定",
+      "cannot_read": "読み取り不可",
+      "skipped": "スキップ",
+      "apply": "{count}行を適用",
+      "discard": "破棄",
+      "column_row": "行",
+      "column_verdict": "判定",
+      "column_detail": "詳細",
+      "verdict": {
+        "ok": "書き込まれます",
+        "error": "読み取れません",
+        "skip": "スキップ済み"
+      },
+      "past": "これまでに取り込んだファイル",
+      "none_yet": "まだ何も取り込まれていません。",
+      "row_summary": "{total}行中{valid}行",
+      "state": {
+        "10": "アップロード済み",
+        "20": "確認中",
+        "30": "適用待ち",
+        "40": "書き込み中",
+        "50": "適用済み",
+        "60": "読み取り失敗",
+        "70": "取り消し済み"
+      },
+      "undo": "取り消し",
+      "undo_title": "{filename}を取り消しますか？",
+      "undo_body": "このファイルが書き込んだ時間はすべて削除され、それ以外には影響しません。その後に確定された月の時間はそのまま残ります。",
+      "undo_label": "取り消す理由",
+      "undo_placeholder": "3月が二重に記載されていました。",
+      "undo_confirm": "取り消す",
+      "undo_cancel": "そのままにする",
+      "toasts": {
+        "applied": "適用しました",
+        "written": "{count}行を書き込みました",
+        "undone": "取り消しました",
+        "removed": "{count}行を削除しました",
         "refused": "処理できませんでした",
         "try_again": "もう一度お試しください。"
       }

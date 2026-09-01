@@ -83,11 +83,11 @@
     },
     "reopen": {
       "title": "Riaprire {month}?",
-      "explanation": "Il mese di {name} è stato chiuso e i suoi dati sono congelati. La riapertura conserva la versione chiusa e ne registra una nuova accanto ad essa, così nulla di quanto approvato viene sovrascritto.",
-      "reason_label": "Perché viene riaperto?",
-      "reason_placeholder": "Tre giorni della seconda settimana sono stati registrati nel mese sbagliato.",
-      "cancel": "Lascia chiuso",
-      "confirm": "Riapri"
+      "body": "Il mese di {person} è stato chiuso e i suoi dati sono congelati. La riapertura conserva la versione chiusa e ne registra una nuova accanto ad essa, così nulla di quanto approvato viene sovrascritto.",
+      "label": "Perché viene riaperto?",
+      "placeholder": "Tre giorni della seconda settimana sono stati registrati nel mese sbagliato.",
+      "confirm": "Riapri",
+      "cancel": "Lascia chiuso"
     },
     "day_kind": {
       "workday": "Giorno lavorativo",
@@ -197,6 +197,65 @@
       },
       "toasts": {
         "added": "Aggiunto",
+        "refused": "Operazione non riuscita",
+        "try_again": "Riprovi, per favore."
+      }
+    },
+    "imports": {
+      "title": "Importazione delle ore",
+      "subtitle": "Mesi registrati altrove, letti da un foglio di calcolo e controllati prima che venga scritto qualcosa.",
+      "not_permitted_detail": "Solo chi si occupa del team può importare le ore.",
+      "what_kind": "Che cosa contiene il file",
+      "choose_file": "Scegli un file",
+      "kind": {
+        "time_entries": "Ore",
+        "absences": "Assenze",
+        "opening_balances": "Saldi iniziali"
+      },
+      "columns": {
+        "time_entries": "Colonne: email, date e, in alternativa, hours oppure minutes — esattamente queste intestazioni. Se è presente una colonna note, viene conservata. 7:42, 7,7 e 462 corrispondono tutti alla stessa durata.",
+        "absences": "Colonne: email, start_date, end_date e type — esattamente queste intestazioni. Per un solo giorno, ometta end_date.",
+        "opening_balances": "Colonne: email, effective_on per il giorno da cui vale il saldo e hours oppure minutes per il saldo stesso — esattamente queste intestazioni."
+      },
+      "preview_title": "{filename}, come verrebbe applicato",
+      "preview_hint": "Non è stato ancora scritto nulla. Controlli le righe qui sotto, poi applichi.",
+      "will_write": "verranno scritte",
+      "cannot_read": "non possono essere lette",
+      "skipped": "saltate",
+      "apply": "Applica {count} righe",
+      "discard": "Scarta",
+      "column_row": "Riga",
+      "column_verdict": "Esito",
+      "column_detail": "Dettaglio",
+      "verdict": {
+        "ok": "Verrà scritta",
+        "error": "Non leggibile",
+        "skip": "Saltata"
+      },
+      "past": "File importati in precedenza",
+      "none_yet": "Non è stato ancora importato nulla.",
+      "row_summary": "{valid} righe su {total}",
+      "state": {
+        "10": "Caricato",
+        "20": "In verifica",
+        "30": "In attesa di applicazione",
+        "40": "In scrittura",
+        "50": "Applicato",
+        "60": "Non leggibile",
+        "70": "Annullato"
+      },
+      "undo": "Annulla",
+      "undo_title": "Annullare {filename}?",
+      "undo_body": "Ogni ora scritta da questo file viene rimossa e nient'altro viene toccato. Le ore che si trovano in un mese nel frattempo chiuso restano dove sono.",
+      "undo_label": "Perché viene annullato?",
+      "undo_placeholder": "Il file elencava marzo due volte.",
+      "undo_confirm": "Annulla l'importazione",
+      "undo_cancel": "Lascia com'è",
+      "toasts": {
+        "applied": "Applicato",
+        "written": "{count} righe scritte",
+        "undone": "Annullato",
+        "removed": "{count} righe rimosse",
         "refused": "Operazione non riuscita",
         "try_again": "Riprovi, per favore."
       }
