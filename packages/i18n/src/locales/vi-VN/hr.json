@@ -19,7 +19,8 @@
         "handed_in_message": "{month} đã được chuyển đi phê duyệt.",
         "not_handed_in": "Chưa gửi duyệt",
         "try_again": "Hãy thử lại sau giây lát."
-      }
+      },
+      "opening": "Số dư đầu kỳ"
     },
     "team_time": {
       "title": "Thời gian của nhóm",
@@ -162,7 +163,8 @@
         "removed": "Đã đánh dấu là đã nghỉ việc",
         "refused": "Thao tác không thành công",
         "try_again": "Vui lòng thử lại."
-      }
+      },
+      "opening": "Số dư đầu kỳ"
     },
     "arrangement": {
       "onsite_full_time": "Tại văn phòng, toàn thời gian",
@@ -256,6 +258,47 @@
         "written": "Đã ghi {count} dòng",
         "undone": "Đã hoàn tác",
         "removed": "Đã gỡ bỏ {count} dòng",
+        "refused": "Thao tác không thành công",
+        "try_again": "Vui lòng thử lại."
+      }
+    },
+    "opening": {
+      "title": "Số dư đầu kỳ của {person}",
+      "hint": "Tình trạng của người này vào ngày bắt đầu tính số liệu ở đây. Không có lịch sử nào để tính ra những con số này, chính vì vậy chúng được phê duyệt chứ không phải được suy ra — nên mỗi con số đều lưu lại căn cứ của nó, và người mà con số đó thuộc về sẽ cho biết mình có chấp nhận hay không.",
+      "none_yet": "Chưa có số dư đầu kỳ nào được ghi nhận, nên việc tính bắt đầu từ số không.",
+      "from": "từ {date}",
+      "from_label": "Áp dụng từ ngày",
+      "agreed": "Đã đồng ý",
+      "agree": "Số liệu này đúng",
+      "not_agreed": "Chưa đồng ý",
+      "replaced": "{count} số dư đã được thay bằng bản điều chỉnh",
+      "record": "Ghi nhận một số dư đầu kỳ",
+      "record_confirm": "Ghi nhận",
+      "amount": "Số dư",
+      "what_for": "Loại số dư",
+      "how_sure": "Mức độ chắc chắn",
+      "basis": "Căn cứ của số liệu này",
+      "basis_placeholder": "Chuyển sang từ bảng tính nghỉ phép, đã đối chiếu với phiếu lương tháng Ba",
+      "done": "Xong",
+      "kind": {
+        "time_balance": "Số giờ thừa hoặc thiếu",
+        "leave": "Nghỉ phép",
+        "overtime_bank": "Giờ làm thêm sẽ được trả lương"
+      },
+      "confidence": {
+        "exact": "Lấy từ hồ sơ",
+        "reconstructed": "Dựng lại",
+        "estimated": "Ước tính",
+        "agreed": "Đã thống nhất với nhân viên"
+      },
+      "errors": {
+        "bad_duration": "Hãy cho biết bao nhiêu. Nhập -12:30 hoặc -12,5, hoặc bỏ dấu trừ nếu là phần dư.",
+        "basis_required": "Hãy cho biết số liệu này căn cứ vào đâu. Một con số không ai giải trình được là con số không ai bảo vệ được khi chính người mà nó thuộc về không đồng ý.",
+        "date_required": "Hãy cho biết số dư này áp dụng từ ngày nào."
+      },
+      "toasts": {
+        "recorded": "Đã ghi nhận",
+        "agreed": "Đã đồng ý",
         "refused": "Thao tác không thành công",
         "try_again": "Vui lòng thử lại."
       }

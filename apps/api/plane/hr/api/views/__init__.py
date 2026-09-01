@@ -39,6 +39,7 @@ from .transfer import (
     HrImportEndpoint,
     HrImportUndoEndpoint,
     HrMonthExportEndpoint,
+    HrOpeningBalanceAcknowledgeEndpoint,
     HrOpeningBalanceEndpoint,
     HrPeriodExportEndpoint,
 )
@@ -68,6 +69,7 @@ __all__ = [
     "HrLeaveEntitlementEndpoint",
     "HrMeEndpoint",
     "HrMonthExportEndpoint",
+    "HrOpeningBalanceAcknowledgeEndpoint",
     "HrOpeningBalanceEndpoint",
     "HrOverviewEndpoint",
     "HrPeriodApproveEndpoint",

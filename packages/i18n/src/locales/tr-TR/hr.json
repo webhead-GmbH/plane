@@ -19,7 +19,8 @@
         "handed_in_message": "{month} onaya gönderildi.",
         "not_handed_in": "Teslim edilmedi",
         "try_again": "Birazdan tekrar deneyin."
-      }
+      },
+      "opening": "Açılış bakiyesi"
     },
     "team_time": {
       "title": "Ekip zamanı",
@@ -162,7 +163,8 @@
         "removed": "Ayrıldı olarak işaretlendi",
         "refused": "İşlem gerçekleşmedi",
         "try_again": "Lütfen tekrar deneyin."
-      }
+      },
+      "opening": "Açılış bakiyesi"
     },
     "arrangement": {
       "onsite_full_time": "İş yerinde, tam zamanlı",
@@ -256,6 +258,47 @@
         "written": "{count} satır yazıldı",
         "undone": "Geri alındı",
         "removed": "{count} satır kaldırıldı",
+        "refused": "İşlem gerçekleşmedi",
+        "try_again": "Lütfen tekrar deneyin."
+      }
+    },
+    "opening": {
+      "title": "{person} adlı kişinin açılış bakiyesi",
+      "hint": "Burada sayım başladığı gün bu kişinin nerede durduğu. Bunları türetecek bir geçmiş yok; tam da bu yüzden hesaplanmazlar, üzerinde uzlaşılıp onaylanırlar — bu nedenle her kayıt neye dayandığını saklar ve bakiyenin ait olduğu kişi kabul edip etmediğini söyler.",
+      "none_yet": "Henüz bir açılış bakiyesi kaydedilmedi, bu nedenle sayım sıfırdan başlar.",
+      "from": "{date} tarihinden itibaren",
+      "from_label": "Geçerlilik başlangıcı",
+      "agreed": "Kabul edildi",
+      "agree": "Bu doğru",
+      "not_agreed": "Henüz kabul edilmedi",
+      "replaced": "Düzeltmeyle değiştirilen {count} kayıt",
+      "record": "Açılış bakiyesi kaydet",
+      "record_confirm": "Kaydet",
+      "amount": "Bakiye",
+      "what_for": "Ne için",
+      "how_sure": "Ne kadar kesin",
+      "basis": "Neye dayanıyor",
+      "basis_placeholder": "İzin hesap tablosundan devredildi, mart bordrosuyla karşılaştırıldı",
+      "done": "Bitti",
+      "kind": {
+        "time_balance": "Fazla veya eksik saatler",
+        "leave": "İzin",
+        "overtime_bank": "Ödenecek fazla mesai"
+      },
+      "confidence": {
+        "exact": "Kayıtlardan alındı",
+        "reconstructed": "Yeniden oluşturuldu",
+        "estimated": "Tahmin edildi",
+        "agreed": "Kişiyle birlikte onaylandı"
+      },
+      "errors": {
+        "bad_duration": "Ne kadar olduğunu belirtin. -12:30 veya -12,5 yazın; fazlalık için eksi işaretini koymayın.",
+        "basis_required": "Bu rakamın neye dayandığını belirtin. Kimsenin hesabını veremediği bir sayıyı, ait olduğu kişi itiraz ettiğinde kimse savunamaz.",
+        "date_required": "Bu bakiyenin hangi günden itibaren geçerli olduğunu belirtin."
+      },
+      "toasts": {
+        "recorded": "Kaydedildi",
+        "agreed": "Kabul edildi",
         "refused": "İşlem gerçekleşmedi",
         "try_again": "Lütfen tekrar deneyin."
       }

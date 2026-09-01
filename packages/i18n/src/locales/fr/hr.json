@@ -19,7 +19,8 @@
         "handed_in_message": "{month} a été transmis pour approbation.",
         "not_handed_in": "Non soumis",
         "try_again": "Réessayez dans un instant."
-      }
+      },
+      "opening": "Solde initial"
     },
     "team_time": {
       "title": "Temps de l’équipe",
@@ -162,7 +163,8 @@
         "removed": "Départ enregistré",
         "refused": "L’opération n’a pas abouti",
         "try_again": "Veuillez réessayer."
-      }
+      },
+      "opening": "Solde initial"
     },
     "arrangement": {
       "onsite_full_time": "Sur site, temps plein",
@@ -256,6 +258,47 @@
         "written": "{count} lignes écrites",
         "undone": "Annulé",
         "removed": "{count} lignes retirées",
+        "refused": "L’opération n’a pas abouti",
+        "try_again": "Veuillez réessayer."
+      }
+    },
+    "opening": {
+      "title": "Solde initial de {person}",
+      "hint": "La situation de cette personne le jour où le décompte a commencé ici. Aucun historique ne permet de calculer ces soldes, c’est pourquoi ils sont convenus plutôt que déduits — chacun conserve donc ce sur quoi il repose, et la personne concernée indique si elle l’accepte.",
+      "none_yet": "Aucun solde initial n’a encore été enregistré ; le décompte part donc de zéro.",
+      "from": "à partir du {date}",
+      "from_label": "S’applique à partir du",
+      "agreed": "Accepté",
+      "agree": "C’est exact",
+      "not_agreed": "Pas encore accepté",
+      "replaced": "{count, plural, one {# remplacé par une correction} many {# remplacés par une correction} other {# remplacés par une correction}}",
+      "record": "Enregistrer un solde initial",
+      "record_confirm": "Enregistrer",
+      "amount": "Solde",
+      "what_for": "Nature",
+      "how_sure": "Degré de certitude",
+      "basis": "Ce sur quoi il repose",
+      "basis_placeholder": "Repris de la feuille de calcul des congés, vérifié avec le bulletin de paie de mars",
+      "done": "Terminé",
+      "kind": {
+        "time_balance": "Heures en plus ou en moins",
+        "leave": "Congés",
+        "overtime_bank": "Heures supplémentaires à payer"
+      },
+      "confidence": {
+        "exact": "Issu des registres",
+        "reconstructed": "Reconstitué",
+        "estimated": "Estimé",
+        "agreed": "Convenu avec la personne"
+      },
+      "errors": {
+        "bad_duration": "Indiquez le solde. Saisissez -12:30 ou -12,5, ou omettez le signe moins pour un excédent.",
+        "basis_required": "Indiquez ce sur quoi ce chiffre repose. Un chiffre que personne ne peut justifier est un chiffre que personne ne pourra défendre le jour où la personne concernée le contestera.",
+        "date_required": "Indiquez à partir de quel jour ce solde s’applique."
+      },
+      "toasts": {
+        "recorded": "Enregistré",
+        "agreed": "Accepté",
         "refused": "L’opération n’a pas abouti",
         "try_again": "Veuillez réessayer."
       }

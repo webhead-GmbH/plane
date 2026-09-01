@@ -19,7 +19,8 @@
         "handed_in_message": "{month} è stato inviato per l'approvazione.",
         "not_handed_in": "Non consegnato",
         "try_again": "Riprovi tra un momento."
-      }
+      },
+      "opening": "Saldo iniziale"
     },
     "team_time": {
       "title": "Tempo del team",
@@ -162,7 +163,8 @@
         "removed": "Uscita registrata",
         "refused": "Operazione non riuscita",
         "try_again": "Riprovi, per favore."
-      }
+      },
+      "opening": "Saldo iniziale"
     },
     "arrangement": {
       "onsite_full_time": "In sede, tempo pieno",
@@ -256,6 +258,47 @@
         "written": "{count} righe scritte",
         "undone": "Annullato",
         "removed": "{count} righe rimosse",
+        "refused": "Operazione non riuscita",
+        "try_again": "Riprovi, per favore."
+      }
+    },
+    "opening": {
+      "title": "Saldo iniziale di {person}",
+      "hint": "La situazione di questa persona il giorno in cui è iniziato qui il conteggio. Non esiste uno storico da cui ricavare questi valori: per questo vengono concordati anziché calcolati, così ciascuno conserva ciò su cui si basa e la persona a cui appartiene dichiara se lo accetta.",
+      "none_yet": "Non è stato ancora registrato alcun saldo iniziale, perciò il conteggio parte da zero.",
+      "from": "dal {date}",
+      "from_label": "Vale dal",
+      "agreed": "Accettato",
+      "agree": "È corretto",
+      "not_agreed": "Non ancora accettato",
+      "replaced": "{count, plural, one {# sostituito da una correzione} many {# sostituiti da una correzione} other {# sostituiti da una correzione}}",
+      "record": "Registra un saldo iniziale",
+      "record_confirm": "Registra",
+      "amount": "Saldo",
+      "what_for": "Tipo di saldo",
+      "how_sure": "Quanto è attendibile",
+      "basis": "Su cosa si basa",
+      "basis_placeholder": "Riportato dal foglio di calcolo delle ferie, verificato sulla busta paga di marzo",
+      "done": "Fine",
+      "kind": {
+        "time_balance": "Ore in più o in meno",
+        "leave": "Ferie",
+        "overtime_bank": "Straordinari da pagare"
+      },
+      "confidence": {
+        "exact": "Ricavato dai registri",
+        "reconstructed": "Ricostruito",
+        "estimated": "Stimato",
+        "agreed": "Concordato con la persona"
+      },
+      "errors": {
+        "bad_duration": "Indichi a quanto ammonta. Digiti -12:30 oppure -12,5, oppure ometta il meno se il saldo è positivo.",
+        "basis_required": "Indichi su cosa si basa questa cifra. Un numero di cui nessuno sa rendere conto è un numero che nessuno può difendere quando la persona a cui appartiene non è d'accordo.",
+        "date_required": "Indichi da quale giorno vale questo saldo."
+      },
+      "toasts": {
+        "recorded": "Registrato",
+        "agreed": "Accettato",
         "refused": "Operazione non riuscita",
         "try_again": "Riprovi, per favore."
       }

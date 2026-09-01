@@ -19,7 +19,8 @@
         "handed_in_message": "Měsíc {month} byl odeslán ke schválení.",
         "not_handed_in": "Neodevzdáno",
         "try_again": "Zkuste to prosím za chvíli znovu."
-      }
+      },
+      "opening": "Počáteční saldo"
     },
     "team_time": {
       "title": "Čas týmu",
@@ -162,7 +163,8 @@
         "removed": "Odchod zaznamenán",
         "refused": "Akce neproběhla",
         "try_again": "Zkuste to prosím znovu."
-      }
+      },
+      "opening": "Počáteční saldo"
     },
     "arrangement": {
       "onsite_full_time": "Na pracovišti, plný úvazek",
@@ -256,6 +258,47 @@
         "written": "Zapsáno řádků: {count}",
         "undone": "Vráceno zpět",
         "removed": "Odebráno řádků: {count}",
+        "refused": "Akce neproběhla",
+        "try_again": "Zkuste to prosím znovu."
+      }
+    },
+    "opening": {
+      "title": "Počáteční saldo – {person}",
+      "hint": "Jak na tom tato osoba byla v den, kdy se zde začalo počítat. Není žádná historie, z níž by šlo tato čísla odvodit – právě proto se na nich domlouvá, místo aby se dopočítávala. U každého se tedy uchovává, z čeho vychází, a osoba, jíž se týká, sama říká, zda je přijímá.",
+      "none_yet": "Zatím nebylo zaznamenáno žádné počáteční saldo, počítá se tedy od nuly.",
+      "from": "od {date}",
+      "from_label": "Platí od",
+      "agreed": "Odsouhlaseno",
+      "agree": "Souhlasím",
+      "not_agreed": "Zatím neodsouhlaseno",
+      "replaced": "Nahrazeno opravou: {count}",
+      "record": "Zaznamenat počáteční saldo",
+      "record_confirm": "Zaznamenat",
+      "amount": "Saldo",
+      "what_for": "Čeho se týká",
+      "how_sure": "Nakolik je to jisté",
+      "basis": "Z čeho to vychází",
+      "basis_placeholder": "Převzato z tabulky dovolených, ověřeno proti březnové výplatní pásce",
+      "done": "Hotovo",
+      "kind": {
+        "time_balance": "Hodiny navíc nebo chybějící",
+        "leave": "Dovolená",
+        "overtime_bank": "Přesčasy k proplacení"
+      },
+      "confidence": {
+        "exact": "Převzato ze záznamů",
+        "reconstructed": "Zrekonstruováno",
+        "estimated": "Odhadnuto",
+        "agreed": "Dohodnuto s danou osobou"
+      },
+      "errors": {
+        "bad_duration": "Uveďte, o kolik jde. Zadejte -12:30 nebo -12,5; pokud jde o přebytek, minus vynechte.",
+        "basis_required": "Uveďte, z čeho toto číslo vychází. Číslo, které nikdo nedokáže zdůvodnit, také nikdo neobhájí, až s ním osoba, jíž se týká, nebude souhlasit.",
+        "date_required": "Uveďte, od kterého dne toto saldo platí."
+      },
+      "toasts": {
+        "recorded": "Zaznamenáno",
+        "agreed": "Odsouhlaseno",
         "refused": "Akce neproběhla",
         "try_again": "Zkuste to prosím znovu."
       }

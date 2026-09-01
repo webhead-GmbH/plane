@@ -19,7 +19,8 @@
         "handed_in_message": "{month} 승인 요청이 전달되었습니다.",
         "not_handed_in": "제출되지 않았습니다",
         "try_again": "잠시 후 다시 시도해 주세요."
-      }
+      },
+      "opening": "기초 누적 차이"
     },
     "team_time": {
       "title": "팀 근무 시간",
@@ -162,7 +163,8 @@
         "removed": "퇴사 처리되었습니다",
         "refused": "처리되지 않았습니다",
         "try_again": "다시 시도해 주세요."
-      }
+      },
+      "opening": "기초 누적 차이"
     },
     "arrangement": {
       "onsite_full_time": "사무실 근무, 풀타임",
@@ -256,6 +258,47 @@
         "written": "{count}개 행이 기록되었습니다",
         "undone": "되돌렸습니다",
         "removed": "{count}개 행이 삭제되었습니다",
+        "refused": "처리되지 않았습니다",
+        "try_again": "다시 시도해 주세요."
+      }
+    },
+    "opening": {
+      "title": "{person}님의 기초 누적 차이",
+      "hint": "여기서 집계가 시작된 날에 이 구성원이 어떤 상태였는지를 나타냅니다. 이 수치를 도출할 이력이 없기 때문에 계산으로 산출하는 것이 아니라 합의로 정합니다. 그래서 각 수치는 무엇을 근거로 했는지를 함께 보관하며, 그 수치의 당사자 본인이 이를 받아들이는지 직접 밝힙니다.",
+      "none_yet": "아직 기록된 기초 누적 차이가 없으므로 0부터 집계를 시작합니다.",
+      "from": "{date}부터",
+      "from_label": "적용 시작일",
+      "agreed": "합의됨",
+      "agree": "이대로 맞습니다",
+      "not_agreed": "아직 합의되지 않음",
+      "replaced": "정정으로 대체된 {count}건",
+      "record": "기초 누적 차이 기록",
+      "record_confirm": "기록하기",
+      "amount": "차이",
+      "what_for": "구분",
+      "how_sure": "확실성",
+      "basis": "근거",
+      "basis_placeholder": "휴가 스프레드시트에서 이월했으며, 3월 급여명세서와 대조하여 확인",
+      "done": "닫기",
+      "kind": {
+        "time_balance": "초과 또는 부족 시간",
+        "leave": "휴가",
+        "overtime_bank": "수당으로 지급할 초과근무"
+      },
+      "confidence": {
+        "exact": "기록에서 그대로 가져옴",
+        "reconstructed": "재구성함",
+        "estimated": "추정함",
+        "agreed": "당사자와 합의함"
+      },
+      "errors": {
+        "bad_duration": "얼마인지 입력해 주세요. -12:30 또는 -12.5 형식으로 입력하고, 초과일 때는 마이너스 기호를 빼고 입력하세요.",
+        "basis_required": "이 수치가 무엇을 근거로 하는지 입력해 주세요. 아무도 설명하지 못하는 숫자는 당사자가 동의하지 않을 때 아무도 변호할 수 없습니다.",
+        "date_required": "이 차이가 어느 날짜부터 적용되는지 입력해 주세요."
+      },
+      "toasts": {
+        "recorded": "기록되었습니다",
+        "agreed": "합의되었습니다",
         "refused": "처리되지 않았습니다",
         "try_again": "다시 시도해 주세요."
       }

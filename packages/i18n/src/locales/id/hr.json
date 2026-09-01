@@ -19,7 +19,8 @@
         "handed_in_message": "{month} telah dikirim untuk persetujuan.",
         "not_handed_in": "Belum diserahkan",
         "try_again": "Silakan coba lagi dalam beberapa saat."
-      }
+      },
+      "opening": "Saldo awal"
     },
     "team_time": {
       "title": "Waktu tim",
@@ -162,7 +163,8 @@
         "removed": "Ditandai telah keluar",
         "refused": "Tindakan itu tidak berhasil",
         "try_again": "Silakan coba lagi."
-      }
+      },
+      "opening": "Saldo awal"
     },
     "arrangement": {
       "onsite_full_time": "Di kantor, penuh waktu",
@@ -256,6 +258,47 @@
         "written": "{count} baris ditulis",
         "undone": "Diurungkan",
         "removed": "{count} baris dihapus",
+        "refused": "Tindakan itu tidak berhasil",
+        "try_again": "Silakan coba lagi."
+      }
+    },
+    "opening": {
+      "title": "Saldo awal {person}",
+      "hint": "Posisi orang ini pada hari penghitungan dimulai di sini. Tidak ada riwayat yang dapat dipakai untuk menghitungnya, dan justru karena itu saldo ini disetujui bersama, bukan diturunkan dari data — jadi setiap saldo menyimpan dasar penetapannya, dan orang yang memilikinya menyatakan apakah ia menerimanya.",
+      "none_yet": "Belum ada saldo awal yang dicatat, jadi penghitungan dimulai dari nol.",
+      "from": "sejak {date}",
+      "from_label": "Berlaku sejak",
+      "agreed": "Diterima",
+      "agree": "Ini sudah benar",
+      "not_agreed": "Belum diterima",
+      "replaced": "{count} digantikan oleh koreksi",
+      "record": "Catat saldo awal",
+      "record_confirm": "Catat",
+      "amount": "Saldo",
+      "what_for": "Untuk apa",
+      "how_sure": "Seberapa yakin",
+      "basis": "Dasar penetapannya",
+      "basis_placeholder": "Dibawa dari spreadsheet cuti, dicocokkan dengan slip gaji bulan Maret",
+      "done": "Selesai",
+      "kind": {
+        "time_balance": "Jam lebih atau kurang",
+        "leave": "Cuti",
+        "overtime_bank": "Lembur yang akan dibayar"
+      },
+      "confidence": {
+        "exact": "Diambil dari catatan",
+        "reconstructed": "Disusun ulang",
+        "estimated": "Diperkirakan",
+        "agreed": "Disepakati dengan orang tersebut"
+      },
+      "errors": {
+        "bad_duration": "Sebutkan berapa jumlahnya. Ketik -12:30 atau -12,5, atau hilangkan tanda minus untuk saldo lebih.",
+        "basis_required": "Sebutkan apa yang menjadi dasar angka ini. Angka yang tidak dapat dipertanggungjawabkan oleh siapa pun tidak akan dapat dipertahankan ketika orang yang memilikinya tidak setuju.",
+        "date_required": "Sebutkan sejak hari mana saldo ini berlaku."
+      },
+      "toasts": {
+        "recorded": "Dicatat",
+        "agreed": "Diterima",
         "refused": "Tindakan itu tidak berhasil",
         "try_again": "Silakan coba lagi."
       }

@@ -11,6 +11,7 @@ from uuid import uuid4
 # Django imports
 from django.db import transaction
 from django.http import HttpResponse
+from django.utils import timezone
 
 # Third-party imports
 from rest_framework import status
@@ -233,6 +234,46 @@ class HrPeriodExportEndpoint(BaseAPIView):
         response = HttpResponse(payload, content_type=content_type)
         response["Content-Disposition"] = f'attachment; filename="hr-{stamp}-detail.{file_format}"'
         return response
+
+
+class HrOpeningBalanceAcknowledgeEndpoint(BaseAPIView):
+    """The person says the figure they were given is right.
+
+    Scoped to the person themselves rather than to whoever looks after the team.
+    The whole worth of an agreed figure is that the person it belongs to agreed
+    it, and a manager who could tick that box on their behalf would be recording
+    their own opinion twice.
+    """
+
+    @hr_permission(SELF)
+    def post(self, request, profile_id, pk):
+        from plane.hr.models import HrOpeningBalance
+
+        own = getattr(request, "hr_profile", None)
+        if own is None or str(own.id) != str(profile_id):
+            return Response(
+                {"error": "Only the person a balance belongs to can agree it."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        row = HrOpeningBalance.objects.filter(profile_id=own.id, pk=pk).first()
+        if row is None:
+            return Response({"error": "Not found."}, status=status.HTTP_404_NOT_FOUND)
+        if row.superseded_by_id is not None:
+            return Response(
+                {"error": "That figure has already been replaced by a corrected one."},
+                status=status.HTTP_409_CONFLICT,
+            )
+        if row.acknowledged_at is not None:
+            return Response({"already_agreed": True}, status=status.HTTP_200_OK)
+
+        row.acknowledged_by = request.user
+        row.acknowledged_at = timezone.now()
+        row.save(update_fields=["acknowledged_by", "acknowledged_at", "updated_at"])
+        return Response(
+            {"id": str(row.id), "acknowledged_at": row.acknowledged_at},
+            status=status.HTTP_200_OK,
+        )
 
 
 class HrOpeningBalanceEndpoint(BaseAPIView):

@@ -19,7 +19,8 @@
         "handed_in_message": "{month} foi enviado para aprovação.",
         "not_handed_in": "Não enviado",
         "try_again": "Tente novamente em instantes."
-      }
+      },
+      "opening": "Saldo inicial"
     },
     "team_time": {
       "title": "Horas da equipe",
@@ -162,7 +163,8 @@
         "removed": "Desligamento registrado",
         "refused": "A ação não foi concluída",
         "try_again": "Por favor, tente novamente."
-      }
+      },
+      "opening": "Saldo inicial"
     },
     "arrangement": {
       "onsite_full_time": "Presencial, tempo integral",
@@ -256,6 +258,47 @@
         "written": "{count} linhas gravadas",
         "undone": "Desfeito",
         "removed": "{count} linhas removidas",
+        "refused": "A ação não foi concluída",
+        "try_again": "Por favor, tente novamente."
+      }
+    },
+    "opening": {
+      "title": "Saldo inicial de {person}",
+      "hint": "A situação em que esta pessoa estava no dia em que a contagem começou aqui. Não existe histórico do qual derivar esses valores, e é justamente por isso que eles são acordados em vez de calculados — cada um guarda em que se baseou, e a pessoa a quem ele pertence diz se o aceita.",
+      "none_yet": "Nenhum saldo inicial foi registrado ainda, portanto a contagem começa do zero.",
+      "from": "a partir de {date}",
+      "from_label": "Vale a partir de",
+      "agreed": "Aceito",
+      "agree": "Está correto",
+      "not_agreed": "Ainda não aceito",
+      "replaced": "{count, plural, one {# substituído por uma correção} many {# substituídos por uma correção} other {# substituídos por uma correção}}",
+      "record": "Registrar um saldo inicial",
+      "record_confirm": "Registrar",
+      "amount": "Saldo",
+      "what_for": "Referente a",
+      "how_sure": "Grau de certeza",
+      "basis": "Em que se baseia",
+      "basis_placeholder": "Transferido da planilha de férias, conferido com o contracheque de março",
+      "done": "Pronto",
+      "kind": {
+        "time_balance": "Horas a mais ou a menos",
+        "leave": "Férias",
+        "overtime_bank": "Horas extras a pagar"
+      },
+      "confidence": {
+        "exact": "Extraído dos registros",
+        "reconstructed": "Reconstruído",
+        "estimated": "Estimado",
+        "agreed": "Acordado com a pessoa"
+      },
+      "errors": {
+        "bad_duration": "Informe quanto. Digite -12:30 ou -12,5, ou omita o sinal de menos para um saldo positivo.",
+        "basis_required": "Informe em que este número se baseia. Um número que ninguém consegue explicar é um número que ninguém consegue defender quando a pessoa a quem ele pertence discorda dele.",
+        "date_required": "Informe a partir de que dia este saldo vale."
+      },
+      "toasts": {
+        "recorded": "Registrado",
+        "agreed": "Aceito",
         "refused": "A ação não foi concluída",
         "try_again": "Por favor, tente novamente."
       }

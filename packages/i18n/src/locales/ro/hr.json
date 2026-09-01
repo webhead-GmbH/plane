@@ -19,7 +19,8 @@
         "handed_in_message": "{month} a fost trimisă spre aprobare.",
         "not_handed_in": "Nepredată",
         "try_again": "Încercați din nou peste un moment."
-      }
+      },
+      "opening": "Sold inițial"
     },
     "team_time": {
       "title": "Timpul echipei",
@@ -162,7 +163,8 @@
         "removed": "Plecare marcată",
         "refused": "Acțiunea nu a reușit",
         "try_again": "Vă rugăm să încercați din nou."
-      }
+      },
+      "opening": "Sold inițial"
     },
     "arrangement": {
       "onsite_full_time": "La sediu, normă întreagă",
@@ -256,6 +258,47 @@
         "written": "{count} rânduri scrise",
         "undone": "Anulat",
         "removed": "{count} rânduri eliminate",
+        "refused": "Acțiunea nu a reușit",
+        "try_again": "Vă rugăm să încercați din nou."
+      }
+    },
+    "opening": {
+      "title": "Soldul inițial pentru {person}",
+      "hint": "Unde se afla această persoană în ziua în care a început numărătoarea aici. Nu există un istoric din care aceste cifre să fie deduse, tocmai de aceea sunt convenite, nu calculate — așa că fiecare păstrează pe ce s-a bazat, iar persoana căreia îi aparține spune dacă o acceptă.",
+      "none_yet": "Nu s-a înregistrat încă niciun sold inițial, așa că numărătoarea începe de la zero.",
+      "from": "din {date}",
+      "from_label": "Se aplică din",
+      "agreed": "Acceptat",
+      "agree": "Este corect",
+      "not_agreed": "Încă neacceptat",
+      "replaced": "{count, plural, one {# înlocuit printr-o corecție} few {# înlocuite printr-o corecție} other {# înlocuite printr-o corecție}}",
+      "record": "Înregistrați un sold inițial",
+      "record_confirm": "Înregistrați",
+      "amount": "Sold",
+      "what_for": "La ce se referă",
+      "how_sure": "Cât de sigur este",
+      "basis": "Pe ce se bazează",
+      "basis_placeholder": "Reportat din foaia de calcul cu concediile, verificat cu fluturașul de salariu din martie",
+      "done": "Gata",
+      "kind": {
+        "time_balance": "Ore în plus sau în minus",
+        "leave": "Concediu",
+        "overtime_bank": "Ore suplimentare de plătit"
+      },
+      "confidence": {
+        "exact": "Preluat din evidențe",
+        "reconstructed": "Reconstituit",
+        "estimated": "Estimat",
+        "agreed": "Convenit cu persoana"
+      },
+      "errors": {
+        "bad_duration": "Precizați cât anume. Scrieți -12:30 sau -12,5 ori omiteți minusul pentru un excedent.",
+        "basis_required": "Precizați pe ce se bazează această cifră. O cifră de care nimeni nu poate da socoteală este o cifră pe care nimeni nu o poate susține atunci când persoana căreia îi aparține nu este de acord.",
+        "date_required": "Precizați din ce zi se aplică acest sold."
+      },
+      "toasts": {
+        "recorded": "Înregistrat",
+        "agreed": "Acceptat",
         "refused": "Acțiunea nu a reușit",
         "try_again": "Vă rugăm să încercați din nou."
       }

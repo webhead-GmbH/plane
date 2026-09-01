@@ -7,7 +7,7 @@
 import { useState } from "react";
 import { observer } from "mobx-react";
 import { Link, useParams } from "react-router";
-import { ChevronLeft, ChevronRight, RefreshCw, Send, Users } from "lucide-react";
+import { ChevronLeft, ChevronRight, RefreshCw, Scale, Send, Users } from "lucide-react";
 import useSWR from "swr";
 // plane imports
 import { Button } from "@plane/propel/button";
@@ -18,6 +18,7 @@ import { Loader } from "@plane/ui";
 import { EHrPeriodState, HrService } from "@/services/hr.service";
 import { HrDayTable } from "./day-table";
 import { HrDayEntriesModal } from "./day-entries-modal";
+import { HrOpeningBalanceModal } from "./opening-balance-modal";
 import { HrMonthSummary } from "./month-summary";
 import { formatMonthLabel, isPeriodEditable, nextMonth, previousMonth } from "./utils";
 
@@ -30,6 +31,7 @@ export const MyTimeRoot = observer(function MyTimeRoot() {
   const [[year, month], setMonth] = useState<[number, number]>([now.getFullYear(), now.getMonth() + 1]);
   const [isBusy, setIsBusy] = useState(false);
   const [openDay, setOpenDay] = useState<string | null>(null);
+  const [showOpening, setShowOpening] = useState(false);
 
   const { t, currentLocale } = useTranslation();
   const { data, isLoading, mutate } = useSWR(`HR_ME_${year}_${month}`, () => hrService.me(year, month));
@@ -141,6 +143,10 @@ export const MyTimeRoot = observer(function MyTimeRoot() {
               </Button>
             </Link>
           ) : null}
+          <Button variant="secondary" size="sm" onClick={() => setShowOpening(true)}>
+            <Scale className="size-3.5" />
+            {t("hr.my_time.opening")}
+          </Button>
           {period && isPeriodEditable(period.state) ? (
             <Button variant="secondary" size="sm" onClick={handleRecompute} loading={isBusy}>
               <RefreshCw className="size-3.5" />
@@ -187,6 +193,13 @@ export const MyTimeRoot = observer(function MyTimeRoot() {
         isLocked={!period || !isPeriodEditable(period.state)}
         onClose={() => setOpenDay(null)}
         onChanged={() => void mutate()}
+      />
+
+      <HrOpeningBalanceModal
+        person={showOpening ? data.profile : null}
+        isOwn
+        canRecord={false}
+        onClose={() => setShowOpening(false)}
       />
     </div>
   );

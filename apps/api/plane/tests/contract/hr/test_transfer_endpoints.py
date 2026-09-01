@@ -552,3 +552,99 @@ class TestExport:
     def test_a_month_that_was_not_asked_for_properly_is_a_bad_request(self, workspace, manager):
         response = client_for(manager).get(url(workspace, "export/?year=abc"))
         assert response.status_code == 400
+
+
+class TestAgreeingAnOpeningBalance:
+    """Who may say a starting figure is right.
+
+    The worth of an agreed balance is that the person it belongs to agreed it.
+    A manager able to tick that box on somebody's behalf would be recording
+    their own opinion twice and calling the second one agreement.
+    """
+
+    def _balance(self, workspace, profile, minutes=-600, on=date(2026, 1, 1)):
+        return HrOpeningBalance.objects.create(
+            workspace=workspace,
+            profile=profile,
+            effective_on=on,
+            kind=HrOpeningBalance.Kind.TIME_BALANCE,
+            minutes=minutes,
+            basis="Carried over from the spreadsheet.",
+        )
+
+    def test_the_person_can_agree_their_own(self, workspace):
+        user, profile = employ(workspace)
+        row = self._balance(workspace, profile)
+
+        response = client_for(user).post(
+            url(workspace, f"employees/{profile.id}/opening-balances/{row.id}/agree/")
+        )
+        assert response.status_code == 200
+        row.refresh_from_db()
+        assert row.acknowledged_at is not None
+        assert row.acknowledged_by_id == user.id
+
+    def test_a_manager_cannot_agree_it_for_them(self, workspace, manager):
+        _, profile = employ(workspace)
+        row = self._balance(workspace, profile)
+
+        response = client_for(manager).post(
+            url(workspace, f"employees/{profile.id}/opening-balances/{row.id}/agree/")
+        )
+        assert response.status_code == 403
+        row.refresh_from_db()
+        assert row.acknowledged_at is None
+
+    def test_agreeing_twice_changes_nothing(self, workspace):
+        user, profile = employ(workspace)
+        row = self._balance(workspace, profile)
+        path = url(workspace, f"employees/{profile.id}/opening-balances/{row.id}/agree/")
+
+        client_for(user).post(path)
+        row.refresh_from_db()
+        first = row.acknowledged_at
+
+        second = client_for(user).post(path)
+        assert second.status_code == 200
+        assert second.json()["already_agreed"] is True
+        row.refresh_from_db()
+        assert row.acknowledged_at == first
+
+    def test_a_figure_already_replaced_cannot_be_agreed(self, workspace):
+        # Agreeing a superseded number records assent to something nobody uses.
+        user, profile = employ(workspace)
+        old = self._balance(workspace, profile)
+        # Only one figure per person, kind and date may be current, so a
+        # correction carries its own date rather than sitting on top of the one
+        # it replaces.
+        replacement = self._balance(workspace, profile, minutes=-540, on=date(2026, 2, 1))
+        old.superseded_by = replacement
+        old.save()
+
+        response = client_for(user).post(
+            url(workspace, f"employees/{profile.id}/opening-balances/{old.id}/agree/")
+        )
+        assert response.status_code == 409
+
+    def test_somebody_else_cannot_agree_it(self, workspace):
+        user, _ = employ(workspace)
+        _, colleague = employ(workspace)
+        row = self._balance(workspace, colleague)
+
+        response = client_for(user).post(
+            url(workspace, f"employees/{colleague.id}/opening-balances/{row.id}/agree/")
+        )
+        assert response.status_code in (403, 404)
+        row.refresh_from_db()
+        assert row.acknowledged_at is None
+
+    def test_an_unagreed_balance_is_still_counted(self, workspace):
+        # Refusing to count it would show a zero, which is a different wrong
+        # number rather than a safe one. It is shown as unagreed instead.
+        from plane.hr.services.closing import opening_balance_for
+        from plane.hr.services.ledger import rebuild_period
+
+        _, profile = employ(workspace)
+        self._balance(workspace, profile, minutes=-600)
+        period = rebuild_period(profile, 2026, 3)
+        assert opening_balance_for(period) == -600

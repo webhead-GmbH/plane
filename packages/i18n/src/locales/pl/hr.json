@@ -19,7 +19,8 @@
         "handed_in_message": "{month} został przekazany do zatwierdzenia.",
         "not_handed_in": "Nie przekazano",
         "try_again": "Proszę spróbować ponownie za chwilę."
-      }
+      },
+      "opening": "Saldo początkowe"
     },
     "team_time": {
       "title": "Czas zespołu",
@@ -162,7 +163,8 @@
         "removed": "Oznaczono odejście",
         "refused": "Nie powiodło się",
         "try_again": "Proszę spróbować ponownie."
-      }
+      },
+      "opening": "Saldo początkowe"
     },
     "arrangement": {
       "onsite_full_time": "Na miejscu, pełny wymiar godzin",
@@ -256,6 +258,47 @@
         "written": "Zapisane wiersze: {count}",
         "undone": "Cofnięto",
         "removed": "Usunięte wiersze: {count}",
+        "refused": "Nie powiodło się",
+        "try_again": "Proszę spróbować ponownie."
+      }
+    },
+    "opening": {
+      "title": "Saldo początkowe osoby {person}",
+      "hint": "Stan, w jakim ta osoba znajdowała się w dniu rozpoczęcia liczenia. Nie ma historii, na podstawie której można by je wyliczyć — dlatego są zatwierdzane, a nie wyliczane: każde z nich zachowuje to, na czym zostało oparte, a osoba, której dotyczy, potwierdza, czy je przyjmuje.",
+      "none_yet": "Nie zarejestrowano jeszcze żadnego salda początkowego, więc liczenie zaczyna się od zera.",
+      "from": "od {date}",
+      "from_label": "Obowiązuje od",
+      "agreed": "Uzgodnione",
+      "agree": "Zgadza się",
+      "not_agreed": "Jeszcze nieuzgodnione",
+      "replaced": "Zastąpione korektą: {count}",
+      "record": "Zarejestruj saldo początkowe",
+      "record_confirm": "Zarejestruj",
+      "amount": "Saldo",
+      "what_for": "Czego dotyczy",
+      "how_sure": "Na ile pewne",
+      "basis": "Na czym jest oparte",
+      "basis_placeholder": "Przeniesione z arkusza urlopowego, sprawdzone z paskiem wynagrodzenia za marzec",
+      "done": "Gotowe",
+      "kind": {
+        "time_balance": "Nadwyżka lub niedobór godzin",
+        "leave": "Urlop",
+        "overtime_bank": "Nadgodziny do wypłaty"
+      },
+      "confidence": {
+        "exact": "Wzięte z ewidencji",
+        "reconstructed": "Odtworzone",
+        "estimated": "Oszacowane",
+        "agreed": "Uzgodnione z tą osobą"
+      },
+      "errors": {
+        "bad_duration": "Proszę podać wysokość salda. Należy wpisać -12:30 lub -12,5, a przy nadwyżce pominąć minus.",
+        "basis_required": "Proszę podać, na czym oparta jest ta wartość. Liczby, której nikt nie potrafi uzasadnić, nikt nie obroni, gdy osoba, której ona dotyczy, się z nią nie zgodzi.",
+        "date_required": "Proszę podać, od którego dnia obowiązuje to saldo."
+      },
+      "toasts": {
+        "recorded": "Zarejestrowano",
+        "agreed": "Uzgodniono",
         "refused": "Nie powiodło się",
         "try_again": "Proszę spróbować ponownie."
       }

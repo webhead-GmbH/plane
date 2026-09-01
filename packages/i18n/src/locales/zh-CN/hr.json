@@ -19,7 +19,8 @@
         "handed_in_message": "{month}已送交审批。",
         "not_handed_in": "未能提交",
         "try_again": "请稍后重试。"
-      }
+      },
+      "opening": "期初结余"
     },
     "team_time": {
       "title": "团队工时",
@@ -162,7 +163,8 @@
         "removed": "已标记为离职",
         "refused": "操作未成功",
         "try_again": "请重试。"
-      }
+      },
+      "opening": "期初结余"
     },
     "arrangement": {
       "onsite_full_time": "现场办公，全职",
@@ -256,6 +258,47 @@
         "written": "已写入 {count} 行",
         "undone": "已撤销",
         "removed": "已删除 {count} 行",
+        "refused": "操作未成功",
+        "try_again": "请重试。"
+      }
+    },
+    "opening": {
+      "title": "{person} 的期初结余",
+      "hint": "该成员在此处开始计算工时的那一天所处的状况。这些数字没有历史记录可供推算，正因如此，它们由双方商定，而不是计算得出——因此每一条都会保留自己的依据，并由结余所属的成员表明是否认可。",
+      "none_yet": "尚未记录任何期初结余，因此从零开始计算。",
+      "from": "自{date}起",
+      "from_label": "生效日期",
+      "agreed": "已商定",
+      "agree": "确认无误",
+      "not_agreed": "尚未商定",
+      "replaced": "{count} 条已被更正替换",
+      "record": "记录期初结余",
+      "record_confirm": "确认记录",
+      "amount": "结余",
+      "what_for": "结余类型",
+      "how_sure": "可信程度",
+      "basis": "依据",
+      "basis_placeholder": "从假期电子表格结转而来，并与三月的工资单核对过",
+      "done": "完成",
+      "kind": {
+        "time_balance": "多出或欠缺的工时",
+        "leave": "休假",
+        "overtime_bank": "待支付的加班"
+      },
+      "confidence": {
+        "exact": "取自记录",
+        "reconstructed": "还原得出",
+        "estimated": "估算得出",
+        "agreed": "与本人商定"
+      },
+      "errors": {
+        "bad_duration": "请填写数额。可输入 -12:30 或 -12.5；多出的部分不加负号。",
+        "basis_required": "请填写这个数字的依据。无人能说清来历的数字，在其所属成员提出异议时，也无人能为它辩护。",
+        "date_required": "请填写该结余从哪一天开始生效。"
+      },
+      "toasts": {
+        "recorded": "已记录",
+        "agreed": "已商定",
         "refused": "操作未成功",
         "try_again": "请重试。"
       }

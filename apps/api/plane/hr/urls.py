@@ -32,6 +32,7 @@ from plane.hr.api.views import (
     HrLeaveEntitlementEndpoint,
     HrMeEndpoint,
     HrMonthExportEndpoint,
+    HrOpeningBalanceAcknowledgeEndpoint,
     HrOpeningBalanceEndpoint,
     HrOverviewEndpoint,
     HrPeriodApproveEndpoint,
@@ -103,6 +104,11 @@ urlpatterns = [
         "employees/<uuid:profile_id>/opening-balances/<uuid:pk>/",
         HrOpeningBalanceEndpoint.as_view(),
         name="hr-opening-balance-detail",
+    ),
+    path(
+        "employees/<uuid:profile_id>/opening-balances/<uuid:pk>/agree/",
+        HrOpeningBalanceAcknowledgeEndpoint.as_view(),
+        name="hr-opening-balance-agree",
     ),
     # When people are expected to work, and when nobody does
     path("schedules/", HrWorkScheduleEndpoint.as_view(), name="hr-schedules"),

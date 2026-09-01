@@ -7,7 +7,7 @@
 import { useState } from "react";
 import { observer } from "mobx-react";
 import { Link } from "react-router";
-import { CalendarClock, Plus, UserMinus } from "lucide-react";
+import { CalendarClock, Plus, Scale, UserMinus } from "lucide-react";
 import useSWR from "swr";
 // plane imports
 import { useTranslation } from "@plane/i18n";
@@ -19,6 +19,7 @@ import { cn } from "@plane/utils";
 import { HrService, type THrContract, type THrEmploymentProfile } from "@/services/hr.service";
 // local imports
 import { HrAddPersonModal } from "./add-person-modal";
+import { HrOpeningBalanceModal } from "./opening-balance-modal";
 import { HrPersonModal, type TPersonDraft } from "./person-modal";
 import { formatMinutes } from "./utils";
 
@@ -36,6 +37,7 @@ export const HrPeopleRoot = observer(function HrPeopleRoot({ workspaceSlug }: { 
   const { t } = useTranslation();
   const [adding, setAdding] = useState(false);
   const [editing, setEditing] = useState<THrEmploymentProfile | null>(null);
+  const [opening, setOpening] = useState<THrEmploymentProfile | null>(null);
   const [isBusy, setIsBusy] = useState(false);
 
   const { data: people, isLoading, error, mutate } = useSWR("HR_EMPLOYEES", () => hrService.employees());
@@ -166,6 +168,8 @@ export const HrPeopleRoot = observer(function HrPeopleRoot({ workspaceSlug }: { 
         onSave={(draft) => void handleSave(draft)}
       />
 
+      <HrOpeningBalanceModal person={opening} isOwn={false} canRecord onClose={() => setOpening(null)} />
+
       {rows.length === 0 ? (
         <div className="border-custom-border-200 bg-custom-background-90 text-custom-text-300 text-sm rounded-md border px-4 py-8 text-center">
           {t("hr.people.nobody_yet")}
@@ -219,6 +223,14 @@ export const HrPeopleRoot = observer(function HrPeopleRoot({ workspaceSlug }: { 
                       <div className="flex items-center justify-end gap-1">
                         <Button variant="link" size="sm" onClick={() => setEditing(person)}>
                           {t("hr.people.edit")}
+                        </Button>
+                        <Button
+                          variant="link"
+                          size="sm"
+                          prependIcon={<Scale className="size-3.5" />}
+                          onClick={() => setOpening(person)}
+                        >
+                          {t("hr.people.opening")}
                         </Button>
                         {person.is_active ? (
                           <Button

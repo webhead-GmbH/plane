@@ -269,6 +269,32 @@ export type THrImportBatch = {
   rollback_reason: string | null;
 };
 
+/** What a starting figure covers. */
+export enum EHrBalanceKind {
+  TIME_BALANCE = 10,
+  LEAVE = 20,
+  OVERTIME_BANK = 30,
+}
+
+/** How much anybody can stand behind the number. */
+export enum EHrConfidence {
+  EXACT = 10,
+  RECONSTRUCTED = 20,
+  ESTIMATED = 30,
+  AGREED = 40,
+}
+
+export type THrOpeningBalance = {
+  id: string;
+  effective_on: string;
+  kind: EHrBalanceKind;
+  minutes: number;
+  confidence: EHrConfidence;
+  basis: string;
+  superseded_by: string | null;
+  acknowledged_at: string | null;
+};
+
 export class HrService extends APIService {
   constructor() {
     super(API_BASE_URL);
@@ -552,6 +578,44 @@ export class HrService extends APIService {
 
   async undoImport(batchId: string, reason: string): Promise<THrImportBatch & { removed: number }> {
     return this.post(`${this.base}/imports/${batchId}/undo/`, { reason })
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  // ---------------------------------------------------------------------------
+  // Where somebody stood before this started counting. Agreed, never derived.
+  // ---------------------------------------------------------------------------
+
+  async openingBalances(profileId: string): Promise<THrOpeningBalance[]> {
+    return this.get(`${this.base}/employees/${profileId}/opening-balances/`)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  async recordOpeningBalance(profileId: string, payload: Partial<THrOpeningBalance>) {
+    return this.post(`${this.base}/employees/${profileId}/opening-balances/`, payload)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  /** Replaces a figure with a corrected one, keeping the original readable. */
+  async correctOpeningBalance(profileId: string, balanceId: string, payload: Partial<THrOpeningBalance>) {
+    return this.patch(`${this.base}/employees/${profileId}/opening-balances/${balanceId}/`, payload)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  /** Only the person a balance belongs to can do this. */
+  async agreeOpeningBalance(profileId: string, balanceId: string) {
+    return this.post(`${this.base}/employees/${profileId}/opening-balances/${balanceId}/agree/`)
       .then((response) => response?.data)
       .catch((error) => {
         throw error?.response?.data;

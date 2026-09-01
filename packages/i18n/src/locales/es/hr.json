@@ -19,7 +19,8 @@
         "handed_in_message": "{month} ha pasado a aprobación.",
         "not_handed_in": "Sin entregar",
         "try_again": "Vuelva a intentarlo en un momento."
-      }
+      },
+      "opening": "Saldo inicial"
     },
     "team_time": {
       "title": "Tiempo del equipo",
@@ -162,7 +163,8 @@
         "removed": "Marcado como baja",
         "refused": "No se pudo completar",
         "try_again": "Vuelva a intentarlo."
-      }
+      },
+      "opening": "Saldo inicial"
     },
     "arrangement": {
       "onsite_full_time": "Presencial, jornada completa",
@@ -256,6 +258,47 @@
         "written": "{count} filas escritas",
         "undone": "Deshecho",
         "removed": "{count} filas eliminadas",
+        "refused": "No se pudo completar",
+        "try_again": "Vuelva a intentarlo."
+      }
+    },
+    "opening": {
+      "title": "Saldo inicial de {person}",
+      "hint": "La situación de esta persona el día en que aquí se empezó a contar. No hay historial del que deducir estos saldos, y por eso se acuerdan en lugar de calcularse: cada uno conserva en qué se basó, y la persona a la que pertenece dice si lo acepta.",
+      "none_yet": "Todavía no se ha registrado ningún saldo inicial, por lo que la cuenta empieza desde cero.",
+      "from": "desde {date}",
+      "from_label": "Se aplica desde",
+      "agreed": "Aceptado",
+      "agree": "Es correcto",
+      "not_agreed": "Aún sin aceptar",
+      "replaced": "{count, plural, one {# sustituido por una corrección} other {# sustituidos por una corrección}}",
+      "record": "Registrar un saldo inicial",
+      "record_confirm": "Registrarlo",
+      "amount": "Saldo",
+      "what_for": "Concepto",
+      "how_sure": "Grado de certeza",
+      "basis": "En qué se basa",
+      "basis_placeholder": "Arrastrado desde la hoja de cálculo de vacaciones, comprobado con la nómina de marzo",
+      "done": "Listo",
+      "kind": {
+        "time_balance": "Horas de más o de menos",
+        "leave": "Vacaciones",
+        "overtime_bank": "Horas extra por pagar"
+      },
+      "confidence": {
+        "exact": "Tomado de los registros",
+        "reconstructed": "Reconstruido",
+        "estimated": "Estimado",
+        "agreed": "Acordado con la persona"
+      },
+      "errors": {
+        "bad_duration": "Indique cuánto. Escriba -12:30 o -12,5, u omita el signo menos si el saldo es a favor.",
+        "basis_required": "Indique en qué se basa esta cifra. Un número del que nadie puede dar cuenta es un número que nadie puede defender cuando la persona a la que pertenece no está de acuerdo.",
+        "date_required": "Indique desde qué día se aplica este saldo."
+      },
+      "toasts": {
+        "recorded": "Registrado",
+        "agreed": "Aceptado",
         "refused": "No se pudo completar",
         "try_again": "Vuelva a intentarlo."
       }

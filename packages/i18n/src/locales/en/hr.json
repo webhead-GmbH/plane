@@ -19,7 +19,8 @@
         "handed_in_message": "{month} has gone for approval.",
         "not_handed_in": "Not handed in",
         "try_again": "Try again in a moment."
-      }
+      },
+      "opening": "Starting balance"
     },
     "team_time": {
       "title": "Team time",
@@ -162,7 +163,8 @@
         "removed": "Marked as having left",
         "refused": "That did not go through",
         "try_again": "Please try again."
-      }
+      },
+      "opening": "Starting balance"
     },
     "arrangement": {
       "onsite_full_time": "On site, full time",
@@ -256,6 +258,47 @@
         "written": "{count} rows written",
         "undone": "Undone",
         "removed": "{count} rows removed",
+        "refused": "That did not go through",
+        "try_again": "Please try again."
+      }
+    },
+    "opening": {
+      "title": "{person}'s starting balance",
+      "hint": "Where this person stood on the day counting started here. There is no history to work these out from, which is why they are agreed rather than derived — so each one keeps what it was based on, and the person it belongs to says whether they accept it.",
+      "none_yet": "No starting balance has been recorded yet, so counting begins from zero.",
+      "from": "from {date}",
+      "from_label": "Applies from",
+      "agreed": "Agreed",
+      "agree": "This is right",
+      "not_agreed": "Not agreed yet",
+      "replaced": "{count, plural, one {# replaced by a correction} other {# replaced by a correction}}",
+      "record": "Record a starting balance",
+      "record_confirm": "Record it",
+      "amount": "Balance",
+      "what_for": "What for",
+      "how_sure": "How sure",
+      "basis": "What it is based on",
+      "basis_placeholder": "Carried over from the leave spreadsheet, checked against the March payslip",
+      "done": "Done",
+      "kind": {
+        "time_balance": "Hours over or under",
+        "leave": "Leave",
+        "overtime_bank": "Overtime to be paid"
+      },
+      "confidence": {
+        "exact": "Taken from records",
+        "reconstructed": "Reconstructed",
+        "estimated": "Estimated",
+        "agreed": "Agreed with the person"
+      },
+      "errors": {
+        "bad_duration": "Say how much. Type -12:30 or -12.5, or leave off the minus for a surplus.",
+        "basis_required": "Say what this figure is based on. A number nobody can account for is one nobody can defend when the person it belongs to disagrees.",
+        "date_required": "Say which day this balance applies from."
+      },
+      "toasts": {
+        "recorded": "Recorded",
+        "agreed": "Agreed",
         "refused": "That did not go through",
         "try_again": "Please try again."
       }

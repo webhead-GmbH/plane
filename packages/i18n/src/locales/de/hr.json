@@ -19,7 +19,8 @@
         "handed_in_message": "{month} wurde zur Genehmigung weitergeleitet.",
         "not_handed_in": "Nicht eingereicht",
         "try_again": "Bitte versuchen Sie es in einem Moment erneut."
-      }
+      },
+      "opening": "Anfangssaldo"
     },
     "team_time": {
       "title": "Teamzeit",
@@ -162,7 +163,8 @@
         "removed": "Als ausgetreten markiert",
         "refused": "Nicht durchgeführt",
         "try_again": "Bitte versuchen Sie es erneut."
-      }
+      },
+      "opening": "Anfangssaldo"
     },
     "arrangement": {
       "onsite_full_time": "Vor Ort, Vollzeit",
@@ -256,6 +258,47 @@
         "written": "{count} Zeilen geschrieben",
         "undone": "Zurückgenommen",
         "removed": "{count} Zeilen entfernt",
+        "refused": "Nicht durchgeführt",
+        "try_again": "Bitte versuchen Sie es erneut."
+      }
+    },
+    "opening": {
+      "title": "Anfangssaldo von {person}",
+      "hint": "Der Stand dieser Person an dem Tag, an dem hier zu zählen begonnen wurde. Es gibt keine Vorgeschichte, aus der sich diese Werte ableiten ließen – genau deshalb werden sie vereinbart und nicht berechnet. Zu jedem Wert wird daher festgehalten, worauf er beruht, und die Person, der er gehört, gibt an, ob sie damit einverstanden ist.",
+      "none_yet": "Es ist noch kein Anfangssaldo erfasst, daher wird ab null gezählt.",
+      "from": "ab {date}",
+      "from_label": "Gilt ab",
+      "agreed": "Vereinbart",
+      "agree": "Das stimmt so",
+      "not_agreed": "Noch nicht vereinbart",
+      "replaced": "{count} durch eine Korrektur ersetzt",
+      "record": "Anfangssaldo erfassen",
+      "record_confirm": "Erfassen",
+      "amount": "Saldo",
+      "what_for": "Wofür",
+      "how_sure": "Wie sicher",
+      "basis": "Worauf er beruht",
+      "basis_placeholder": "Aus der Urlaubstabelle übernommen, mit der Gehaltsabrechnung für März abgeglichen",
+      "done": "Fertig",
+      "kind": {
+        "time_balance": "Stunden über oder unter dem Soll",
+        "leave": "Urlaub",
+        "overtime_bank": "Auszuzahlende Überstunden"
+      },
+      "confidence": {
+        "exact": "Aus Aufzeichnungen übernommen",
+        "reconstructed": "Rekonstruiert",
+        "estimated": "Geschätzt",
+        "agreed": "Mit der Person vereinbart"
+      },
+      "errors": {
+        "bad_duration": "Der Saldo fehlt. Geben Sie -12:30 oder -12,5 ein oder lassen Sie das Minus weg, wenn es ein Guthaben ist.",
+        "basis_required": "Geben Sie an, worauf dieser Wert beruht. Eine Zahl, die niemand begründen kann, lässt sich auch nicht verteidigen, wenn die Person, der sie gehört, ihr widerspricht.",
+        "date_required": "Geben Sie an, ab welchem Tag dieser Saldo gilt."
+      },
+      "toasts": {
+        "recorded": "Erfasst",
+        "agreed": "Vereinbart",
         "refused": "Nicht durchgeführt",
         "try_again": "Bitte versuchen Sie es erneut."
       }

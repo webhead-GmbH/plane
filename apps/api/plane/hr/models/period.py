@@ -252,7 +252,11 @@ class HrOpeningBalance(HrBaseModel):
         related_name="supersedes",
     )
 
-    # Nothing is counted from a balance the person has not seen.
+    # Whether the person has seen the figure and agreed it. An unacknowledged
+    # balance is still counted — refusing to would show a zero, which is a
+    # different wrong number rather than a safe one — but it is shown as not yet
+    # agreed wherever it appears, because that is the state somebody has to act
+    # on rather than one to hide.
     acknowledged_by = models.ForeignKey(
         "db.User",
         on_delete=models.SET_NULL,
