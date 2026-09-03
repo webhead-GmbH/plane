@@ -295,6 +295,66 @@ export type THrOpeningBalance = {
   acknowledged_at: string | null;
 };
 
+/** What being away does to the arithmetic. */
+export type THrAbsenceType = {
+  id: string;
+  code: string;
+  name_de: string;
+  name_en: string;
+  credits_actual: boolean;
+  consumes_leave_entitlement: boolean;
+  consumes_balance: boolean;
+  is_paid: boolean;
+  requires_approval: boolean;
+  requires_document: boolean;
+  max_consecutive_days: number | null;
+  colour: string;
+  is_active: boolean;
+};
+
+/** How much of a day an absence covers. */
+export enum EHrGranularity {
+  FULL_DAY = 10,
+  HALF_DAY = 20,
+  HOURS = 30,
+}
+
+/** Which half of a day a part-day absence falls in. */
+export enum EHrHalf {
+  MORNING = 10,
+  AFTERNOON = 20,
+}
+
+/** How far an absence has got through being agreed. */
+export enum EHrAbsenceState {
+  DRAFT = 10,
+  REQUESTED = 20,
+  APPROVED = 30,
+  REJECTED = 40,
+  CANCELLED = 50,
+}
+
+export type THrAbsence = {
+  id: string;
+  profile: string;
+  absence_type: string;
+  absence_type_code: string;
+  absence_type_name: string;
+  start_date: string;
+  end_date: string;
+  granularity: EHrGranularity;
+  start_half: EHrHalf | null;
+  end_half: EHrHalf | null;
+  minutes_per_day: number | null;
+  total_minutes: number;
+  state: EHrAbsenceState;
+  approved_at: string | null;
+  reason: string;
+  rejection_reason: string;
+  /** Set once the month it falls in has been locked, after which it cannot change. */
+  locked_period: string | null;
+};
+
 export class HrService extends APIService {
   constructor() {
     super(API_BASE_URL);
@@ -616,6 +676,89 @@ export class HrService extends APIService {
   /** Only the person a balance belongs to can do this. */
   async agreeOpeningBalance(profileId: string, balanceId: string) {
     return this.post(`${this.base}/employees/${profileId}/opening-balances/${balanceId}/agree/`)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  /* ----------------------------------------------------------------- absence */
+
+  async absenceTypes(): Promise<THrAbsenceType[]> {
+    return this.get(`${this.base}/absence-types/`)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  async createAbsenceType(payload: Partial<THrAbsenceType>) {
+    return this.post(`${this.base}/absence-types/`, payload)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  async updateAbsenceType(typeId: string, payload: Partial<THrAbsenceType>) {
+    return this.patch(`${this.base}/absence-types/${typeId}/`, payload)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  async removeAbsenceType(typeId: string) {
+    return this.delete(`${this.base}/absence-types/${typeId}/`)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  /**
+   * Absences overlapping a window, for one person or for everyone in view.
+   *
+   * The window is inclusive at both ends and matches an absence that merely
+   * touches it, so a holiday running across a month boundary shows up in both
+   * months rather than only the one it started in.
+   */
+  async absences(from: string, to: string, profileId?: string): Promise<THrAbsence[]> {
+    const scope = profileId ? `&profile_id=${profileId}` : "";
+    return this.get(`${this.base}/absences/?from=${from}&to=${to}${scope}`)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  async createAbsence(payload: Record<string, unknown>) {
+    return this.post(`${this.base}/absences/`, payload)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  async updateAbsence(absenceId: string, payload: Record<string, unknown>) {
+    return this.patch(`${this.base}/absences/${absenceId}/`, payload)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  async removeAbsence(absenceId: string) {
+    return this.delete(`${this.base}/absences/${absenceId}/`)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  /** `approve`, `reject` or `cancel`. Nobody may decide on their own absence. */
+  async decideAbsence(absenceId: string, decision: "approve" | "reject" | "cancel", reason?: string) {
+    return this.post(`${this.base}/absences/${absenceId}/${decision}/`, reason ? { rejection_reason: reason } : {})
       .then((response) => response?.data)
       .catch((error) => {
         throw error?.response?.data;

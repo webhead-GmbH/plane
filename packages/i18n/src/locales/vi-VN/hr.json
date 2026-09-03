@@ -302,6 +302,91 @@
         "refused": "Thao tác không thành công",
         "try_again": "Vui lòng thử lại."
       }
+    },
+    "absences": {
+      "title": "Vắng mặt",
+      "subtitle": "Thời gian nghỉ làm và ảnh hưởng của nó đến tháng.",
+      "record": "Ghi nhận vắng mặt",
+      "manage_types": "Lý do",
+      "everyone": "Tất cả",
+      "previous_month": "Tháng trước",
+      "next_month": "Tháng sau",
+      "none_this_month": "Không ai nghỉ trong tháng này.",
+      "not_permitted_detail": "Chỉ quản lý mới xem được toàn nhóm. Vắng mặt của bạn nằm ở trang thời gian của bạn.",
+      "month_locked": "tháng đã khóa",
+      "approve": "Đồng ý",
+      "reject": "Từ chối",
+      "delete": "Xóa vắng mặt",
+      "column_person": "Người",
+      "column_reason": "Lý do",
+      "column_when": "Thời gian",
+      "column_away": "Vắng",
+      "column_state": "Trạng thái",
+      "column_action": "Thao tác",
+      "state": {
+        "draft": "Nháp",
+        "requested": "Đã yêu cầu",
+        "approved": "Đã đồng ý",
+        "rejected": "Đã từ chối",
+        "cancelled": "Đã rút lại"
+      },
+      "granularity": {
+        "full_day": "Cả ngày",
+        "half_day": "Nửa ngày đầu và cuối",
+        "hours": "Số giờ cố định mỗi ngày"
+      },
+      "half": {
+        "morning": "Buổi sáng",
+        "afternoon": "Buổi chiều"
+      },
+      "modal": {
+        "title": "Ghi nhận vắng mặt",
+        "edit_title": "Sửa vắng mặt này",
+        "subtitle": "Khi lý do được tính là ngày làm, ngày đó được cộng đủ giờ nên số dư tháng vẫn cân bằng. Còn giờ định mức thì giữ nguyên.",
+        "person": "Người",
+        "type": "Lý do",
+        "no_types": "Chưa thiết lập lý do nào",
+        "from": "Ngày nghỉ đầu tiên",
+        "to": "Ngày nghỉ cuối cùng",
+        "backwards": "Ngày cuối không thể trước ngày đầu.",
+        "granularity": "Nghỉ bao nhiêu mỗi ngày",
+        "which_half": "Buổi nào",
+        "first_day": "Ngày đầu",
+        "last_day": "Ngày cuối",
+        "hours_each_day": "Số giờ nghỉ mỗi ngày",
+        "hours_placeholder": "ví dụ 3:30",
+        "hours_hint": "Viết dạng 3:30, 3.5 hoặc 210m.",
+        "note": "Ghi chú",
+        "note_placeholder": "Không bắt buộc",
+        "record": "Ghi nhận"
+      },
+      "toasts": {
+        "saved": "Đã lưu vắng mặt",
+        "removed": "Đã xóa vắng mặt",
+        "refused": "Không thể lưu",
+        "try_again": "Vui lòng thử lại."
+      },
+      "types": {
+        "title": "Lý do vắng mặt",
+        "subtitle": "Hai câu trả lời quyết định cách tính: ngày đó có được tính là ngày làm không, và có trừ vào quỹ phép không.",
+        "column_code": "Mã",
+        "column_name": "Tên",
+        "column_counts": "Tính là ngày làm",
+        "column_leave": "Trừ vào quỹ phép",
+        "column_action": "Thao tác",
+        "none_yet": "Chưa thiết lập lý do nào.",
+        "retire": "Ngừng dùng",
+        "bring_back": "Dùng lại",
+        "delete": "Xóa lý do",
+        "add": "Thêm lý do",
+        "add_button": "Thêm",
+        "code_placeholder": "Mã, ví dụ URLAUB",
+        "name_placeholder": "Tên hiển thị cho mọi người",
+        "counts_as_worked": "Ngày đó vẫn tính là ngày làm",
+        "draws_on_leave": "Ngày đó trừ vào quỹ phép",
+        "refused": "Không thể lưu",
+        "try_again": "Vui lòng thử lại."
+      }
     }
   }
 }

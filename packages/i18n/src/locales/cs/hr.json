@@ -302,6 +302,91 @@
         "refused": "Akce neproběhla",
         "try_again": "Zkuste to prosím znovu."
       }
+    },
+    "absences": {
+      "title": "Nepřítomnosti",
+      "subtitle": "Čas mimo práci a jeho dopad na měsíc.",
+      "record": "Zaznamenat nepřítomnost",
+      "manage_types": "Důvody",
+      "everyone": "Všichni",
+      "previous_month": "Předchozí měsíc",
+      "next_month": "Další měsíc",
+      "none_this_month": "Tento měsíc nikdo nechyběl.",
+      "not_permitted_detail": "Celý tým vidí jen manažer. Vaše nepřítomnosti najdete na své stránce docházky.",
+      "month_locked": "měsíc uzamčen",
+      "approve": "Schválit",
+      "reject": "Zamítnout",
+      "delete": "Smazat nepřítomnost",
+      "column_person": "Osoba",
+      "column_reason": "Důvod",
+      "column_when": "Kdy",
+      "column_away": "Doba",
+      "column_state": "Stav",
+      "column_action": "Akce",
+      "state": {
+        "draft": "Koncept",
+        "requested": "Požádáno",
+        "approved": "Schváleno",
+        "rejected": "Zamítnuto",
+        "cancelled": "Staženo"
+      },
+      "granularity": {
+        "full_day": "Celé dny",
+        "half_day": "Půlden na začátku i na konci",
+        "hours": "Pevný počet hodin denně"
+      },
+      "half": {
+        "morning": "Dopoledne",
+        "afternoon": "Odpoledne"
+      },
+      "modal": {
+        "title": "Zaznamenat nepřítomnost",
+        "edit_title": "Upravit nepřítomnost",
+        "subtitle": "Pokud se důvod počítá jako odpracovaný, den se započítá do odpracovaných hodin, takže saldo měsíce zůstane vyrovnané. Předepsané hodiny se přitom nemění.",
+        "person": "Osoba",
+        "type": "Důvod",
+        "no_types": "Zatím nejsou nastaveny žádné důvody",
+        "from": "První den nepřítomnosti",
+        "to": "Poslední den nepřítomnosti",
+        "backwards": "Poslední den nemůže být před prvním.",
+        "granularity": "Kolik z každého dne",
+        "which_half": "Která polovina",
+        "first_day": "První den",
+        "last_day": "Poslední den",
+        "hours_each_day": "Hodiny nepřítomnosti za den",
+        "hours_placeholder": "např. 3:30",
+        "hours_hint": "Zapisuje se jako 3:30, 3.5 nebo 210m.",
+        "note": "Poznámka",
+        "note_placeholder": "Nepovinné",
+        "record": "Zaznamenat"
+      },
+      "toasts": {
+        "saved": "Nepřítomnost uložena",
+        "removed": "Nepřítomnost smazána",
+        "refused": "Uložení se nezdařilo",
+        "try_again": "Zkuste to prosím znovu."
+      },
+      "types": {
+        "title": "Důvody nepřítomnosti",
+        "subtitle": "O výpočtu rozhodují dvě odpovědi: zda se den počítá jako odpracovaný a zda se odečítá z fondu dovolené.",
+        "column_code": "Kód",
+        "column_name": "Název",
+        "column_counts": "Počítá se jako odpracovaný",
+        "column_leave": "Z fondu dovolené",
+        "column_action": "Akce",
+        "none_yet": "Zatím nejsou nastaveny žádné důvody.",
+        "retire": "Vyřadit",
+        "bring_back": "Obnovit",
+        "delete": "Smazat důvod",
+        "add": "Přidat důvod",
+        "add_button": "Přidat",
+        "code_placeholder": "Kód, např. URLAUB",
+        "name_placeholder": "Název, který uvidí ostatní",
+        "counts_as_worked": "Den se počítá jako odpracovaný",
+        "draws_on_leave": "Den se odečítá z fondu dovolené",
+        "refused": "Uložení se nezdařilo",
+        "try_again": "Zkuste to prosím znovu."
+      }
     }
   }
 }

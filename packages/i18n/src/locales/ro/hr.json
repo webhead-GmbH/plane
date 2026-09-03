@@ -302,6 +302,91 @@
         "refused": "Acțiunea nu a reușit",
         "try_again": "Vă rugăm să încercați din nou."
       }
+    },
+    "absences": {
+      "title": "Absențe",
+      "subtitle": "Absențele de la muncă și efectul lor asupra lunii.",
+      "record": "Înregistrați absență",
+      "manage_types": "Motive",
+      "everyone": "Toată lumea",
+      "previous_month": "Luna anterioară",
+      "next_month": "Luna următoare",
+      "none_this_month": "Nimeni nu a lipsit luna aceasta.",
+      "not_permitted_detail": "Doar un manager vede întreaga echipă. Absențele proprii se află pe pagina dumneavoastră de timp.",
+      "month_locked": "lună blocată",
+      "approve": "Aprobați",
+      "reject": "Refuzați",
+      "delete": "Ștergeți absența",
+      "column_person": "Persoană",
+      "column_reason": "Motiv",
+      "column_when": "Când",
+      "column_away": "Absență",
+      "column_state": "Stare",
+      "column_action": "Acțiune",
+      "state": {
+        "draft": "Ciornă",
+        "requested": "Solicitată",
+        "approved": "Aprobată",
+        "rejected": "Refuzată",
+        "cancelled": "Retrasă"
+      },
+      "granularity": {
+        "full_day": "Zile întregi",
+        "half_day": "Jumătate de zi la început și la final",
+        "hours": "Un număr fix de ore pe zi"
+      },
+      "half": {
+        "morning": "Dimineața",
+        "afternoon": "După-amiaza"
+      },
+      "modal": {
+        "title": "Înregistrați o absență",
+        "edit_title": "Modificați această absență",
+        "subtitle": "Când motivul contează ca zi lucrată, ziua se creditează la orele lucrate, astfel încât luna să iasă în continuare echilibrată. Orele de lucrat rămân însă neschimbate.",
+        "person": "Persoană",
+        "type": "Motiv",
+        "no_types": "Niciun motiv configurat încă",
+        "from": "Prima zi de absență",
+        "to": "Ultima zi de absență",
+        "backwards": "Ultima zi nu poate fi înaintea primei.",
+        "granularity": "Cât din fiecare zi",
+        "which_half": "Care jumătate",
+        "first_day": "Prima zi",
+        "last_day": "Ultima zi",
+        "hours_each_day": "Ore de absență pe zi",
+        "hours_placeholder": "ex. 3:30",
+        "hours_hint": "Se scrie ca 3:30, 3.5 sau 210m.",
+        "note": "Notă",
+        "note_placeholder": "Opțional",
+        "record": "Înregistrați"
+      },
+      "toasts": {
+        "saved": "Absență salvată",
+        "removed": "Absență ștearsă",
+        "refused": "Nu s-a putut salva",
+        "try_again": "Vă rugăm să încercați din nou."
+      },
+      "types": {
+        "title": "Motive de absență",
+        "subtitle": "Două răspunsuri decid calculul: dacă ziua contează în continuare ca lucrată și dacă se scade din soldul de concediu.",
+        "column_code": "Cod",
+        "column_name": "Nume",
+        "column_counts": "Contează ca lucrată",
+        "column_leave": "Din soldul de concediu",
+        "column_action": "Acțiune",
+        "none_yet": "Niciun motiv configurat încă.",
+        "retire": "Dezactivați",
+        "bring_back": "Reactivați",
+        "delete": "Ștergeți motivul",
+        "add": "Adăugați un motiv",
+        "add_button": "Adăugați",
+        "code_placeholder": "Cod, ex. URLAUB",
+        "name_placeholder": "Numele afișat oamenilor",
+        "counts_as_worked": "Ziua contează în continuare ca lucrată",
+        "draws_on_leave": "Ziua se scade din soldul de concediu",
+        "refused": "Nu s-a putut salva",
+        "try_again": "Vă rugăm să încercați din nou."
+      }
     }
   }
 }

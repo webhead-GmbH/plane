@@ -302,6 +302,91 @@
         "refused": "No se pudo completar",
         "try_again": "Vuelva a intentarlo."
       }
+    },
+    "absences": {
+      "title": "Ausencias",
+      "subtitle": "Tiempo fuera del trabajo y su efecto en el mes.",
+      "record": "Registrar ausencia",
+      "manage_types": "Motivos",
+      "everyone": "Todos",
+      "previous_month": "Mes anterior",
+      "next_month": "Mes siguiente",
+      "none_this_month": "Nadie se ausentó este mes.",
+      "not_permitted_detail": "Solo un responsable ve todo el equipo. Sus ausencias están en su página de tiempo.",
+      "month_locked": "mes cerrado",
+      "approve": "Aceptar",
+      "reject": "Rechazar",
+      "delete": "Eliminar ausencia",
+      "column_person": "Persona",
+      "column_reason": "Motivo",
+      "column_when": "Cuándo",
+      "column_away": "Ausente",
+      "column_state": "Estado",
+      "column_action": "Acción",
+      "state": {
+        "draft": "Borrador",
+        "requested": "Solicitada",
+        "approved": "Aceptada",
+        "rejected": "Rechazada",
+        "cancelled": "Retirada"
+      },
+      "granularity": {
+        "full_day": "Días completos",
+        "half_day": "Medio día al inicio y al final",
+        "hours": "Un número fijo de horas al día"
+      },
+      "half": {
+        "morning": "Mañana",
+        "afternoon": "Tarde"
+      },
+      "modal": {
+        "title": "Registrar una ausencia",
+        "edit_title": "Modificar esta ausencia",
+        "subtitle": "Si el motivo computa como trabajado, se abonan las horas de la jornada para que el mes siga cuadrando. El objetivo en sí no se modifica.",
+        "person": "Persona",
+        "type": "Motivo",
+        "no_types": "Aún no hay motivos configurados",
+        "from": "Primer día de ausencia",
+        "to": "Último día de ausencia",
+        "backwards": "El último día no puede ser anterior al primero.",
+        "granularity": "Parte de cada día",
+        "which_half": "Qué mitad",
+        "first_day": "Primer día",
+        "last_day": "Último día",
+        "hours_each_day": "Horas de ausencia al día",
+        "hours_placeholder": "p. ej. 3:30",
+        "hours_hint": "Se escribe como 3:30, 3.5 o 210m.",
+        "note": "Nota",
+        "note_placeholder": "Opcional",
+        "record": "Registrar"
+      },
+      "toasts": {
+        "saved": "Ausencia guardada",
+        "removed": "Ausencia eliminada",
+        "refused": "No se ha podido guardar",
+        "try_again": "Inténtelo de nuevo."
+      },
+      "types": {
+        "title": "Motivos de ausencia",
+        "subtitle": "Dos respuestas deciden el cálculo: si el día cuenta como trabajado y si se descuenta del saldo de vacaciones.",
+        "column_code": "Código",
+        "column_name": "Nombre",
+        "column_counts": "Cuenta como trabajado",
+        "column_leave": "Descuenta de vacaciones",
+        "column_action": "Acción",
+        "none_yet": "Aún no hay motivos configurados.",
+        "retire": "Desactivar",
+        "bring_back": "Reactivar",
+        "delete": "Eliminar motivo",
+        "add": "Añadir un motivo",
+        "add_button": "Añadir",
+        "code_placeholder": "Código, p. ej. URLAUB",
+        "name_placeholder": "Nombre que se mostrará",
+        "counts_as_worked": "El día cuenta como trabajado",
+        "draws_on_leave": "El día se descuenta del saldo de vacaciones",
+        "refused": "No se ha podido guardar",
+        "try_again": "Inténtelo de nuevo."
+      }
     }
   }
 }

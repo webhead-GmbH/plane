@@ -7,7 +7,7 @@
 import { useState } from "react";
 import { observer } from "mobx-react";
 import { Link, useParams } from "react-router";
-import { ChevronLeft, ChevronRight, Download, Upload, UserCog } from "lucide-react";
+import { CalendarOff, ChevronLeft, ChevronRight, Download, Upload, UserCog } from "lucide-react";
 import useSWR from "swr";
 // plane imports
 import { Button } from "@plane/propel/button";
@@ -118,6 +118,11 @@ export const HrTeamMonthRoot = observer(function HrTeamMonthRoot() {
           <Link to={`/${workspaceSlug}/team-time/people`}>
             <Button variant="secondary" size="sm" prependIcon={<UserCog className="size-4" />}>
               {t("hr.people.title")}
+            </Button>
+          </Link>
+          <Link to={`/${workspaceSlug}/team-time/absences`}>
+            <Button variant="secondary" size="sm" prependIcon={<CalendarOff className="size-4" />}>
+              {t("hr.absences.title")}
             </Button>
           </Link>
           <a href={hrService.monthExportUrl(year, month, "csv")} download>

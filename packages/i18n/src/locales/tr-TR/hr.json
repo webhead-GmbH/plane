@@ -302,6 +302,91 @@
         "refused": "İşlem gerçekleşmedi",
         "try_again": "Lütfen tekrar deneyin."
       }
+    },
+    "absences": {
+      "title": "Devamsızlıklar",
+      "subtitle": "İşten uzak kalınan süre ve bunun aya etkisi.",
+      "record": "Devamsızlık kaydet",
+      "manage_types": "Nedenler",
+      "everyone": "Herkes",
+      "previous_month": "Önceki ay",
+      "next_month": "Sonraki ay",
+      "none_this_month": "Bu ay kimse işten uzak kalmadı.",
+      "not_permitted_detail": "Tüm ekibi yalnızca yönetici görür. Kendi devamsızlıklarınız zaman sayfanızda yer alır.",
+      "month_locked": "ay kilitli",
+      "approve": "Onayla",
+      "reject": "Reddet",
+      "delete": "Devamsızlığı sil",
+      "column_person": "Kişi",
+      "column_reason": "Neden",
+      "column_when": "Tarih",
+      "column_away": "Süre",
+      "column_state": "Durum",
+      "column_action": "İşlem",
+      "state": {
+        "draft": "Taslak",
+        "requested": "Talep edildi",
+        "approved": "Onaylandı",
+        "rejected": "Reddedildi",
+        "cancelled": "Geri çekildi"
+      },
+      "granularity": {
+        "full_day": "Tam günler",
+        "half_day": "İlk ve son gün yarım",
+        "hours": "Günde belirli saat"
+      },
+      "half": {
+        "morning": "Sabah",
+        "afternoon": "Öğleden sonra"
+      },
+      "modal": {
+        "title": "Devamsızlık kaydet",
+        "edit_title": "Devamsızlığı düzenle",
+        "subtitle": "Neden çalışılmış sayılıyorsa, o gün gerçekleşen saatlere eklenir ve ay yine denk çıkar. Hedefin kendisi değişmez.",
+        "person": "Kişi",
+        "type": "Neden",
+        "no_types": "Henüz neden tanımlanmadı",
+        "from": "Başlangıç günü",
+        "to": "Bitiş günü",
+        "backwards": "Bitiş günü başlangıçtan önce olamaz.",
+        "granularity": "Günün ne kadarı",
+        "which_half": "Hangi yarım gün",
+        "first_day": "İlk gün",
+        "last_day": "Son gün",
+        "hours_each_day": "Günde kaç saat",
+        "hours_placeholder": "örn. 3:30",
+        "hours_hint": "3:30, 3.5 veya 210m biçiminde yazılır.",
+        "note": "Not",
+        "note_placeholder": "İsteğe bağlı",
+        "record": "Kaydet"
+      },
+      "toasts": {
+        "saved": "Devamsızlık kaydedildi",
+        "removed": "Devamsızlık silindi",
+        "refused": "Bu kaydedilemedi",
+        "try_again": "Lütfen tekrar deneyin."
+      },
+      "types": {
+        "title": "Devamsızlık nedenleri",
+        "subtitle": "Hesabı iki yanıt belirler: gün çalışılmış sayılıyor mu ve izin hakkından düşüyor mu.",
+        "column_code": "Kod",
+        "column_name": "Ad",
+        "column_counts": "Çalışılmış sayılır",
+        "column_leave": "İzin hakkından düşer",
+        "column_action": "İşlem",
+        "none_yet": "Henüz neden tanımlanmadı.",
+        "retire": "Pasife al",
+        "bring_back": "Aktife al",
+        "delete": "Nedeni sil",
+        "add": "Neden ekle",
+        "add_button": "Ekle",
+        "code_placeholder": "Kod, örn. URLAUB",
+        "name_placeholder": "Görünecek ad",
+        "counts_as_worked": "Gün çalışılmış sayılır",
+        "draws_on_leave": "Gün izin hakkından düşer",
+        "refused": "Bu kaydedilemedi",
+        "try_again": "Lütfen tekrar deneyin."
+      }
     }
   }
 }

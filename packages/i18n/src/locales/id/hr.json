@@ -302,6 +302,91 @@
         "refused": "Tindakan itu tidak berhasil",
         "try_again": "Silakan coba lagi."
       }
+    },
+    "absences": {
+      "title": "Ketidakhadiran",
+      "subtitle": "Waktu tidak bekerja, dan dampaknya pada bulan ini.",
+      "record": "Catat ketidakhadiran",
+      "manage_types": "Alasan",
+      "everyone": "Semua orang",
+      "previous_month": "Bulan sebelumnya",
+      "next_month": "Bulan berikutnya",
+      "none_this_month": "Tidak ada yang absen bulan ini.",
+      "not_permitted_detail": "Hanya manajer yang melihat seluruh tim. Ketidakhadiran Anda ada di halaman waktu Anda.",
+      "month_locked": "bulan terkunci",
+      "approve": "Setujui",
+      "reject": "Tolak",
+      "delete": "Hapus ketidakhadiran",
+      "column_person": "Orang",
+      "column_reason": "Alasan",
+      "column_when": "Kapan",
+      "column_away": "Absen",
+      "column_state": "Status",
+      "column_action": "Tindakan",
+      "state": {
+        "draft": "Draf",
+        "requested": "Diajukan",
+        "approved": "Disetujui",
+        "rejected": "Ditolak",
+        "cancelled": "Ditarik"
+      },
+      "granularity": {
+        "full_day": "Hari penuh",
+        "half_day": "Setengah hari di awal dan akhir",
+        "hours": "Sejumlah jam tetap per hari"
+      },
+      "half": {
+        "morning": "Pagi",
+        "afternoon": "Siang"
+      },
+      "modal": {
+        "title": "Catat ketidakhadiran",
+        "edit_title": "Ubah ketidakhadiran ini",
+        "subtitle": "Jika alasannya dihitung sebagai kerja, hari itu tetap masuk sebagai jam kerja sehingga saldo bulan itu tetap seimbang. Jam wajibnya sendiri tidak berubah.",
+        "person": "Orang",
+        "type": "Alasan",
+        "no_types": "Belum ada alasan yang disiapkan",
+        "from": "Hari pertama absen",
+        "to": "Hari terakhir absen",
+        "backwards": "Hari terakhir tidak boleh sebelum hari pertama.",
+        "granularity": "Berapa lama tiap hari",
+        "which_half": "Paruh mana",
+        "first_day": "Hari pertama",
+        "last_day": "Hari terakhir",
+        "hours_each_day": "Jam absen tiap hari",
+        "hours_placeholder": "mis. 3:30",
+        "hours_hint": "Ditulis sebagai 3:30, 3.5 atau 210m.",
+        "note": "Catatan",
+        "note_placeholder": "Opsional",
+        "record": "Catat"
+      },
+      "toasts": {
+        "saved": "Ketidakhadiran tersimpan",
+        "removed": "Ketidakhadiran dihapus",
+        "refused": "Tidak dapat disimpan",
+        "try_again": "Silakan coba lagi."
+      },
+      "types": {
+        "title": "Alasan ketidakhadiran",
+        "subtitle": "Dua jawaban menentukan perhitungannya: apakah hari itu tetap dihitung sebagai kerja, dan apakah dipotong dari jatah cuti.",
+        "column_code": "Kode",
+        "column_name": "Nama",
+        "column_counts": "Dihitung sebagai kerja",
+        "column_leave": "Potong jatah cuti",
+        "column_action": "Tindakan",
+        "none_yet": "Belum ada alasan yang disiapkan.",
+        "retire": "Nonaktifkan",
+        "bring_back": "Aktifkan lagi",
+        "delete": "Hapus alasan",
+        "add": "Tambah alasan",
+        "add_button": "Tambah",
+        "code_placeholder": "Kode, mis. URLAUB",
+        "name_placeholder": "Nama yang dibaca orang",
+        "counts_as_worked": "Hari itu tetap dihitung sebagai kerja",
+        "draws_on_leave": "Hari itu dipotong dari jatah cuti",
+        "refused": "Tidak dapat disimpan",
+        "try_again": "Silakan coba lagi."
+      }
     }
   }
 }

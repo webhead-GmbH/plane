@@ -302,6 +302,91 @@
         "refused": "Nie powiodło się",
         "try_again": "Proszę spróbować ponownie."
       }
+    },
+    "absences": {
+      "title": "Nieobecności",
+      "subtitle": "Czas poza pracą i jego wpływ na miesiąc.",
+      "record": "Dodaj nieobecność",
+      "manage_types": "Powody",
+      "everyone": "Wszyscy",
+      "previous_month": "Poprzedni miesiąc",
+      "next_month": "Następny miesiąc",
+      "none_this_month": "W tym miesiącu nikt nie był nieobecny.",
+      "not_permitted_detail": "Tylko przełożony widzi cały zespół. Twoje nieobecności są na Twojej stronie czasu pracy.",
+      "month_locked": "miesiąc zamknięty",
+      "approve": "Zatwierdź",
+      "reject": "Odrzuć",
+      "delete": "Usuń nieobecność",
+      "column_person": "Osoba",
+      "column_reason": "Powód",
+      "column_when": "Kiedy",
+      "column_away": "Poza pracą",
+      "column_state": "Stan",
+      "column_action": "Akcja",
+      "state": {
+        "draft": "Szkic",
+        "requested": "Zgłoszona",
+        "approved": "Zatwierdzona",
+        "rejected": "Odrzucona",
+        "cancelled": "Wycofana"
+      },
+      "granularity": {
+        "full_day": "Całe dni",
+        "half_day": "Pół dnia na początku i końcu",
+        "hours": "Określona liczba godzin dziennie"
+      },
+      "half": {
+        "morning": "Rano",
+        "afternoon": "Po południu"
+      },
+      "modal": {
+        "title": "Dodaj nieobecność",
+        "edit_title": "Zmień nieobecność",
+        "subtitle": "Gdy powód liczy się jako praca, dzień zostaje zaliczony, więc saldo miesiąca się nie zmienia. Sama norma pozostaje bez zmian.",
+        "person": "Osoba",
+        "type": "Powód",
+        "no_types": "Nie dodano jeszcze powodów",
+        "from": "Pierwszy dzień nieobecności",
+        "to": "Ostatni dzień nieobecności",
+        "backwards": "Ostatni dzień nie może być wcześniejszy niż pierwszy.",
+        "granularity": "Jaka część dnia",
+        "which_half": "Która połowa",
+        "first_day": "Pierwszy dzień",
+        "last_day": "Ostatni dzień",
+        "hours_each_day": "Godziny nieobecności dziennie",
+        "hours_placeholder": "np. 3:30",
+        "hours_hint": "Wpisz jako 3:30, 3.5 lub 210m.",
+        "note": "Notatka",
+        "note_placeholder": "Opcjonalnie",
+        "record": "Zapisz"
+      },
+      "toasts": {
+        "saved": "Nieobecność zapisana",
+        "removed": "Nieobecność usunięta",
+        "refused": "Nie udało się zapisać",
+        "try_again": "Spróbuj ponownie."
+      },
+      "types": {
+        "title": "Powody nieobecności",
+        "subtitle": "Dwie odpowiedzi decydują o wyliczeniach: czy dzień nadal liczy się jako przepracowany i czy pomniejsza pulę urlopu.",
+        "column_code": "Kod",
+        "column_name": "Nazwa",
+        "column_counts": "Liczy się jako praca",
+        "column_leave": "Z puli urlopu",
+        "column_action": "Akcja",
+        "none_yet": "Nie dodano jeszcze powodów.",
+        "retire": "Wyłącz",
+        "bring_back": "Przywróć",
+        "delete": "Usuń powód",
+        "add": "Dodaj powód",
+        "add_button": "Dodaj",
+        "code_placeholder": "Kod, np. URLOP",
+        "name_placeholder": "Nazwa widoczna dla innych",
+        "counts_as_worked": "Dzień nadal liczy się jako przepracowany",
+        "draws_on_leave": "Dzień pomniejsza pulę urlopu",
+        "refused": "Nie udało się zapisać",
+        "try_again": "Spróbuj ponownie."
+      }
     }
   }
 }

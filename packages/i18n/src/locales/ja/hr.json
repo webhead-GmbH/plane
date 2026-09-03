@@ -302,6 +302,91 @@
         "refused": "処理できませんでした",
         "try_again": "もう一度お試しください。"
       }
+    },
+    "absences": {
+      "title": "休暇・欠勤",
+      "subtitle": "勤務を離れた時間と、その月への影響です。",
+      "record": "休暇・欠勤を登録",
+      "manage_types": "理由",
+      "everyone": "全員",
+      "previous_month": "前の月",
+      "next_month": "次の月",
+      "none_this_month": "今月の休暇・欠勤はありません。",
+      "not_permitted_detail": "チーム全体を確認できるのはマネージャーのみです。ご自身の休暇・欠勤は勤務時間ページに表示されます。",
+      "month_locked": "月次締め済み",
+      "approve": "承認",
+      "reject": "却下",
+      "delete": "休暇・欠勤を削除",
+      "column_person": "対象者",
+      "column_reason": "理由",
+      "column_when": "期間",
+      "column_away": "不在",
+      "column_state": "状態",
+      "column_action": "操作",
+      "state": {
+        "draft": "下書き",
+        "requested": "申請中",
+        "approved": "承認済み",
+        "rejected": "却下済み",
+        "cancelled": "取り下げ済み"
+      },
+      "granularity": {
+        "full_day": "終日",
+        "half_day": "初日と最終日が半日",
+        "hours": "1日あたり指定時間"
+      },
+      "half": {
+        "morning": "午前",
+        "afternoon": "午後"
+      },
+      "modal": {
+        "title": "休暇・欠勤の登録",
+        "edit_title": "休暇・欠勤の変更",
+        "subtitle": "理由が勤務扱いの場合、その日の所定時間が実績に加算されるため、月の過不足は生じません。目標時間自体は変わりません。",
+        "person": "対象者",
+        "type": "理由",
+        "no_types": "理由が未登録です",
+        "from": "不在の初日",
+        "to": "不在の最終日",
+        "backwards": "最終日を初日より前にはできません。",
+        "granularity": "取得単位",
+        "which_half": "半日の区分",
+        "first_day": "初日",
+        "last_day": "最終日",
+        "hours_each_day": "1日あたりの不在時間",
+        "hours_placeholder": "例：3:30",
+        "hours_hint": "3:30、3.5、210m のように入力します。",
+        "note": "メモ",
+        "note_placeholder": "任意",
+        "record": "登録"
+      },
+      "toasts": {
+        "saved": "休暇・欠勤を保存しました",
+        "removed": "休暇・欠勤を削除しました",
+        "refused": "保存できませんでした",
+        "try_again": "もう一度お試しください。"
+      },
+      "types": {
+        "title": "不在の理由",
+        "subtitle": "計算は2つの設定で決まります。その日を勤務として扱うか、年次休暇の残日数から差し引くかです。",
+        "column_code": "コード",
+        "column_name": "名称",
+        "column_counts": "勤務扱い",
+        "column_leave": "年次休暇から控除",
+        "column_action": "操作",
+        "none_yet": "理由がまだ登録されていません。",
+        "retire": "無効化",
+        "bring_back": "有効化",
+        "delete": "理由を削除",
+        "add": "理由を追加",
+        "add_button": "追加",
+        "code_placeholder": "コード（例：URLAUB）",
+        "name_placeholder": "表示される名称",
+        "counts_as_worked": "その日を勤務として扱う",
+        "draws_on_leave": "その日を年次休暇の残日数から差し引く",
+        "refused": "保存できませんでした",
+        "try_again": "もう一度お試しください。"
+      }
     }
   }
 }

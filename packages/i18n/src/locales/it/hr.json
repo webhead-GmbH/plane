@@ -302,6 +302,91 @@
         "refused": "Operazione non riuscita",
         "try_again": "Riprovi, per favore."
       }
+    },
+    "absences": {
+      "title": "Assenze",
+      "subtitle": "Il tempo di assenza dal lavoro e i suoi effetti sul mese.",
+      "record": "Registra assenza",
+      "manage_types": "Motivi",
+      "everyone": "Tutti",
+      "previous_month": "Mese precedente",
+      "next_month": "Mese successivo",
+      "none_this_month": "Nessuno è stato assente questo mese.",
+      "not_permitted_detail": "Solo un responsabile vede l'intero team. Le tue assenze sono nella tua pagina delle ore.",
+      "month_locked": "mese bloccato",
+      "approve": "Accetta",
+      "reject": "Rifiuta",
+      "delete": "Elimina assenza",
+      "column_person": "Persona",
+      "column_reason": "Motivo",
+      "column_when": "Quando",
+      "column_away": "Durata",
+      "column_state": "Stato",
+      "column_action": "Azione",
+      "state": {
+        "draft": "Bozza",
+        "requested": "Richiesta",
+        "approved": "Accettata",
+        "rejected": "Rifiutata",
+        "cancelled": "Ritirata"
+      },
+      "granularity": {
+        "full_day": "Giornate intere",
+        "half_day": "Mezza giornata a inizio e fine",
+        "hours": "Un numero fisso di ore al giorno"
+      },
+      "half": {
+        "morning": "Mattina",
+        "afternoon": "Pomeriggio"
+      },
+      "modal": {
+        "title": "Registra un'assenza",
+        "edit_title": "Modifica questa assenza",
+        "subtitle": "Se il motivo conta come lavorato, la giornata viene accreditata e il mese si chiude comunque in pari. Le ore previste, invece, non cambiano.",
+        "person": "Persona",
+        "type": "Motivo",
+        "no_types": "Nessun motivo ancora configurato",
+        "from": "Primo giorno di assenza",
+        "to": "Ultimo giorno di assenza",
+        "backwards": "L'ultimo giorno non può precedere il primo.",
+        "granularity": "Quanta parte di ogni giorno",
+        "which_half": "Quale metà",
+        "first_day": "Primo giorno",
+        "last_day": "Ultimo giorno",
+        "hours_each_day": "Ore di assenza al giorno",
+        "hours_placeholder": "es. 3:30",
+        "hours_hint": "Scritte come 3:30, 3.5 o 210m.",
+        "note": "Nota",
+        "note_placeholder": "Facoltativo",
+        "record": "Registra"
+      },
+      "toasts": {
+        "saved": "Assenza salvata",
+        "removed": "Assenza eliminata",
+        "refused": "Non è stato possibile salvare",
+        "try_again": "Riprova."
+      },
+      "types": {
+        "title": "Motivi di assenza",
+        "subtitle": "Due risposte determinano il calcolo: se la giornata conta comunque come lavorata e se viene scalata dal monte ferie.",
+        "column_code": "Codice",
+        "column_name": "Nome",
+        "column_counts": "Conta come lavorata",
+        "column_leave": "Scalata dal monte ferie",
+        "column_action": "Azione",
+        "none_yet": "Nessun motivo ancora configurato.",
+        "retire": "Disattiva",
+        "bring_back": "Ripristina",
+        "delete": "Elimina motivo",
+        "add": "Aggiungi un motivo",
+        "add_button": "Aggiungi",
+        "code_placeholder": "Codice, es. FERIE",
+        "name_placeholder": "Nome visibile alle persone",
+        "counts_as_worked": "La giornata conta comunque come lavorata",
+        "draws_on_leave": "La giornata viene scalata dal monte ferie",
+        "refused": "Non è stato possibile salvare",
+        "try_again": "Riprova."
+      }
     }
   }
 }

@@ -302,6 +302,91 @@
         "refused": "L’opération n’a pas abouti",
         "try_again": "Veuillez réessayer."
       }
+    },
+    "absences": {
+      "title": "Absences",
+      "subtitle": "Le temps d'absence et son effet sur le mois.",
+      "record": "Enregistrer une absence",
+      "manage_types": "Motifs",
+      "everyone": "Tout le monde",
+      "previous_month": "Mois précédent",
+      "next_month": "Mois suivant",
+      "none_this_month": "Personne n'a été absent ce mois-ci.",
+      "not_permitted_detail": "Seul un responsable voit toute l'équipe. Vos propres absences figurent sur votre page de temps.",
+      "month_locked": "mois clôturé",
+      "approve": "Accepter",
+      "reject": "Refuser",
+      "delete": "Supprimer l'absence",
+      "column_person": "Personne",
+      "column_reason": "Motif",
+      "column_when": "Période",
+      "column_away": "Absence",
+      "column_state": "État",
+      "column_action": "Action",
+      "state": {
+        "draft": "Brouillon",
+        "requested": "Demandée",
+        "approved": "Acceptée",
+        "rejected": "Refusée",
+        "cancelled": "Retirée"
+      },
+      "granularity": {
+        "full_day": "Journées entières",
+        "half_day": "Demi-journée au début et à la fin",
+        "hours": "Un nombre d'heures fixe par jour"
+      },
+      "half": {
+        "morning": "Matin",
+        "afternoon": "Après-midi"
+      },
+      "modal": {
+        "title": "Enregistrer une absence",
+        "edit_title": "Modifier cette absence",
+        "subtitle": "Lorsque le motif compte comme travaillé, la journée est créditée et le mois reste équilibré. Les heures théoriques, elles, ne changent pas.",
+        "person": "Personne",
+        "type": "Motif",
+        "no_types": "Aucun motif configuré",
+        "from": "Premier jour d'absence",
+        "to": "Dernier jour d'absence",
+        "backwards": "Le dernier jour ne peut pas précéder le premier.",
+        "granularity": "Part de chaque journée",
+        "which_half": "Quelle demi-journée",
+        "first_day": "Premier jour",
+        "last_day": "Dernier jour",
+        "hours_each_day": "Heures d'absence par jour",
+        "hours_placeholder": "ex. 3:30",
+        "hours_hint": "Sous la forme 3:30, 3.5 ou 210m.",
+        "note": "Note",
+        "note_placeholder": "Facultatif",
+        "record": "Enregistrer"
+      },
+      "toasts": {
+        "saved": "Absence enregistrée",
+        "removed": "Absence supprimée",
+        "refused": "Impossible d'enregistrer",
+        "try_again": "Veuillez réessayer."
+      },
+      "types": {
+        "title": "Motifs d'absence",
+        "subtitle": "Deux réponses déterminent le calcul : si la journée compte quand même comme travaillée et si elle est déduite du compteur de congés.",
+        "column_code": "Code",
+        "column_name": "Nom",
+        "column_counts": "Compte comme travaillé",
+        "column_leave": "Déduit des congés",
+        "column_action": "Action",
+        "none_yet": "Aucun motif configuré.",
+        "retire": "Archiver",
+        "bring_back": "Réactiver",
+        "delete": "Supprimer le motif",
+        "add": "Ajouter un motif",
+        "add_button": "Ajouter",
+        "code_placeholder": "Code, ex. URLAUB",
+        "name_placeholder": "Nom affiché",
+        "counts_as_worked": "La journée compte quand même comme travaillée",
+        "draws_on_leave": "La journée est déduite du compteur de congés",
+        "refused": "Impossible d'enregistrer",
+        "try_again": "Veuillez réessayer."
+      }
     }
   }
 }

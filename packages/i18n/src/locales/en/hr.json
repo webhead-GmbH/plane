@@ -302,6 +302,91 @@
         "refused": "That did not go through",
         "try_again": "Please try again."
       }
+    },
+    "absences": {
+      "title": "Absences",
+      "subtitle": "Time away from work, and what it does to the month.",
+      "record": "Record absence",
+      "manage_types": "Reasons",
+      "everyone": "Everyone",
+      "previous_month": "Previous month",
+      "next_month": "Next month",
+      "none_this_month": "Nobody was away this month.",
+      "not_permitted_detail": "Only a manager sees the whole team. Your own absences are on your time page.",
+      "month_locked": "month locked",
+      "approve": "Agree",
+      "reject": "Refuse",
+      "delete": "Delete absence",
+      "column_person": "Person",
+      "column_reason": "Reason",
+      "column_when": "When",
+      "column_away": "Away",
+      "column_state": "State",
+      "column_action": "Action",
+      "state": {
+        "draft": "Draft",
+        "requested": "Asked for",
+        "approved": "Agreed",
+        "rejected": "Refused",
+        "cancelled": "Withdrawn"
+      },
+      "granularity": {
+        "full_day": "Whole days",
+        "half_day": "Half day at each end",
+        "hours": "A set number of hours a day"
+      },
+      "half": {
+        "morning": "Morning",
+        "afternoon": "Afternoon"
+      },
+      "modal": {
+        "title": "Record an absence",
+        "edit_title": "Change this absence",
+        "subtitle": "Where the reason counts as worked, the day is credited so the month still comes out level. The target itself does not change.",
+        "person": "Person",
+        "type": "Reason",
+        "no_types": "No reasons set up yet",
+        "from": "First day away",
+        "to": "Last day away",
+        "backwards": "The last day cannot come before the first.",
+        "granularity": "How much of each day",
+        "which_half": "Which half",
+        "first_day": "First day",
+        "last_day": "Last day",
+        "hours_each_day": "Hours away each day",
+        "hours_placeholder": "e.g. 3:30",
+        "hours_hint": "Written as 3:30, 3.5 or 210m.",
+        "note": "Note",
+        "note_placeholder": "Optional",
+        "record": "Record"
+      },
+      "toasts": {
+        "saved": "Absence saved",
+        "removed": "Absence deleted",
+        "refused": "That could not be saved",
+        "try_again": "Please try again."
+      },
+      "types": {
+        "title": "Reasons for being away",
+        "subtitle": "Two answers decide the arithmetic: whether the day still counts as worked, and whether it comes off the leave account.",
+        "column_code": "Code",
+        "column_name": "Name",
+        "column_counts": "Counts as worked",
+        "column_leave": "Off the leave account",
+        "column_action": "Action",
+        "none_yet": "No reasons set up yet.",
+        "retire": "Retire",
+        "bring_back": "Bring back",
+        "delete": "Delete reason",
+        "add": "Add a reason",
+        "add_button": "Add",
+        "code_placeholder": "Code, e.g. URLAUB",
+        "name_placeholder": "Name people will read",
+        "counts_as_worked": "The day still counts as worked",
+        "draws_on_leave": "The day comes off the leave account",
+        "refused": "That could not be saved",
+        "try_again": "Please try again."
+      }
     }
   }
 }

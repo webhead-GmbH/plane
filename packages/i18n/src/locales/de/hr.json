@@ -302,6 +302,91 @@
         "refused": "Nicht durchgeführt",
         "try_again": "Bitte versuchen Sie es erneut."
       }
+    },
+    "absences": {
+      "title": "Abwesenheiten",
+      "subtitle": "Abwesenheitszeiten und ihre Auswirkung auf den Monat.",
+      "record": "Abwesenheit erfassen",
+      "manage_types": "Gründe",
+      "everyone": "Alle",
+      "previous_month": "Vormonat",
+      "next_month": "Folgemonat",
+      "none_this_month": "In diesem Monat war niemand abwesend.",
+      "not_permitted_detail": "Nur Führungskräfte sehen das gesamte Team. Ihre eigenen Abwesenheiten finden Sie auf Ihrer Zeitseite.",
+      "month_locked": "Monat gesperrt",
+      "approve": "Genehmigen",
+      "reject": "Ablehnen",
+      "delete": "Abwesenheit löschen",
+      "column_person": "Person",
+      "column_reason": "Grund",
+      "column_when": "Zeitraum",
+      "column_away": "Abwesend",
+      "column_state": "Status",
+      "column_action": "Aktion",
+      "state": {
+        "draft": "Entwurf",
+        "requested": "Beantragt",
+        "approved": "Genehmigt",
+        "rejected": "Abgelehnt",
+        "cancelled": "Zurückgezogen"
+      },
+      "granularity": {
+        "full_day": "Ganze Tage",
+        "half_day": "Erster und letzter Tag halbtags",
+        "hours": "Feste Stundenzahl pro Tag"
+      },
+      "half": {
+        "morning": "Vormittag",
+        "afternoon": "Nachmittag"
+      },
+      "modal": {
+        "title": "Abwesenheit erfassen",
+        "edit_title": "Abwesenheit ändern",
+        "subtitle": "Zählt der Grund als gearbeitet, wird das Tagessoll gutgeschrieben und der Monat bleibt ausgeglichen. Das Monatssoll selbst ändert sich dadurch nicht.",
+        "person": "Person",
+        "type": "Grund",
+        "no_types": "Noch keine Gründe angelegt",
+        "from": "Erster Abwesenheitstag",
+        "to": "Letzter Abwesenheitstag",
+        "backwards": "Der letzte Tag darf nicht vor dem ersten liegen.",
+        "granularity": "Umfang pro Tag",
+        "which_half": "Tageshälfte",
+        "first_day": "Erster Tag",
+        "last_day": "Letzter Tag",
+        "hours_each_day": "Stunden pro Tag",
+        "hours_placeholder": "z. B. 3:30",
+        "hours_hint": "Schreibweise: 3:30, 3.5 oder 210m.",
+        "note": "Notiz",
+        "note_placeholder": "Optional",
+        "record": "Erfassen"
+      },
+      "toasts": {
+        "saved": "Abwesenheit gespeichert",
+        "removed": "Abwesenheit gelöscht",
+        "refused": "Speichern nicht möglich",
+        "try_again": "Bitte versuchen Sie es erneut."
+      },
+      "types": {
+        "title": "Abwesenheitsgründe",
+        "subtitle": "Zwei Angaben bestimmen die Berechnung: ob der Tag als gearbeitet zählt und ob er vom Urlaubskonto abgezogen wird.",
+        "column_code": "Code",
+        "column_name": "Name",
+        "column_counts": "Zählt als gearbeitet",
+        "column_leave": "Vom Urlaubskonto",
+        "column_action": "Aktion",
+        "none_yet": "Noch keine Gründe angelegt.",
+        "retire": "Deaktivieren",
+        "bring_back": "Reaktivieren",
+        "delete": "Grund löschen",
+        "add": "Grund hinzufügen",
+        "add_button": "Hinzufügen",
+        "code_placeholder": "Code, z. B. URLAUB",
+        "name_placeholder": "Sichtbare Bezeichnung",
+        "counts_as_worked": "Der Tag zählt als gearbeitet",
+        "draws_on_leave": "Der Tag wird vom Urlaubskonto abgezogen",
+        "refused": "Speichern nicht möglich",
+        "try_again": "Bitte versuchen Sie es erneut."
+      }
     }
   }
 }

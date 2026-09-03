@@ -302,6 +302,91 @@
         "refused": "操作未完成",
         "try_again": "請再試一次。"
       }
+    },
+    "absences": {
+      "title": "缺勤",
+      "subtitle": "離開工作的時間，以及它對當月的影響。",
+      "record": "登記缺勤",
+      "manage_types": "事由",
+      "everyone": "所有人",
+      "previous_month": "上個月",
+      "next_month": "下個月",
+      "none_this_month": "本月沒有人缺勤。",
+      "not_permitted_detail": "只有主管能看到整個團隊。你自己的缺勤在你的工時頁面上。",
+      "month_locked": "月份已鎖定",
+      "approve": "同意",
+      "reject": "拒絕",
+      "delete": "刪除缺勤",
+      "column_person": "人員",
+      "column_reason": "事由",
+      "column_when": "時間",
+      "column_away": "缺勤時長",
+      "column_state": "狀態",
+      "column_action": "操作",
+      "state": {
+        "draft": "草稿",
+        "requested": "已申請",
+        "approved": "已同意",
+        "rejected": "已拒絕",
+        "cancelled": "已撤回"
+      },
+      "granularity": {
+        "full_day": "整天",
+        "half_day": "頭尾各半天",
+        "hours": "每天固定時數"
+      },
+      "half": {
+        "morning": "上午",
+        "afternoon": "下午"
+      },
+      "modal": {
+        "title": "登記缺勤",
+        "edit_title": "修改此缺勤",
+        "subtitle": "若事由計為已工作，該日的應工時會計入實際工時，當月結餘因此不受影響。應工時本身維持不變。",
+        "person": "人員",
+        "type": "事由",
+        "no_types": "尚未設定事由",
+        "from": "缺勤第一天",
+        "to": "缺勤最後一天",
+        "backwards": "最後一天不能早於第一天。",
+        "granularity": "每天缺勤多少",
+        "which_half": "哪半天",
+        "first_day": "第一天",
+        "last_day": "最後一天",
+        "hours_each_day": "每天缺勤時數",
+        "hours_placeholder": "例如 3:30",
+        "hours_hint": "可寫成 3:30、3.5 或 210m。",
+        "note": "備註",
+        "note_placeholder": "選填",
+        "record": "登記"
+      },
+      "toasts": {
+        "saved": "缺勤已儲存",
+        "removed": "缺勤已刪除",
+        "refused": "無法儲存",
+        "try_again": "請再試一次。"
+      },
+      "types": {
+        "title": "缺勤事由",
+        "subtitle": "兩個答案決定計算方式：該日是否仍計為已工作，以及是否從年假額度扣除。",
+        "column_code": "代碼",
+        "column_name": "名稱",
+        "column_counts": "計為已工作",
+        "column_leave": "扣除年假額度",
+        "column_action": "操作",
+        "none_yet": "尚未設定任何事由。",
+        "retire": "停用",
+        "bring_back": "重新啟用",
+        "delete": "刪除事由",
+        "add": "新增事由",
+        "add_button": "新增",
+        "code_placeholder": "代碼，例如 URLAUB",
+        "name_placeholder": "大家看到的名稱",
+        "counts_as_worked": "該日仍計為已工作",
+        "draws_on_leave": "該日從年假額度扣除",
+        "refused": "無法儲存",
+        "try_again": "請再試一次。"
+      }
     }
   }
 }

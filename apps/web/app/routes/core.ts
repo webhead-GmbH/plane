@@ -110,16 +110,13 @@ export const coreRoutes: RouteConfigEntry[] = [
           route(":workspaceSlug/my-time", "./(all)/[workspaceSlug]/(projects)/my-time/page.tsx"),
         ]),
         layout("./(all)/[workspaceSlug]/(projects)/team-time/import/layout.tsx", [
-          route(
-            ":workspaceSlug/team-time/import",
-            "./(all)/[workspaceSlug]/(projects)/team-time/import/page.tsx"
-          ),
+          route(":workspaceSlug/team-time/import", "./(all)/[workspaceSlug]/(projects)/team-time/import/page.tsx"),
         ]),
         layout("./(all)/[workspaceSlug]/(projects)/team-time/people/layout.tsx", [
-          route(
-            ":workspaceSlug/team-time/people",
-            "./(all)/[workspaceSlug]/(projects)/team-time/people/page.tsx"
-          ),
+          route(":workspaceSlug/team-time/people", "./(all)/[workspaceSlug]/(projects)/team-time/people/page.tsx"),
+        ]),
+        layout("./(all)/[workspaceSlug]/(projects)/team-time/absences/layout.tsx", [
+          route(":workspaceSlug/team-time/absences", "./(all)/[workspaceSlug]/(projects)/team-time/absences/page.tsx"),
         ]),
         layout("./(all)/[workspaceSlug]/(projects)/team-time/layout.tsx", [
           route(":workspaceSlug/team-time", "./(all)/[workspaceSlug]/(projects)/team-time/page.tsx"),

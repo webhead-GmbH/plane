@@ -302,6 +302,91 @@
         "refused": "Nepodarilo sa to",
         "try_again": "Skúste to prosím znova."
       }
+    },
+    "absences": {
+      "title": "Neprítomnosti",
+      "subtitle": "Čas mimo práce a jeho vplyv na mesiac.",
+      "record": "Zaznamenať neprítomnosť",
+      "manage_types": "Dôvody",
+      "everyone": "Všetci",
+      "previous_month": "Predchádzajúci mesiac",
+      "next_month": "Nasledujúci mesiac",
+      "none_this_month": "Tento mesiac nebol nikto neprítomný.",
+      "not_permitted_detail": "Celý tím vidí iba manažér. Vaše neprítomnosti nájdete na svojej stránke času.",
+      "month_locked": "mesiac uzamknutý",
+      "approve": "Schváliť",
+      "reject": "Zamietnuť",
+      "delete": "Odstrániť neprítomnosť",
+      "column_person": "Osoba",
+      "column_reason": "Dôvod",
+      "column_when": "Kedy",
+      "column_away": "Neprítomnosť",
+      "column_state": "Stav",
+      "column_action": "Akcia",
+      "state": {
+        "draft": "Koncept",
+        "requested": "Požiadané",
+        "approved": "Schválené",
+        "rejected": "Zamietnuté",
+        "cancelled": "Stiahnuté"
+      },
+      "granularity": {
+        "full_day": "Celé dni",
+        "half_day": "Pol dňa na začiatku a na konci",
+        "hours": "Pevný počet hodín denne"
+      },
+      "half": {
+        "morning": "Dopoludnie",
+        "afternoon": "Popoludnie"
+      },
+      "modal": {
+        "title": "Zaznamenať neprítomnosť",
+        "edit_title": "Upraviť neprítomnosť",
+        "subtitle": "Ak sa dôvod počíta ako odpracovaný, deň sa započíta, takže saldo mesiaca zostane vyrovnané. Samotné predpísané hodiny sa nemenia.",
+        "person": "Osoba",
+        "type": "Dôvod",
+        "no_types": "Zatiaľ nie sú nastavené žiadne dôvody",
+        "from": "Prvý deň neprítomnosti",
+        "to": "Posledný deň neprítomnosti",
+        "backwards": "Posledný deň nemôže byť pred prvým.",
+        "granularity": "Koľko z každého dňa",
+        "which_half": "Ktorá polovica",
+        "first_day": "Prvý deň",
+        "last_day": "Posledný deň",
+        "hours_each_day": "Hodiny neprítomnosti denne",
+        "hours_placeholder": "napr. 3:30",
+        "hours_hint": "Zapísané ako 3:30, 3.5 alebo 210m.",
+        "note": "Poznámka",
+        "note_placeholder": "Voliteľné",
+        "record": "Zaznamenať"
+      },
+      "toasts": {
+        "saved": "Neprítomnosť uložená",
+        "removed": "Neprítomnosť odstránená",
+        "refused": "Nepodarilo sa uložiť",
+        "try_again": "Skúste to znova."
+      },
+      "types": {
+        "title": "Dôvody neprítomnosti",
+        "subtitle": "O výpočte rozhodujú dve odpovede: či sa deň počíta ako odpracovaný a či sa odpočíta z konta dovolenky.",
+        "column_code": "Kód",
+        "column_name": "Názov",
+        "column_counts": "Počíta sa ako odpracované",
+        "column_leave": "Z konta dovolenky",
+        "column_action": "Akcia",
+        "none_yet": "Zatiaľ nie sú nastavené žiadne dôvody.",
+        "retire": "Vyradiť",
+        "bring_back": "Obnoviť",
+        "delete": "Odstrániť dôvod",
+        "add": "Pridať dôvod",
+        "add_button": "Pridať",
+        "code_placeholder": "Kód, napr. URLAUB",
+        "name_placeholder": "Názov, ktorý uvidia ľudia",
+        "counts_as_worked": "Deň sa počíta ako odpracovaný",
+        "draws_on_leave": "Deň sa odpočíta z konta dovolenky",
+        "refused": "Nepodarilo sa uložiť",
+        "try_again": "Skúste to znova."
+      }
     }
   }
 }
