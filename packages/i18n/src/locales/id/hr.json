@@ -422,6 +422,17 @@
         "refused": "Tidak dapat disimpan",
         "try_again": "Silakan coba lagi."
       }
+    },
+    "statement": {
+      "title": "Sebelum Anda menagih",
+      "hint": "Hasil bulan ini menurut tarif Anda, sehingga angkanya sudah disepakati sebelum tagihan dibuat, bukan diperdebatkan setelah tagihan diterima.",
+      "hours": "Jam",
+      "rate": "Tarif",
+      "expected": "Jumlahnya",
+      "monthly_rate": "Jumlah tetap tiap bulan",
+      "no_rate": "Belum ada tarif yang tercatat untuk Anda, jadi bagian ini hanya menampilkan jam. Tanyakan kepada orang yang mengelola tim.",
+      "still_moving": "Bulan ini masih terbuka, sehingga angka-angka ini masih dapat berubah.",
+      "settled": "Bulan ini sudah ditutup, sehingga angka-angka ini sudah tetap."
     }
   }
 }

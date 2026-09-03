@@ -422,6 +422,17 @@
         "refused": "Bu kaydedilemedi",
         "try_again": "Lütfen tekrar deneyin."
       }
+    },
+    "statement": {
+      "title": "Faturanızı kesmeden önce",
+      "hint": "Bu ayın sizin ücretinizle neye karşılık geldiği; böylece rakam üzerinde, fatura geldikten sonra tartışmak yerine kesilmeden önce uzlaşılmış olur.",
+      "hours": "Saatler",
+      "rate": "Ücret",
+      "expected": "Karşılığı",
+      "monthly_rate": "Her ay sabit bir tutar",
+      "no_rate": "Sizin için henüz kayıtlı bir ücret yok, bu nedenle burada yalnızca saatler görünür. Ekipten sorumlu olan kişiye sorun.",
+      "still_moving": "Ay hâlâ açık, bu nedenle bu rakamlar değişebilir.",
+      "settled": "Ay kapatıldı, bu nedenle bu rakamlar kesinleşti."
     }
   }
 }

@@ -422,6 +422,17 @@
         "refused": "Uložení se nezdařilo",
         "try_again": "Zkuste to prosím znovu."
       }
+    },
+    "statement": {
+      "title": "Než vystavíte fakturu",
+      "hint": "Kolik za tento měsíc při Vaší sazbě vychází – částka je tak domluvená dřív, než se faktura vystaví, místo aby se o ní někdo dohadoval, až dorazí.",
+      "hours": "Hodiny",
+      "rate": "Sazba",
+      "expected": "Vychází na",
+      "monthly_rate": "Pevná měsíční částka",
+      "no_rate": "Zatím pro Vás není zaznamenána žádná sazba, zobrazují se proto jen hodiny. Obraťte se na toho, kdo vede tým.",
+      "still_moving": "Měsíc je stále otevřený, tato čísla se proto ještě mohou změnit.",
+      "settled": "Měsíc je uzavřený, tato čísla jsou proto konečná."
     }
   }
 }

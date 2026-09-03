@@ -15,26 +15,11 @@ import { EModalPosition, EModalWidth, ModalCore } from "@plane/ui";
 // services
 import { EHrRateBasis, HrService, type THrEmploymentProfile, type THrRateCard } from "@/services/hr.service";
 // local imports
-import { formatDayWithYear } from "./utils";
+import { formatDayWithYear, tidyAmount } from "./utils";
 
 const hrService = new HrService();
 
 const BASES = [EHrRateBasis.HOURLY, EHrRateBasis.MONTHLY_FIXED, EHrRateBasis.MONTHLY_PLUS_OVERTIME];
-
-/**
- * An amount as somebody would write it.
- *
- * Rates are held to four decimals so an odd one can be recorded exactly, but a
- * rate of 72.50 an hour arrives as "72.5000" and reads like a rounding error.
- * Two decimals always, and any more only where they carry something.
- */
-const tidyAmount = (amount: string | null) => {
-  if (!amount) return "";
-  const trimmed = amount.includes(".") ? amount.replace(/0+$/, "") : amount;
-  const [whole, fraction = ""] = trimmed.split(".");
-
-  return `${whole}.${fraction.padEnd(2, "0")}`;
-};
 
 const BASIS_KEY: Record<number, string> = {
   [EHrRateBasis.HOURLY]: "hourly",

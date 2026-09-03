@@ -422,6 +422,17 @@
         "refused": "Nu s-a putut salva",
         "try_again": "Vă rugăm să încercați din nou."
       }
+    },
+    "statement": {
+      "title": "Înainte de a factura",
+      "hint": "La cât se ridică luna aceasta la tariful dumneavoastră, astfel încât cifra să fie convenită înainte de întocmirea facturii, nu disputată după ce aceasta a sosit.",
+      "hours": "Ore",
+      "rate": "Tarif",
+      "expected": "Se ridică la",
+      "monthly_rate": "O sumă lunară fixă",
+      "no_rate": "Nu aveți încă niciun tarif înregistrat, așa că aici apar doar orele. Adresați-vă persoanei care se ocupă de echipă.",
+      "still_moving": "Luna este încă deschisă, așa că aceste cifre se mai pot modifica.",
+      "settled": "Luna este închisă, așa că aceste cifre sunt definitive."
     }
   }
 }

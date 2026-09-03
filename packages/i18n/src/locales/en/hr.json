@@ -422,6 +422,17 @@
         "refused": "That could not be saved",
         "try_again": "Please try again."
       }
+    },
+    "statement": {
+      "title": "Before you invoice",
+      "hint": "What this month comes to at your rate, so the figure is agreed before the invoice is written rather than argued about after it arrives.",
+      "hours": "Hours",
+      "rate": "Rate",
+      "expected": "Comes to",
+      "monthly_rate": "A fixed monthly amount",
+      "no_rate": "No rate on record for you yet, so this shows the hours only. Ask whoever looks after the team.",
+      "still_moving": "The month is still open, so these figures can still move.",
+      "settled": "The month is closed, so these figures are settled."
     }
   }
 }

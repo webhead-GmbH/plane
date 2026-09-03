@@ -196,6 +196,8 @@ export type THrStatement = {
   minutes: number;
   hours: string;
   currency: string;
+  /** Null when nobody has set a rate, which is what has_rate says too. */
+  rate_basis: EHrRateBasis | null;
   hourly_rate: string | null;
   expected_amount: string | null;
   has_rate: boolean;

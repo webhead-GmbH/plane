@@ -422,6 +422,17 @@
         "refused": "Impossible d'enregistrer",
         "try_again": "Veuillez réessayer."
       }
+    },
+    "statement": {
+      "title": "Avant de facturer",
+      "hint": "Ce que donne ce mois à votre tarif, afin que le montant soit convenu avant que la facture ne soit établie plutôt que contesté après son arrivée.",
+      "hours": "Heures",
+      "rate": "Tarif",
+      "expected": "Montant",
+      "monthly_rate": "Un montant fixe chaque mois",
+      "no_rate": "Aucun tarif n’est encore enregistré pour vous ; seules les heures sont donc indiquées. Adressez-vous au responsable de l’équipe.",
+      "still_moving": "Le mois est encore ouvert, ces chiffres peuvent donc encore bouger.",
+      "settled": "Le mois est clôturé, ces chiffres sont donc définitifs."
     }
   }
 }

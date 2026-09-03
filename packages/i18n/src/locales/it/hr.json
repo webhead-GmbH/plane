@@ -422,6 +422,17 @@
         "refused": "Non è stato possibile salvare",
         "try_again": "Riprovi, per favore."
       }
+    },
+    "statement": {
+      "title": "Prima di fatturare",
+      "hint": "A quanto ammonta questo mese alla Sua tariffa, così la cifra è concordata prima che la fattura venga emessa, anziché discussa dopo che è arrivata.",
+      "hours": "Ore",
+      "rate": "Tariffa",
+      "expected": "Ammonta a",
+      "monthly_rate": "Un importo fisso ogni mese",
+      "no_rate": "Non è stata ancora registrata alcuna tariffa per Lei, perciò qui compaiono solo le ore. Si rivolga a chi si occupa del team.",
+      "still_moving": "Il mese è ancora aperto, perciò questi dati possono ancora cambiare.",
+      "settled": "Il mese è chiuso, perciò questi dati sono definitivi."
     }
   }
 }

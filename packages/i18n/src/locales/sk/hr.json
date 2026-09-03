@@ -422,6 +422,17 @@
         "refused": "Nepodarilo sa uložiť",
         "try_again": "Skúste to prosím znova."
       }
+    },
+    "statement": {
+      "title": "Pred fakturáciou",
+      "hint": "Na akú sumu tento mesiac vychádza podľa vašej sadzby, aby bola dohodnutá ešte pred vystavením faktúry, a nie sporná až po jej doručení.",
+      "hours": "Hodiny",
+      "rate": "Sadzba",
+      "expected": "Vychádza",
+      "monthly_rate": "Pevná suma každý mesiac",
+      "no_rate": "Zatiaľ pre vás nie je zaznamenaná žiadna sadzba, takže sa tu zobrazujú len hodiny. Obráťte sa na toho, kto tím vedie.",
+      "still_moving": "Mesiac je ešte otvorený, takže tieto čísla sa ešte môžu zmeniť.",
+      "settled": "Mesiac je uzavretý, takže tieto čísla sú konečné."
     }
   }
 }

@@ -422,6 +422,17 @@
         "refused": "Nie udało się zapisać",
         "try_again": "Proszę spróbować ponownie."
       }
+    },
+    "statement": {
+      "title": "Przed wystawieniem faktury",
+      "hint": "Ile wynosi ten miesiąc według własnej stawki, aby kwota była uzgodniona przed wystawieniem faktury, a nie kwestionowana po jej otrzymaniu.",
+      "hours": "Godziny",
+      "rate": "Stawka",
+      "expected": "Wynosi",
+      "monthly_rate": "Stała kwota miesięczna",
+      "no_rate": "Nie zarejestrowano jeszcze żadnej stawki, więc widoczne są tu tylko godziny. Proszę zwrócić się do osoby odpowiedzialnej za zespół.",
+      "still_moving": "Miesiąc jest nadal otwarty, więc te wartości mogą się jeszcze zmienić.",
+      "settled": "Miesiąc jest zamknięty, więc te wartości są ostateczne."
     }
   }
 }

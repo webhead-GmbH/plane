@@ -422,6 +422,17 @@
         "refused": "Speichern nicht möglich",
         "try_again": "Bitte versuchen Sie es erneut."
       }
+    },
+    "statement": {
+      "title": "Vor der Rechnungsstellung",
+      "hint": "Was dieser Monat zu Ihrem Vergütungssatz ergibt, damit der Betrag vereinbart ist, bevor die Rechnung geschrieben wird, und nicht erst strittig wird, nachdem sie eingegangen ist.",
+      "hours": "Stunden",
+      "rate": "Vergütungssatz",
+      "expected": "Ergibt",
+      "monthly_rate": "Fester Betrag pro Monat",
+      "no_rate": "Für Sie ist noch kein Vergütungssatz hinterlegt, daher werden hier nur die Stunden ausgewiesen. Wenden Sie sich an die Person, die das Team betreut.",
+      "still_moving": "Der Monat ist noch offen, daher können sich diese Werte noch ändern.",
+      "settled": "Der Monat ist abgeschlossen, daher stehen diese Werte fest."
     }
   }
 }

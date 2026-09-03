@@ -422,6 +422,17 @@
         "refused": "No se ha podido guardar",
         "try_again": "Inténtelo de nuevo."
       }
+    },
+    "statement": {
+      "title": "Antes de facturar",
+      "hint": "A cuánto asciende este mes según su tarifa, para que la cifra quede acordada antes de emitir la factura y no se discuta una vez que ha llegado.",
+      "hours": "Horas",
+      "rate": "Tarifa",
+      "expected": "Asciende a",
+      "monthly_rate": "Un importe mensual fijo",
+      "no_rate": "Todavía no hay ninguna tarifa registrada a su nombre, por lo que aquí solo se muestran las horas. Pregunte a quien se ocupa del equipo.",
+      "still_moving": "El mes sigue abierto, por lo que estas cifras aún pueden cambiar.",
+      "settled": "El mes está cerrado, por lo que estas cifras son definitivas."
     }
   }
 }

@@ -422,6 +422,17 @@
         "refused": "Não foi possível salvar",
         "try_again": "Tente novamente."
       }
+    },
+    "statement": {
+      "title": "Antes de emitir a nota fiscal",
+      "hint": "Quanto este mês dá com base na sua remuneração, para que o valor seja acordado antes de a nota fiscal ser emitida, em vez de ser discutido depois que ela chega.",
+      "hours": "Horas",
+      "rate": "Remuneração",
+      "expected": "Total",
+      "monthly_rate": "Um valor mensal fixo",
+      "no_rate": "Nenhuma remuneração registrada para você ainda, portanto isto mostra apenas as horas. Fale com quem cuida da equipe.",
+      "still_moving": "O mês ainda está em aberto, portanto estes números ainda podem mudar.",
+      "settled": "O mês está fechado, portanto estes números são definitivos."
     }
   }
 }

@@ -81,6 +81,21 @@ export function formatDayLabel(isoDate: string, locale?: string): string {
 }
 
 /**
+ * An amount as somebody would write it.
+ *
+ * Rates are held to four decimals so an odd one can be recorded exactly, but a
+ * rate of 72.50 an hour arrives as "72.5000" and reads like a rounding error.
+ * Two decimals always, and any more only where they carry something.
+ */
+export const tidyAmount = (amount: string | null) => {
+  if (!amount) return "";
+  const trimmed = amount.includes(".") ? amount.replace(/0+$/, "") : amount;
+  const [whole, fraction = ""] = trimmed.split(".");
+
+  return `${whole}.${fraction.padEnd(2, "0")}`;
+};
+
+/**
  * `2026-03-02` as `2 Mar 2026`.
  *
  * The year is kept, unlike formatDayLabel above. That one labels a day inside a

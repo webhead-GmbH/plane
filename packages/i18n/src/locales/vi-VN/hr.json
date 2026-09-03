@@ -422,6 +422,17 @@
         "refused": "Không thể lưu",
         "try_again": "Vui lòng thử lại."
       }
+    },
+    "statement": {
+      "title": "Trước khi xuất hóa đơn",
+      "hint": "Số tiền tháng này quy ra theo đơn giá của bạn, để con số được thống nhất trước khi hóa đơn được lập, chứ không phải tranh cãi sau khi hóa đơn đã gửi đến.",
+      "hours": "Số giờ",
+      "rate": "Đơn giá",
+      "expected": "Thành tiền",
+      "monthly_rate": "Một khoản cố định mỗi tháng",
+      "no_rate": "Chưa có đơn giá nào được ghi nhận cho bạn, nên phần này chỉ hiện số giờ. Hãy hỏi người phụ trách nhóm.",
+      "still_moving": "Tháng này vẫn đang mở, nên các số liệu này vẫn có thể thay đổi.",
+      "settled": "Tháng này đã được đóng, nên các số liệu này đã được chốt."
     }
   }
 }

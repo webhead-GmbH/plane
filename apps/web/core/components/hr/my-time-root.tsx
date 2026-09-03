@@ -20,6 +20,7 @@ import { HrDayTable } from "./day-table";
 import { HrDayEntriesModal } from "./day-entries-modal";
 import { HrOpeningBalanceModal } from "./opening-balance-modal";
 import { HrMonthSummary } from "./month-summary";
+import { HrStatementPanel } from "./statement-panel";
 import { formatMonthLabel, isPeriodEditable, nextMonth, previousMonth } from "./utils";
 
 const hrService = new HrService();
@@ -180,6 +181,8 @@ export const MyTimeRoot = observer(function MyTimeRoot() {
         hasRunningTimer={data.has_running_timer}
         contractedWeeklyMinutes={data.schedule?.weekly_minutes ?? data.contract?.weekly_minutes ?? null}
       />
+
+      <HrStatementPanel periodId={period?.id ?? null} arrangement={data.contract?.arrangement ?? null} />
 
       <HrDayTable
         days={days}
