@@ -80,6 +80,20 @@ export function formatDayLabel(isoDate: string, locale?: string): string {
   return date.toLocaleDateString(locale, { weekday: "short", day: "numeric", month: "short" });
 }
 
+/**
+ * `2026-03-02` as `2 Mar 2026`.
+ *
+ * The year is kept, unlike formatDayLabel above. That one labels a day inside a
+ * month somebody is already looking at, where the year is on the screen already;
+ * this labels a date that can be years from the one being read, and "Mon 2 Mar"
+ * on its own says nothing about which March.
+ */
+export function formatDayWithYear(isoDate: string, locale?: string): string {
+  const date = new Date(`${isoDate}T00:00:00`);
+  if (Number.isNaN(date.getTime())) return isoDate;
+  return date.toLocaleDateString(locale, { day: "numeric", month: "short", year: "numeric" });
+}
+
 export function formatMonthLabel(isoDate: string, locale?: string): string {
   const date = new Date(`${isoDate}T00:00:00`);
   if (Number.isNaN(date.getTime())) return isoDate;

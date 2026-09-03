@@ -164,7 +164,8 @@
         "refused": "操作未成功",
         "try_again": "请重试。"
       },
-      "opening": "期初结余"
+      "opening": "期初结余",
+      "rates": "费率"
     },
     "arrangement": {
       "onsite_full_time": "现场办公，全职",
@@ -384,6 +385,40 @@
         "name_placeholder": "显示给员工的名称",
         "counts_as_worked": "当天仍计为工作时间",
         "draws_on_leave": "当天从年假额度中扣除",
+        "refused": "无法保存",
+        "try_again": "请重试。"
+      }
+    },
+    "rates": {
+      "title": "{person} 的工时价值",
+      "hint": "费率只会新增一条并注明生效日期，而不会被修改，因此已按旧费率结算过的月份仍然保持当时的含义。涨薪的记录方式是旧费率结束、新费率开始。",
+      "none_yet": "尚未记录任何费率。该成员的结算单只会显示工时，不会显示金额。",
+      "add": "添加费率",
+      "add_button": "添加",
+      "close": "关闭",
+      "remove": "删除费率",
+      "valid_from": "生效日期",
+      "basis_label": "计酬方式",
+      "hourly_rate": "每小时金额",
+      "monthly_amount": "每月金额",
+      "amount_placeholder": "例如 65",
+      "currency": "货币",
+      "per_hour": "每小时 {amount} {currency}",
+      "per_month": "每月 {amount} {currency}",
+      "from": "自{date}起",
+      "between": "{from} 至 {to}",
+      "basis": {
+        "hourly": "按小时计酬",
+        "monthly_fixed": "每月固定金额",
+        "monthly_plus_overtime": "每月固定金额，另计加班费"
+      },
+      "errors": {
+        "date_required": "请填写该费率从哪一天开始生效。",
+        "bad_amount": "请将金额填写为数字，例如 65 或 65.50。"
+      },
+      "toasts": {
+        "added": "费率已添加",
+        "removed": "费率已删除",
         "refused": "无法保存",
         "try_again": "请重试。"
       }

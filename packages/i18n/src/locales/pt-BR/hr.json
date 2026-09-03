@@ -164,7 +164,42 @@
         "refused": "A ação não foi concluída",
         "try_again": "Por favor, tente novamente."
       },
-      "opening": "Saldo inicial"
+      "opening": "Saldo inicial",
+      "rates": "Remunerações"
+    },
+    "rates": {
+      "title": "Quanto vale o tempo de {person}",
+      "hint": "Uma remuneração é datada em vez de alterada, para que um mês já apresentado com a anterior continue significando o que dizia. Um aumento é a remuneração antiga terminando e uma nova começando.",
+      "none_yet": "Nenhuma remuneração registrada. Um demonstrativo desta pessoa mostrará as horas, sem nenhum valor.",
+      "add": "Adicionar remuneração",
+      "add_button": "Adicionar",
+      "close": "Fechar",
+      "remove": "Excluir remuneração",
+      "valid_from": "A partir de",
+      "basis_label": "Pagamento",
+      "hourly_rate": "Por hora",
+      "monthly_amount": "Por mês",
+      "amount_placeholder": "ex.: 65",
+      "currency": "Moeda",
+      "per_hour": "{currency} {amount} por hora",
+      "per_month": "{currency} {amount} por mês",
+      "from": "A partir de {date}",
+      "between": "{from} a {to}",
+      "basis": {
+        "hourly": "Por hora",
+        "monthly_fixed": "Um valor fixo por mês",
+        "monthly_plus_overtime": "Um valor mensal mais horas extras"
+      },
+      "errors": {
+        "date_required": "Informe em que dia esta remuneração começa a valer.",
+        "bad_amount": "Escreva o valor como número, por exemplo 65 ou 65,50."
+      },
+      "toasts": {
+        "added": "Remuneração adicionada",
+        "removed": "Remuneração excluída",
+        "refused": "Não foi possível salvar",
+        "try_again": "Por favor, tente novamente."
+      }
     },
     "arrangement": {
       "onsite_full_time": "Presencial, tempo integral",

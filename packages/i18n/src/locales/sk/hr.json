@@ -164,7 +164,8 @@
         "refused": "Nepodarilo sa to",
         "try_again": "Skúste to prosím znova."
       },
-      "opening": "Počiatočné saldo"
+      "opening": "Počiatočné saldo",
+      "rates": "Sadzby"
     },
     "arrangement": {
       "onsite_full_time": "Na pracovisku, plný úväzok",
@@ -386,6 +387,40 @@
         "draws_on_leave": "Deň sa odpočíta z konta dovolenky",
         "refused": "Nepodarilo sa uložiť",
         "try_again": "Skúste to znova."
+      }
+    },
+    "rates": {
+      "title": "Hodnota času používateľa {person}",
+      "hint": "Sadzba sa nemení, ale datuje sa, takže mesiac, ktorý už bol vyčíslený podľa pôvodnej sadzby, stále znamená to, čo znamenal. Zvýšenie je ukončenie starej sadzby a začiatok novej.",
+      "none_yet": "Zatiaľ nie je zaznamenaná žiadna sadzba. Vo výkaze tejto osoby sa zobrazia hodiny, ale žiadna suma.",
+      "add": "Pridať sadzbu",
+      "add_button": "Pridať",
+      "close": "Zavrieť",
+      "remove": "Odstrániť sadzbu",
+      "valid_from": "Platí od",
+      "basis_label": "Odmeňovanie",
+      "hourly_rate": "Za hodinu",
+      "monthly_amount": "Za mesiac",
+      "amount_placeholder": "napr. 65",
+      "currency": "Mena",
+      "per_hour": "{amount} {currency} za hodinu",
+      "per_month": "{amount} {currency} za mesiac",
+      "from": "Od {date}",
+      "between": "{from} – {to}",
+      "basis": {
+        "hourly": "Hodinová sadzba",
+        "monthly_fixed": "Pevná suma každý mesiac",
+        "monthly_plus_overtime": "Mesačná suma plus nadčasy"
+      },
+      "errors": {
+        "date_required": "Uveďte, od ktorého dňa táto sadzba platí.",
+        "bad_amount": "Sumu zapíšte ako číslo, napríklad 65 alebo 65,50."
+      },
+      "toasts": {
+        "added": "Sadzba pridaná",
+        "removed": "Sadzba odstránená",
+        "refused": "Nepodarilo sa uložiť",
+        "try_again": "Skúste to prosím znova."
       }
     }
   }

@@ -164,7 +164,42 @@
         "refused": "Akce neproběhla",
         "try_again": "Zkuste to prosím znovu."
       },
-      "opening": "Počáteční saldo"
+      "opening": "Počáteční saldo",
+      "rates": "Sazby"
+    },
+    "rates": {
+      "title": "Hodnota času – {person}",
+      "hint": "Sazba se nemění, ale zaznamenává se s datem, od kterého platí – měsíc už vyúčtovaný podle té staré tak dál znamená to, co znamenal. Zvýšení sazby se zaznamená tak, že stará sazba skončí a začne nová.",
+      "none_yet": "Není zaznamenána žádná sazba. Vyúčtování této osoby ukáže hodiny, ale žádnou částku.",
+      "add": "Přidat sazbu",
+      "add_button": "Přidat",
+      "close": "Zavřít",
+      "remove": "Smazat sazbu",
+      "valid_from": "Platí od",
+      "basis_label": "Forma odměny",
+      "hourly_rate": "Za hodinu",
+      "monthly_amount": "Za měsíc",
+      "amount_placeholder": "např. 65",
+      "currency": "Měna",
+      "per_hour": "{amount} {currency} za hodinu",
+      "per_month": "{amount} {currency} za měsíc",
+      "from": "Od {date}",
+      "between": "Od {from} do {to}",
+      "basis": {
+        "hourly": "Hodinově",
+        "monthly_fixed": "Pevná měsíční částka",
+        "monthly_plus_overtime": "Měsíční částka plus přesčasy"
+      },
+      "errors": {
+        "date_required": "Uveďte, od kterého dne tato sazba platí.",
+        "bad_amount": "Zadejte částku jako číslo, například 65 nebo 65,50."
+      },
+      "toasts": {
+        "added": "Sazba přidána",
+        "removed": "Sazba smazána",
+        "refused": "Uložení se nezdařilo",
+        "try_again": "Zkuste to prosím znovu."
+      }
     },
     "arrangement": {
       "onsite_full_time": "Na pracovišti, plný úvazek",

@@ -164,7 +164,42 @@
         "refused": "Thao tác không thành công",
         "try_again": "Vui lòng thử lại."
       },
-      "opening": "Số dư đầu kỳ"
+      "opening": "Số dư đầu kỳ",
+      "rates": "Đơn giá"
+    },
+    "rates": {
+      "title": "Giá trị thời gian của {person}",
+      "hint": "Đơn giá được ghi kèm ngày áp dụng chứ không bị sửa lại, nên tháng nào đã lập bảng kê theo đơn giá cũ thì vẫn giữ đúng con số đã nêu. Tăng lương là đơn giá cũ kết thúc và một đơn giá mới bắt đầu.",
+      "none_yet": "Chưa có đơn giá nào được ghi nhận. Bảng kê của người này sẽ chỉ hiện số giờ mà không có số tiền.",
+      "add": "Thêm đơn giá",
+      "add_button": "Thêm",
+      "close": "Đóng",
+      "remove": "Xóa đơn giá",
+      "valid_from": "Từ ngày",
+      "basis_label": "Hình thức trả công",
+      "hourly_rate": "Mỗi giờ",
+      "monthly_amount": "Mỗi tháng",
+      "amount_placeholder": "ví dụ 65",
+      "currency": "Tiền tệ",
+      "per_hour": "{amount} {currency} mỗi giờ",
+      "per_month": "{amount} {currency} mỗi tháng",
+      "from": "Từ {date}",
+      "between": "{from} đến {to}",
+      "basis": {
+        "hourly": "Theo giờ",
+        "monthly_fixed": "Một khoản cố định mỗi tháng",
+        "monthly_plus_overtime": "Một khoản mỗi tháng cộng giờ làm thêm"
+      },
+      "errors": {
+        "date_required": "Hãy cho biết đơn giá này bắt đầu từ ngày nào.",
+        "bad_amount": "Hãy viết số tiền dưới dạng con số, ví dụ 65 hoặc 65,50."
+      },
+      "toasts": {
+        "added": "Đã thêm đơn giá",
+        "removed": "Đã xóa đơn giá",
+        "refused": "Không thể lưu",
+        "try_again": "Vui lòng thử lại."
+      }
     },
     "arrangement": {
       "onsite_full_time": "Tại văn phòng, toàn thời gian",

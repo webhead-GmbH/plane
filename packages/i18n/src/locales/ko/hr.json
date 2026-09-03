@@ -164,7 +164,8 @@
         "refused": "처리되지 않았습니다",
         "try_again": "다시 시도해 주세요."
       },
-      "opening": "기초 누적 차이"
+      "opening": "기초 누적 차이",
+      "rates": "단가"
     },
     "arrangement": {
       "onsite_full_time": "사무실 근무, 풀타임",
@@ -386,6 +387,40 @@
         "draws_on_leave": "해당일을 연차에서 차감",
         "refused": "저장하지 못했습니다",
         "try_again": "다시 시도해 주십시오."
+      }
+    },
+    "rates": {
+      "title": "{person}님의 시간 단가",
+      "hint": "단가는 고쳐 쓰지 않고 적용 시작일과 함께 기록합니다. 그래야 이전 단가로 이미 산정된 월의 명세가 그때 밝힌 내용 그대로 유지됩니다. 급여 인상은 기존 단가가 끝나고 새 단가가 시작되는 방식으로 기록합니다.",
+      "none_yet": "기록된 단가가 없습니다. 이 구성원의 명세에는 시간만 표시되고 금액은 표시되지 않습니다.",
+      "add": "단가 추가",
+      "add_button": "추가",
+      "close": "닫기",
+      "remove": "단가 삭제",
+      "valid_from": "적용 시작일",
+      "basis_label": "지급 방식",
+      "hourly_rate": "시간당 금액",
+      "monthly_amount": "월 금액",
+      "amount_placeholder": "예: 65",
+      "currency": "통화",
+      "per_hour": "시간당 {amount} {currency}",
+      "per_month": "월 {amount} {currency}",
+      "from": "{date}부터",
+      "between": "{from}부터 {to}까지",
+      "basis": {
+        "hourly": "시간당 지급",
+        "monthly_fixed": "매월 정액 지급",
+        "monthly_plus_overtime": "매월 정액에 초과근무 수당 추가"
+      },
+      "errors": {
+        "date_required": "이 단가가 어느 날짜부터 적용되는지 입력해 주세요.",
+        "bad_amount": "금액은 65 또는 65.50과 같이 숫자로 입력해 주세요."
+      },
+      "toasts": {
+        "added": "단가를 추가했습니다",
+        "removed": "단가를 삭제했습니다",
+        "refused": "저장하지 못했습니다",
+        "try_again": "다시 시도해 주세요."
       }
     }
   }

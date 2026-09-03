@@ -164,7 +164,8 @@
         "refused": "Operazione non riuscita",
         "try_again": "Riprovi, per favore."
       },
-      "opening": "Saldo iniziale"
+      "opening": "Saldo iniziale",
+      "rates": "Tariffe"
     },
     "arrangement": {
       "onsite_full_time": "In sede, tempo pieno",
@@ -386,6 +387,40 @@
         "draws_on_leave": "La giornata viene scalata dal monte ferie",
         "refused": "Non è stato possibile salvare",
         "try_again": "Riprova."
+      }
+    },
+    "rates": {
+      "title": "Quanto vale il tempo di {person}",
+      "hint": "Una tariffa viene datata anziché modificata, così un mese già conteggiato con quella precedente continua a valere quanto diceva. Un aumento è la vecchia tariffa che termina e una nuova che inizia.",
+      "none_yet": "Nessuna tariffa registrata. Il prospetto di questa persona mostrerà le ore, ma nessun importo.",
+      "add": "Aggiungi una tariffa",
+      "add_button": "Aggiungi",
+      "close": "Chiudi",
+      "remove": "Elimina tariffa",
+      "valid_from": "In vigore dal",
+      "basis_label": "Retribuzione",
+      "hourly_rate": "All'ora",
+      "monthly_amount": "Al mese",
+      "amount_placeholder": "es. 65",
+      "currency": "Valuta",
+      "per_hour": "{amount} {currency} all'ora",
+      "per_month": "{amount} {currency} al mese",
+      "from": "Dal {date}",
+      "between": "Dal {from} al {to}",
+      "basis": {
+        "hourly": "A ore",
+        "monthly_fixed": "Un importo fisso ogni mese",
+        "monthly_plus_overtime": "Un importo mensile più gli straordinari"
+      },
+      "errors": {
+        "date_required": "Indichi da quale giorno vale questa tariffa.",
+        "bad_amount": "Scriva l'importo come numero, ad esempio 65 oppure 65,50."
+      },
+      "toasts": {
+        "added": "Tariffa aggiunta",
+        "removed": "Tariffa eliminata",
+        "refused": "Non è stato possibile salvare",
+        "try_again": "Riprovi, per favore."
       }
     }
   }

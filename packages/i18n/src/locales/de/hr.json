@@ -164,7 +164,8 @@
         "refused": "Nicht durchgeführt",
         "try_again": "Bitte versuchen Sie es erneut."
       },
-      "opening": "Anfangssaldo"
+      "opening": "Anfangssaldo",
+      "rates": "Vergütungssätze"
     },
     "arrangement": {
       "onsite_full_time": "Vor Ort, Vollzeit",
@@ -384,6 +385,40 @@
         "name_placeholder": "Sichtbare Bezeichnung",
         "counts_as_worked": "Der Tag zählt als gearbeitet",
         "draws_on_leave": "Der Tag wird vom Urlaubskonto abgezogen",
+        "refused": "Speichern nicht möglich",
+        "try_again": "Bitte versuchen Sie es erneut."
+      }
+    },
+    "rates": {
+      "title": "Was die Zeit von {person} wert ist",
+      "hint": "Ein Vergütungssatz wird nicht geändert, sondern datiert: Ein Monat, der bereits mit dem alten Satz abgerechnet wurde, sagt damit weiterhin dasselbe aus. Eine Erhöhung wird als Ende des alten und Beginn eines neuen Satzes erfasst.",
+      "none_yet": "Es ist noch kein Vergütungssatz hinterlegt. Die Abrechnung dieser Person weist dann Stunden aus, aber keinen Betrag.",
+      "add": "Vergütungssatz hinzufügen",
+      "add_button": "Hinzufügen",
+      "close": "Schließen",
+      "remove": "Vergütungssatz löschen",
+      "valid_from": "Gültig ab",
+      "basis_label": "Bezahlung",
+      "hourly_rate": "Stundensatz",
+      "monthly_amount": "Monatsbetrag",
+      "amount_placeholder": "z. B. 65",
+      "currency": "Währung",
+      "per_hour": "{amount} {currency} pro Stunde",
+      "per_month": "{amount} {currency} pro Monat",
+      "from": "Ab {date}",
+      "between": "{from} bis {to}",
+      "basis": {
+        "hourly": "Nach Stunden",
+        "monthly_fixed": "Fester Betrag pro Monat",
+        "monthly_plus_overtime": "Monatsbetrag zuzüglich Überstunden"
+      },
+      "errors": {
+        "date_required": "Geben Sie an, ab welchem Tag dieser Vergütungssatz gilt.",
+        "bad_amount": "Geben Sie den Betrag als Zahl ein, etwa 65 oder 65,50."
+      },
+      "toasts": {
+        "added": "Vergütungssatz hinzugefügt",
+        "removed": "Vergütungssatz gelöscht",
         "refused": "Speichern nicht möglich",
         "try_again": "Bitte versuchen Sie es erneut."
       }

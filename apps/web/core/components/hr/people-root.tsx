@@ -7,7 +7,7 @@
 import { useState } from "react";
 import { observer } from "mobx-react";
 import { Link } from "react-router";
-import { CalendarClock, Plus, Scale, UserMinus } from "lucide-react";
+import { BadgeEuro, CalendarClock, Plus, Scale, UserMinus } from "lucide-react";
 import useSWR from "swr";
 // plane imports
 import { useTranslation } from "@plane/i18n";
@@ -20,6 +20,7 @@ import { HrService, type THrContract, type THrEmploymentProfile } from "@/servic
 // local imports
 import { HrAddPersonModal } from "./add-person-modal";
 import { HrOpeningBalanceModal } from "./opening-balance-modal";
+import { HrRateCardModal } from "./rate-card-modal";
 import { HrPersonModal, type TPersonDraft } from "./person-modal";
 import { formatMinutes } from "./utils";
 
@@ -38,6 +39,7 @@ export const HrPeopleRoot = observer(function HrPeopleRoot({ workspaceSlug }: { 
   const [adding, setAdding] = useState(false);
   const [editing, setEditing] = useState<THrEmploymentProfile | null>(null);
   const [opening, setOpening] = useState<THrEmploymentProfile | null>(null);
+  const [rating, setRating] = useState<THrEmploymentProfile | null>(null);
   const [isBusy, setIsBusy] = useState(false);
 
   const { data: people, isLoading, error, mutate } = useSWR("HR_EMPLOYEES", () => hrService.employees());
@@ -170,6 +172,8 @@ export const HrPeopleRoot = observer(function HrPeopleRoot({ workspaceSlug }: { 
 
       <HrOpeningBalanceModal person={opening} isOwn={false} canRecord onClose={() => setOpening(null)} />
 
+      <HrRateCardModal person={rating} onClose={() => setRating(null)} />
+
       {rows.length === 0 ? (
         <div className="border-custom-border-200 bg-custom-background-90 text-custom-text-300 text-sm rounded-md border px-4 py-8 text-center">
           {t("hr.people.nobody_yet")}
@@ -231,6 +235,14 @@ export const HrPeopleRoot = observer(function HrPeopleRoot({ workspaceSlug }: { 
                           onClick={() => setOpening(person)}
                         >
                           {t("hr.people.opening")}
+                        </Button>
+                        <Button
+                          variant="link"
+                          size="sm"
+                          prependIcon={<BadgeEuro className="size-3.5" />}
+                          onClick={() => setRating(person)}
+                        >
+                          {t("hr.people.rates")}
                         </Button>
                         {person.is_active ? (
                           <Button

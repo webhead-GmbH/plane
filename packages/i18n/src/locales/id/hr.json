@@ -164,7 +164,8 @@
         "refused": "Tindakan itu tidak berhasil",
         "try_again": "Silakan coba lagi."
       },
-      "opening": "Saldo awal"
+      "opening": "Saldo awal",
+      "rates": "Tarif"
     },
     "arrangement": {
       "onsite_full_time": "Di kantor, penuh waktu",
@@ -384,6 +385,40 @@
         "name_placeholder": "Nama yang dibaca orang",
         "counts_as_worked": "Hari itu tetap dihitung sebagai kerja",
         "draws_on_leave": "Hari itu dipotong dari jatah cuti",
+        "refused": "Tidak dapat disimpan",
+        "try_again": "Silakan coba lagi."
+      }
+    },
+    "rates": {
+      "title": "Nilai waktu kerja {person}",
+      "hint": "Tarif tidak diubah, melainkan diberi tanggal berlakunya, sehingga bulan yang sudah direkap dengan tarif lama tetap berarti sebagaimana tertulis. Kenaikan gaji dicatat sebagai berakhirnya tarif lama dan dimulainya tarif baru.",
+      "none_yet": "Belum ada tarif yang tercatat. Rekap untuk orang ini akan menampilkan jam saja, tanpa nominal.",
+      "add": "Tambah tarif",
+      "add_button": "Tambah",
+      "close": "Tutup",
+      "remove": "Hapus tarif",
+      "valid_from": "Berlaku sejak",
+      "basis_label": "Dibayar",
+      "hourly_rate": "Per jam",
+      "monthly_amount": "Per bulan",
+      "amount_placeholder": "mis. 65",
+      "currency": "Mata uang",
+      "per_hour": "{amount} {currency} per jam",
+      "per_month": "{amount} {currency} per bulan",
+      "from": "Sejak {date}",
+      "between": "{from} sampai {to}",
+      "basis": {
+        "hourly": "Per jam",
+        "monthly_fixed": "Jumlah tetap tiap bulan",
+        "monthly_plus_overtime": "Jumlah bulanan ditambah lembur"
+      },
+      "errors": {
+        "date_required": "Sebutkan sejak hari mana tarif ini berlaku.",
+        "bad_amount": "Tulis nominalnya berupa angka, misalnya 65 atau 65,50."
+      },
+      "toasts": {
+        "added": "Tarif ditambahkan",
+        "removed": "Tarif dihapus",
         "refused": "Tidak dapat disimpan",
         "try_again": "Silakan coba lagi."
       }

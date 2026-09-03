@@ -164,7 +164,42 @@
         "refused": "L’opération n’a pas abouti",
         "try_again": "Veuillez réessayer."
       },
-      "opening": "Solde initial"
+      "opening": "Solde initial",
+      "rates": "Tarifs"
+    },
+    "rates": {
+      "title": "Ce que vaut le temps de {person}",
+      "hint": "Un tarif est daté plutôt que modifié, afin qu’un mois déjà relevé à l’ancien tarif garde le sens qu’il avait. Une augmentation, c’est l’ancien tarif qui prend fin et un nouveau qui commence.",
+      "none_yet": "Aucun tarif enregistré. Le relevé de cette personne indiquera des heures, sans montant.",
+      "add": "Ajouter un tarif",
+      "add_button": "Ajouter",
+      "close": "Fermer",
+      "remove": "Supprimer le tarif",
+      "valid_from": "À partir du",
+      "basis_label": "Rémunération",
+      "hourly_rate": "Par heure",
+      "monthly_amount": "Par mois",
+      "amount_placeholder": "ex. 65",
+      "currency": "Devise",
+      "per_hour": "{amount} {currency} de l’heure",
+      "per_month": "{amount} {currency} par mois",
+      "from": "À partir du {date}",
+      "between": "Du {from} au {to}",
+      "basis": {
+        "hourly": "À l’heure",
+        "monthly_fixed": "Un montant fixe chaque mois",
+        "monthly_plus_overtime": "Un montant mensuel plus les heures supplémentaires"
+      },
+      "errors": {
+        "date_required": "Indiquez à partir de quel jour ce tarif s’applique.",
+        "bad_amount": "Saisissez le montant sous forme de nombre, par exemple 65 ou 65,50."
+      },
+      "toasts": {
+        "added": "Tarif ajouté",
+        "removed": "Tarif supprimé",
+        "refused": "Impossible d’enregistrer",
+        "try_again": "Veuillez réessayer."
+      }
     },
     "arrangement": {
       "onsite_full_time": "Sur site, temps plein",

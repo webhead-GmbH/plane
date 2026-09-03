@@ -164,7 +164,8 @@
         "refused": "İşlem gerçekleşmedi",
         "try_again": "Lütfen tekrar deneyin."
       },
-      "opening": "Açılış bakiyesi"
+      "opening": "Açılış bakiyesi",
+      "rates": "Ücretler"
     },
     "arrangement": {
       "onsite_full_time": "İş yerinde, tam zamanlı",
@@ -384,6 +385,40 @@
         "name_placeholder": "Görünecek ad",
         "counts_as_worked": "Gün çalışılmış sayılır",
         "draws_on_leave": "Gün izin hakkından düşer",
+        "refused": "Bu kaydedilemedi",
+        "try_again": "Lütfen tekrar deneyin."
+      }
+    },
+    "rates": {
+      "title": "{person} adlı kişinin zamanının karşılığı",
+      "hint": "Ücret değiştirilmez, tarihlendirilir; böylece eski ücret üzerinden çıkarılmış bir ay ne söylediyse onu söylemeye devam eder. Zam, eski ücretin sona ermesi ve yeni bir ücretin başlamasıdır.",
+      "none_yet": "Kayıtlı ücret yok. Bu kişi için çıkarılan dökümde saatler görünür, tutar görünmez.",
+      "add": "Ücret ekle",
+      "add_button": "Ekle",
+      "close": "Kapat",
+      "remove": "Ücreti sil",
+      "valid_from": "Başlangıç",
+      "basis_label": "Ödeme biçimi",
+      "hourly_rate": "Saat başına",
+      "monthly_amount": "Ay başına",
+      "amount_placeholder": "örn. 65",
+      "currency": "Para birimi",
+      "per_hour": "Saatte {amount} {currency}",
+      "per_month": "Ayda {amount} {currency}",
+      "from": "{date} tarihinden itibaren",
+      "between": "{from} – {to}",
+      "basis": {
+        "hourly": "Saat üzerinden",
+        "monthly_fixed": "Her ay sabit bir tutar",
+        "monthly_plus_overtime": "Aylık tutar artı fazla mesai"
+      },
+      "errors": {
+        "date_required": "Bu ücretin hangi gün başladığını belirtin.",
+        "bad_amount": "Tutarı sayı olarak yazın; örneğin 65 veya 65,50."
+      },
+      "toasts": {
+        "added": "Ücret eklendi",
+        "removed": "Ücret silindi",
         "refused": "Bu kaydedilemedi",
         "try_again": "Lütfen tekrar deneyin."
       }

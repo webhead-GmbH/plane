@@ -284,6 +284,36 @@ export enum EHrConfidence {
   AGREED = 40,
 }
 
+/** How somebody is paid for a stretch of time. */
+export enum EHrRateBasis {
+  HOURLY = 10,
+  MONTHLY_FIXED = 20,
+  MONTHLY_PLUS_OVERTIME = 30,
+}
+
+/**
+ * What an hour of somebody's time costs.
+ *
+ * Amounts arrive as strings and stay strings. They are decimals on the server and
+ * turning them into JavaScript numbers to carry them across would be the one place
+ * money could quietly lose a cent.
+ */
+export type THrRateCard = {
+  id: string;
+  profile: string | null;
+  valid_from: string;
+  valid_to: string | null;
+  currency: string;
+  basis: EHrRateBasis;
+  hourly_rate: string | null;
+  monthly_amount: string | null;
+  overtime_multiplier: string;
+  holiday_multiplier: string;
+  vat_rate: string | null;
+  is_vat_exempt: boolean;
+  vat_exemption_note: string;
+};
+
 export type THrOpeningBalance = {
   id: string;
   effective_on: string;
@@ -759,6 +789,43 @@ export class HrService extends APIService {
   /** `approve`, `reject` or `cancel`. Nobody may decide on their own absence. */
   async decideAbsence(absenceId: string, decision: "approve" | "reject" | "cancel", reason?: string) {
     return this.post(`${this.base}/absences/${absenceId}/${decision}/`, reason ? { rejection_reason: reason } : {})
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  /**
+   * The rates on record, newest first. Manager-only in both directions: these are
+   * internal cost rates and one person has no business reading another's.
+   */
+  async rateCards(profileId?: string): Promise<THrRateCard[]> {
+    const query = profileId ? `?profile=${profileId}` : "";
+    return this.get(`${this.base}/rate-cards/${query}`)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  async createRateCard(payload: Partial<THrRateCard>): Promise<THrRateCard> {
+    return this.post(`${this.base}/rate-cards/`, payload)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  async updateRateCard(rateId: string, payload: Partial<THrRateCard>): Promise<THrRateCard> {
+    return this.patch(`${this.base}/rate-cards/${rateId}/`, payload)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  async removeRateCard(rateId: string) {
+    return this.delete(`${this.base}/rate-cards/${rateId}/`)
       .then((response) => response?.data)
       .catch((error) => {
         throw error?.response?.data;

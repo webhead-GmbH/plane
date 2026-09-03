@@ -164,7 +164,42 @@
         "refused": "操作未完成",
         "try_again": "請再試一次。"
       },
-      "opening": "期初結餘"
+      "opening": "期初結餘",
+      "rates": "費率"
+    },
+    "rates": {
+      "title": "{person} 的計酬費率",
+      "hint": "費率不會直接修改，而是以生效日期一筆一筆記錄；已依舊費率結算過的月份，因此仍然維持當初的內容。調薪的記錄方式，是舊費率結束、新費率開始。",
+      "none_yet": "尚未記錄任何費率。這個人的結算明細只會顯示時數，不會有金額。",
+      "add": "新增費率",
+      "add_button": "新增",
+      "close": "關閉",
+      "remove": "刪除費率",
+      "valid_from": "生效日",
+      "basis_label": "計酬方式",
+      "hourly_rate": "每小時",
+      "monthly_amount": "每月",
+      "amount_placeholder": "例如 65",
+      "currency": "幣別",
+      "per_hour": "每小時 {amount} {currency}",
+      "per_month": "每月 {amount} {currency}",
+      "from": "自 {date} 起",
+      "between": "{from} 至 {to}",
+      "basis": {
+        "hourly": "按小時計酬",
+        "monthly_fixed": "每月固定金額",
+        "monthly_plus_overtime": "每月金額另加加班費"
+      },
+      "errors": {
+        "date_required": "請填寫這筆費率自哪一天起生效。",
+        "bad_amount": "請以數字填寫金額，例如 65 或 65.50。"
+      },
+      "toasts": {
+        "added": "費率已新增",
+        "removed": "費率已刪除",
+        "refused": "無法儲存",
+        "try_again": "請再試一次。"
+      }
     },
     "arrangement": {
       "onsite_full_time": "現場辦公，全職",

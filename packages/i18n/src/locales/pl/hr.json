@@ -164,7 +164,8 @@
         "refused": "Nie powiodło się",
         "try_again": "Proszę spróbować ponownie."
       },
-      "opening": "Saldo początkowe"
+      "opening": "Saldo początkowe",
+      "rates": "Stawki"
     },
     "arrangement": {
       "onsite_full_time": "Na miejscu, pełny wymiar godzin",
@@ -386,6 +387,40 @@
         "draws_on_leave": "Dzień pomniejsza pulę urlopu",
         "refused": "Nie udało się zapisać",
         "try_again": "Spróbuj ponownie."
+      }
+    },
+    "rates": {
+      "title": "Ile jest wart czas osoby {person}",
+      "hint": "Stawki się nie zmienia — nadaje się jej datę obowiązywania, dzięki czemu miesiąc rozliczony już według poprzedniej stawki nadal znaczy to, co znaczył. Podwyżka to zakończenie poprzedniej stawki i początek nowej.",
+      "none_yet": "Nie zarejestrowano żadnej stawki. Zestawienie dla tej osoby pokaże godziny, ale bez kwoty.",
+      "add": "Dodaj stawkę",
+      "add_button": "Dodaj",
+      "close": "Zamknij",
+      "remove": "Usuń stawkę",
+      "valid_from": "Od",
+      "basis_label": "Wynagrodzenie",
+      "hourly_rate": "Stawka godzinowa",
+      "monthly_amount": "Kwota miesięczna",
+      "amount_placeholder": "np. 65",
+      "currency": "Waluta",
+      "per_hour": "{amount} {currency} za godzinę",
+      "per_month": "{amount} {currency} miesięcznie",
+      "from": "Od {date}",
+      "between": "Od {from} do {to}",
+      "basis": {
+        "hourly": "Godzinowo",
+        "monthly_fixed": "Stała kwota co miesiąc",
+        "monthly_plus_overtime": "Kwota miesięczna plus nadgodziny"
+      },
+      "errors": {
+        "date_required": "Proszę podać, od którego dnia obowiązuje ta stawka.",
+        "bad_amount": "Kwotę należy wpisać jako liczbę, np. 65 lub 65,50."
+      },
+      "toasts": {
+        "added": "Stawka dodana",
+        "removed": "Stawka usunięta",
+        "refused": "Nie udało się zapisać",
+        "try_again": "Proszę spróbować ponownie."
       }
     }
   }

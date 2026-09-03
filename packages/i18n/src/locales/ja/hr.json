@@ -164,7 +164,42 @@
         "refused": "処理できませんでした",
         "try_again": "もう一度お試しください。"
       },
-      "opening": "開始時の過不足"
+      "opening": "開始時の過不足",
+      "rates": "単価"
+    },
+    "rates": {
+      "title": "{person}さんの単価",
+      "hint": "単価は書き換えるのではなく、適用開始日を付けて記録します。古い単価で作成済みの月の明細が、そのままの内容で意味を保つためです。昇給は、古い単価の終了と新しい単価の開始として記録します。",
+      "none_yet": "単価が記録されていません。このメンバーの明細には時間数のみが表示され、金額は表示されません。",
+      "add": "単価を追加",
+      "add_button": "追加",
+      "close": "閉じる",
+      "remove": "単価を削除",
+      "valid_from": "適用開始日",
+      "basis_label": "給与形態",
+      "hourly_rate": "時給",
+      "monthly_amount": "月額",
+      "amount_placeholder": "例：65",
+      "currency": "通貨",
+      "per_hour": "時給{amount} {currency}",
+      "per_month": "月額{amount} {currency}",
+      "from": "{date}から",
+      "between": "{from}から{to}まで",
+      "basis": {
+        "hourly": "時給制",
+        "monthly_fixed": "月給制（固定額）",
+        "monthly_plus_overtime": "月給制（残業代を加算）"
+      },
+      "errors": {
+        "date_required": "この単価をどの日から適用するかを入力してください。",
+        "bad_amount": "金額は数値で入力してください。65または65.50のように入力します。"
+      },
+      "toasts": {
+        "added": "単価を追加しました",
+        "removed": "単価を削除しました",
+        "refused": "保存できませんでした",
+        "try_again": "もう一度お試しください。"
+      }
     },
     "arrangement": {
       "onsite_full_time": "出社・フルタイム",

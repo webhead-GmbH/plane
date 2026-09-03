@@ -164,7 +164,8 @@
         "refused": "Acțiunea nu a reușit",
         "try_again": "Vă rugăm să încercați din nou."
       },
-      "opening": "Sold inițial"
+      "opening": "Sold inițial",
+      "rates": "Tarife"
     },
     "arrangement": {
       "onsite_full_time": "La sediu, normă întreagă",
@@ -384,6 +385,40 @@
         "name_placeholder": "Numele afișat oamenilor",
         "counts_as_worked": "Ziua contează în continuare ca lucrată",
         "draws_on_leave": "Ziua se scade din soldul de concediu",
+        "refused": "Nu s-a putut salva",
+        "try_again": "Vă rugăm să încercați din nou."
+      }
+    },
+    "rates": {
+      "title": "Cât valorează timpul lucrat de {person}",
+      "hint": "Un tarif nu se modifică, ci primește o dată de la care se aplică, astfel încât o lună deja calculată la tariful vechi să însemne în continuare ceea ce a spus. O majorare înseamnă încheierea tarifului vechi și începerea altuia nou.",
+      "none_yet": "Niciun tarif înregistrat. Situația acestei persoane va afișa orele, fără nicio sumă.",
+      "add": "Adăugați un tarif",
+      "add_button": "Adăugați",
+      "close": "Închideți",
+      "remove": "Ștergeți tariful",
+      "valid_from": "Din",
+      "basis_label": "Se plătește",
+      "hourly_rate": "Pe oră",
+      "monthly_amount": "Pe lună",
+      "amount_placeholder": "ex. 65",
+      "currency": "Monedă",
+      "per_hour": "{amount} {currency} pe oră",
+      "per_month": "{amount} {currency} pe lună",
+      "from": "Din {date}",
+      "between": "{from} – {to}",
+      "basis": {
+        "hourly": "La oră",
+        "monthly_fixed": "O sumă fixă în fiecare lună",
+        "monthly_plus_overtime": "O sumă lunară plus orele suplimentare"
+      },
+      "errors": {
+        "date_required": "Precizați din ce zi se aplică acest tarif.",
+        "bad_amount": "Scrieți suma ca număr, de exemplu 65 sau 65,50."
+      },
+      "toasts": {
+        "added": "Tarif adăugat",
+        "removed": "Tarif șters",
         "refused": "Nu s-a putut salva",
         "try_again": "Vă rugăm să încercați din nou."
       }

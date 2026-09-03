@@ -17,6 +17,7 @@ export * from "./day-entries-modal";
 export * from "./reason-modal";
 export * from "./import-root";
 export * from "./opening-balance-modal";
+export * from "./rate-card-modal";
 export * from "./absence-modal";
 export * from "./absence-types-modal";
 export * from "./absences-root";

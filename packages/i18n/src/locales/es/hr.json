@@ -164,7 +164,8 @@
         "refused": "No se pudo completar",
         "try_again": "Vuelva a intentarlo."
       },
-      "opening": "Saldo inicial"
+      "opening": "Saldo inicial",
+      "rates": "Tarifas"
     },
     "arrangement": {
       "onsite_full_time": "Presencial, jornada completa",
@@ -384,6 +385,40 @@
         "name_placeholder": "Nombre que se mostrará",
         "counts_as_worked": "El día cuenta como trabajado",
         "draws_on_leave": "El día se descuenta del saldo de vacaciones",
+        "refused": "No se ha podido guardar",
+        "try_again": "Inténtelo de nuevo."
+      }
+    },
+    "rates": {
+      "title": "Lo que vale el tiempo de {person}",
+      "hint": "Una tarifa se fecha en lugar de modificarse, para que un mes ya liquidado con la anterior siga significando lo que decía. Una subida es la tarifa anterior que termina y una nueva que empieza.",
+      "none_yet": "No hay ninguna tarifa registrada. La liquidación de esta persona mostrará las horas, pero ningún importe.",
+      "add": "Añadir una tarifa",
+      "add_button": "Añadir",
+      "close": "Cerrar",
+      "remove": "Eliminar tarifa",
+      "valid_from": "Desde",
+      "basis_label": "Se paga",
+      "hourly_rate": "Por hora",
+      "monthly_amount": "Al mes",
+      "amount_placeholder": "p. ej. 65",
+      "currency": "Moneda",
+      "per_hour": "{amount} {currency} a la hora",
+      "per_month": "{amount} {currency} al mes",
+      "from": "Desde {date}",
+      "between": "De {from} a {to}",
+      "basis": {
+        "hourly": "Por horas",
+        "monthly_fixed": "Un importe fijo cada mes",
+        "monthly_plus_overtime": "Un importe mensual más las horas extra"
+      },
+      "errors": {
+        "date_required": "Indique desde qué día se aplica esta tarifa.",
+        "bad_amount": "Escriba el importe como un número, por ejemplo 65 o 65,50."
+      },
+      "toasts": {
+        "added": "Tarifa añadida",
+        "removed": "Tarifa eliminada",
         "refused": "No se ha podido guardar",
         "try_again": "Inténtelo de nuevo."
       }

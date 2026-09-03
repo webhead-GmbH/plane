@@ -164,7 +164,8 @@
         "refused": "That did not go through",
         "try_again": "Please try again."
       },
-      "opening": "Starting balance"
+      "opening": "Starting balance",
+      "rates": "Rates"
     },
     "arrangement": {
       "onsite_full_time": "On site, full time",
@@ -384,6 +385,40 @@
         "name_placeholder": "Name people will read",
         "counts_as_worked": "The day still counts as worked",
         "draws_on_leave": "The day comes off the leave account",
+        "refused": "That could not be saved",
+        "try_again": "Please try again."
+      }
+    },
+    "rates": {
+      "title": "What {person}'s time is worth",
+      "hint": "A rate is dated rather than changed, so a month already stated at the old one still means what it said. A raise is the old rate ending and a new one starting.",
+      "none_yet": "No rate on record. A statement for this person will show hours and no amount.",
+      "add": "Add a rate",
+      "add_button": "Add",
+      "close": "Close",
+      "remove": "Delete rate",
+      "valid_from": "From",
+      "basis_label": "Paid",
+      "hourly_rate": "Per hour",
+      "monthly_amount": "Per month",
+      "amount_placeholder": "e.g. 65",
+      "currency": "Currency",
+      "per_hour": "{amount} {currency} an hour",
+      "per_month": "{amount} {currency} a month",
+      "from": "From {date}",
+      "between": "{from} to {to}",
+      "basis": {
+        "hourly": "By the hour",
+        "monthly_fixed": "A fixed amount each month",
+        "monthly_plus_overtime": "A monthly amount plus overtime"
+      },
+      "errors": {
+        "date_required": "Say which day this rate starts.",
+        "bad_amount": "Write the amount as a number, like 65 or 65.50."
+      },
+      "toasts": {
+        "added": "Rate added",
+        "removed": "Rate deleted",
         "refused": "That could not be saved",
         "try_again": "Please try again."
       }
