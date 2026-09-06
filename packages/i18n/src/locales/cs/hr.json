@@ -20,7 +20,9 @@
         "not_handed_in": "Neodevzdáno",
         "try_again": "Zkuste to prosím za chvíli znovu."
       },
-      "opening": "Počáteční saldo"
+      "opening": "Počáteční saldo",
+      "export_csv": "CSV",
+      "export_excel": "Excel"
     },
     "team_time": {
       "title": "Čas týmu",

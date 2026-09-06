@@ -20,7 +20,9 @@
         "not_handed_in": "Nepredată",
         "try_again": "Încercați din nou peste un moment."
       },
-      "opening": "Sold inițial"
+      "opening": "Sold inițial",
+      "export_csv": "CSV",
+      "export_excel": "Excel"
     },
     "team_time": {
       "title": "Timpul echipei",

@@ -20,7 +20,9 @@
         "not_handed_in": "Не подано",
         "try_again": "Спробуйте ще раз трохи згодом."
       },
-      "opening": "Початковий баланс"
+      "opening": "Початковий баланс",
+      "export_csv": "CSV",
+      "export_excel": "Excel"
     },
     "team_time": {
       "title": "Час команди",

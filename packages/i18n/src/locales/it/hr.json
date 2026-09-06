@@ -5,6 +5,8 @@
       "everyone": "Tutti",
       "bring_up_to_date": "Aggiorna i dati",
       "hand_in": "Consegna",
+      "export_csv": "CSV",
+      "export_excel": "Excel",
       "no_record": "Nessun rapporto di lavoro qui",
       "previous_month": "Mese precedente",
       "next_month": "Mese successivo",

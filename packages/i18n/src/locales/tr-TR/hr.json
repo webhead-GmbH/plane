@@ -20,7 +20,9 @@
         "not_handed_in": "Teslim edilmedi",
         "try_again": "Birazdan tekrar deneyin."
       },
-      "opening": "Açılış bakiyesi"
+      "opening": "Açılış bakiyesi",
+      "export_csv": "CSV",
+      "export_excel": "Excel"
     },
     "team_time": {
       "title": "Ekip zamanı",

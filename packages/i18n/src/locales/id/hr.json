@@ -20,7 +20,9 @@
         "not_handed_in": "Belum diserahkan",
         "try_again": "Silakan coba lagi dalam beberapa saat."
       },
-      "opening": "Saldo awal"
+      "opening": "Saldo awal",
+      "export_csv": "CSV",
+      "export_excel": "Excel"
     },
     "team_time": {
       "title": "Waktu tim",

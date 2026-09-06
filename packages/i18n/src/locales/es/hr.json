@@ -8,6 +8,8 @@
       "no_record": "Aquí no hay ningún registro laboral",
       "previous_month": "Mes anterior",
       "next_month": "Mes siguiente",
+      "export_csv": "CSV",
+      "export_excel": "Excel",
       "cannot_hand_in": {
         "month_running": "El mes aún no ha terminado. Podrá entregarse cuando haya finalizado.",
         "timer_running": "Detenga el temporizador que sigue en marcha y entregue el mes."

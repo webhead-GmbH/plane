@@ -20,7 +20,9 @@
         "not_handed_in": "Не отправлено",
         "try_again": "Повторите попытку чуть позже."
       },
-      "opening": "Начальный баланс"
+      "opening": "Начальный баланс",
+      "export_csv": "CSV",
+      "export_excel": "Excel"
     },
     "team_time": {
       "title": "Время команды",

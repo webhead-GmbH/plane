@@ -463,9 +463,32 @@ export class HrService extends APIService {
       });
   }
 
+  /**
+   * A download link, which the browser follows itself.
+   *
+   * These are the only calls not made through axios, so they are the only ones
+   * that do not get the base URL applied for them. A bare path is served by
+   * whatever is answering the web app's own origin — in development that is the
+   * dev server, which hands back the page rather than the file.
+   */
+  private fileUrl(path: string): string {
+    return `${this.baseURL}${this.base}${path}`;
+  }
+
   /** The payroll export for a whole month, as a file. */
   monthExportUrl(year: number, month: number, fileFormat: "csv" | "xlsx"): string {
-    return `${this.base}/export/?year=${year}&month=${month}&file_format=${fileFormat}`;
+    return this.fileUrl(`/export/?year=${year}&month=${month}&file_format=${fileFormat}`);
+  }
+
+  /**
+   * One person's month, day by day, as a file.
+   *
+   * The whole-month export above is a line per person for payroll; this is the
+   * detail behind one of those lines — what the person themselves is asked to
+   * stand behind, and what gets attached when a figure is queried later.
+   */
+  periodExportUrl(periodId: string, fileFormat: "csv" | "xlsx"): string {
+    return this.fileUrl(`/periods/${periodId}/export/?file_format=${fileFormat}`);
   }
 
   async periods(year?: number): Promise<THrPeriod[]> {

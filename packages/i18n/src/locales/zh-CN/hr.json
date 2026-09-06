@@ -20,7 +20,9 @@
         "not_handed_in": "未能提交",
         "try_again": "请稍后重试。"
       },
-      "opening": "期初结余"
+      "opening": "期初结余",
+      "export_csv": "CSV",
+      "export_excel": "Excel"
     },
     "team_time": {
       "title": "团队工时",

@@ -20,7 +20,9 @@
         "not_handed_in": "Non soumis",
         "try_again": "Réessayez dans un instant."
       },
-      "opening": "Solde initial"
+      "opening": "Solde initial",
+      "export_csv": "CSV",
+      "export_excel": "Excel"
     },
     "team_time": {
       "title": "Temps de l’équipe",

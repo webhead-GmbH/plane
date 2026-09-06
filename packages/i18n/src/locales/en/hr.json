@@ -20,7 +20,9 @@
         "not_handed_in": "Not handed in",
         "try_again": "Try again in a moment."
       },
-      "opening": "Starting balance"
+      "opening": "Starting balance",
+      "export_csv": "CSV",
+      "export_excel": "Excel"
     },
     "team_time": {
       "title": "Team time",

@@ -8,6 +8,8 @@
       "no_record": "Không có hồ sơ lao động ở đây",
       "previous_month": "Tháng trước",
       "next_month": "Tháng sau",
+      "export_csv": "CSV",
+      "export_excel": "Excel",
       "cannot_hand_in": {
         "month_running": "Tháng này chưa kết thúc. Bạn có thể gửi duyệt sau khi tháng kết thúc.",
         "timer_running": "Hãy dừng bộ đếm giờ vẫn đang chạy, sau đó gửi duyệt tháng này."

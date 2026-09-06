@@ -8,6 +8,8 @@
       "no_record": "여기에는 고용 기록이 없습니다",
       "previous_month": "이전 달",
       "next_month": "다음 달",
+      "export_csv": "CSV",
+      "export_excel": "Excel",
       "cannot_hand_in": {
         "month_running": "해당 월이 아직 끝나지 않았습니다. 월이 종료된 후에 제출할 수 있습니다.",
         "timer_running": "아직 실행 중인 타이머를 중지한 다음 해당 월을 제출하세요."

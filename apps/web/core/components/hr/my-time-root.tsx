@@ -7,7 +7,7 @@
 import { useState } from "react";
 import { observer } from "mobx-react";
 import { Link, useParams } from "react-router";
-import { ChevronLeft, ChevronRight, RefreshCw, Scale, Send, Users } from "lucide-react";
+import { ChevronLeft, ChevronRight, Download, RefreshCw, Scale, Send, Users } from "lucide-react";
 import useSWR from "swr";
 // plane imports
 import { Button } from "@plane/propel/button";
@@ -153,6 +153,22 @@ export const MyTimeRoot = observer(function MyTimeRoot() {
               <RefreshCw className="size-3.5" />
               {t("hr.my_time.bring_up_to_date")}
             </Button>
+          ) : null}
+          {period ? (
+            <>
+              <a href={hrService.periodExportUrl(period.id, "csv")} download>
+                <Button variant="secondary" size="sm">
+                  <Download className="size-3.5" />
+                  {t("hr.my_time.export_csv")}
+                </Button>
+              </a>
+              <a href={hrService.periodExportUrl(period.id, "xlsx")} download>
+                <Button variant="secondary" size="sm">
+                  <Download className="size-3.5" />
+                  {t("hr.my_time.export_excel")}
+                </Button>
+              </a>
+            </>
           ) : null}
           {period && period.state !== EHrPeriodState.LOCKED ? (
             <Button

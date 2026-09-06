@@ -536,6 +536,22 @@ class TestExport:
         rows = list(csv.DictReader(StringIO(response.content.decode("utf-8"))))
         assert len(rows) == 31
 
+    def test_a_person_can_have_their_month_as_a_spreadsheet_too(self, workspace):
+        """The detail behind one payroll line, in the shape a spreadsheet opens.
+
+        The whole-month export offers both shapes and so does the button on the
+        person's own month, so the per-person route has to answer to xlsx as well
+        — and it reads the format from ``file_format`` rather than ``format``,
+        which the framework reserves for choosing its own renderer.
+        """
+        user, profile = employ(workspace, email="ana@example.invalid")
+        rebuild_period(profile, 2026, 3)
+        period = HrPeriod.objects.get(profile=profile)
+        response = client_for(user).get(url(workspace, f"periods/{period.id}/export/?file_format=xlsx"))
+        assert response.status_code == 200
+        assert "spreadsheetml" in response["Content-Type"]
+        assert response.content[:2] == b"PK"
+
     def test_one_person_cannot_export_anothers_month(self, workspace):
         user, _ = employ(workspace, email="ana@example.invalid")
         _, colleague = employ(workspace, email="bea@example.invalid")

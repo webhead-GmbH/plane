@@ -20,7 +20,9 @@
         "not_handed_in": "Nie przekazano",
         "try_again": "Proszę spróbować ponownie za chwilę."
       },
-      "opening": "Saldo początkowe"
+      "opening": "Saldo początkowe",
+      "export_csv": "CSV",
+      "export_excel": "Excel"
     },
     "team_time": {
       "title": "Czas zespołu",

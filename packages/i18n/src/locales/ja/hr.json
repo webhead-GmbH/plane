@@ -20,7 +20,9 @@
         "not_handed_in": "提出できませんでした",
         "try_again": "しばらくしてからもう一度お試しください。"
       },
-      "opening": "開始時の過不足"
+      "opening": "開始時の過不足",
+      "export_csv": "CSV",
+      "export_excel": "Excel"
     },
     "team_time": {
       "title": "チームの勤怠",

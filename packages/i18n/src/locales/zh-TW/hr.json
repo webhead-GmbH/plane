@@ -20,7 +20,9 @@
         "not_handed_in": "未送出",
         "try_again": "請稍後再試。"
       },
-      "opening": "期初結餘"
+      "opening": "期初結餘",
+      "export_csv": "CSV",
+      "export_excel": "Excel"
     },
     "team_time": {
       "title": "團隊工時",
