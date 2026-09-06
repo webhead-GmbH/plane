@@ -236,6 +236,38 @@
         "try_again": "もう一度お試しください。"
       }
     },
+    "holidays": {
+      "title": "祝日",
+      "subtitle": "誰も勤務しない日です。祝日はその日の所定時間を減らすものであり、実働時間に加算されるわけではありません。",
+      "back_to_month": "月の勤怠",
+      "calendar": "カレンダー",
+      "previous_year": "前の年",
+      "next_year": "次の年",
+      "none_this_year": "このカレンダーには、この年に登録された祝日がありません。",
+      "not_permitted_detail": "カレンダーを変更できるのはマネージャーのみです。",
+      "column_date": "日付",
+      "column_name": "名称",
+      "column_kind": "区分",
+      "column_action": "操作",
+      "statutory": "法定",
+      "granted": "会社付与",
+      "make_half": "半日にする",
+      "make_whole": "終日にする",
+      "remove": "この祝日を削除",
+      "add": "祝日を追加",
+      "add_button": "追加",
+      "only_half": "半日のみ",
+      "name_placeholder": "祝日の名称",
+      "errors": {
+        "date_and_name": "日付と名称を入力してください。"
+      },
+      "toasts": {
+        "added": "祝日を追加しました",
+        "removed": "祝日を削除しました",
+        "refused": "保存できませんでした",
+        "try_again": "もう一度お試しください。"
+      }
+    },
     "arrangement": {
       "onsite_full_time": "出社・フルタイム",
       "onsite_part_time": "出社・パートタイム",

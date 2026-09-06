@@ -15,7 +15,7 @@ import { EModalPosition, EModalWidth, ModalCore } from "@plane/ui";
 // services
 import { EHrRateBasis, HrService, type THrEmploymentProfile, type THrRateCard } from "@/services/hr.service";
 // local imports
-import { formatDayWithYear, tidyAmount } from "./utils";
+import { formatDayWithYear, refusalMessage, tidyAmount } from "./utils";
 
 const hrService = new HrService();
 
@@ -71,7 +71,7 @@ export const HrRateCardModal = ({ person, onClose }: TProps) => {
     setToast({
       type: TOAST_TYPE.ERROR,
       title: t("hr.rates.toasts.refused"),
-      message: (failure as { error?: string })?.error ?? t("hr.rates.toasts.try_again"),
+      message: refusalMessage(failure) ?? t("hr.rates.toasts.try_again"),
     });
 
   const isHourly = basis === EHrRateBasis.HOURLY;

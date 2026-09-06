@@ -458,6 +458,38 @@
         "try_again": "Silakan coba lagi."
       }
     },
+    "holidays": {
+      "title": "Hari libur nasional",
+      "subtitle": "Hari-hari ketika tidak ada yang bekerja. Hari libur mengurangi jam wajib pada hari itu, bukan menambah jam yang tercatat.",
+      "back_to_month": "Bulan ini",
+      "calendar": "Kalender",
+      "previous_year": "Tahun sebelumnya",
+      "next_year": "Tahun berikutnya",
+      "none_this_year": "Tidak ada hari libur pada kalender ini untuk tahun ini.",
+      "not_permitted_detail": "Hanya manajer yang dapat mengubah kalender.",
+      "column_date": "Tanggal",
+      "column_name": "Nama",
+      "column_kind": "Jenis",
+      "column_action": "Tindakan",
+      "statutory": "Menurut UU",
+      "granted": "Diberikan",
+      "make_half": "Jadikan setengah hari",
+      "make_whole": "Jadikan satu hari penuh",
+      "remove": "Hapus hari libur ini",
+      "add": "Tambah hari libur",
+      "add_button": "Tambah",
+      "only_half": "Hanya setengah hari",
+      "name_placeholder": "Nama hari libur ini",
+      "errors": {
+        "date_and_name": "Sebutkan tanggal dan nama hari libur ini."
+      },
+      "toasts": {
+        "added": "Hari libur ditambahkan",
+        "removed": "Hari libur dihapus",
+        "refused": "Tidak dapat disimpan",
+        "try_again": "Silakan coba lagi."
+      }
+    },
     "statement": {
       "title": "Sebelum Anda menagih",
       "hint": "Hasil bulan ini menurut tarif Anda, sehingga angkanya sudah disepakati sebelum tagihan dibuat, bukan diperdebatkan setelah tagihan diterima.",

@@ -21,7 +21,7 @@ import { HrDayEntriesModal } from "./day-entries-modal";
 import { HrOpeningBalanceModal } from "./opening-balance-modal";
 import { HrMonthSummary } from "./month-summary";
 import { HrStatementPanel } from "./statement-panel";
-import { formatMonthLabel, isPeriodEditable, nextMonth, previousMonth } from "./utils";
+import { formatMonthLabel, isPeriodEditable, nextMonth, previousMonth, refusalMessage } from "./utils";
 
 const hrService = new HrService();
 
@@ -52,7 +52,7 @@ export const MyTimeRoot = observer(function MyTimeRoot() {
       setToast({
         type: TOAST_TYPE.ERROR,
         title: t("hr.my_time.toasts.not_recomputed"),
-        message: (error as { error?: string })?.error ?? t("hr.my_time.toasts.try_again"),
+        message: refusalMessage(error) ?? t("hr.my_time.toasts.try_again"),
       });
     } finally {
       setIsBusy(false);
@@ -74,7 +74,7 @@ export const MyTimeRoot = observer(function MyTimeRoot() {
       setToast({
         type: TOAST_TYPE.ERROR,
         title: t("hr.my_time.toasts.not_handed_in"),
-        message: (error as { error?: string })?.error ?? t("hr.my_time.toasts.try_again"),
+        message: refusalMessage(error) ?? t("hr.my_time.toasts.try_again"),
       });
     } finally {
       setIsBusy(false);

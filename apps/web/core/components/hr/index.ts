@@ -15,6 +15,7 @@ export * from "./people-root";
 export * from "./person-modal";
 export * from "./day-entries-modal";
 export * from "./reason-modal";
+export * from "./holidays-root";
 export * from "./import-root";
 export * from "./opening-balance-modal";
 export * from "./rate-card-modal";

@@ -468,6 +468,38 @@
         "refused": "Nu s-a putut salva",
         "try_again": "Vă rugăm să încercați din nou."
       }
+    },
+    "holidays": {
+      "title": "Zile de sărbătoare",
+      "subtitle": "Zilele în care nu lucrează nimeni. O zi de sărbătoare reduce orele de lucrat din ziua respectivă; nu se adaugă la orele lucrate.",
+      "back_to_month": "Luna",
+      "calendar": "Calendar",
+      "previous_year": "Anul anterior",
+      "next_year": "Anul următor",
+      "none_this_year": "Nicio zi în acest calendar pentru anul acesta.",
+      "not_permitted_detail": "Doar un manager poate modifica calendarul.",
+      "column_date": "Data",
+      "column_name": "Nume",
+      "column_kind": "Tip",
+      "column_action": "Acțiune",
+      "statutory": "Legală",
+      "granted": "Acordată",
+      "make_half": "Faceți-o jumătate de zi",
+      "make_whole": "Faceți-o zi întreagă",
+      "remove": "Eliminați această zi",
+      "add": "Adăugați o zi",
+      "add_button": "Adăugați",
+      "only_half": "Doar jumătate de zi",
+      "name_placeholder": "Cum se numește ziua",
+      "errors": {
+        "date_and_name": "Precizați data și numele zilei."
+      },
+      "toasts": {
+        "added": "Zi adăugată",
+        "removed": "Zi eliminată",
+        "refused": "Nu s-a putut salva",
+        "try_again": "Vă rugăm să încercați din nou."
+      }
     }
   }
 }

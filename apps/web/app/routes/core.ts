@@ -118,6 +118,9 @@ export const coreRoutes: RouteConfigEntry[] = [
         layout("./(all)/[workspaceSlug]/(projects)/team-time/absences/layout.tsx", [
           route(":workspaceSlug/team-time/absences", "./(all)/[workspaceSlug]/(projects)/team-time/absences/page.tsx"),
         ]),
+        layout("./(all)/[workspaceSlug]/(projects)/team-time/holidays/layout.tsx", [
+          route(":workspaceSlug/team-time/holidays", "./(all)/[workspaceSlug]/(projects)/team-time/holidays/page.tsx"),
+        ]),
         layout("./(all)/[workspaceSlug]/(projects)/team-time/layout.tsx", [
           route(":workspaceSlug/team-time", "./(all)/[workspaceSlug]/(projects)/team-time/page.tsx"),
         ]),

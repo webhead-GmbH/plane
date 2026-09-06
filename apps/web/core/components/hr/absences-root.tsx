@@ -26,7 +26,7 @@ import {
 // local imports
 import { HrAbsenceModal, type TAbsenceDraft } from "./absence-modal";
 import { HrAbsenceTypesModal } from "./absence-types-modal";
-import { formatDayLabel, formatMinutes, formatMonthLabel, nextMonth, previousMonth } from "./utils";
+import { formatDayLabel, formatMinutes, formatMonthLabel, nextMonth, previousMonth, refusalMessage } from "./utils";
 
 const hrService = new HrService();
 
@@ -89,7 +89,7 @@ export const HrAbsencesRoot = observer(function HrAbsencesRoot({ workspaceSlug }
     setToast({
       type: TOAST_TYPE.ERROR,
       title: t("hr.absences.toasts.refused"),
-      message: (failure as { error?: string })?.error ?? t("hr.absences.toasts.try_again"),
+      message: refusalMessage(failure) ?? t("hr.absences.toasts.try_again"),
     });
 
   const step = (move: (year: number, month: number) => [number, number]) => {

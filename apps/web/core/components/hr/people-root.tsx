@@ -23,7 +23,7 @@ import { HrOpeningBalanceModal } from "./opening-balance-modal";
 import { HrLeaveModal } from "./leave-modal";
 import { HrRateCardModal } from "./rate-card-modal";
 import { HrPersonModal, type TPersonDraft } from "./person-modal";
-import { formatMinutes } from "./utils";
+import { formatMinutes, refusalMessage } from "./utils";
 
 const hrService = new HrService();
 
@@ -55,7 +55,7 @@ export const HrPeopleRoot = observer(function HrPeopleRoot({ workspaceSlug }: { 
     setToast({
       type: TOAST_TYPE.ERROR,
       title: t("hr.people.toasts.refused"),
-      message: (failure as { error?: string })?.error ?? t("hr.people.toasts.try_again"),
+      message: refusalMessage(failure) ?? t("hr.people.toasts.try_again"),
     });
 
   const handleAdd = async (memberId: string, hireDate: string) => {

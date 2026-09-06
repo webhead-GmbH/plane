@@ -22,7 +22,7 @@ import {
   type THrOpeningBalance,
 } from "@/services/hr.service";
 // local imports
-import { balanceTone, formatBalance, formatDayLabel, parseDuration } from "./utils";
+import { balanceTone, formatBalance, formatDayLabel, parseDuration, refusalMessage } from "./utils";
 
 const hrService = new HrService();
 
@@ -90,7 +90,7 @@ export const HrOpeningBalanceModal = ({ person, isOwn, canRecord, onClose }: TPr
     setToast({
       type: TOAST_TYPE.ERROR,
       title: t("hr.opening.toasts.refused"),
-      message: (failure as { error?: string })?.error ?? t("hr.opening.toasts.try_again"),
+      message: refusalMessage(failure) ?? t("hr.opening.toasts.try_again"),
     });
 
   const handleRecord = async () => {

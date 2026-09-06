@@ -468,6 +468,38 @@
         "refused": "Non è stato possibile salvare",
         "try_again": "Riprovi, per favore."
       }
+    },
+    "holidays": {
+      "title": "Festività",
+      "subtitle": "I giorni in cui non si lavora. Una festività riduce le ore dovute di quel giorno; non viene aggiunta a quanto è stato lavorato.",
+      "back_to_month": "Il mese",
+      "calendar": "Calendario",
+      "previous_year": "Anno precedente",
+      "next_year": "Anno successivo",
+      "none_this_year": "Nessun giorno in questo calendario per quest'anno.",
+      "not_permitted_detail": "Solo un responsabile può modificare il calendario.",
+      "column_date": "Data",
+      "column_name": "Nome",
+      "column_kind": "Tipo",
+      "column_action": "Azione",
+      "statutory": "Per legge",
+      "granted": "Concessa",
+      "make_half": "Imposta come mezza giornata",
+      "make_whole": "Imposta come giornata intera",
+      "remove": "Rimuovi questo giorno",
+      "add": "Aggiungi un giorno",
+      "add_button": "Aggiungi",
+      "only_half": "Solo mezza giornata",
+      "name_placeholder": "Come si chiama il giorno",
+      "errors": {
+        "date_and_name": "Indichi la data e il nome del giorno."
+      },
+      "toasts": {
+        "added": "Giorno aggiunto",
+        "removed": "Giorno rimosso",
+        "refused": "Non è stato possibile salvare",
+        "try_again": "Riprovi, per favore."
+      }
     }
   }
 }

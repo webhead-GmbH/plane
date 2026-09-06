@@ -7,7 +7,7 @@
 import { useState } from "react";
 import { observer } from "mobx-react";
 import { Link, useParams } from "react-router";
-import { CalendarOff, ChevronLeft, ChevronRight, Download, Upload, UserCog } from "lucide-react";
+import { CalendarDays, CalendarOff, ChevronLeft, ChevronRight, Download, Upload, UserCog } from "lucide-react";
 import useSWR from "swr";
 // plane imports
 import { Button } from "@plane/propel/button";
@@ -27,6 +27,7 @@ import {
   formatMonthLabel,
   nextMonth,
   previousMonth,
+  refusalMessage,
 } from "./utils";
 
 const hrService = new HrService();
@@ -72,7 +73,7 @@ export const HrTeamMonthRoot = observer(function HrTeamMonthRoot() {
       setToast({
         type: TOAST_TYPE.ERROR,
         title: t("hr.team_time.toasts.refused"),
-        message: (failure as { error?: string })?.error ?? t("hr.team_time.toasts.try_again"),
+        message: refusalMessage(failure) ?? t("hr.team_time.toasts.try_again"),
       });
     } finally {
       setBusyPeriodId(null);
@@ -123,6 +124,11 @@ export const HrTeamMonthRoot = observer(function HrTeamMonthRoot() {
           <Link to={`/${workspaceSlug}/team-time/absences`}>
             <Button variant="secondary" size="sm" prependIcon={<CalendarOff className="size-4" />}>
               {t("hr.absences.title")}
+            </Button>
+          </Link>
+          <Link to={`/${workspaceSlug}/team-time/holidays`}>
+            <Button variant="secondary" size="sm" prependIcon={<CalendarDays className="size-4" />}>
+              {t("hr.holidays.title")}
             </Button>
           </Link>
           <a href={hrService.monthExportUrl(year, month, "csv")} download>

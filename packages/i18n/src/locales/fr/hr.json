@@ -236,6 +236,38 @@
         "try_again": "Veuillez réessayer."
       }
     },
+    "holidays": {
+      "title": "Jours fériés",
+      "subtitle": "Les jours où personne ne travaille. Un jour férié réduit les heures théoriques de cette journée ; il ne s’ajoute pas au temps réalisé.",
+      "back_to_month": "Le mois",
+      "calendar": "Calendrier",
+      "previous_year": "Année précédente",
+      "next_year": "Année suivante",
+      "none_this_year": "Aucun jour dans ce calendrier pour cette année.",
+      "not_permitted_detail": "Seul un responsable peut modifier le calendrier.",
+      "column_date": "Date",
+      "column_name": "Nom",
+      "column_kind": "Type",
+      "column_action": "Action",
+      "statutory": "Légal",
+      "granted": "Accordé",
+      "make_half": "Passer en demi-journée",
+      "make_whole": "Passer en journée entière",
+      "remove": "Supprimer ce jour",
+      "add": "Ajouter un jour",
+      "add_button": "Ajouter",
+      "only_half": "Une demi-journée seulement",
+      "name_placeholder": "Le nom de ce jour férié",
+      "errors": {
+        "date_and_name": "Indiquez une date et un nom pour ce jour."
+      },
+      "toasts": {
+        "added": "Jour ajouté",
+        "removed": "Jour supprimé",
+        "refused": "Impossible d’enregistrer",
+        "try_again": "Veuillez réessayer."
+      }
+    },
     "arrangement": {
       "onsite_full_time": "Sur site, temps plein",
       "onsite_part_time": "Sur site, temps partiel",

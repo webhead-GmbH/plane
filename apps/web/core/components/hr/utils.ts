@@ -193,3 +193,29 @@ export function parseDuration(input: string): number | null {
   }
   return null;
 }
+
+/**
+ * The readable part of a refusal, whichever shape it arrives in.
+ *
+ * The endpoints answer with {"error": "..."} where they refuse something
+ * deliberately, and with the serializer's own {"field": ["..."]} — or
+ * {"non_field_errors": ["..."]} — where the data itself does not stand up.
+ * Reading only the first meant every validation failure came out as "please try
+ * again", which is wrong twice over: it says nothing about what is wrong, and
+ * trying again does exactly the same thing.
+ */
+export function refusalMessage(failure: unknown): string | null {
+  if (!failure || typeof failure !== "object") return null;
+
+  const body = failure as Record<string, unknown>;
+  if (typeof body.error === "string" && body.error) return body.error;
+
+  // Whatever the serializer objected to first. Field order is the serializer's,
+  // and any of them is more use than none.
+  for (const value of Object.values(body)) {
+    if (typeof value === "string" && value) return value;
+    if (Array.isArray(value) && typeof value[0] === "string" && value[0]) return value[0];
+  }
+
+  return null;
+}

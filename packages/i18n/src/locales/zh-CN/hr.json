@@ -468,6 +468,38 @@
         "refused": "无法保存",
         "try_again": "请重试。"
       }
+    },
+    "holidays": {
+      "title": "节假日",
+      "subtitle": "无人上班的日子。节假日会减少当天的应工作工时，而不是计入已工作工时。",
+      "back_to_month": "月度工时",
+      "calendar": "日历",
+      "previous_year": "上一年",
+      "next_year": "下一年",
+      "none_this_year": "本年度此日历上没有任何日期。",
+      "not_permitted_detail": "仅管理者可更改此日历。",
+      "column_date": "日期",
+      "column_name": "名称",
+      "column_kind": "类型",
+      "column_action": "操作",
+      "statutory": "法定",
+      "granted": "公司给予",
+      "make_half": "改为半天",
+      "make_whole": "改为整天",
+      "remove": "删除此日期",
+      "add": "添加日期",
+      "add_button": "添加",
+      "only_half": "仅半天",
+      "name_placeholder": "这一天的名称",
+      "errors": {
+        "date_and_name": "请填写日期和名称。"
+      },
+      "toasts": {
+        "added": "日期已添加",
+        "removed": "日期已删除",
+        "refused": "无法保存",
+        "try_again": "请重试。"
+      }
     }
   }
 }

@@ -14,6 +14,8 @@ import { EModalPosition, EModalWidth, ModalCore } from "@plane/ui";
 // services
 import { HrService, type THrAbsenceType } from "@/services/hr.service";
 
+import { refusalMessage } from "./utils";
+
 const hrService = new HrService();
 
 type TProps = {
@@ -52,7 +54,7 @@ export const HrAbsenceTypesModal = ({ isOpen, types, onClose, onChanged }: TProp
     setToast({
       type: TOAST_TYPE.ERROR,
       title: t("hr.absences.types.refused"),
-      message: (failure as { error?: string })?.error ?? t("hr.absences.types.try_again"),
+      message: refusalMessage(failure) ?? t("hr.absences.types.try_again"),
     });
 
   const handleAdd = async () => {

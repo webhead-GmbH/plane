@@ -25,7 +25,7 @@ import {
 } from "@/services/hr.service";
 // local imports
 import { HrReasonModal } from "./reason-modal";
-import { formatDayLabel } from "./utils";
+import { formatDayLabel, refusalMessage } from "./utils";
 
 const hrService = new HrService();
 
@@ -63,7 +63,7 @@ export const HrImportRoot = observer(function HrImportRoot({ workspaceSlug }: { 
     setToast({
       type: TOAST_TYPE.ERROR,
       title: t("hr.imports.toasts.refused"),
-      message: (failure as { error?: string })?.error ?? t("hr.imports.toasts.try_again"),
+      message: refusalMessage(failure) ?? t("hr.imports.toasts.try_again"),
     });
 
   const handleFile = async (file: File) => {

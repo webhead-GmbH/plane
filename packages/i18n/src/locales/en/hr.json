@@ -468,6 +468,38 @@
         "refused": "That could not be saved",
         "try_again": "Please try again."
       }
+    },
+    "holidays": {
+      "title": "Public holidays",
+      "subtitle": "The days nobody works. A holiday reduces the target for that day; it is not added to what was worked.",
+      "back_to_month": "The month",
+      "calendar": "Calendar",
+      "previous_year": "Previous year",
+      "next_year": "Next year",
+      "none_this_year": "No days on this calendar for this year.",
+      "not_permitted_detail": "Only a manager can change the calendar.",
+      "column_date": "Date",
+      "column_name": "Name",
+      "column_kind": "Kind",
+      "column_action": "Action",
+      "statutory": "By law",
+      "granted": "Granted",
+      "make_half": "Make it half a day",
+      "make_whole": "Make it a whole day",
+      "remove": "Remove this day",
+      "add": "Add a day",
+      "add_button": "Add",
+      "only_half": "Only half a day",
+      "name_placeholder": "What the day is called",
+      "errors": {
+        "date_and_name": "Give the day a date and a name."
+      },
+      "toasts": {
+        "added": "Day added",
+        "removed": "Day removed",
+        "refused": "That could not be saved",
+        "try_again": "Please try again."
+      }
     }
   }
 }

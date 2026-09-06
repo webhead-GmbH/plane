@@ -468,6 +468,38 @@
         "refused": "Nie udało się zapisać",
         "try_again": "Proszę spróbować ponownie."
       }
+    },
+    "holidays": {
+      "title": "Dni świąteczne",
+      "subtitle": "Dni, w których nikt nie pracuje. Święto pomniejsza normę na ten dzień; nie jest doliczane do przepracowanych godzin.",
+      "back_to_month": "Miesiąc",
+      "calendar": "Kalendarz",
+      "previous_year": "Poprzedni rok",
+      "next_year": "Następny rok",
+      "none_this_year": "Brak dni w tym kalendarzu na ten rok.",
+      "not_permitted_detail": "Tylko przełożony może zmieniać kalendarz.",
+      "column_date": "Data",
+      "column_name": "Nazwa",
+      "column_kind": "Rodzaj",
+      "column_action": "Akcja",
+      "statutory": "Ustawowe",
+      "granted": "Przyznane",
+      "make_half": "Zmień na pół dnia",
+      "make_whole": "Zmień na cały dzień",
+      "remove": "Usuń ten dzień",
+      "add": "Dodaj dzień",
+      "add_button": "Dodaj",
+      "only_half": "Tylko pół dnia",
+      "name_placeholder": "Nazwa tego dnia",
+      "errors": {
+        "date_and_name": "Proszę podać datę i nazwę dnia."
+      },
+      "toasts": {
+        "added": "Dzień dodany",
+        "removed": "Dzień usunięty",
+        "refused": "Nie udało się zapisać",
+        "try_again": "Proszę spróbować ponownie."
+      }
     }
   }
 }

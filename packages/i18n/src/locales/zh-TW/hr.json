@@ -236,6 +236,38 @@
         "try_again": "請再試一次。"
       }
     },
+    "holidays": {
+      "title": "國定假日",
+      "subtitle": "沒有人上班的日子。假日會扣減當天的應工時，而不是加計到實際工時中。",
+      "back_to_month": "月份工時",
+      "calendar": "行事曆",
+      "previous_year": "上一年",
+      "next_year": "下一年",
+      "none_this_year": "這一年的行事曆上沒有任何日子。",
+      "not_permitted_detail": "只有主管才能變更行事曆。",
+      "column_date": "日期",
+      "column_name": "名稱",
+      "column_kind": "類型",
+      "column_action": "操作",
+      "statutory": "法定",
+      "granted": "公司給假",
+      "make_half": "改為半天",
+      "make_whole": "改為整天",
+      "remove": "移除這一天",
+      "add": "新增假日",
+      "add_button": "新增",
+      "only_half": "只有半天",
+      "name_placeholder": "這一天的名稱",
+      "errors": {
+        "date_and_name": "請填寫這一天的日期與名稱。"
+      },
+      "toasts": {
+        "added": "假日已新增",
+        "removed": "假日已移除",
+        "refused": "無法儲存",
+        "try_again": "請再試一次。"
+      }
+    },
     "arrangement": {
       "onsite_full_time": "現場辦公，全職",
       "onsite_part_time": "現場辦公，兼職",

@@ -468,6 +468,38 @@
       "no_rate": "Todavía no hay ninguna tarifa registrada a su nombre, por lo que aquí solo se muestran las horas. Pregunte a quien se ocupa del equipo.",
       "still_moving": "El mes sigue abierto, por lo que estas cifras aún pueden cambiar.",
       "settled": "El mes está cerrado, por lo que estas cifras son definitivas."
+    },
+    "holidays": {
+      "title": "Días festivos",
+      "subtitle": "Los días en que no trabaja nadie. Un día festivo reduce las horas previstas de esa jornada; no se suma a lo trabajado.",
+      "back_to_month": "El mes",
+      "calendar": "Calendario",
+      "previous_year": "Año anterior",
+      "next_year": "Año siguiente",
+      "none_this_year": "No hay días en este calendario para este año.",
+      "not_permitted_detail": "Solo un responsable puede modificar el calendario.",
+      "column_date": "Fecha",
+      "column_name": "Nombre",
+      "column_kind": "Tipo",
+      "column_action": "Acción",
+      "statutory": "Por ley",
+      "granted": "Concedido",
+      "make_half": "Convertir en medio día",
+      "make_whole": "Convertir en día completo",
+      "remove": "Eliminar este día",
+      "add": "Añadir un día",
+      "add_button": "Añadir",
+      "only_half": "Solo medio día",
+      "name_placeholder": "Cómo se llama el día",
+      "errors": {
+        "date_and_name": "Indique una fecha y un nombre para el día."
+      },
+      "toasts": {
+        "added": "Día añadido",
+        "removed": "Día eliminado",
+        "refused": "No se ha podido guardar",
+        "try_again": "Inténtelo de nuevo."
+      }
     }
   }
 }

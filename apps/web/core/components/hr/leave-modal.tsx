@@ -20,7 +20,7 @@ import {
   type THrWorkSchedule,
 } from "@/services/hr.service";
 // local imports
-import { formatDayWithYear, formatMinutes, parseDuration } from "./utils";
+import { formatDayWithYear, formatMinutes, parseDuration, refusalMessage } from "./utils";
 
 const hrService = new HrService();
 
@@ -76,7 +76,7 @@ export const HrLeaveModal = ({ person, schedule, onClose }: TProps) => {
     setToast({
       type: TOAST_TYPE.ERROR,
       title: t("hr.leave.toasts.refused"),
-      message: (failure as { error?: string })?.error ?? t("hr.leave.toasts.try_again"),
+      message: refusalMessage(failure) ?? t("hr.leave.toasts.try_again"),
     });
 
   /**

@@ -15,7 +15,7 @@ import { EModalPosition, EModalWidth, ModalCore } from "@plane/ui";
 // services
 import { EHrTimeCategory, EHrTimeSource, HrService, type THrTimeEntry } from "@/services/hr.service";
 // local imports
-import { formatDayLabel, formatMinutes, parseDuration } from "./utils";
+import { formatDayLabel, formatMinutes, parseDuration, refusalMessage } from "./utils";
 
 const hrService = new HrService();
 
@@ -107,7 +107,7 @@ export const HrDayEntriesModal = ({ workDate, profileId, isLocked, onClose, onCh
       setToast({
         type: TOAST_TYPE.ERROR,
         title: t("hr.entries.toasts.refused"),
-        message: (failure as { error?: string })?.error ?? t("hr.entries.toasts.try_again"),
+        message: refusalMessage(failure) ?? t("hr.entries.toasts.try_again"),
       });
     } finally {
       setIsBusy(false);
@@ -124,7 +124,7 @@ export const HrDayEntriesModal = ({ workDate, profileId, isLocked, onClose, onCh
       setToast({
         type: TOAST_TYPE.ERROR,
         title: t("hr.entries.toasts.refused"),
-        message: (failure as { error?: string })?.error ?? t("hr.entries.toasts.try_again"),
+        message: refusalMessage(failure) ?? t("hr.entries.toasts.try_again"),
       });
     } finally {
       setIsBusy(false);

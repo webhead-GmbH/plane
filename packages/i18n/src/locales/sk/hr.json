@@ -468,6 +468,38 @@
         "refused": "Nepodarilo sa uložiť",
         "try_again": "Skúste to prosím znova."
       }
+    },
+    "holidays": {
+      "title": "Sviatky",
+      "subtitle": "Dni, keď sa nepracuje. Sviatok znižuje predpísané hodiny na daný deň; nepripočítava sa k odpracovanému času.",
+      "back_to_month": "Mesiac",
+      "calendar": "Kalendár",
+      "previous_year": "Predchádzajúci rok",
+      "next_year": "Nasledujúci rok",
+      "none_this_year": "V tomto kalendári nie sú na tento rok žiadne dni.",
+      "not_permitted_detail": "Kalendár môže meniť iba manažér.",
+      "column_date": "Dátum",
+      "column_name": "Názov",
+      "column_kind": "Druh",
+      "column_action": "Akcia",
+      "statutory": "Zo zákona",
+      "granted": "Poskytnutý",
+      "make_half": "Zmeniť na pol dňa",
+      "make_whole": "Zmeniť na celý deň",
+      "remove": "Odstrániť tento deň",
+      "add": "Pridať deň",
+      "add_button": "Pridať",
+      "only_half": "Len pol dňa",
+      "name_placeholder": "Ako sa tento deň volá",
+      "errors": {
+        "date_and_name": "Zadajte dátum a názov dňa."
+      },
+      "toasts": {
+        "added": "Deň pridaný",
+        "removed": "Deň odstránený",
+        "refused": "Nepodarilo sa uložiť",
+        "try_again": "Skúste to prosím znova."
+      }
     }
   }
 }

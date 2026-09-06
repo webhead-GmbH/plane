@@ -287,6 +287,33 @@ export enum EHrConfidence {
 }
 
 /**
+ * A named set of non-working days, so people in different places can differ.
+ *
+ * Austria's statutory holidays are federal and identical in every Bundesland, so
+ * the region only carries weight for Germany and for days granted by agreement.
+ */
+export type THrHolidayCalendar = {
+  id: string;
+  name: string;
+  country_code: string;
+  region_code: string;
+  is_default: boolean;
+};
+
+/** One non-working day, possibly only half of one. */
+export type THrHoliday = {
+  id: string;
+  calendar: string;
+  date: string;
+  name_de: string;
+  name_en: string;
+  /** 1 for a whole day. 24 and 31 December are commonly half days by agreement. */
+  day_fraction: string;
+  /** A statutory holiday carries a pay entitlement; a granted day does not. */
+  is_statutory: boolean;
+};
+
+/**
  * Annual leave for one leave year, in minutes.
  *
  * Minutes rather than days because a day is not a fixed quantity for anyone
@@ -905,6 +932,55 @@ export class HrService extends APIService {
     payload: Partial<THrLeaveEntitlement>
   ): Promise<THrLeaveEntitlement> {
     return this.patch(`${this.base}/employees/${profileId}/leave/${entitlementId}/`, payload)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  async holidayCalendars(): Promise<THrHolidayCalendar[]> {
+    return this.get(`${this.base}/holiday-calendars/`)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  async createHolidayCalendar(payload: Partial<THrHolidayCalendar>): Promise<THrHolidayCalendar> {
+    return this.post(`${this.base}/holiday-calendars/`, payload)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  /** Everybody may read the calendar; only a manager may change it. */
+  async holidays(calendarId: string, year: number): Promise<THrHoliday[]> {
+    return this.get(`${this.base}/holidays/?calendar=${calendarId}&year=${year}`)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  async createHoliday(payload: Partial<THrHoliday>): Promise<THrHoliday> {
+    return this.post(`${this.base}/holidays/`, payload)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  async updateHoliday(holidayId: string, payload: Partial<THrHoliday>): Promise<THrHoliday> {
+    return this.patch(`${this.base}/holidays/${holidayId}/`, payload)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  async deleteHoliday(holidayId: string) {
+    return this.delete(`${this.base}/holidays/${holidayId}/`)
       .then((response) => response?.data)
       .catch((error) => {
         throw error?.response?.data;

@@ -236,6 +236,38 @@
         "try_again": "Por favor, tente novamente."
       }
     },
+    "holidays": {
+      "title": "Feriados",
+      "subtitle": "Os dias em que ninguém trabalha. Um feriado reduz as horas previstas daquele dia; ele não é somado ao que foi trabalhado.",
+      "back_to_month": "O mês",
+      "calendar": "Calendário",
+      "previous_year": "Ano anterior",
+      "next_year": "Próximo ano",
+      "none_this_year": "Nenhum dia neste calendário para este ano.",
+      "not_permitted_detail": "Somente gestores podem alterar o calendário.",
+      "column_date": "Data",
+      "column_name": "Nome",
+      "column_kind": "Tipo",
+      "column_action": "Ação",
+      "statutory": "Por lei",
+      "granted": "Concedido",
+      "make_half": "Transformar em meio dia",
+      "make_whole": "Transformar em dia inteiro",
+      "remove": "Remover este dia",
+      "add": "Adicionar dia",
+      "add_button": "Adicionar",
+      "only_half": "Apenas meio dia",
+      "name_placeholder": "Como o dia se chama",
+      "errors": {
+        "date_and_name": "Informe uma data e um nome para o dia."
+      },
+      "toasts": {
+        "added": "Dia adicionado",
+        "removed": "Dia removido",
+        "refused": "Não foi possível salvar",
+        "try_again": "Por favor, tente novamente."
+      }
+    },
     "arrangement": {
       "onsite_full_time": "Presencial, tempo integral",
       "onsite_part_time": "Presencial, meio período",

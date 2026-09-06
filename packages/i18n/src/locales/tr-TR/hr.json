@@ -468,6 +468,38 @@
       "no_rate": "Sizin için henüz kayıtlı bir ücret yok, bu nedenle burada yalnızca saatler görünür. Ekipten sorumlu olan kişiye sorun.",
       "still_moving": "Ay hâlâ açık, bu nedenle bu rakamlar değişebilir.",
       "settled": "Ay kapatıldı, bu nedenle bu rakamlar kesinleşti."
+    },
+    "holidays": {
+      "title": "Resmi tatiller",
+      "subtitle": "Kimsenin çalışmadığı günler. Tatil, o günün hedefini düşürür; çalışılana eklenmez.",
+      "back_to_month": "Ay",
+      "calendar": "Takvim",
+      "previous_year": "Önceki yıl",
+      "next_year": "Sonraki yıl",
+      "none_this_year": "Bu takvimde bu yıla ait gün yok.",
+      "not_permitted_detail": "Takvimi yalnızca yönetici değiştirebilir.",
+      "column_date": "Tarih",
+      "column_name": "Ad",
+      "column_kind": "Tür",
+      "column_action": "İşlem",
+      "statutory": "Yasal",
+      "granted": "İdari",
+      "make_half": "Yarım güne çevir",
+      "make_whole": "Tam güne çevir",
+      "remove": "Bu günü kaldır",
+      "add": "Gün ekle",
+      "add_button": "Ekle",
+      "only_half": "Yalnızca yarım gün",
+      "name_placeholder": "Günün adı",
+      "errors": {
+        "date_and_name": "Güne bir tarih ve bir ad verin."
+      },
+      "toasts": {
+        "added": "Gün eklendi",
+        "removed": "Gün kaldırıldı",
+        "refused": "Bu kaydedilemedi",
+        "try_again": "Lütfen tekrar deneyin."
+      }
     }
   }
 }

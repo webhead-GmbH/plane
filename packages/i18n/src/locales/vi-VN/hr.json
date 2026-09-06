@@ -236,6 +236,38 @@
         "try_again": "Vui lòng thử lại."
       }
     },
+    "holidays": {
+      "title": "Ngày lễ",
+      "subtitle": "Những ngày không ai đi làm. Ngày lễ làm giảm giờ định mức của ngày hôm đó, chứ không được cộng vào số giờ đã làm.",
+      "back_to_month": "Tháng",
+      "calendar": "Lịch",
+      "previous_year": "Năm trước",
+      "next_year": "Năm sau",
+      "none_this_year": "Lịch này không có ngày nào trong năm này.",
+      "not_permitted_detail": "Chỉ quản lý mới thay đổi được lịch này.",
+      "column_date": "Ngày",
+      "column_name": "Tên",
+      "column_kind": "Loại",
+      "column_action": "Thao tác",
+      "statutory": "Theo luật",
+      "granted": "Công ty cho",
+      "make_half": "Chuyển thành nửa ngày",
+      "make_whole": "Chuyển thành cả ngày",
+      "remove": "Xóa ngày này",
+      "add": "Thêm một ngày",
+      "add_button": "Thêm",
+      "only_half": "Chỉ nửa ngày",
+      "name_placeholder": "Tên gọi của ngày này",
+      "errors": {
+        "date_and_name": "Hãy chọn ngày và đặt tên cho ngày lễ này."
+      },
+      "toasts": {
+        "added": "Đã thêm ngày lễ",
+        "removed": "Đã xóa ngày lễ",
+        "refused": "Không thể lưu",
+        "try_again": "Vui lòng thử lại."
+      }
+    },
     "arrangement": {
       "onsite_full_time": "Tại văn phòng, toàn thời gian",
       "onsite_part_time": "Tại văn phòng, bán thời gian",

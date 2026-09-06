@@ -236,6 +236,38 @@
         "try_again": "Zkuste to prosím znovu."
       }
     },
+    "holidays": {
+      "title": "Státní svátky",
+      "subtitle": "Dny, kdy nikdo nepracuje. Svátek snižuje předepsané hodiny na daný den; k odpracovaným hodinám se nepřičítá.",
+      "back_to_month": "Měsíc",
+      "calendar": "Kalendář",
+      "previous_year": "Předchozí rok",
+      "next_year": "Další rok",
+      "none_this_year": "V tomto kalendáři nejsou pro tento rok žádné dny.",
+      "not_permitted_detail": "Kalendář může měnit jen manažer.",
+      "column_date": "Datum",
+      "column_name": "Název",
+      "column_kind": "Druh",
+      "column_action": "Akce",
+      "statutory": "Ze zákona",
+      "granted": "Poskytnutý",
+      "make_half": "Změnit na půlden",
+      "make_whole": "Změnit na celý den",
+      "remove": "Odebrat tento den",
+      "add": "Přidat den",
+      "add_button": "Přidat",
+      "only_half": "Jen půlden",
+      "name_placeholder": "Jak se tento den jmenuje",
+      "errors": {
+        "date_and_name": "Zadejte u tohoto dne datum a název."
+      },
+      "toasts": {
+        "added": "Den přidán",
+        "removed": "Den odebrán",
+        "refused": "Uložení se nezdařilo",
+        "try_again": "Zkuste to prosím znovu."
+      }
+    },
     "arrangement": {
       "onsite_full_time": "Na pracovišti, plný úvazek",
       "onsite_part_time": "Na pracovišti, částečný úvazek",

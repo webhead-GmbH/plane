@@ -468,6 +468,38 @@
         "refused": "Speichern nicht möglich",
         "try_again": "Bitte versuchen Sie es erneut."
       }
+    },
+    "holidays": {
+      "title": "Feiertage",
+      "subtitle": "Tage, an denen niemand arbeitet. Ein Feiertag verringert das Soll für diesen Tag; er wird nicht zu den geleisteten Stunden hinzugezählt.",
+      "back_to_month": "Der Monat",
+      "calendar": "Kalender",
+      "previous_year": "Vorjahr",
+      "next_year": "Folgejahr",
+      "none_this_year": "Für dieses Jahr sind in diesem Kalender keine Tage hinterlegt.",
+      "not_permitted_detail": "Nur Führungskräfte können den Kalender ändern.",
+      "column_date": "Datum",
+      "column_name": "Name",
+      "column_kind": "Art",
+      "column_action": "Aktion",
+      "statutory": "Gesetzlich",
+      "granted": "Betrieblich",
+      "make_half": "Auf halben Tag setzen",
+      "make_whole": "Auf ganzen Tag setzen",
+      "remove": "Diesen Tag entfernen",
+      "add": "Tag hinzufügen",
+      "add_button": "Hinzufügen",
+      "only_half": "Nur ein halber Tag",
+      "name_placeholder": "Bezeichnung des Tages",
+      "errors": {
+        "date_and_name": "Geben Sie für den Tag ein Datum und einen Namen an."
+      },
+      "toasts": {
+        "added": "Tag hinzugefügt",
+        "removed": "Tag entfernt",
+        "refused": "Speichern nicht möglich",
+        "try_again": "Bitte versuchen Sie es erneut."
+      }
     }
   }
 }
