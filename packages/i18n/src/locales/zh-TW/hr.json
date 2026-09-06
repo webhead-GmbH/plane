@@ -165,7 +165,8 @@
         "try_again": "請再試一次。"
       },
       "opening": "期初結餘",
-      "rates": "費率"
+      "rates": "費率",
+      "leave": "年假"
     },
     "rates": {
       "title": "{person} 的計酬費率",
@@ -197,6 +198,38 @@
       "toasts": {
         "added": "費率已新增",
         "removed": "費率已刪除",
+        "refused": "無法儲存",
+        "try_again": "請再試一次。"
+      }
+    },
+    "leave": {
+      "title": "{person} 的年假",
+      "hint": "額度以分鐘記錄，而非天數：對每天工時不一的人來說，「一天」並不是固定的長度。年假年度自到職週年日起算。",
+      "none_yet": "尚未記錄任何年假年度。",
+      "add": "新增年假年度",
+      "add_button": "新增",
+      "close": "關閉",
+      "year_start": "年度起始日",
+      "year_end": "年度結束日",
+      "entitlement": "年度年假",
+      "carryover": "前期結轉",
+      "carryover_placeholder": "選填，可為負數",
+      "duration_placeholder": "例如 200:00",
+      "basis": "這些數字的依據",
+      "basis_placeholder": "選填",
+      "between": "{from} 至 {to}",
+      "about_days": "約 {days} 天",
+      "carried": "前期結轉 {duration}",
+      "agree": "確認無誤",
+      "agreed": "已議定",
+      "errors": {
+        "dates_required": "請填寫年假年度的起訖日期。",
+        "backwards": "年假年度的結束日不能早於起始日。",
+        "bad_duration": "請將時間長度寫成 200:00、200 或 12000m。"
+      },
+      "toasts": {
+        "added": "年假年度已新增",
+        "agreed": "已標記為議定",
         "refused": "無法儲存",
         "try_again": "請再試一次。"
       }

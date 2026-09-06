@@ -165,7 +165,8 @@
         "try_again": "Zkuste to prosím znovu."
       },
       "opening": "Počáteční saldo",
-      "rates": "Sazby"
+      "rates": "Sazby",
+      "leave": "Dovolená"
     },
     "rates": {
       "title": "Hodnota času – {person}",
@@ -197,6 +198,38 @@
       "toasts": {
         "added": "Sazba přidána",
         "removed": "Sazba smazána",
+        "refused": "Uložení se nezdařilo",
+        "try_again": "Zkuste to prosím znovu."
+      }
+    },
+    "leave": {
+      "title": "Dovolená – {person}",
+      "hint": "Eviduje se v minutách, ne ve dnech: pro toho, kdo pracuje nestejně dlouhé dny, není den pevnou veličinou. Dovolenkový rok běží od výročí nástupu.",
+      "none_yet": "Zatím není zaznamenán žádný dovolenkový rok.",
+      "add": "Přidat dovolenkový rok",
+      "add_button": "Přidat",
+      "close": "Zavřít",
+      "year_start": "Dovolenkový rok od",
+      "year_end": "Dovolenkový rok do",
+      "entitlement": "Dovolená na rok",
+      "carryover": "Převedeno",
+      "carryover_placeholder": "Nepovinné, může být záporné",
+      "duration_placeholder": "např. 200:00",
+      "basis": "Z čeho to vychází",
+      "basis_placeholder": "Nepovinné",
+      "between": "Od {from} do {to}",
+      "about_days": "přibližně {days} dne",
+      "carried": "{duration} převedeno",
+      "agree": "Odsouhlasit",
+      "agreed": "Odsouhlaseno",
+      "errors": {
+        "dates_required": "Uveďte, kdy dovolenkový rok začíná a kdy končí.",
+        "backwards": "Dovolenkový rok nemůže skončit dříve, než začne.",
+        "bad_duration": "Zadejte dobu jako 200:00, 200 nebo 12000m."
+      },
+      "toasts": {
+        "added": "Dovolenkový rok přidán",
+        "agreed": "Označeno jako odsouhlasené",
         "refused": "Uložení se nezdařilo",
         "try_again": "Zkuste to prosím znovu."
       }

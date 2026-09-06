@@ -165,7 +165,8 @@
         "try_again": "もう一度お試しください。"
       },
       "opening": "開始時の過不足",
-      "rates": "単価"
+      "rates": "単価",
+      "leave": "年次休暇"
     },
     "rates": {
       "title": "{person}さんの単価",
@@ -197,6 +198,38 @@
       "toasts": {
         "added": "単価を追加しました",
         "removed": "単価を削除しました",
+        "refused": "保存できませんでした",
+        "try_again": "もう一度お試しください。"
+      }
+    },
+    "leave": {
+      "title": "{person}さんの年次休暇",
+      "hint": "年次休暇は日数ではなく分単位で保持します。勤務時間が日によって異なる場合、1日は決まった長さではないためです。年次休暇の年度は入社日の応当日から始まります。",
+      "none_yet": "年次休暇の年度はまだ記録されていません。",
+      "add": "年次休暇の年度を追加",
+      "add_button": "追加",
+      "close": "閉じる",
+      "year_start": "年度の開始日",
+      "year_end": "年度の終了日",
+      "entitlement": "年度の休暇時間",
+      "carryover": "繰越",
+      "carryover_placeholder": "任意（マイナスも入力できます）",
+      "duration_placeholder": "例：200:00",
+      "basis": "根拠",
+      "basis_placeholder": "任意",
+      "between": "{from}から{to}まで",
+      "about_days": "約{days}日",
+      "carried": "{duration}を繰り越し",
+      "agree": "合意する",
+      "agreed": "合意済み",
+      "errors": {
+        "dates_required": "年次休暇の年度の開始日と終了日を入力してください。",
+        "backwards": "年度の終了日を開始日より前にはできません。",
+        "bad_duration": "時間は200:00、200、12000mのように入力してください。"
+      },
+      "toasts": {
+        "added": "年次休暇の年度を追加しました",
+        "agreed": "合意済みにしました",
         "refused": "保存できませんでした",
         "try_again": "もう一度お試しください。"
       }

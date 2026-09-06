@@ -165,7 +165,8 @@
         "try_again": "Please try again."
       },
       "opening": "Starting balance",
-      "rates": "Rates"
+      "rates": "Rates",
+      "leave": "Leave"
     },
     "arrangement": {
       "onsite_full_time": "On site, full time",
@@ -433,6 +434,38 @@
       "no_rate": "No rate on record for you yet, so this shows the hours only. Ask whoever looks after the team.",
       "still_moving": "The month is still open, so these figures can still move.",
       "settled": "The month is closed, so these figures are settled."
+    },
+    "leave": {
+      "title": "{person}'s leave",
+      "hint": "Held in minutes, not days: a day is not a fixed quantity for anyone working uneven hours. The leave year runs from the anniversary of joining.",
+      "none_yet": "No leave year on record yet.",
+      "add": "Add a leave year",
+      "add_button": "Add",
+      "close": "Close",
+      "year_start": "Leave year from",
+      "year_end": "Leave year to",
+      "entitlement": "Leave for the year",
+      "carryover": "Carried over",
+      "carryover_placeholder": "Optional, may be negative",
+      "duration_placeholder": "e.g. 200:00",
+      "basis": "What this is based on",
+      "basis_placeholder": "Optional",
+      "between": "{from} to {to}",
+      "about_days": "about {days} days",
+      "carried": "{duration} carried over",
+      "agree": "Agree",
+      "agreed": "Agreed",
+      "errors": {
+        "dates_required": "Say when the leave year starts and ends.",
+        "backwards": "The leave year cannot end before it starts.",
+        "bad_duration": "Write the time as 200:00, 200 or 12000m."
+      },
+      "toasts": {
+        "added": "Leave year added",
+        "agreed": "Marked as agreed",
+        "refused": "That could not be saved",
+        "try_again": "Please try again."
+      }
     }
   }
 }

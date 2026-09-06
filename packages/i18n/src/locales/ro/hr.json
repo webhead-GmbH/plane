@@ -165,7 +165,8 @@
         "try_again": "Vă rugăm să încercați din nou."
       },
       "opening": "Sold inițial",
-      "rates": "Tarife"
+      "rates": "Tarife",
+      "leave": "Concediu"
     },
     "arrangement": {
       "onsite_full_time": "La sediu, normă întreagă",
@@ -433,6 +434,38 @@
       "no_rate": "Nu aveți încă niciun tarif înregistrat, așa că aici apar doar orele. Adresați-vă persoanei care se ocupă de echipă.",
       "still_moving": "Luna este încă deschisă, așa că aceste cifre se mai pot modifica.",
       "settled": "Luna este închisă, așa că aceste cifre sunt definitive."
+    },
+    "leave": {
+      "title": "Concediul pentru {person}",
+      "hint": "Se ține în minute, nu în zile: o zi nu este o mărime fixă pentru cine lucrează ore inegale. Anul de concediu curge de la aniversarea angajării.",
+      "none_yet": "Niciun an de concediu înregistrat încă.",
+      "add": "Adăugați un an de concediu",
+      "add_button": "Adăugați",
+      "close": "Închideți",
+      "year_start": "Anul de concediu, de la",
+      "year_end": "Anul de concediu, până la",
+      "entitlement": "Concediul pe an",
+      "carryover": "Report",
+      "carryover_placeholder": "Opțional, poate fi negativ",
+      "duration_placeholder": "ex. 200:00",
+      "basis": "Pe ce se bazează",
+      "basis_placeholder": "Opțional",
+      "between": "{from} – {to}",
+      "about_days": "aproximativ {days} zile",
+      "carried": "{duration} reportate",
+      "agree": "Acceptați",
+      "agreed": "Acceptat",
+      "errors": {
+        "dates_required": "Precizați când începe și când se încheie anul de concediu.",
+        "backwards": "Anul de concediu nu se poate încheia înainte de a începe.",
+        "bad_duration": "Scrieți durata ca 200:00, 200 sau 12000m."
+      },
+      "toasts": {
+        "added": "An de concediu adăugat",
+        "agreed": "Marcat ca acceptat",
+        "refused": "Nu s-a putut salva",
+        "try_again": "Vă rugăm să încercați din nou."
+      }
     }
   }
 }

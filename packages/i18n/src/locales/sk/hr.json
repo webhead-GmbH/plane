@@ -165,7 +165,8 @@
         "try_again": "Skúste to prosím znova."
       },
       "opening": "Počiatočné saldo",
-      "rates": "Sadzby"
+      "rates": "Sadzby",
+      "leave": "Dovolenka"
     },
     "arrangement": {
       "onsite_full_time": "Na pracovisku, plný úväzok",
@@ -433,6 +434,38 @@
       "no_rate": "Zatiaľ pre vás nie je zaznamenaná žiadna sadzba, takže sa tu zobrazujú len hodiny. Obráťte sa na toho, kto tím vedie.",
       "still_moving": "Mesiac je ešte otvorený, takže tieto čísla sa ešte môžu zmeniť.",
       "settled": "Mesiac je uzavretý, takže tieto čísla sú konečné."
+    },
+    "leave": {
+      "title": "Dovolenka používateľa {person}",
+      "hint": "Eviduje sa v minútach, nie v dňoch: pri nerovnomerne rozvrhnutých hodinách nie je deň pevná veličina. Dovolenkový rok plynie od výročia nástupu.",
+      "none_yet": "Zatiaľ nie je zaznamenaný žiadny dovolenkový rok.",
+      "add": "Pridať dovolenkový rok",
+      "add_button": "Pridať",
+      "close": "Zavrieť",
+      "year_start": "Dovolenkový rok od",
+      "year_end": "Dovolenkový rok do",
+      "entitlement": "Dovolenka za rok",
+      "carryover": "Prenesené",
+      "carryover_placeholder": "Voliteľné, môže byť aj záporné",
+      "duration_placeholder": "napr. 200:00",
+      "basis": "Z čoho to vychádza",
+      "basis_placeholder": "Voliteľné",
+      "between": "{from} – {to}",
+      "about_days": "približný počet dní: {days}",
+      "carried": "Prenesené: {duration}",
+      "agree": "Odsúhlasiť",
+      "agreed": "Odsúhlasené",
+      "errors": {
+        "dates_required": "Uveďte, kedy sa dovolenkový rok začína a kedy končí.",
+        "backwards": "Dovolenkový rok sa nemôže skončiť skôr, ako sa začne.",
+        "bad_duration": "Čas zapíšte ako 200:00, 200 alebo 12000m."
+      },
+      "toasts": {
+        "added": "Dovolenkový rok pridaný",
+        "agreed": "Označené ako odsúhlasené",
+        "refused": "Nepodarilo sa uložiť",
+        "try_again": "Skúste to prosím znova."
+      }
     }
   }
 }

@@ -165,7 +165,8 @@
         "try_again": "Vuelva a intentarlo."
       },
       "opening": "Saldo inicial",
-      "rates": "Tarifas"
+      "rates": "Tarifas",
+      "leave": "Vacaciones"
     },
     "arrangement": {
       "onsite_full_time": "Presencial, jornada completa",
@@ -419,6 +420,38 @@
       "toasts": {
         "added": "Tarifa añadida",
         "removed": "Tarifa eliminada",
+        "refused": "No se ha podido guardar",
+        "try_again": "Inténtelo de nuevo."
+      }
+    },
+    "leave": {
+      "title": "Vacaciones de {person}",
+      "hint": "Se guardan en minutos, no en días: un día no es una cantidad fija para quien no trabaja siempre las mismas horas. El año de vacaciones empieza en el aniversario de la incorporación.",
+      "none_yet": "Todavía no hay ningún año de vacaciones registrado.",
+      "add": "Añadir un año de vacaciones",
+      "add_button": "Añadir",
+      "close": "Cerrar",
+      "year_start": "Año de vacaciones desde",
+      "year_end": "Año de vacaciones hasta",
+      "entitlement": "Vacaciones del año",
+      "carryover": "Arrastrado",
+      "carryover_placeholder": "Opcional, puede ser negativo",
+      "duration_placeholder": "p. ej. 200:00",
+      "basis": "En qué se basa",
+      "basis_placeholder": "Opcional",
+      "between": "De {from} a {to}",
+      "about_days": "unos {days} días",
+      "carried": "{duration} arrastrado",
+      "agree": "Aceptar",
+      "agreed": "Aceptado",
+      "errors": {
+        "dates_required": "Indique cuándo empieza y cuándo termina el año de vacaciones.",
+        "backwards": "El año de vacaciones no puede terminar antes de empezar.",
+        "bad_duration": "Escriba la duración como 200:00, 200 o 12000m."
+      },
+      "toasts": {
+        "added": "Año de vacaciones añadido",
+        "agreed": "Marcado como aceptado",
         "refused": "No se ha podido guardar",
         "try_again": "Inténtelo de nuevo."
       }

@@ -165,7 +165,8 @@
         "try_again": "Silakan coba lagi."
       },
       "opening": "Saldo awal",
-      "rates": "Tarif"
+      "rates": "Tarif",
+      "leave": "Cuti"
     },
     "arrangement": {
       "onsite_full_time": "Di kantor, penuh waktu",
@@ -419,6 +420,38 @@
       "toasts": {
         "added": "Tarif ditambahkan",
         "removed": "Tarif dihapus",
+        "refused": "Tidak dapat disimpan",
+        "try_again": "Silakan coba lagi."
+      }
+    },
+    "leave": {
+      "title": "Cuti {person}",
+      "hint": "Disimpan dalam menit, bukan hari: bagi siapa pun yang jam kerjanya tidak sama tiap hari, satu hari bukanlah jumlah yang tetap. Tahun cuti berjalan mulai dari tanggal mulai bekerja setiap tahunnya.",
+      "none_yet": "Belum ada tahun cuti yang tercatat.",
+      "add": "Tambah tahun cuti",
+      "add_button": "Tambah",
+      "close": "Tutup",
+      "year_start": "Tahun cuti mulai",
+      "year_end": "Tahun cuti sampai",
+      "entitlement": "Jatah cuti setahun",
+      "carryover": "Dibawa dari tahun lalu",
+      "carryover_placeholder": "Opsional, boleh negatif",
+      "duration_placeholder": "mis. 200:00",
+      "basis": "Dasar penetapannya",
+      "basis_placeholder": "Opsional",
+      "between": "{from} sampai {to}",
+      "about_days": "sekitar {days} hari",
+      "carried": "{duration} dibawa dari tahun lalu",
+      "agree": "Terima",
+      "agreed": "Diterima",
+      "errors": {
+        "dates_required": "Sebutkan kapan tahun cuti ini mulai dan berakhir.",
+        "backwards": "Tahun cuti tidak boleh berakhir sebelum tanggal mulainya.",
+        "bad_duration": "Tulis durasinya sebagai 200:00, 200 atau 12000m."
+      },
+      "toasts": {
+        "added": "Tahun cuti ditambahkan",
+        "agreed": "Ditandai sebagai diterima",
         "refused": "Tidak dapat disimpan",
         "try_again": "Silakan coba lagi."
       }

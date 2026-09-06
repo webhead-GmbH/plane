@@ -165,7 +165,8 @@
         "try_again": "Bitte versuchen Sie es erneut."
       },
       "opening": "Anfangssaldo",
-      "rates": "Vergütungssätze"
+      "rates": "Vergütungssätze",
+      "leave": "Urlaub"
     },
     "arrangement": {
       "onsite_full_time": "Vor Ort, Vollzeit",
@@ -433,6 +434,38 @@
       "no_rate": "Für Sie ist noch kein Vergütungssatz hinterlegt, daher werden hier nur die Stunden ausgewiesen. Wenden Sie sich an die Person, die das Team betreut.",
       "still_moving": "Der Monat ist noch offen, daher können sich diese Werte noch ändern.",
       "settled": "Der Monat ist abgeschlossen, daher stehen diese Werte fest."
+    },
+    "leave": {
+      "title": "Urlaub von {person}",
+      "hint": "Der Anspruch wird in Minuten geführt, nicht in Tagen: Bei ungleichmäßigen Arbeitszeiten ist ein Tag keine feste Größe. Das Urlaubsjahr läuft jeweils ab dem Jahrestag des Eintritts.",
+      "none_yet": "Es ist noch kein Urlaubsjahr hinterlegt.",
+      "add": "Urlaubsjahr hinzufügen",
+      "add_button": "Hinzufügen",
+      "close": "Schließen",
+      "year_start": "Urlaubsjahr von",
+      "year_end": "Urlaubsjahr bis",
+      "entitlement": "Urlaub für das Jahr",
+      "carryover": "Übertrag",
+      "carryover_placeholder": "Optional, kann negativ sein",
+      "duration_placeholder": "z. B. 200:00",
+      "basis": "Worauf dies beruht",
+      "basis_placeholder": "Optional",
+      "between": "{from} bis {to}",
+      "about_days": "etwa {days} Tage",
+      "carried": "{duration} Übertrag",
+      "agree": "Vereinbaren",
+      "agreed": "Vereinbart",
+      "errors": {
+        "dates_required": "Geben Sie an, wann das Urlaubsjahr beginnt und endet.",
+        "backwards": "Das Urlaubsjahr darf nicht enden, bevor es beginnt.",
+        "bad_duration": "Geben Sie die Zeit als 200:00, 200 oder 12000m ein."
+      },
+      "toasts": {
+        "added": "Urlaubsjahr hinzugefügt",
+        "agreed": "Als vereinbart markiert",
+        "refused": "Speichern nicht möglich",
+        "try_again": "Bitte versuchen Sie es erneut."
+      }
     }
   }
 }

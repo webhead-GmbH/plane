@@ -165,7 +165,8 @@
         "try_again": "Riprovi, per favore."
       },
       "opening": "Saldo iniziale",
-      "rates": "Tariffe"
+      "rates": "Tariffe",
+      "leave": "Ferie"
     },
     "arrangement": {
       "onsite_full_time": "In sede, tempo pieno",
@@ -433,6 +434,38 @@
       "no_rate": "Non è stata ancora registrata alcuna tariffa per Lei, perciò qui compaiono solo le ore. Si rivolga a chi si occupa del team.",
       "still_moving": "Il mese è ancora aperto, perciò questi dati possono ancora cambiare.",
       "settled": "Il mese è chiuso, perciò questi dati sono definitivi."
+    },
+    "leave": {
+      "title": "Ferie di {person}",
+      "hint": "Le ferie sono conteggiate in minuti, non in giorni: per chi lavora con orari variabili una giornata non è una quantità fissa. L'anno di ferie decorre dall'anniversario dell'assunzione.",
+      "none_yet": "Nessun anno di ferie ancora registrato.",
+      "add": "Aggiungi un anno di ferie",
+      "add_button": "Aggiungi",
+      "close": "Chiudi",
+      "year_start": "Anno di ferie dal",
+      "year_end": "Anno di ferie al",
+      "entitlement": "Ferie dell'anno",
+      "carryover": "Riporto",
+      "carryover_placeholder": "Facoltativo, può essere negativo",
+      "duration_placeholder": "es. 200:00",
+      "basis": "Su cosa si basa",
+      "basis_placeholder": "Facoltativo",
+      "between": "Dal {from} al {to}",
+      "about_days": "circa {days} giorni",
+      "carried": "{duration} di riporto",
+      "agree": "È corretto",
+      "agreed": "Accettato",
+      "errors": {
+        "dates_required": "Indichi quando inizia e quando finisce l'anno di ferie.",
+        "backwards": "L'anno di ferie non può finire prima di iniziare.",
+        "bad_duration": "Scriva la durata come 200:00, 200 oppure 12000m."
+      },
+      "toasts": {
+        "added": "Anno di ferie aggiunto",
+        "agreed": "Contrassegnato come accettato",
+        "refused": "Non è stato possibile salvare",
+        "try_again": "Riprovi, per favore."
+      }
     }
   }
 }

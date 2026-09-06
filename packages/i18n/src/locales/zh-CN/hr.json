@@ -165,7 +165,8 @@
         "try_again": "请重试。"
       },
       "opening": "期初结余",
-      "rates": "费率"
+      "rates": "费率",
+      "leave": "年假"
     },
     "arrangement": {
       "onsite_full_time": "现场办公，全职",
@@ -433,6 +434,38 @@
       "no_rate": "尚未记录您的费率，因此这里只显示工时。请联系团队负责人。",
       "still_moving": "该月尚未关闭，因此这些数据仍可能变动。",
       "settled": "该月已关闭，因此这些数据已经确定。"
+    },
+    "leave": {
+      "title": "{person} 的年假",
+      "hint": "年假以分钟记录，而不是以天记录：对于每天工时不一的人来说，一天并不是一个固定的量。年假年度自入职周年日起算。",
+      "none_yet": "尚未记录任何年假年度。",
+      "add": "添加年假年度",
+      "add_button": "添加",
+      "close": "关闭",
+      "year_start": "年假年度自",
+      "year_end": "年假年度至",
+      "entitlement": "本年度年假额度",
+      "carryover": "结转",
+      "carryover_placeholder": "选填，可以为负数",
+      "duration_placeholder": "例如 200:00",
+      "basis": "依据",
+      "basis_placeholder": "选填",
+      "between": "{from} 至 {to}",
+      "about_days": "约 {days} 天",
+      "carried": "结转 {duration}",
+      "agree": "确认无误",
+      "agreed": "已商定",
+      "errors": {
+        "dates_required": "请填写该年假年度的起止日期。",
+        "backwards": "年假年度的结束日期不能早于开始日期。",
+        "bad_duration": "请将时长写作 200:00、200 或 12000m。"
+      },
+      "toasts": {
+        "added": "年假年度已添加",
+        "agreed": "已标记为商定",
+        "refused": "无法保存",
+        "try_again": "请重试。"
+      }
     }
   }
 }

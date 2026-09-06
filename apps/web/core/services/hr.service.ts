@@ -286,6 +286,30 @@ export enum EHrConfidence {
   AGREED = 40,
 }
 
+/**
+ * Annual leave for one leave year, in minutes.
+ *
+ * Minutes rather than days because a day is not a fixed quantity for anyone
+ * working uneven hours, and the moment contracted hours change mid-year the day
+ * figure becomes ambiguous while the minute figure does not. Days are worked out
+ * for display from the schedule and never stored.
+ */
+export type THrLeaveEntitlement = {
+  id: string;
+  profile: string;
+  leave_year_start: string;
+  leave_year_end: string;
+  entitlement_minutes: number;
+  /** Signed: leave can be carried forward, and it can also be taken in advance. */
+  carryover_minutes: number;
+  adjustment_minutes: number;
+  granted_minutes: number;
+  expires_on: string | null;
+  basis_note: string;
+  /** Agreed with the person, after which it is adjusted rather than edited. */
+  is_final: boolean;
+};
+
 /** How somebody is paid for a stretch of time. */
 export enum EHrRateBasis {
   HOURLY = 10,
@@ -828,6 +852,36 @@ export class HrService extends APIService {
 
   async removeRateCard(rateId: string) {
     return this.delete(`${this.base}/rate-cards/${rateId}/`)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  /** A person may read their own; only a manager may write. */
+  async leaveEntitlements(profileId: string): Promise<THrLeaveEntitlement[]> {
+    return this.get(`${this.base}/employees/${profileId}/leave/`)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  async createLeaveEntitlement(profileId: string, payload: Partial<THrLeaveEntitlement>): Promise<THrLeaveEntitlement> {
+    return this.post(`${this.base}/employees/${profileId}/leave/`, payload)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  /** Refused once the figure has been agreed, which the server enforces. */
+  async updateLeaveEntitlement(
+    profileId: string,
+    entitlementId: string,
+    payload: Partial<THrLeaveEntitlement>
+  ): Promise<THrLeaveEntitlement> {
+    return this.patch(`${this.base}/employees/${profileId}/leave/${entitlementId}/`, payload)
       .then((response) => response?.data)
       .catch((error) => {
         throw error?.response?.data;

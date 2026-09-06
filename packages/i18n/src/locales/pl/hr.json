@@ -165,7 +165,8 @@
         "try_again": "Proszę spróbować ponownie."
       },
       "opening": "Saldo początkowe",
-      "rates": "Stawki"
+      "rates": "Stawki",
+      "leave": "Urlop"
     },
     "arrangement": {
       "onsite_full_time": "Na miejscu, pełny wymiar godzin",
@@ -433,6 +434,38 @@
       "no_rate": "Nie zarejestrowano jeszcze żadnej stawki, więc widoczne są tu tylko godziny. Proszę zwrócić się do osoby odpowiedzialnej za zespół.",
       "still_moving": "Miesiąc jest nadal otwarty, więc te wartości mogą się jeszcze zmienić.",
       "settled": "Miesiąc jest zamknięty, więc te wartości są ostateczne."
+    },
+    "leave": {
+      "title": "Urlop osoby {person}",
+      "hint": "Zapisywany w minutach, a nie w dniach: dla osoby pracującej w nierównym wymiarze godzin dzień nie jest stałą wielkością. Rok urlopowy biegnie od rocznicy rozpoczęcia pracy.",
+      "none_yet": "Nie zarejestrowano jeszcze żadnego roku urlopowego.",
+      "add": "Dodaj rok urlopowy",
+      "add_button": "Dodaj",
+      "close": "Zamknij",
+      "year_start": "Rok urlopowy od",
+      "year_end": "Rok urlopowy do",
+      "entitlement": "Urlop na ten rok",
+      "carryover": "Z przeniesienia",
+      "carryover_placeholder": "Opcjonalnie, może być ujemne",
+      "duration_placeholder": "np. 200:00",
+      "basis": "Na czym jest oparty",
+      "basis_placeholder": "Opcjonalnie",
+      "between": "Od {from} do {to}",
+      "about_days": "około {days} dni",
+      "carried": "{duration} z przeniesienia",
+      "agree": "Uzgodnij",
+      "agreed": "Uzgodnione",
+      "errors": {
+        "dates_required": "Proszę podać, kiedy rok urlopowy się zaczyna i kończy.",
+        "backwards": "Rok urlopowy nie może kończyć się przed rozpoczęciem.",
+        "bad_duration": "Czas należy wpisać jako 200:00, 200 lub 12000m."
+      },
+      "toasts": {
+        "added": "Rok urlopowy dodany",
+        "agreed": "Oznaczono jako uzgodnione",
+        "refused": "Nie udało się zapisać",
+        "try_again": "Proszę spróbować ponownie."
+      }
     }
   }
 }

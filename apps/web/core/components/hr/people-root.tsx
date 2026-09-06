@@ -7,7 +7,7 @@
 import { useState } from "react";
 import { observer } from "mobx-react";
 import { Link } from "react-router";
-import { BadgeEuro, CalendarClock, Plus, Scale, UserMinus } from "lucide-react";
+import { BadgeEuro, CalendarClock, Palmtree, Plus, Scale, UserMinus } from "lucide-react";
 import useSWR from "swr";
 // plane imports
 import { useTranslation } from "@plane/i18n";
@@ -20,6 +20,7 @@ import { HrService, type THrContract, type THrEmploymentProfile } from "@/servic
 // local imports
 import { HrAddPersonModal } from "./add-person-modal";
 import { HrOpeningBalanceModal } from "./opening-balance-modal";
+import { HrLeaveModal } from "./leave-modal";
 import { HrRateCardModal } from "./rate-card-modal";
 import { HrPersonModal, type TPersonDraft } from "./person-modal";
 import { formatMinutes } from "./utils";
@@ -40,6 +41,7 @@ export const HrPeopleRoot = observer(function HrPeopleRoot({ workspaceSlug }: { 
   const [editing, setEditing] = useState<THrEmploymentProfile | null>(null);
   const [opening, setOpening] = useState<THrEmploymentProfile | null>(null);
   const [rating, setRating] = useState<THrEmploymentProfile | null>(null);
+  const [leaving, setLeaving] = useState<THrEmploymentProfile | null>(null);
   const [isBusy, setIsBusy] = useState(false);
 
   const { data: people, isLoading, error, mutate } = useSWR("HR_EMPLOYEES", () => hrService.employees());
@@ -174,6 +176,12 @@ export const HrPeopleRoot = observer(function HrPeopleRoot({ workspaceSlug }: { 
 
       <HrRateCardModal person={rating} onClose={() => setRating(null)} />
 
+      <HrLeaveModal
+        person={leaving}
+        schedule={leaving ? scheduleFor(leaving.id) : null}
+        onClose={() => setLeaving(null)}
+      />
+
       {rows.length === 0 ? (
         <div className="border-custom-border-200 bg-custom-background-90 text-custom-text-300 text-sm rounded-md border px-4 py-8 text-center">
           {t("hr.people.nobody_yet")}
@@ -243,6 +251,14 @@ export const HrPeopleRoot = observer(function HrPeopleRoot({ workspaceSlug }: { 
                           onClick={() => setRating(person)}
                         >
                           {t("hr.people.rates")}
+                        </Button>
+                        <Button
+                          variant="link"
+                          size="sm"
+                          prependIcon={<Palmtree className="size-3.5" />}
+                          onClick={() => setLeaving(person)}
+                        >
+                          {t("hr.people.leave")}
                         </Button>
                         {person.is_active ? (
                           <Button

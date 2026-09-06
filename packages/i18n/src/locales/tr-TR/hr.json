@@ -165,7 +165,8 @@
         "try_again": "Lütfen tekrar deneyin."
       },
       "opening": "Açılış bakiyesi",
-      "rates": "Ücretler"
+      "rates": "Ücretler",
+      "leave": "İzin"
     },
     "arrangement": {
       "onsite_full_time": "İş yerinde, tam zamanlı",
@@ -419,6 +420,38 @@
       "toasts": {
         "added": "Ücret eklendi",
         "removed": "Ücret silindi",
+        "refused": "Bu kaydedilemedi",
+        "try_again": "Lütfen tekrar deneyin."
+      }
+    },
+    "leave": {
+      "title": "{person} adlı kişinin izin hakkı",
+      "hint": "Gün olarak değil, dakika olarak tutulur: her gün aynı saatleri çalışmayan biri için bir gün sabit bir süre değildir. İzin yılı, işe başlama yıl dönümünde başlar.",
+      "none_yet": "Henüz kayıtlı bir izin yılı yok.",
+      "add": "İzin yılı ekle",
+      "add_button": "Ekle",
+      "close": "Kapat",
+      "year_start": "İzin yılı başlangıcı",
+      "year_end": "İzin yılı bitişi",
+      "entitlement": "Yıllık izin hakkı",
+      "carryover": "Devreden",
+      "carryover_placeholder": "İsteğe bağlı, eksi olabilir",
+      "duration_placeholder": "örn. 200:00",
+      "basis": "Neye dayanıyor",
+      "basis_placeholder": "İsteğe bağlı",
+      "between": "{from} – {to}",
+      "about_days": "yaklaşık {days} gün",
+      "carried": "devreden {duration}",
+      "agree": "Kabul et",
+      "agreed": "Kabul edildi",
+      "errors": {
+        "dates_required": "İzin yılının ne zaman başlayıp ne zaman bittiğini belirtin.",
+        "backwards": "İzin yılı, başlamadan önce bitemez.",
+        "bad_duration": "Süreyi 200:00, 200 veya 12000m biçiminde yazın."
+      },
+      "toasts": {
+        "added": "İzin yılı eklendi",
+        "agreed": "Kabul edildi olarak işaretlendi",
         "refused": "Bu kaydedilemedi",
         "try_again": "Lütfen tekrar deneyin."
       }

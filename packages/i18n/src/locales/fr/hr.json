@@ -165,7 +165,8 @@
         "try_again": "Veuillez réessayer."
       },
       "opening": "Solde initial",
-      "rates": "Tarifs"
+      "rates": "Tarifs",
+      "leave": "Congés"
     },
     "rates": {
       "title": "Ce que vaut le temps de {person}",
@@ -197,6 +198,38 @@
       "toasts": {
         "added": "Tarif ajouté",
         "removed": "Tarif supprimé",
+        "refused": "Impossible d’enregistrer",
+        "try_again": "Veuillez réessayer."
+      }
+    },
+    "leave": {
+      "title": "Congés de {person}",
+      "hint": "Exprimés en minutes, et non en jours : une journée ne représente pas une durée fixe pour qui travaille des horaires irréguliers. L’année de congés court à compter de la date anniversaire d’entrée.",
+      "none_yet": "Aucune année de congés n’est encore enregistrée.",
+      "add": "Ajouter une année de congés",
+      "add_button": "Ajouter",
+      "close": "Fermer",
+      "year_start": "Année de congés du",
+      "year_end": "Année de congés au",
+      "entitlement": "Congés pour l’année",
+      "carryover": "Report",
+      "carryover_placeholder": "Facultatif, peut être négatif",
+      "duration_placeholder": "ex. 200:00",
+      "basis": "Ce sur quoi cela repose",
+      "basis_placeholder": "Facultatif",
+      "between": "Du {from} au {to}",
+      "about_days": "environ {days} jours",
+      "carried": "{duration} de report",
+      "agree": "Accepter",
+      "agreed": "Accepté",
+      "errors": {
+        "dates_required": "Indiquez le début et la fin de l’année de congés.",
+        "backwards": "L’année de congés ne peut pas se terminer avant de commencer.",
+        "bad_duration": "Saisissez la durée sous la forme 200:00, 200 ou 12000m."
+      },
+      "toasts": {
+        "added": "Année de congés ajoutée",
+        "agreed": "Marquée comme acceptée",
         "refused": "Impossible d’enregistrer",
         "try_again": "Veuillez réessayer."
       }

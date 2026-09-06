@@ -165,7 +165,8 @@
         "try_again": "Por favor, tente novamente."
       },
       "opening": "Saldo inicial",
-      "rates": "Remunerações"
+      "rates": "Remunerações",
+      "leave": "Férias"
     },
     "rates": {
       "title": "Quanto vale o tempo de {person}",
@@ -197,6 +198,38 @@
       "toasts": {
         "added": "Remuneração adicionada",
         "removed": "Remuneração excluída",
+        "refused": "Não foi possível salvar",
+        "try_again": "Por favor, tente novamente."
+      }
+    },
+    "leave": {
+      "title": "Férias de {person}",
+      "hint": "Registradas em minutos, não em dias: um dia não é uma quantidade fixa para quem trabalha jornadas irregulares. O ano de férias corre a partir do aniversário de admissão.",
+      "none_yet": "Nenhum ano de férias registrado ainda.",
+      "add": "Adicionar ano de férias",
+      "add_button": "Adicionar",
+      "close": "Fechar",
+      "year_start": "Início do ano de férias",
+      "year_end": "Fim do ano de férias",
+      "entitlement": "Férias do ano",
+      "carryover": "Saldo anterior",
+      "carryover_placeholder": "Opcional, pode ser negativo",
+      "duration_placeholder": "ex.: 200:00",
+      "basis": "Em que se baseia",
+      "basis_placeholder": "Opcional",
+      "between": "{from} a {to}",
+      "about_days": "cerca de {days} dias",
+      "carried": "{duration} de saldo anterior",
+      "agree": "Aceitar",
+      "agreed": "Aceito",
+      "errors": {
+        "dates_required": "Informe quando o ano de férias começa e termina.",
+        "backwards": "O ano de férias não pode terminar antes de começar.",
+        "bad_duration": "Escreva a duração como 200:00, 200 ou 12000m."
+      },
+      "toasts": {
+        "added": "Ano de férias adicionado",
+        "agreed": "Marcado como aceito",
         "refused": "Não foi possível salvar",
         "try_again": "Por favor, tente novamente."
       }

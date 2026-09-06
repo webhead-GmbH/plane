@@ -165,7 +165,8 @@
         "try_again": "Vui lòng thử lại."
       },
       "opening": "Số dư đầu kỳ",
-      "rates": "Đơn giá"
+      "rates": "Đơn giá",
+      "leave": "Nghỉ phép"
     },
     "rates": {
       "title": "Giá trị thời gian của {person}",
@@ -197,6 +198,38 @@
       "toasts": {
         "added": "Đã thêm đơn giá",
         "removed": "Đã xóa đơn giá",
+        "refused": "Không thể lưu",
+        "try_again": "Vui lòng thử lại."
+      }
+    },
+    "leave": {
+      "title": "Nghỉ phép của {person}",
+      "hint": "Được ghi nhận bằng phút chứ không phải bằng ngày: với người có số giờ làm không đều nhau, một ngày không phải là một lượng cố định. Năm phép được tính từ ngày vào làm hằng năm.",
+      "none_yet": "Chưa có năm phép nào được ghi nhận.",
+      "add": "Thêm năm phép",
+      "add_button": "Thêm",
+      "close": "Đóng",
+      "year_start": "Năm phép từ ngày",
+      "year_end": "Năm phép đến ngày",
+      "entitlement": "Phép cho cả năm",
+      "carryover": "Chuyển từ năm trước",
+      "carryover_placeholder": "Không bắt buộc, có thể là số âm",
+      "duration_placeholder": "ví dụ 200:00",
+      "basis": "Căn cứ của số liệu này",
+      "basis_placeholder": "Không bắt buộc",
+      "between": "{from} đến {to}",
+      "about_days": "khoảng {days} ngày",
+      "carried": "{duration} chuyển từ năm trước",
+      "agree": "Đồng ý",
+      "agreed": "Đã đồng ý",
+      "errors": {
+        "dates_required": "Hãy cho biết năm phép bắt đầu và kết thúc vào ngày nào.",
+        "backwards": "Năm phép không thể kết thúc trước khi bắt đầu.",
+        "bad_duration": "Hãy viết khoảng thời gian dưới dạng 200:00, 200 hoặc 12000m."
+      },
+      "toasts": {
+        "added": "Đã thêm năm phép",
+        "agreed": "Đã đánh dấu là đã đồng ý",
         "refused": "Không thể lưu",
         "try_again": "Vui lòng thử lại."
       }
