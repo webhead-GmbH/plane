@@ -168,7 +168,16 @@
       },
       "opening": "Saldo inicial",
       "rates": "Remunerações",
-      "leave": "Férias"
+      "leave": "Férias",
+      "crm_staff_id": "ID do funcionário no CRM",
+      "crm_staff_id_placeholder": "Deixe em branco para vincular pelo e-mail",
+      "crm_guessed": "CRM vinculado pelo e-mail",
+      "crm_missing": "Sem conta no CRM",
+      "crm_link": {
+        "set": "Definido aqui, de modo que as horas vão para esta conta, seja qual for o e-mail em cada sistema.",
+        "email": "Vinculado pelo endereço de e-mail. Funciona até que um dos dois sistemas tenha um endereço diferente.",
+        "none": "Nada liga esta pessoa ao CRM, portanto as horas dela nunca se tornam um cronômetro no CRM."
+      }
     },
     "rates": {
       "title": "Quanto vale o tempo de {person}",

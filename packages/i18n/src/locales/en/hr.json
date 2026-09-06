@@ -168,7 +168,16 @@
       },
       "opening": "Starting balance",
       "rates": "Rates",
-      "leave": "Leave"
+      "leave": "Leave",
+      "crm_staff_id": "CRM staff id",
+      "crm_staff_id_placeholder": "Leave empty to match by email",
+      "crm_link": {
+        "set": "Set here, so the hours go to this account whatever the addresses say.",
+        "email": "Matched by email address. It works until one of the two systems has a different one.",
+        "none": "Nothing joins this person to the CRM, so their hours never become a CRM timer."
+      },
+      "crm_guessed": "CRM matched by email",
+      "crm_missing": "No CRM account"
     },
     "arrangement": {
       "onsite_full_time": "On site, full time",

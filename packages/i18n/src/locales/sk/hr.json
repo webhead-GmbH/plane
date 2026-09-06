@@ -168,7 +168,16 @@
       },
       "opening": "Počiatočné saldo",
       "rates": "Sadzby",
-      "leave": "Dovolenka"
+      "leave": "Dovolenka",
+      "crm_staff_id": "ID zamestnanca v CRM",
+      "crm_staff_id_placeholder": "Nechajte prázdne a priradenie sa urobí podľa e-mailu",
+      "crm_guessed": "Priradené k CRM len podľa e-mailu",
+      "crm_missing": "Bez účtu v CRM",
+      "crm_link": {
+        "set": "Zadané tu, takže hodiny pôjdu na tento účet bez ohľadu na e-mailové adresy.",
+        "email": "Priradenie podľa e-mailovej adresy. Funguje dovtedy, kým v jednom z tých dvoch systémov nebude iná.",
+        "none": "Túto osobu nespája s CRM nič, takže z jej hodín sa nikdy nestane časovač v CRM."
+      }
     },
     "arrangement": {
       "onsite_full_time": "Na pracovisku, plný úväzok",

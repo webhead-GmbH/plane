@@ -168,7 +168,16 @@
       },
       "opening": "Počáteční saldo",
       "rates": "Sazby",
-      "leave": "Dovolená"
+      "leave": "Dovolená",
+      "crm_staff_id": "ID zaměstnance v CRM",
+      "crm_staff_id_placeholder": "Nechte prázdné, spáruje se podle e-mailu",
+      "crm_guessed": "Spárováno s CRM podle e-mailu",
+      "crm_missing": "Bez účtu v CRM",
+      "crm_link": {
+        "set": "Zadáno zde, takže hodiny půjdou na tento účet bez ohledu na e-mailové adresy.",
+        "email": "Spárováno podle e-mailové adresy. Funguje do chvíle, než bude mít jeden z obou systémů jinou.",
+        "none": "Tuto osobu nic nespojuje s CRM, takže se její hodiny nikdy nepřenesou do CRM jako časovač."
+      }
     },
     "rates": {
       "title": "Hodnota času – {person}",

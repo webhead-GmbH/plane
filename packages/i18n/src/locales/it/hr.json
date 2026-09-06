@@ -168,7 +168,16 @@
       },
       "opening": "Saldo iniziale",
       "rates": "Tariffe",
-      "leave": "Ferie"
+      "leave": "Ferie",
+      "crm_staff_id": "ID staff CRM",
+      "crm_staff_id_placeholder": "Lasci vuoto per abbinare tramite email",
+      "crm_guessed": "Abbinamento CRM tramite email",
+      "crm_missing": "Nessun account CRM",
+      "crm_link": {
+        "set": "Impostato qui, così le ore finiscono su questo account a prescindere dagli indirizzi email.",
+        "email": "Abbinamento tramite indirizzo email. Funziona finché uno dei due sistemi non ne registra uno diverso.",
+        "none": "Nulla collega questa persona al CRM, perciò le sue ore non diventano mai un timer nel CRM."
+      }
     },
     "arrangement": {
       "onsite_full_time": "In sede, tempo pieno",

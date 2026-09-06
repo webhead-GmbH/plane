@@ -214,6 +214,20 @@ export const HrPeopleRoot = observer(function HrPeopleRoot({ workspaceSlug }: { 
                         {person.member_display_name || person.member_email}
                       </span>
                       <span className="text-custom-text-400 text-xs">{person.member_email}</span>
+                      {/*
+                        Said here rather than only inside the edit dialog, because
+                        nobody opens the dialog for somebody they have no reason to
+                        suspect — and a person whose hours are not reaching the CRM
+                        looks exactly like everybody else until payroll is short.
+                      */}
+                      {person.is_active && person.crm_link !== "set" ? (
+                        <span
+                          className="text-custom-text-400 text-xs block"
+                          title={t(`hr.people.crm_link.${person.crm_link}`)}
+                        >
+                          {person.crm_link === "none" ? t("hr.people.crm_missing") : t("hr.people.crm_guessed")}
+                        </span>
+                      ) : null}
                     </td>
                     <td className="text-custom-text-300 px-4 py-2">{person.hire_date ?? "—"}</td>
                     <td className="text-custom-text-200 px-4 py-2 text-right tabular-nums">

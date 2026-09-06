@@ -168,7 +168,16 @@
       },
       "opening": "기초 누적 차이",
       "rates": "단가",
-      "leave": "연차"
+      "leave": "연차",
+      "crm_staff_id": "CRM 직원 ID",
+      "crm_staff_id_placeholder": "비워 두면 이메일 주소로 연결합니다",
+      "crm_guessed": "이메일로 추정한 CRM 계정",
+      "crm_missing": "CRM 계정 없음",
+      "crm_link": {
+        "set": "여기에 직접 지정했으므로 이메일 주소가 무엇이든 근무 시간은 이 계정으로 전송됩니다.",
+        "email": "이메일 주소로 연결되어 있습니다. 두 시스템 중 한쪽의 주소가 달라지는 순간까지만 유효합니다.",
+        "none": "이 구성원을 CRM과 이어 주는 것이 없으므로, 이 사람의 근무 시간은 CRM 타이머가 되지 못합니다."
+      }
     },
     "arrangement": {
       "onsite_full_time": "사무실 근무, 풀타임",

@@ -24,6 +24,7 @@ from plane.hr.models import (
     HrTimeEntry,
     HrWorkSchedule,
 )
+from plane.db.models import WorkspaceMember
 from plane.tests.factories import UserFactory, WorkspaceFactory, WorkspaceMemberFactory
 
 pytestmark = [pytest.mark.contract, pytest.mark.django_db]
@@ -557,3 +558,76 @@ class TestTimeEntryScoping:
             url(workspace, f"time-entries/?from={day}&to={day}&profile_id={colleague.id}")
         ).json()
         assert rows == []
+
+class TestCrmStaffMapping:
+    """Which CRM staff account somebody's hours are pushed to.
+
+    The sync prefers the id set on the workspace membership and falls back to
+    matching email addresses. That fallback is a guess, and when it misses, the
+    hours never become a CRM timer and nothing but a log line says so — which is
+    why the screen has to be able to both show and set the id.
+    """
+
+    def test_somebody_with_no_id_set_is_shown_as_matched_by_email(self, workspace):
+        manager, _ = employ(workspace, is_hr_manager=True)
+        _, profile = employ(workspace)
+        response = client_for(manager).get(url(workspace, f"employees/{profile.id}/"))
+        assert response.status_code == 200
+        assert response.data["crm_staff_id"] is None
+        assert response.data["crm_link"] == "email"
+
+    def test_setting_an_id_records_it_and_says_it_was_set(self, workspace):
+        manager, _ = employ(workspace, is_hr_manager=True)
+        _, profile = employ(workspace)
+        response = client_for(manager).patch(
+            url(workspace, f"employees/{profile.id}/"), {"crm_staff_id": 42}, format="json"
+        )
+        assert response.status_code == 200
+        assert response.data["crm_staff_id"] == 42
+        assert response.data["crm_link"] == "set"
+        assert WorkspaceMember.objects.get(workspace=workspace, member=profile.member).crm_staff_id == 42
+
+    def test_clearing_it_puts_them_back_on_the_email_match(self, workspace):
+        manager, _ = employ(workspace, is_hr_manager=True)
+        _, profile = employ(workspace)
+        client = client_for(manager)
+        client.patch(url(workspace, f"employees/{profile.id}/"), {"crm_staff_id": 7}, format="json")
+        response = client.patch(
+            url(workspace, f"employees/{profile.id}/"), {"crm_staff_id": ""}, format="json"
+        )
+        assert response.status_code == 200
+        assert response.data["crm_staff_id"] is None
+        assert response.data["crm_link"] == "email"
+
+    def test_the_id_reaches_every_workspace_the_person_is_in(self, workspace):
+        """One person is one employee, so one CRM account — not one per workspace.
+
+        Setting it in one workspace and not another would leave the sync guessing
+        wherever it was missed, which is the failure this exists to remove.
+        """
+        manager, _ = employ(workspace, is_hr_manager=True)
+        _, profile = employ(workspace)
+        elsewhere = WorkspaceFactory(owner=new_user())
+        WorkspaceMemberFactory(workspace=elsewhere, member=profile.member, role=ROLE.MEMBER.value)
+
+        client_for(manager).patch(
+            url(workspace, f"employees/{profile.id}/"), {"crm_staff_id": 9}, format="json"
+        )
+        assert WorkspaceMember.objects.get(workspace=elsewhere, member=profile.member).crm_staff_id == 9
+
+    def test_something_that_is_not_a_staff_id_is_refused(self, workspace):
+        manager, _ = employ(workspace, is_hr_manager=True)
+        _, profile = employ(workspace)
+        for bad in ("abc", 0, -3):
+            response = client_for(manager).patch(
+                url(workspace, f"employees/{profile.id}/"), {"crm_staff_id": bad}, format="json"
+            )
+            assert response.status_code == 400, bad
+
+    def test_an_employee_cannot_set_their_own(self, workspace):
+        user, profile = employ(workspace)
+        response = client_for(user).patch(
+            url(workspace, f"employees/{profile.id}/"), {"crm_staff_id": 5}, format="json"
+        )
+        assert response.status_code == 403
+        assert WorkspaceMember.objects.get(workspace=workspace, member=user).crm_staff_id is None

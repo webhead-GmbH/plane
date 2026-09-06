@@ -168,7 +168,16 @@
       },
       "opening": "Số dư đầu kỳ",
       "rates": "Đơn giá",
-      "leave": "Nghỉ phép"
+      "leave": "Nghỉ phép",
+      "crm_staff_id": "Mã nhân viên CRM",
+      "crm_staff_id_placeholder": "Để trống để đối chiếu theo email",
+      "crm_guessed": "Chỉ khớp CRM theo email",
+      "crm_missing": "Không có tài khoản CRM",
+      "crm_link": {
+        "set": "Được đặt ở đây, nên số giờ luôn vào đúng tài khoản này bất kể địa chỉ email ghi thế nào.",
+        "email": "Đang đối chiếu theo địa chỉ email. Cách này còn đúng cho đến khi một trong hai hệ thống có địa chỉ khác.",
+        "none": "Không có gì nối người này với CRM, nên số giờ của họ không bao giờ trở thành một bộ đếm giờ trong CRM."
+      }
     },
     "rates": {
       "title": "Giá trị thời gian của {person}",

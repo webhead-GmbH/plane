@@ -168,7 +168,16 @@
       },
       "opening": "期初结余",
       "rates": "费率",
-      "leave": "年假"
+      "leave": "年假",
+      "crm_staff_id": "CRM 员工 ID",
+      "crm_staff_id_placeholder": "留空则按邮箱匹配",
+      "crm_guessed": "CRM 靠邮箱匹配",
+      "crm_missing": "未关联 CRM 账户",
+      "crm_link": {
+        "set": "在此填写后，无论两边的邮箱地址如何，工时都会计入该账户。",
+        "email": "当前按邮箱地址匹配。一旦两个系统中的邮箱不一致，匹配就会失效。",
+        "none": "该成员与 CRM 之间没有任何关联，其工时永远不会进入 CRM 计时。"
+      }
     },
     "arrangement": {
       "onsite_full_time": "现场办公，全职",

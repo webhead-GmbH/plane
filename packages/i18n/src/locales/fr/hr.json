@@ -168,7 +168,16 @@
       },
       "opening": "Solde initial",
       "rates": "Tarifs",
-      "leave": "Congés"
+      "leave": "Congés",
+      "crm_staff_id": "Identifiant CRM du collaborateur",
+      "crm_staff_id_placeholder": "Laissez vide pour une correspondance par e-mail",
+      "crm_guessed": "CRM associé par e-mail",
+      "crm_missing": "Aucun compte CRM",
+      "crm_link": {
+        "set": "Défini ici : les heures vont sur ce compte, quelles que soient les adresses.",
+        "email": "Correspondance établie par adresse e-mail. Elle tient jusqu’au jour où l’un des deux systèmes en contient une autre.",
+        "none": "Rien ne relie cette personne au CRM : ses heures ne deviennent donc jamais un chronomètre dans le CRM."
+      }
     },
     "rates": {
       "title": "Ce que vaut le temps de {person}",

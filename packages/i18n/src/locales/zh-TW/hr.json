@@ -168,7 +168,16 @@
       },
       "opening": "期初結餘",
       "rates": "費率",
-      "leave": "年假"
+      "leave": "年假",
+      "crm_staff_id": "CRM 員工編號",
+      "crm_staff_id_placeholder": "留空則改以電子郵件比對",
+      "crm_guessed": "CRM 僅以電子郵件比對",
+      "crm_missing": "未連結 CRM 帳號",
+      "crm_link": {
+        "set": "在這裡填入編號後，不論兩邊的電子郵件是什麼，工時都會記到這個帳號。",
+        "email": "目前以電子郵件比對。只要兩套系統其中一邊的電子郵件不一樣，比對就會失效。",
+        "none": "這個人沒有任何資料可以連結到 CRM，工時因此永遠不會成為 CRM 的計時紀錄。"
+      }
     },
     "rates": {
       "title": "{person} 的計酬費率",

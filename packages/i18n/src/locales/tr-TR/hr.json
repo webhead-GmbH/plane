@@ -168,7 +168,16 @@
       },
       "opening": "Açılış bakiyesi",
       "rates": "Ücretler",
-      "leave": "İzin"
+      "leave": "İzin",
+      "crm_staff_id": "CRM personel ID'si",
+      "crm_staff_id_placeholder": "E-postaya göre eşleştirmek için boş bırakın",
+      "crm_guessed": "CRM e-postaya göre eşleşti",
+      "crm_missing": "CRM hesabı yok",
+      "crm_link": {
+        "set": "Burada belirlendi; böylece adresler ne olursa olsun saatler bu hesaba gider.",
+        "email": "E-posta adresine göre eşleştirildi. İki sistemden birinde farklı bir adres olana kadar işe yarar.",
+        "none": "Bu kişiyi CRM'e bağlayan hiçbir şey yok; bu nedenle saatleri hiçbir zaman CRM zamanlayıcısına dönüşmez."
+      }
     },
     "arrangement": {
       "onsite_full_time": "İş yerinde, tam zamanlı",

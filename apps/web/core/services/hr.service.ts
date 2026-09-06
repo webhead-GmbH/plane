@@ -129,6 +129,13 @@ export type THrEmploymentProfile = {
   exit_date: string | null;
   is_hr_manager: boolean;
   is_active: boolean;
+  /** The CRM staff account this person's hours are pushed to, where one is set. */
+  crm_staff_id: number | null;
+  /**
+   * How they reach the CRM: "set" is an id somebody entered, "email" means the
+   * address is the only thing joining the two systems, "none" that nothing does.
+   */
+  crm_link: "set" | "email" | "none";
 };
 
 export type THrContract = {

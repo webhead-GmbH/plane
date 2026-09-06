@@ -168,7 +168,16 @@
       },
       "opening": "Saldo inicial",
       "rates": "Tarifas",
-      "leave": "Vacaciones"
+      "leave": "Vacaciones",
+      "crm_staff_id": "ID de empleado en el CRM",
+      "crm_staff_id_placeholder": "Déjelo vacío para vincular por correo electrónico",
+      "crm_guessed": "Vinculado al CRM por correo",
+      "crm_missing": "Sin cuenta en el CRM",
+      "crm_link": {
+        "set": "Indicado aquí, de modo que las horas van a esta cuenta digan lo que digan las direcciones de correo.",
+        "email": "Vinculado por la dirección de correo electrónico. Funciona hasta que uno de los dos sistemas tenga una distinta.",
+        "none": "Nada une a esta persona con el CRM, así que sus horas nunca llegan a convertirse en un temporizador del CRM."
+      }
     },
     "arrangement": {
       "onsite_full_time": "Presencial, jornada completa",

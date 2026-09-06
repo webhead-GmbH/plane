@@ -68,6 +68,7 @@ export const HrPersonModal = ({ isOpen, person, contract, schedule, isBusy, onCl
   const [hireDate, setHireDate] = useState("");
   const [timezone, setTimezone] = useState("Europe/Vienna");
   const [isManager, setIsManager] = useState(false);
+  const [crmStaffId, setCrmStaffId] = useState("");
   const [arrangement, setArrangement] = useState<EHrArrangement>(EHrArrangement.ONSITE_FULL_TIME);
   const [recordsTarget, setRecordsTarget] = useState(true);
   const [validFrom, setValidFrom] = useState("");
@@ -80,6 +81,7 @@ export const HrPersonModal = ({ isOpen, person, contract, schedule, isBusy, onCl
     setHireDate(person?.hire_date ?? "");
     setTimezone(person?.timezone || "Europe/Vienna");
     setIsManager(person?.is_hr_manager ?? false);
+    setCrmStaffId(person?.crm_staff_id ? String(person.crm_staff_id) : "");
     setArrangement((contract?.arrangement as EHrArrangement) ?? EHrArrangement.ONSITE_FULL_TIME);
     setRecordsTarget(contract?.records_target_hours ?? true);
     setValidFrom(contract?.valid_from ?? person?.hire_date ?? "");
@@ -111,7 +113,13 @@ export const HrPersonModal = ({ isOpen, person, contract, schedule, isBusy, onCl
     }
 
     onSave({
-      profile: { hire_date: hireDate, timezone, is_hr_manager: isManager },
+      profile: {
+        hire_date: hireDate,
+        timezone,
+        is_hr_manager: isManager,
+        // Sent as typed. Empty clears it, which puts them back on the email match.
+        crm_staff_id: crmStaffId.trim() === "" ? null : Number(crmStaffId.trim()),
+      },
       contract: {
         valid_from: validFrom || hireDate,
         arrangement,
@@ -150,6 +158,23 @@ export const HrPersonModal = ({ isOpen, person, contract, schedule, isBusy, onCl
               <input value={timezone} onChange={(e) => setTimezone(e.target.value)} className={inputClass} />
             </Field>
           </div>
+          <Field label={t("hr.people.crm_staff_id")}>
+            <input
+              value={crmStaffId}
+              inputMode="numeric"
+              placeholder={t("hr.people.crm_staff_id_placeholder")}
+              onChange={(e) => setCrmStaffId(e.target.value)}
+              className={inputClass}
+            />
+            <p className="text-custom-text-400 text-xs mt-1">
+              {person?.crm_link === "set"
+                ? t("hr.people.crm_link.set")
+                : person?.crm_link === "email"
+                  ? t("hr.people.crm_link.email")
+                  : t("hr.people.crm_link.none")}
+            </p>
+          </Field>
+
           <label className="text-sm text-custom-text-200 flex items-center gap-2">
             <input type="checkbox" checked={isManager} onChange={(e) => setIsManager(e.target.checked)} />
             {t("hr.people.is_manager")}

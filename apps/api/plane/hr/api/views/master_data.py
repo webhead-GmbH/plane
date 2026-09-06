@@ -40,6 +40,7 @@ from plane.hr.models import (
     HrWorkSchedule,
 )
 from plane.hr.utils.company import hr_home_workspace
+from plane.hr.utils.crm_link import set_crm_staff_id
 from plane.hr.permissions import (
     MANAGER,
     SELF,
@@ -110,6 +111,53 @@ class HrEmploymentProfileEndpoint(HrWorkspaceConfigEndpoint):
             return Response(self.serializer_class(row).data, status=status.HTTP_200_OK)
         rows = self._apply_filters(rows, request)
         return Response(self.serializer_class(rows, many=True).data, status=status.HTTP_200_OK)
+
+    @hr_permission(MANAGER)
+    def patch(self, request, pk):
+        """Change somebody's record, including who they are in the CRM.
+
+        The staff id is not a field of this model — it belongs to the workspace
+        membership — so it is taken out of the payload and written separately.
+        An empty value clears it, which is how somebody is put back on the email
+        match rather than being stuck with a wrong id forever.
+        """
+        row = self.get_queryset().filter(pk=pk).first()
+        if row is None:
+            return Response({"error": "Not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        payload = request.data.copy() if hasattr(request.data, "copy") else dict(request.data)
+        sets_crm = "crm_staff_id" in payload
+        raw = payload.pop("crm_staff_id", None)
+        if isinstance(raw, list):
+            raw = raw[0] if raw else None
+
+        if sets_crm:
+            if raw in (None, "", "null"):
+                staff_id = None
+            else:
+                try:
+                    staff_id = int(raw)
+                except (TypeError, ValueError):
+                    return Response(
+                        {"crm_staff_id": ["A CRM staff id is a whole number."]},
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
+                if staff_id <= 0:
+                    return Response(
+                        {"crm_staff_id": ["A CRM staff id is a whole number."]},
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
+
+        serializer = self.serializer_class(row, data=payload, partial=True, context=self._serializer_context(request))
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.save()
+
+        # After the record saves, so a rejected change does not leave the id moved.
+        if sets_crm:
+            set_crm_staff_id(row, staff_id)
+
+        return Response(self.serializer_class(row).data, status=status.HTTP_200_OK)
 
     @hr_permission(MANAGER)
     def delete(self, request, pk):

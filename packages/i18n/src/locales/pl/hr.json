@@ -168,7 +168,16 @@
       },
       "opening": "Saldo początkowe",
       "rates": "Stawki",
-      "leave": "Urlop"
+      "leave": "Urlop",
+      "crm_staff_id": "ID pracownika w CRM",
+      "crm_staff_id_placeholder": "Puste pole oznacza dopasowanie po adresie e-mail",
+      "crm_guessed": "Dopasowanie do CRM po e-mailu",
+      "crm_missing": "Brak konta w CRM",
+      "crm_link": {
+        "set": "Ustawione tutaj, więc godziny trafiają na to konto niezależnie od tego, jakie adresy są zapisane.",
+        "email": "Dopasowanie po adresie e-mail. Działa do chwili, gdy w jednym z dwóch systemów pojawi się inny adres.",
+        "none": "Nic nie łączy tej osoby z CRM, więc jej godziny nigdy nie trafiają do CRM jako wpis czasu."
+      }
     },
     "arrangement": {
       "onsite_full_time": "Na miejscu, pełny wymiar godzin",

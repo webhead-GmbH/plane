@@ -31,12 +31,33 @@ from plane.hr.models import (
     HrWorkSchedule,
 )
 from plane.hr.api.serializers.base import HrBaseSerializer
+from plane.hr.utils.crm_link import crm_link_for
 
 
 class HrEmploymentProfileSerializer(HrBaseSerializer):
     member_display_name = serializers.CharField(source="member.display_name", read_only=True)
     member_email = serializers.EmailField(source="member.email", read_only=True)
     member_avatar_url = serializers.CharField(source="member.avatar_url", read_only=True)
+
+    # Which CRM staff account this person's hours are pushed to, and how that was
+    # arrived at. The id lives on the workspace membership rather than here, so it
+    # is read through rather than stored twice.
+    crm_staff_id = serializers.SerializerMethodField()
+    crm_link = serializers.SerializerMethodField()
+
+    def get_crm_staff_id(self, profile):
+        return crm_link_for(profile).get("staff_id")
+
+    def get_crm_link(self, profile):
+        """How the person reaches the CRM: "set", "email", or "none".
+
+        Worth saying out loud because the three behave differently when something
+        changes. A set id keeps working; a match by email breaks the day somebody
+        changes their address in one system and not the other; and none means the
+        hours never become a CRM timer at all. Only the first is a decision anyone
+        made.
+        """
+        return crm_link_for(profile).get("origin")
 
     class Meta:
         model = HrEmploymentProfile
@@ -52,6 +73,8 @@ class HrEmploymentProfileSerializer(HrBaseSerializer):
             "exit_date",
             "is_hr_manager",
             "is_active",
+            "crm_staff_id",
+            "crm_link",
             "created_at",
             "updated_at",
         ]

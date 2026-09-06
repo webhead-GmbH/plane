@@ -168,7 +168,16 @@
       },
       "opening": "Anfangssaldo",
       "rates": "Vergütungssätze",
-      "leave": "Urlaub"
+      "leave": "Urlaub",
+      "crm_staff_id": "CRM-Mitarbeiter-ID",
+      "crm_staff_id_placeholder": "Leer lassen, um über die E-Mail-Adresse zuzuordnen",
+      "crm_guessed": "CRM über E-Mail zugeordnet",
+      "crm_missing": "Kein CRM-Konto",
+      "crm_link": {
+        "set": "Hier festgelegt, damit die Stunden auf dieses Konto gehen, unabhängig von den hinterlegten Adressen.",
+        "email": "Über die E-Mail-Adresse zugeordnet. Das funktioniert so lange, bis eines der beiden Systeme eine andere Adresse hat.",
+        "none": "Nichts verbindet diese Person mit dem CRM, ihre Stunden werden dort deshalb nie zu einem Zeiteintrag."
+      }
     },
     "arrangement": {
       "onsite_full_time": "Vor Ort, Vollzeit",

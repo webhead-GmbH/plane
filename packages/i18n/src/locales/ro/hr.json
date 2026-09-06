@@ -168,7 +168,16 @@
       },
       "opening": "Sold inițial",
       "rates": "Tarife",
-      "leave": "Concediu"
+      "leave": "Concediu",
+      "crm_staff_id": "ID-ul CRM al angajatului",
+      "crm_staff_id_placeholder": "Lăsați gol pentru potrivire după e-mail",
+      "crm_guessed": "Potrivire în CRM după e-mail",
+      "crm_missing": "Fără cont în CRM",
+      "crm_link": {
+        "set": "Stabilit aici, așa că orele ajung în acest cont, indiferent de adresele de e-mail.",
+        "email": "Potrivire după adresa de e-mail. Funcționează până când unul dintre cele două sisteme are o altă adresă.",
+        "none": "Nimic nu leagă această persoană de CRM, așa că orele ei nu devin niciodată un cronometru în CRM."
+      }
     },
     "arrangement": {
       "onsite_full_time": "La sediu, normă întreagă",

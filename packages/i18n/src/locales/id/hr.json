@@ -168,7 +168,16 @@
       },
       "opening": "Saldo awal",
       "rates": "Tarif",
-      "leave": "Cuti"
+      "leave": "Cuti",
+      "crm_staff_id": "ID staf CRM",
+      "crm_staff_id_placeholder": "Kosongkan agar dicocokkan lewat email",
+      "crm_guessed": "Dicocokkan ke CRM lewat email",
+      "crm_missing": "Tidak ada akun CRM",
+      "crm_link": {
+        "set": "Ditetapkan di sini, sehingga jamnya masuk ke akun ini apa pun alamat email yang tercatat.",
+        "email": "Dicocokkan lewat alamat email. Cara ini bekerja sampai salah satu dari kedua sistem memuat alamat yang berbeda.",
+        "none": "Tidak ada yang menghubungkan orang ini dengan CRM, sehingga jamnya tidak pernah menjadi pengatur waktu di CRM."
+      }
     },
     "arrangement": {
       "onsite_full_time": "Di kantor, penuh waktu",
