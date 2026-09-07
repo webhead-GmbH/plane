@@ -37,6 +37,8 @@ from plane.hr.permissions import (
     readable_profile_or_none,
     visible_profiles,
 )
+from plane.hr.services.attendance import telework_days_in_year
+from plane.hr.services.leave import standing as leave_standing
 from plane.hr.services.closing import TransitionRefused, approve, lock, reopen, submit
 from plane.hr.services.ledger import (
     counted_through_for,
@@ -46,6 +48,7 @@ from plane.hr.services.ledger import (
     rebuild_period,
     settle_day,
 )
+from plane.hr.services.worklog_detail import detail_for
 from plane.hr.utils.calendar import hr_local_date
 from plane.hr.utils.resolve import effective, effective_schedule
 
@@ -163,6 +166,17 @@ class HrMeEndpoint(BaseAPIView):
                 "schedule": HrWorkScheduleSerializer(schedule).data if schedule else None,
                 "period": _period_payload(period, include_days=True) if period else None,
                 "has_running_timer": has_running_timer(profile, year, month),
+                # Null rather than zero where attendance is not kept for this
+                # person: there is no count, and zero would read as one.
+                "telework_days_this_year": (
+                    telework_days_in_year(profile, year) if contract and contract.records_attendance else None
+                ),
+                # Null where the switch says no leave account is kept for this
+                # person, and null again where one is kept but nobody has said yet
+                # what the year's entitlement is.
+                "leave": (
+                    leave_standing(profile, today) if contract is None or contract.records_leave_account else None
+                ),
             },
             status=status.HTTP_200_OK,
         )
@@ -215,6 +229,29 @@ class HrPeriodDaysEndpoint(BaseAPIView):
             return Response({"error": "No such month, or not yours to read."}, status=status.HTTP_404_NOT_FOUND)
         days = HrPeriodDay.objects.filter(period_id=period.id).order_by("work_date")
         return Response(HrPeriodDaySerializer(days, many=True).data, status=status.HTTP_200_OK)
+
+
+class HrWorklogDetailEndpoint(BaseAPIView):
+    """Which work items a month's hours went on, grouped as asked.
+
+    The month has only ever shown a figure per day. This is the answer to the
+    question that figure invites — and it is a read: nothing here rebuilds, so
+    looking at a month cannot change what it says.
+
+    Scoped to one person on purpose. Unscoped, a manager would get the whole
+    company's work-item names and notes in one response, which is a great deal
+    more than the number it explains.
+    """
+
+    @hr_permission(SELF)
+    def get(self, request):
+        profile = readable_profile_or_none(request, request.query_params.get("profile_id") or None)
+        if profile is None:
+            return Response({"error": "Not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        year, month = _requested_month(request, profile)
+        grouping = request.query_params.get("group_by") or "day"
+        return Response(detail_for(profile, year, month, grouping), status=status.HTTP_200_OK)
 
 
 class HrPeriodRecomputeEndpoint(BaseAPIView):

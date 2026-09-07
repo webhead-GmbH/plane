@@ -17,18 +17,27 @@ from plane.hr.utils.calendar import iter_days
 from plane.hr.utils.resolve import credited_day_minutes, effective_schedule
 
 
-def resolve_total_minutes(absence):
+def resolve_total_minutes(absence, first=None, last=None):
     """How many minutes this absence covers, against the schedule in force now.
 
     Days the person does not work contribute nothing, so a week of leave over a
     part-time schedule costs only the days they would have worked.
+
+    A window narrows it to the part of the absence inside those dates, which is
+    how leave lying across the end of a leave year is counted in each year for the
+    part that falls in it rather than landing wholly in one. The halves stay tied
+    to the absence's own first and last day: the middle of a range is whole days
+    however it is sliced for counting.
     """
     profile = absence.profile
     personal = list(HrWorkSchedule.objects.filter(profile_id=profile.id))
     defaults = list(HrWorkSchedule.objects.filter(profile__isnull=True))
 
+    from_day = max(absence.start_date, first) if first else absence.start_date
+    to_day = min(absence.end_date, last) if last else absence.end_date
+
     total = 0
-    for day in iter_days(absence.start_date, absence.end_date):
+    for day in iter_days(from_day, to_day):
         schedule = effective_schedule(personal, defaults, day)
         day_minutes = credited_day_minutes(schedule, day)
         if not day_minutes:

@@ -111,14 +111,29 @@ export const HrPersonModal = ({ isOpen, person, contract, schedule, isBusy, onCl
       setProblem(t("hr.people.errors.hire_date_required"));
       return;
     }
+    if (weekMinutes === 0) {
+      setProblem(t("hr.people.errors.week_required"));
+      return;
+    }
+    // A typo here reads as a whole number and comes out as NaN, which becomes
+    // null on the way to the server — and null is how the field is deliberately
+    // cleared. So a mistyped id did not fail: it silently put the person back on
+    // the email match, and nothing on any screen said their hours had stopped
+    // reaching the CRM under the id somebody had chosen for them.
+    const staffId = crmStaffId.trim();
+    if (staffId !== "" && !/^[1-9][0-9]*$/.test(staffId)) {
+      setProblem(t("hr.people.errors.bad_crm_staff_id"));
+      return;
+    }
 
     onSave({
       profile: {
         hire_date: hireDate,
         timezone,
         is_hr_manager: isManager,
-        // Sent as typed. Empty clears it, which puts them back on the email match.
-        crm_staff_id: crmStaffId.trim() === "" ? null : Number(crmStaffId.trim()),
+        // Empty clears it, which puts them back on the email match. Anything
+        // else has been checked above, so it is a number by the time it is sent.
+        crm_staff_id: staffId === "" ? null : Number(staffId),
       },
       contract: {
         valid_from: validFrom || hireDate,
@@ -137,14 +152,12 @@ export const HrPersonModal = ({ isOpen, person, contract, schedule, isBusy, onCl
     <ModalCore isOpen={isOpen} handleClose={onClose} position={EModalPosition.CENTER} width={EModalWidth.XXXL}>
       <div className="flex max-h-[80vh] flex-col gap-5 overflow-y-auto p-5">
         <div>
-          <h3 className="text-custom-text-100 text-lg font-medium">
-            {person?.member_display_name || person?.member_email}
-          </h3>
-          <p className="text-custom-text-300 text-sm">{t("hr.people.modal_hint")}</p>
+          <h3 className="text-16 font-medium text-primary">{person?.member_display_name || person?.member_email}</h3>
+          <p className="text-13 text-tertiary">{t("hr.people.modal_hint")}</p>
         </div>
 
         <section className="flex flex-col gap-3">
-          <h4 className="text-custom-text-200 text-sm font-medium">{t("hr.people.section_person")}</h4>
+          <h4 className="text-13 font-medium text-secondary">{t("hr.people.section_person")}</h4>
           <div className="grid gap-3 sm:grid-cols-2">
             <Field label={t("hr.people.hire_date")}>
               <input
@@ -166,7 +179,7 @@ export const HrPersonModal = ({ isOpen, person, contract, schedule, isBusy, onCl
               onChange={(e) => setCrmStaffId(e.target.value)}
               className={inputClass}
             />
-            <p className="text-custom-text-400 text-xs mt-1">
+            <p className="mt-1 text-13 text-tertiary">
               {person?.crm_link === "set"
                 ? t("hr.people.crm_link.set")
                 : person?.crm_link === "email"
@@ -175,14 +188,14 @@ export const HrPersonModal = ({ isOpen, person, contract, schedule, isBusy, onCl
             </p>
           </Field>
 
-          <label className="text-sm text-custom-text-200 flex items-center gap-2">
+          <label className="flex items-center gap-2 text-13 text-secondary">
             <input type="checkbox" checked={isManager} onChange={(e) => setIsManager(e.target.checked)} />
             {t("hr.people.is_manager")}
           </label>
         </section>
 
         <section className="flex flex-col gap-3">
-          <h4 className="text-custom-text-200 text-sm font-medium">{t("hr.people.section_terms")}</h4>
+          <h4 className="text-13 font-medium text-secondary">{t("hr.people.section_terms")}</h4>
           <div className="grid gap-3 sm:grid-cols-2">
             <Field label={t("hr.people.arrangement")}>
               <select
@@ -206,7 +219,7 @@ export const HrPersonModal = ({ isOpen, person, contract, schedule, isBusy, onCl
               />
             </Field>
           </div>
-          <label className="text-sm text-custom-text-200 flex items-start gap-2">
+          <label className="flex items-start gap-2 text-13 text-secondary">
             <input
               type="checkbox"
               checked={recordsTarget}
@@ -215,19 +228,19 @@ export const HrPersonModal = ({ isOpen, person, contract, schedule, isBusy, onCl
             />
             <span>
               {t("hr.people.records_target")}
-              <span className="text-custom-text-400 text-xs block">{t("hr.people.records_target_hint")}</span>
+              <span className="block text-13 text-tertiary">{t("hr.people.records_target_hint")}</span>
             </span>
           </label>
         </section>
 
         <section className="flex flex-col gap-3">
           <div className="flex items-baseline justify-between">
-            <h4 className="text-custom-text-200 text-sm font-medium">{t("hr.people.section_schedule")}</h4>
-            <span className="text-custom-text-400 text-xs">
+            <h4 className="text-13 font-medium text-secondary">{t("hr.people.section_schedule")}</h4>
+            <span className="text-13 text-tertiary">
               {t("hr.people.week_total", { duration: formatMinutes(weekMinutes) })}
             </span>
           </div>
-          <p className="text-custom-text-400 text-xs">{t("hr.people.schedule_hint")}</p>
+          <p className="text-13 text-tertiary">{t("hr.people.schedule_hint")}</p>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-7">
             {WEEKDAYS.map(({ key, label }) => (
               <Field key={key} label={t(label)}>
@@ -242,13 +255,13 @@ export const HrPersonModal = ({ isOpen, person, contract, schedule, isBusy, onCl
           </div>
         </section>
 
-        {problem ? <p className="text-sm text-red-500">{problem}</p> : null}
+        {problem ? <p className="text-13 text-danger-primary">{problem}</p> : null}
 
         <div className="flex items-center justify-end gap-2">
-          <Button variant="secondary" size="sm" onClick={onClose}>
+          <Button variant="secondary" size="lg" onClick={onClose}>
             {t("hr.people.cancel")}
           </Button>
-          <Button variant="primary" size="sm" loading={isBusy} onClick={handleSave}>
+          <Button variant="primary" size="lg" loading={isBusy} onClick={handleSave}>
             {t("hr.people.save")}
           </Button>
         </div>
@@ -258,11 +271,11 @@ export const HrPersonModal = ({ isOpen, person, contract, schedule, isBusy, onCl
 };
 
 const inputClass =
-  "border-custom-border-200 bg-custom-background-100 text-custom-text-100 focus:border-custom-primary-100 w-full rounded-md border px-3 py-1.5 text-sm outline-none";
+  "border-subtle bg-layer-1 text-primary focus:border-accent-strong w-full rounded-md border px-3 py-1.5 text-13 outline-none";
 
 const Field = ({ label, children }: { label: string; children: React.ReactNode }) => (
   <label className="flex flex-col gap-1">
-    <span className="text-custom-text-300 text-xs font-medium">{label}</span>
+    <span className="text-13 font-medium text-tertiary">{label}</span>
     {children}
   </label>
 );

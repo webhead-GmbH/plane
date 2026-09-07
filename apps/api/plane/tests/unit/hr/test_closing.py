@@ -86,6 +86,38 @@ def march(profile):
     return HrPeriod.objects.get(profile_id=profile.id, period_start=date(2026, 3, 1))
 
 
+def an_hour_logged_on(profile, day):
+    """An hour against a work item, which is the kind that can vanish underneath."""
+    project = ProjectFactory(workspace=profile.workspace, created_by=profile.member)
+    state = State.objects.filter(project=project).first() or State.objects.create(
+        name="Todo", project=project, workspace=profile.workspace, group="unstarted"
+    )
+    issue = Issue.objects.create(project=project, workspace=profile.workspace, name="Something", state=state)
+    moment = datetime(day.year, day.month, day.day, 9, 0, tzinfo=dt_timezone.utc)
+    return IssueWorkLog.objects.create(
+        workspace=profile.workspace,
+        project=project,
+        issue=issue,
+        logged_by=profile.member,
+        started_at=moment,
+        logged_at=moment,
+        duration=3600,
+    )
+
+
+def february(profile, worked=0):
+    """The month before March, built, with something in it if asked for."""
+    if worked:
+        HrTimeEntry.objects.create(
+            workspace=profile.workspace,
+            profile=profile,
+            entry_date=date(2026, 2, 3),
+            minutes=worked,
+        )
+    rebuild_period(profile, 2026, 2)
+    return HrPeriod.objects.get(profile_id=profile.id, period_start=date(2026, 2, 1))
+
+
 def through_to_approved(profile, approver):
     period = march(profile)
     submit(period, profile.member)
@@ -104,9 +136,7 @@ class TestSubmit:
         state = State.objects.filter(project=project).first() or State.objects.create(
             name="Todo", project=project, workspace=profile.workspace, group="unstarted"
         )
-        issue = Issue.objects.create(
-            project=project, workspace=profile.workspace, name="Ongoing", state=state
-        )
+        issue = Issue.objects.create(project=project, workspace=profile.workspace, name="Ongoing", state=state)
         IssueWorkLog.objects.create(
             workspace=profile.workspace,
             project=project,
@@ -182,9 +212,7 @@ class TestLock:
 
     def test_a_month_with_days_marked_for_review_refuses_to_close(self, profile, approver):
         period = through_to_approved(profile, approver)
-        HrPeriodDay.objects.filter(period_id=period.id, work_date=date(2026, 3, 2)).update(
-            needs_review=True
-        )
+        HrPeriodDay.objects.filter(period_id=period.id, work_date=date(2026, 3, 2)).update(needs_review=True)
         with pytest.raises(TransitionRefused, match="marked for review"):
             lock(period, approver)
 
@@ -268,9 +296,7 @@ class TestBalanceChainGaps:
         )
         for year, month in ((2026, 1), (2026, 2)):
             rebuild_period(profile, year, month)
-            period = HrPeriod.objects.get(
-                profile_id=profile.id, period_start=date(year, month, 1)
-            )
+            period = HrPeriod.objects.get(profile_id=profile.id, period_start=date(year, month, 1))
             submit(period, profile.member)
             approve(period, approver)
             lock(period, approver)
@@ -318,9 +344,7 @@ class TestRebuildGating:
 
 
 class TestRelock:
-    def test_closing_a_reopened_month_keeps_the_first_closing_on_the_record(
-        self, profile, approver
-    ):
+    def test_closing_a_reopened_month_keeps_the_first_closing_on_the_record(self, profile, approver):
         period = lock(through_to_approved(profile, approver), approver)
         first_target = period.target_minutes
         reopen(period, approver, "Correcting a misfiled day.")
@@ -334,6 +358,148 @@ class TestRelock:
         assert len(superseded) == 1
         assert superseded[0]["target_minutes"] == first_target
         assert superseded[0]["reason"] == "Correcting a misfiled day."
+
+
+class TestClosingCountsWhatIsThereAtTheTime:
+    """The final rebuild, which for a long time did not happen.
+
+    `lock` calls `rebuild_period`, and `rebuild_period` refuses anything that is
+    not open or reopened — which an approved month is not. So the call returned
+    immediately and the figures frozen were whatever had last been computed while
+    the month was still open, missing everything recorded between the two.
+
+    Nothing about it looked wrong: the month closed, the figures were plausible,
+    and only somebody adding up the records by hand would ever have found the
+    difference.
+    """
+
+    def test_hours_recorded_between_approval_and_closing_are_counted(self, profile, approver):
+        period = through_to_approved(profile, approver)
+        HrTimeEntry.objects.create(
+            workspace=profile.workspace,
+            profile=profile,
+            entry_date=date(2026, 3, 3),
+            minutes=300,
+        )
+
+        closed = lock(period, approver)
+
+        assert closed.actual_minutes == 300
+        assert closed.non_project_minutes == 300
+
+    def test_the_day_breakdown_is_rebuilt_too_not_only_the_total(self, profile, approver):
+        period = through_to_approved(profile, approver)
+        HrTimeEntry.objects.create(
+            workspace=profile.workspace,
+            profile=profile,
+            entry_date=date(2026, 3, 3),
+            minutes=300,
+        )
+
+        lock(period, approver)
+
+        day = HrPeriodDay.objects.get(period_id=period.id, work_date=date(2026, 3, 3))
+        assert day.non_project_minutes == 300
+
+    def test_the_snapshot_records_the_rebuilt_figures(self, profile, approver):
+        """The snapshot is what an auditor reads, so it cannot describe the old total."""
+        period = through_to_approved(profile, approver)
+        HrTimeEntry.objects.create(
+            workspace=profile.workspace,
+            profile=profile,
+            entry_date=date(2026, 3, 3),
+            minutes=300,
+        )
+
+        closed = lock(period, approver)
+
+        assert closed.snapshot["totals"]["actual_minutes"] == 300
+
+    def test_hours_that_vanished_before_closing_stop_it(self, profile, approver):
+        """The rebuild now runs, so it can also flag — and that must not be swallowed.
+
+        A worklog counted into the approved month and gone by the time it closes is
+        the case the flag exists for. While the rebuild did nothing, the hours were
+        simply dropped from the frozen total and nobody was asked about them.
+        """
+        worked = an_hour_logged_on(profile, date(2026, 3, 3))
+        period = through_to_approved(profile, approver)
+        worked.delete()
+
+        with pytest.raises(TransitionRefused, match="marked for review"):
+            lock(period, approver)
+
+
+class TestTheMonthBeforeThisOne:
+    """A running balance is a chain, and closing over a gap silently restarts it.
+
+    `opening_balance_for` takes the previous month's closing figure only when that
+    month is closed, and otherwise falls all the way back to the balance agreed
+    when the module started counting. So closing March while February was still
+    open did not carry February forward — it discarded every month since the
+    beginning, and the loss then rode forward on every month after it.
+    """
+
+    def test_a_month_whose_predecessor_is_still_open_refuses_to_close(self, profile, approver):
+        february(profile, worked=300)
+        period = through_to_approved(profile, approver)
+
+        with pytest.raises(TransitionRefused, match="February 2026"):
+            lock(period, approver)
+
+    def test_a_month_whose_predecessor_was_reopened_refuses_too(self, profile, approver):
+        before = february(profile)
+        submit(before, profile.member)
+        approve(before, approver)
+        lock(before, approver)
+        reopen(before, approver, "A figure was queried.")
+
+        period = through_to_approved(profile, approver)
+        with pytest.raises(TransitionRefused, match="February 2026"):
+            lock(period, approver)
+
+    def test_an_empty_month_nobody_recorded_anything_in_is_not_a_gap(self, profile, approver):
+        """One gets created merely by looking at it, and refusing on that is a wall."""
+        rebuild_period(profile, 2026, 2)
+        HrPeriodDay.objects.filter(period__period_start=date(2026, 2, 1)).update(target_minutes=0, actual_minutes=0)
+
+        closed = lock(through_to_approved(profile, approver), approver)
+        assert closed.state == HrPeriod.State.LOCKED
+
+    def test_a_month_from_before_the_counting_began_is_not_a_gap_either(self, profile, approver):
+        """Scrolling back through a year that predates the module creates rows.
+
+        Those months carry a full target — the schedule reaches back as far as it
+        is asked — but not one minute of it was ever owed, because the balance
+        this person actually starts from was agreed on a later date. Treating them
+        as a break in the chain makes the current month uncloseable on account of
+        a shortfall that does not exist.
+        """
+        HrOpeningBalance.objects.create(
+            workspace=profile.workspace,
+            profile=profile,
+            effective_on=date(2026, 3, 1),
+            kind=HrOpeningBalance.Kind.TIME_BALANCE,
+            minutes=0,
+            basis="Agreed at the cut-over.",
+        )
+        # A month somebody merely looked at: a real target, nothing worked.
+        february(profile)
+        assert HrPeriodDay.objects.filter(period__period_start=date(2026, 2, 1), target_minutes__gt=0).exists()
+
+        closed = lock(through_to_approved(profile, approver), approver)
+        assert closed.state == HrPeriod.State.LOCKED
+
+    def test_the_balance_is_carried_once_the_predecessor_is_closed(self, profile, approver):
+        before = february(profile, worked=300)
+        submit(before, profile.member)
+        approve(before, approver)
+        closed_before = lock(before, approver)
+
+        closed = lock(through_to_approved(profile, approver), approver)
+
+        assert closed.opening_balance_minutes == closed_before.closing_balance_minutes
+        assert closed.opening_balance_minutes != 0
 
 
 class TestReopen:

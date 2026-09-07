@@ -113,6 +113,64 @@ def opening_balance_for(period):
     return balance.minutes if balance else 0
 
 
+def unfinished_predecessor(period):
+    """The month before this one, where it is not finished and would be carried.
+
+    The running balance is a chain: each month opens on what the one before it
+    closed with. `opening_balance_for` reads that from the previous month only
+    when it is closed, and otherwise falls all the way back to the figure agreed
+    when the module started counting — so closing March while February is still
+    open does not carry February forward, it silently discards every month since
+    the beginning and starts the chain again.
+
+    A month that exists but holds nothing is not a break in the chain, and nor is
+    one from before this person was being counted at all. A period row gets
+    created merely by looking at a month — so somebody scrolling back through a
+    year that predates the module would otherwise make the current month
+    uncloseable, on account of a target the person never owed.
+    """
+    previous = (
+        HrPeriod.objects.filter(profile_id=period.profile_id, period_start__lt=period.period_start)
+        .order_by("-period_start")
+        .first()
+    )
+    if previous is None or previous.state == HrPeriod.State.LOCKED:
+        return None
+
+    # Reopened counts however empty it looks: it was closed once, so a later month
+    # has already been opened on a figure it is now free to change.
+    if previous.locked_at is not None:
+        return previous
+
+    started = counting_starts(period.profile)
+    if started is not None and previous.period_end < started:
+        return None
+
+    recorded = HrPeriodDay.objects.filter(period_id=previous.id).exclude(target_minutes=0, actual_minutes=0).exists()
+    return previous if recorded else None
+
+
+def counting_starts(profile):
+    """The day this person's running balance begins, or None where nothing says.
+
+    The agreed opening balance, which is the point of one: a figure somebody
+    signed off as where they stood, with everything before it deliberately out of
+    scope. Their hire date stands in when no balance has been agreed yet, since
+    nothing before it can belong to them either.
+    """
+    first = (
+        HrOpeningBalance.objects.filter(
+            profile_id=profile.id,
+            kind=HrOpeningBalance.Kind.TIME_BALANCE,
+            superseded_by__isnull=True,
+        )
+        .order_by("effective_on")
+        .values_list("effective_on", flat=True)
+        .first()
+    )
+    return first or profile.hire_date
+
+
 def _snapshot(period, totals):
     """What the figures were worked out from, kept so they can be explained later."""
     profile = period.profile
@@ -212,8 +270,22 @@ def lock(period, actor):
     # makes the figures permanent.
     _refuse_if_still_running(period)
 
+    unfinished = unfinished_predecessor(period)
+    if unfinished is not None:
+        raise TransitionRefused(
+            "%s has not been closed yet, and this month opens on what that one "
+            "closes with. Close it first, or the balance carried into this month "
+            "starts again from nothing." % unfinished.period_start.strftime("%B %Y"),
+            conflict=False,
+        )
+
     year, month = period.period_start.year, period.period_start.month
-    rebuild_period(period.profile, year, month, actor=actor)
+    # settling=True: without it the rebuild refuses an APPROVED month, so this
+    # step quietly did nothing and the figures frozen below were whatever was
+    # last computed while the month was still open — missing anything a manager
+    # recorded between approval and closing.
+    rebuild_period(period.profile, year, month, actor=actor, settling=True)
+    period.refresh_from_db()
 
     if HrPeriodDay.objects.filter(period_id=period.id, needs_review=True).exists():
         raise TransitionRefused(

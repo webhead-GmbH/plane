@@ -18,6 +18,7 @@ from plane.hr.api.views import (
     HrAbsenceDecisionEndpoint,
     HrAbsenceEndpoint,
     HrAbsenceTypeEndpoint,
+    HrAttendanceDayEndpoint,
     HrCandidateEndpoint,
     HrContractEndpoint,
     HrEmploymentProfileEndpoint,
@@ -49,6 +50,7 @@ from plane.hr.api.views import (
     HrSetupEndpoint,
     HrStatementEndpoint,
     HrTimeEntryEndpoint,
+    HrWorklogDetailEndpoint,
     HrWorkScheduleEndpoint,
 )
 
@@ -133,6 +135,12 @@ urlpatterns = [
         name="hr-absence-decision",
     ),
     # Hours with no work item behind them
+    path("attendance/", HrAttendanceDayEndpoint.as_view(), name="hr-attendance"),
+    path("attendance/<uuid:pk>/", HrAttendanceDayEndpoint.as_view(), name="hr-attendance-detail"),
+    # What the hours in a month were spent on, entry by entry. Alongside the
+    # other person-scoped reads rather than under a month, because it is asked
+    # by year and month like the rest of them and a month row need not exist yet.
+    path("worklogs/", HrWorklogDetailEndpoint.as_view(), name="hr-worklogs"),
     path("time-entries/", HrTimeEntryEndpoint.as_view(), name="hr-time-entries"),
     path("time-entries/<uuid:pk>/", HrTimeEntryEndpoint.as_view(), name="hr-time-entry-detail"),
     # Rates and invoices

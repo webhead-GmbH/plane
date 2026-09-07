@@ -74,16 +74,26 @@ def close_runaway_timers():
 
 def _record(worklog, elapsed_seconds, capped_seconds):
     """Write down that this was closed by the system and not by the person."""
-    profile = HrEmploymentProfile.objects.filter(
-        workspace_id=worklog.workspace_id, member_id=worklog.logged_by_id
-    ).first()
+    # The person's own workspace first, then any of them. An hour is counted
+    # wherever it was logged — the ledger reads across every workspace on purpose,
+    # because the company is one company however many it keeps — so looking only
+    # in the workspace the timer happened to run in dropped the note for anybody
+    # employed through a different one, which is exactly the person most likely to
+    # have a timer running somewhere they were not watching.
+    theirs = list(HrEmploymentProfile.objects.filter(member_id=worklog.logged_by_id))
+    profile = next(
+        (row for row in theirs if row.workspace_id == worklog.workspace_id),
+        theirs[0] if theirs else None,
+    )
     if profile is None:
         # Somebody outside the HR module logged the time. The timer still had to be
         # closed, but there is no employment record to hang the note on.
         return
 
     HrAuditLog.objects.create(
-        workspace_id=worklog.workspace_id,
+        # Filed where the employment record is, which is where somebody goes to
+        # read this person's history.
+        workspace_id=profile.workspace_id,
         profile_id=profile.id,
         actor=None,
         actor_email="",
@@ -94,6 +104,10 @@ def _record(worklog, elapsed_seconds, capped_seconds):
             "elapsed_seconds": elapsed_seconds,
             "recorded_seconds": capped_seconds,
             "started_at": worklog.started_at.isoformat() if worklog.started_at else None,
+            # Named because it is not necessarily the workspace this entry is
+            # filed in, and the difference is the first thing somebody chasing it
+            # would otherwise have to work out for themselves.
+            "workspace_id": str(worklog.workspace_id),
         },
         reason=(
             "The timer was left running past the point where it could still be a "

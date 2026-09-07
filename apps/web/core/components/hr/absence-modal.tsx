@@ -4,7 +4,7 @@
  * See the LICENSE file for details.
  */
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 // plane imports
 import { useTranslation } from "@plane/i18n";
 import { Button } from "@plane/propel/button";
@@ -19,7 +19,7 @@ import {
   type THrEmploymentProfile,
 } from "@/services/hr.service";
 // local imports
-import { parseDuration } from "./utils";
+import { localName, parseDuration } from "./utils";
 
 export type TAbsenceDraft = {
   profile_id: string;
@@ -74,7 +74,7 @@ const today = () => new Date().toISOString().slice(0, 10);
  * happened to be scheduled for.
  */
 export const HrAbsenceModal = ({ isOpen, absence, people, types, fixedProfileId, isBusy, onClose, onSave }: TProps) => {
-  const { t } = useTranslation();
+  const { t, currentLocale } = useTranslation();
 
   const activeTypes = useMemo(
     () => types.filter((type) => type.is_active || type.id === absence?.absence_type),
@@ -83,16 +83,30 @@ export const HrAbsenceModal = ({ isOpen, absence, people, types, fixedProfileId,
 
   const [profileId, setProfileId] = useState("");
   const [typeId, setTypeId] = useState("");
-  const [startDate, setStartDate] = useState(today());
-  const [endDate, setEndDate] = useState(today());
+  const [startDate, setStartDate] = useState(today);
+  const [endDate, setEndDate] = useState(today);
   const [granularity, setGranularity] = useState<EHrGranularity>(EHrGranularity.FULL_DAY);
   const [startHalf, setStartHalf] = useState<EHrHalf>(EHrHalf.AFTERNOON);
   const [endHalf, setEndHalf] = useState<EHrHalf>(EHrHalf.MORNING);
   const [hours, setHours] = useState("");
   const [reason, setReason] = useState("");
 
+  // What the boxes were last filled from. Seeding is once per opening: the
+  // effect below also watches the lists the defaults come from, and SWR hands
+  // back a fresh array on every revalidation — so anything on the page
+  // refreshing emptied the form somebody was in the middle of filling in.
+  const seededFrom = useRef<string | null>(null);
+
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen) {
+      seededFrom.current = null;
+      return;
+    }
+    // Wait for the list the default kind comes from, so a slow load still ends
+    // up seeded rather than seeded with nothing.
+    const seed = absence?.id ?? "new";
+    if (seededFrom.current === seed || activeTypes.length === 0) return;
+    seededFrom.current = seed;
 
     setProfileId(absence?.profile ?? fixedProfileId ?? people[0]?.id ?? "");
     setTypeId(absence?.absence_type ?? activeTypes[0]?.id ?? "");
@@ -132,18 +146,17 @@ export const HrAbsenceModal = ({ isOpen, absence, people, types, fixedProfileId,
     });
   };
 
-  const field =
-    "border-custom-border-200 bg-custom-background-100 text-custom-text-100 w-full rounded-md border px-3 py-1.5 text-sm";
-  const label = "text-custom-text-300 mb-1 block text-xs font-medium";
+  const field = "border-subtle bg-layer-1 text-primary w-full rounded-md border px-3 py-1.5 text-13";
+  const label = "text-tertiary mb-1 block text-13 font-medium";
 
   return (
     <ModalCore isOpen={isOpen} handleClose={onClose} position={EModalPosition.CENTER} width={EModalWidth.XL}>
       <div className="flex flex-col gap-4 p-5">
         <div>
-          <h3 className="text-custom-text-100 text-base font-semibold">
+          <h3 className="text-14 font-semibold text-primary">
             {absence ? t("hr.absences.modal.edit_title") : t("hr.absences.modal.title")}
           </h3>
-          <p className="text-custom-text-300 text-sm">{t("hr.absences.modal.subtitle")}</p>
+          <p className="text-13 text-tertiary">{t("hr.absences.modal.subtitle")}</p>
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2">
@@ -181,7 +194,7 @@ export const HrAbsenceModal = ({ isOpen, absence, people, types, fixedProfileId,
               {activeTypes.length === 0 && <option value="">{t("hr.absences.modal.no_types")}</option>}
               {activeTypes.map((type) => (
                 <option key={type.id} value={type.id}>
-                  {type.name_de || type.name_en || type.code}
+                  {localName(type, currentLocale) || type.code}
                 </option>
               ))}
             </select>
@@ -212,11 +225,11 @@ export const HrAbsenceModal = ({ isOpen, absence, people, types, fixedProfileId,
             <input
               id="hr-absence-to"
               type="date"
-              className={cn(field, backwards && "border-red-500")}
+              className={cn(field, backwards && "border-danger-strong")}
               value={endDate}
               onChange={(event) => setEndDate(event.target.value)}
             />
-            {backwards && <p className="text-xs text-red-500 mt-1">{t("hr.absences.modal.backwards")}</p>}
+            {backwards && <p className="mt-1 text-13 text-danger-primary">{t("hr.absences.modal.backwards")}</p>}
           </div>
 
           <div className="sm:col-span-2">
@@ -286,12 +299,16 @@ export const HrAbsenceModal = ({ isOpen, absence, people, types, fixedProfileId,
               </label>
               <input
                 id="hr-absence-hours"
-                className={cn(field, hoursMissing && hours !== "" && "border-red-500")}
+                className={cn(field, hoursMissing && hours !== "" && "border-danger-strong")}
                 value={hours}
                 placeholder={t("hr.absences.modal.hours_placeholder")}
                 onChange={(event) => setHours(event.target.value)}
               />
-              <p className="text-custom-text-400 text-xs mt-1">{t("hr.absences.modal.hours_hint")}</p>
+              <p className={cn("mt-1 text-13", hoursMissing && hours !== "" ? "text-danger-primary" : "text-tertiary")}>
+                {hoursMissing && hours !== ""
+                  ? t("hr.absences.modal.hours_unreadable")
+                  : t("hr.absences.modal.hours_hint")}
+              </p>
             </div>
           )}
 
@@ -310,10 +327,10 @@ export const HrAbsenceModal = ({ isOpen, absence, people, types, fixedProfileId,
         </div>
 
         <div className="flex items-center justify-end gap-2">
-          <Button variant="secondary" size="sm" onClick={onClose}>
+          <Button variant="secondary" size="lg" onClick={onClose}>
             {t("common.cancel")}
           </Button>
-          <Button variant="primary" size="sm" disabled={!canSave} onClick={handleSave}>
+          <Button variant="primary" size="lg" disabled={!canSave} onClick={handleSave}>
             {absence ? t("common.save_changes") : t("hr.absences.modal.record")}
           </Button>
         </div>

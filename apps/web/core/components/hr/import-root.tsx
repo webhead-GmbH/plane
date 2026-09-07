@@ -6,12 +6,12 @@
 
 import { useRef, useState } from "react";
 import { observer } from "mobx-react";
-import { Link } from "react-router";
-import { AlertTriangle, CalendarClock, CheckCircle2, MinusCircle, Undo2, Upload } from "lucide-react";
+import { AlertTriangle, CheckCircle2, Download, MinusCircle, Undo2, Upload } from "lucide-react";
 import useSWR from "swr";
 // plane imports
 import { useTranslation } from "@plane/i18n";
 import { Button } from "@plane/propel/button";
+import { EmptyStateCompact } from "@plane/propel/empty-state";
 import { setToast, TOAST_TYPE } from "@plane/propel/toast";
 import { Loader } from "@plane/ui";
 import { cn } from "@plane/utils";
@@ -25,7 +25,7 @@ import {
 } from "@/services/hr.service";
 // local imports
 import { HrReasonModal } from "./reason-modal";
-import { formatDayLabel, refusalMessage } from "./utils";
+import { formatDayWithYear, refusalMessage } from "./utils";
 
 const hrService = new HrService();
 
@@ -49,8 +49,8 @@ const KIND_KEY: Record<number, string> = {
  * because the alternative to both is unpicking one spreadsheet's rows from
  * another's by hand.
  */
-export const HrImportRoot = observer(function HrImportRoot({ workspaceSlug }: { workspaceSlug: string }) {
-  const { t } = useTranslation();
+export const HrImportRoot = observer(function HrImportRoot() {
+  const { t, currentLocale } = useTranslation();
   const fileField = useRef<HTMLInputElement>(null);
   const [kind, setKind] = useState<EHrImportKind>(EHrImportKind.TIME_ENTRIES);
   const [checking, setChecking] = useState<THrImportBatch | null>(null);
@@ -59,11 +59,41 @@ export const HrImportRoot = observer(function HrImportRoot({ workspaceSlug }: { 
 
   const { data: batches, isLoading, error, mutate } = useSWR("HR_IMPORTS", () => hrService.imports());
 
+  /** A spreadsheet with the right headings and one row showing the shape of each. */
+  const downloadTemplate = () => {
+    const sheets: Record<number, string[][]> = {
+      [EHrImportKind.TIME_ENTRIES]: [
+        ["email", "date", "hours", "note"],
+        ["anna.berger@example.com", "2026-03-02", "7:42", "Monatsabschluss"],
+      ],
+      [EHrImportKind.OPENING_BALANCES]: [
+        ["email", "date", "hours", "kind", "basis", "confidence"],
+        ["anna.berger@example.com", "2026-01-01", "12:30", "time", "Agreed on 12 Jan", "documented"],
+      ],
+      [EHrImportKind.ABSENCES]: [
+        ["email", "start_date", "end_date", "type"],
+        ["anna.berger@example.com", "2026-03-02", "2026-03-06", "urlaub"],
+      ],
+    };
+    const rows = sheets[kind] ?? sheets[EHrImportKind.TIME_ENTRIES];
+    // Quoted throughout: a note or a basis may hold the separator, and a file
+    // that breaks on somebody's comma is worse than no template at all.
+    const csv = rows.map((row) => row.map((cell) => `"${cell.replace(/"/g, '""')}"`).join(",")).join("\r\n");
+    // A byte-order mark, because Excel reads a UTF-8 file without one as the
+    // local codepage and turns every umlaut in a name into mojibake.
+    const url = URL.createObjectURL(new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8" }));
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${KIND_KEY[kind]}-template.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
   const complain = (failure: unknown) =>
     setToast({
       type: TOAST_TYPE.ERROR,
       title: t("hr.imports.toasts.refused"),
-      message: refusalMessage(failure) ?? t("hr.imports.toasts.try_again"),
+      message: refusalMessage(failure, t, currentLocale) ?? t("hr.imports.toasts.try_again"),
     });
 
   const handleFile = async (file: File) => {
@@ -77,6 +107,18 @@ export const HrImportRoot = observer(function HrImportRoot({ workspaceSlug }: { 
     } finally {
       setIsBusy(false);
       if (fileField.current) fileField.current.value = "";
+    }
+  };
+
+  /** Reopen a checked file, fetching the rows the list leaves out. */
+  const handleResume = async (batch: THrImportBatch) => {
+    setIsBusy(true);
+    try {
+      setChecking(await hrService.importBatch(batch.id));
+    } catch (failure) {
+      complain(failure);
+    } finally {
+      setIsBusy(false);
     }
   };
 
@@ -120,44 +162,49 @@ export const HrImportRoot = observer(function HrImportRoot({ workspaceSlug }: { 
 
   if (isLoading)
     return (
-      <Loader className="mx-auto flex w-full max-w-5xl flex-col gap-3 px-6 py-6">
+      <Loader className="flex w-full flex-col gap-7">
         <Loader.Item height="48px" />
         <Loader.Item height="220px" />
       </Loader>
     );
 
-  if (error)
+  const notAllowed = (error as { status?: number } | undefined)?.status === 403;
+  const hasData = Boolean(batches);
+
+  // Only when there is nothing to show: a revalidation that failed while the
+  // screen already holds good data must not replace it with an error.
+  if (error && (notAllowed || !hasData))
     return (
-      <div className="mx-auto w-full max-w-5xl px-6 py-6">
-        <div className="border-custom-border-200 bg-custom-background-90 rounded-md border px-4 py-6">
-          <p className="text-custom-text-200 text-sm font-medium">{t("hr.team_time.not_permitted")}</p>
-          <p className="text-custom-text-300 text-sm mt-1">{t("hr.imports.not_permitted_detail")}</p>
-        </div>
+      <div className="w-full">
+        <EmptyStateCompact
+          title={notAllowed ? t("hr.team_time.not_permitted") : t("hr.shared.load_failed")}
+          description={notAllowed ? t("hr.imports.not_permitted_detail") : t("hr.shared.load_failed_detail")}
+          assetKey={notAllowed ? "members" : "unknown"}
+          assetClassName="size-20"
+          rootClassName="py-16"
+          actions={
+            notAllowed
+              ? undefined
+              : [{ label: t("hr.shared.retry"), variant: "secondary", onClick: () => void mutate() }]
+          }
+        />
       </div>
     );
 
   return (
-    <div className="mx-auto flex w-full max-w-5xl flex-col gap-5 px-6 py-6">
+    <div className="flex w-full flex-col gap-7">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-custom-text-100 text-lg font-semibold">{t("hr.imports.title")}</h1>
-          <p className="text-custom-text-300 text-sm">{t("hr.imports.subtitle")}</p>
-        </div>
-        <Link to={`/${workspaceSlug}/team-time`}>
-          <Button variant="secondary" size="sm" prependIcon={<CalendarClock className="size-4" />}>
-            {t("hr.people.back_to_month")}
-          </Button>
-        </Link>
+        <p className="text-13 text-tertiary">{t("hr.imports.subtitle")}</p>
       </div>
 
-      <section className="border-custom-border-200 flex flex-col gap-3 rounded-md border p-4">
+      <section className="flex flex-col gap-3 rounded-md border border-subtle p-4">
         <div className="flex flex-wrap items-end gap-3">
           <label className="flex flex-col gap-1">
-            <span className="text-custom-text-300 text-xs font-medium">{t("hr.imports.what_kind")}</span>
+            <span className="text-13 font-medium text-tertiary">{t("hr.imports.what_kind")}</span>
             <select
               value={kind}
               onChange={(e) => setKind(Number(e.target.value) as EHrImportKind)}
-              className="border-custom-border-200 bg-custom-background-100 text-custom-text-100 text-sm rounded-md border px-3 py-1.5 outline-none"
+              className="rounded-md border border-subtle bg-layer-1 px-3 py-1.5 text-13 text-primary outline-none"
             >
               {KINDS.map((value) => (
                 <option key={value} value={value}>
@@ -176,17 +223,20 @@ export const HrImportRoot = observer(function HrImportRoot({ workspaceSlug }: { 
               if (file) void handleFile(file);
             }}
           />
+          <Button variant="secondary" size="lg" prependIcon={<Download />} onClick={downloadTemplate}>
+            {t("hr.imports.template")}
+          </Button>
           <Button
             variant="primary"
-            size="sm"
+            size="lg"
             loading={isBusy}
-            prependIcon={<Upload className="size-4" />}
+            prependIcon={<Upload />}
             onClick={() => fileField.current?.click()}
           >
             {t("hr.imports.choose_file")}
           </Button>
         </div>
-        <p className="text-custom-text-400 text-xs">{t(`hr.imports.columns.${KIND_KEY[kind]}`)}</p>
+        <p className="text-13 text-tertiary">{t(`hr.imports.columns.${KIND_KEY[kind]}`)}</p>
       </section>
 
       {checking ? (
@@ -212,32 +262,37 @@ export const HrImportRoot = observer(function HrImportRoot({ workspaceSlug }: { 
       />
 
       <section className="flex flex-col gap-2">
-        <h2 className="text-custom-text-200 text-sm font-medium">{t("hr.imports.past")}</h2>
+        <h2 className="text-13 font-medium text-secondary">{t("hr.imports.past")}</h2>
         {(batches ?? []).length === 0 ? (
-          <p className="text-custom-text-400 text-sm">{t("hr.imports.none_yet")}</p>
+          <p className="text-13 text-tertiary">{t("hr.imports.none_yet")}</p>
         ) : (
-          <div className="border-custom-border-200 divide-custom-border-100 divide-y rounded-md border">
+          <div className="divide-y divide-subtle rounded-md border border-subtle">
             {(batches ?? []).map((batch) => (
               <div key={batch.id} className="flex flex-wrap items-center gap-3 px-4 py-2">
-                <span className="text-custom-text-100 text-sm flex-1 truncate">{batch.filename}</span>
-                <span className="text-custom-text-400 text-xs">{t(`hr.imports.kind.${KIND_KEY[batch.kind]}`)}</span>
-                <span className="text-custom-text-300 text-xs tabular-nums">
+                <span className="flex-1 truncate text-13 text-primary">{batch.filename}</span>
+                <span className="text-13 text-tertiary">{t(`hr.imports.kind.${KIND_KEY[batch.kind]}`)}</span>
+                <span className="text-13 text-tertiary tabular-nums">
                   {t("hr.imports.row_summary", { valid: batch.valid_count, total: batch.row_count })}
                 </span>
                 <span
                   className={cn(
-                    "text-xs rounded px-2 py-0.5",
-                    batch.state === EHrImportState.COMMITTED && "bg-green-500/10 text-green-600",
-                    batch.state === EHrImportState.ROLLED_BACK && "bg-custom-background-80 text-custom-text-300",
-                    batch.state === EHrImportState.FAILED && "bg-red-500/10 text-red-600"
+                    "rounded px-2 py-0.5 text-13",
+                    batch.state === EHrImportState.COMMITTED && "bg-success-subtle text-success-primary",
+                    batch.state === EHrImportState.ROLLED_BACK && "bg-layer-2 text-tertiary",
+                    batch.state === EHrImportState.FAILED && "bg-danger-subtle text-danger-primary"
                   )}
                 >
                   {t(`hr.imports.state.${batch.state}`)}
                 </span>
+                {batch.state === EHrImportState.PREVIEW_READY ? (
+                  <Button variant="secondary" size="lg" onClick={() => void handleResume(batch)}>
+                    {t("hr.imports.resume")}
+                  </Button>
+                ) : null}
                 {batch.state === EHrImportState.COMMITTED ? (
                   <Button
                     variant="link"
-                    size="sm"
+                    size="lg"
                     prependIcon={<Undo2 className="size-3.5" />}
                     onClick={() => setUndoing(batch)}
                   >
@@ -264,7 +319,7 @@ const ImportPreview = ({
   onApply: () => void;
   onDiscard: () => void;
 }) => {
-  const { t } = useTranslation();
+  const { t, currentLocale } = useTranslation();
   // Errors first: they are the reason to look at this at all, and a file with
   // six bad rows out of four hundred should not need scrolling to find them.
   // Grouped rather than sorted, so file order survives inside each group.
@@ -275,45 +330,45 @@ const ImportPreview = ({
   ];
 
   return (
-    <section className="border-custom-border-200 flex flex-col gap-3 rounded-md border p-4">
+    <section className="flex flex-col gap-3 rounded-md border border-subtle p-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="text-custom-text-100 text-sm font-medium">
+          <h2 className="text-13 font-medium text-primary">
             {t("hr.imports.preview_title", { filename: batch.filename })}
           </h2>
-          <p className="text-custom-text-300 text-sm">{t("hr.imports.preview_hint")}</p>
+          <p className="text-13 text-tertiary">{t("hr.imports.preview_hint")}</p>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="secondary" size="sm" onClick={onDiscard}>
+          <Button variant="secondary" size="lg" onClick={onDiscard}>
             {t("hr.imports.discard")}
           </Button>
-          <Button variant="primary" size="sm" loading={isBusy} disabled={batch.valid_count === 0} onClick={onApply}>
+          <Button variant="primary" size="lg" loading={isBusy} disabled={batch.valid_count === 0} onClick={onApply}>
             {t("hr.imports.apply", { count: batch.valid_count })}
           </Button>
         </div>
       </div>
 
-      <div className="text-sm flex flex-wrap gap-4">
+      <div className="flex flex-wrap gap-4 text-13">
         <Count
-          icon={<CheckCircle2 className="text-green-600 size-4" />}
+          icon={<CheckCircle2 className="size-4 text-success-primary" />}
           label={t("hr.imports.will_write")}
           value={batch.valid_count}
         />
         <Count
-          icon={<AlertTriangle className="text-red-500 size-4" />}
+          icon={<AlertTriangle className="size-4 text-danger-primary" />}
           label={t("hr.imports.cannot_read")}
           value={batch.error_count}
         />
         <Count
-          icon={<MinusCircle className="text-custom-text-400 size-4" />}
+          icon={<MinusCircle className="size-4 text-tertiary" />}
           label={t("hr.imports.skipped")}
           value={batch.skipped_count}
         />
       </div>
 
-      <div className="border-custom-border-200 max-h-80 overflow-y-auto rounded-md border">
-        <table className="text-sm w-full">
-          <thead className="bg-custom-background-90 text-custom-text-400 text-xs uppercase">
+      <div className="max-h-80 overflow-y-auto rounded-md border border-subtle">
+        <table className="w-full text-13">
+          <thead className="border-b border-subtle text-13 text-placeholder">
             <tr>
               <th className="px-3 py-2 text-left font-medium">{t("hr.imports.column_row")}</th>
               <th className="px-3 py-2 text-left font-medium">{t("hr.imports.column_verdict")}</th>
@@ -322,21 +377,21 @@ const ImportPreview = ({
           </thead>
           <tbody>
             {rows.map((row) => (
-              <tr key={row.row} className="border-custom-border-100 border-t">
-                <td className="text-custom-text-400 px-3 py-1.5 tabular-nums">{row.row}</td>
+              <tr key={row.row} className="border-t border-subtle">
+                <td className="px-3 py-1.5 text-tertiary tabular-nums">{row.row}</td>
                 <td className="px-3 py-1.5">
                   <span
                     className={cn(
-                      "text-xs",
-                      row.verdict === "ok" && "text-green-600",
-                      row.verdict === "error" && "text-red-500",
-                      row.verdict === "skip" && "text-custom-text-400"
+                      "text-13",
+                      row.verdict === "ok" && "text-success-primary",
+                      row.verdict === "error" && "text-danger-primary",
+                      row.verdict === "skip" && "text-tertiary"
                     )}
                   >
                     {t(`hr.imports.verdict.${row.verdict}`)}
                   </span>
                 </td>
-                <td className="text-custom-text-300 px-3 py-1.5">{row.message || describe(row)}</td>
+                <td className="px-3 py-1.5 text-tertiary">{explain(row, t) || describe(row, currentLocale)}</td>
               </tr>
             ))}
           </tbody>
@@ -349,10 +404,26 @@ const ImportPreview = ({
 const Count = ({ icon, label, value }: { icon: React.ReactNode; label: string; value: number }) => (
   <span className="flex items-center gap-1.5">
     {icon}
-    <span className="text-custom-text-100 tabular-nums">{value}</span>
-    <span className="text-custom-text-300">{label}</span>
+    <span className="text-primary tabular-nums">{value}</span>
+    <span className="text-tertiary">{label}</span>
   </span>
 );
+
+/**
+ * Why a row was refused or skipped, in the reader's language.
+ *
+ * The server sends a name for the reason and the values it mentions, plus the
+ * English sentence it would otherwise have shown. The sentence is the fallback
+ * for a batch previewed before the names existed, and for anything a future
+ * version of the server refuses for a reason this one has no wording for — which
+ * is better than a blank cell where the explanation should be.
+ */
+function explain(row: THrImportRow, t: (key: string, values?: Record<string, unknown>) => string): string {
+  if (!row.reason) return row.message ?? "";
+  const wording = t(`hr.imports.reasons.${row.reason}`, { ...row.detail });
+  // i18next hands back the key itself when it knows nothing about it.
+  return wording.startsWith("hr.imports.reasons.") ? (row.message ?? "") : wording;
+}
 
 /**
  * What a row that passed will actually write, so "apply 4 rows" is checkable.
@@ -360,11 +431,14 @@ const Count = ({ icon, label, value }: { icon: React.ReactNode; label: string; v
  * Every value in a preview row arrives as a string — the batch is stored as JSON
  * and read back to write from, so it keeps whatever survives that round trip.
  */
-function describe(row: THrImportRow) {
+function describe(row: THrImportRow, locale?: string) {
   const day = row.data?.entry_date ?? row.data?.start_date ?? row.data?.effective_on;
   const minutes = Number(row.data?.minutes);
   const parts: string[] = [];
-  if (typeof day === "string" && day) parts.push(formatDayLabel(day));
+  // With the year: an import is nearly always of months that are not the one
+  // being looked at, so "2 Mar" leaves the reader guessing which March they are
+  // about to write into.
+  if (typeof day === "string" && day) parts.push(formatDayWithYear(day, locale));
   if (Number.isFinite(minutes) && minutes !== 0) {
     const size = Math.abs(minutes);
     parts.push(`${minutes < 0 ? "-" : ""}${Math.floor(size / 60)}:${String(size % 60).padStart(2, "0")}`);

@@ -6,17 +6,21 @@
 
 import { useState } from "react";
 import { observer } from "mobx-react";
-import { Link, useParams } from "react-router";
-import { CalendarDays, CalendarOff, ChevronLeft, ChevronRight, Download, Upload, UserCog } from "lucide-react";
+import { useParams } from "react-router";
+import { CalendarDays, CalendarOff, Download, ListTree, MoreHorizontal, Upload, UserCog } from "lucide-react";
 import useSWR from "swr";
 // plane imports
-import { Button } from "@plane/propel/button";
+import { EmptyStateCompact } from "@plane/propel/empty-state";
 import { useTranslation } from "@plane/i18n";
 import { setToast, TOAST_TYPE } from "@plane/propel/toast";
-import { Loader } from "@plane/ui";
+import { AlertModalCore, CustomMenu, Loader } from "@plane/ui";
 // local imports
 import { EHrPeriodState, HrService, type THrOverviewRow } from "@/services/hr.service";
+import { HrFigure } from "./figure";
+import { HrNavLink } from "./nav-link";
+import { HrPeriodStepper } from "./period-stepper";
 import { HrOverviewTable } from "./overview-table";
+import { HrReviewDaysModal } from "./review-days-modal";
 import { HrReasonModal } from "./reason-modal";
 import {
   balanceTone,
@@ -41,15 +45,20 @@ const hrService = new HrService();
  */
 export const HrTeamMonthRoot = observer(function HrTeamMonthRoot() {
   const now = new Date();
-  const [[year, month], setMonth] = useState<[number, number]>([now.getFullYear(), now.getMonth() + 1]);
+  const [[year, month], setMonth] = useState<[number, number]>(() =>
+    previousMonth(now.getFullYear(), now.getMonth() + 1)
+  );
   const [busyPeriodId, setBusyPeriodId] = useState<string | null>(null);
+  const [reviewing, setReviewing] = useState<THrOverviewRow | null>(null);
   const [reopening, setReopening] = useState<THrOverviewRow | null>(null);
+  const [closing, setClosing] = useState<THrOverviewRow | null>(null);
 
   const { t, currentLocale } = useTranslation();
   const { workspaceSlug } = useParams();
   const { data, isLoading, error, mutate } = useSWR(`HR_OVERVIEW_${year}_${month}`, () =>
     hrService.overview(year, month)
   );
+  const notAllowed = (error as { status?: number } | undefined)?.status === 403;
 
   const rows = data?.rows ?? [];
   const monthLabel = formatMonthLabel(`${year}-${String(month).padStart(2, "0")}-01`, currentLocale);
@@ -73,7 +82,7 @@ export const HrTeamMonthRoot = observer(function HrTeamMonthRoot() {
       setToast({
         type: TOAST_TYPE.ERROR,
         title: t("hr.team_time.toasts.refused"),
-        message: refusalMessage(failure) ?? t("hr.team_time.toasts.try_again"),
+        message: refusalMessage(failure, t, currentLocale) ?? t("hr.team_time.toasts.try_again"),
       });
     } finally {
       setBusyPeriodId(null);
@@ -88,59 +97,63 @@ export const HrTeamMonthRoot = observer(function HrTeamMonthRoot() {
   };
 
   return (
-    <div className="mx-auto flex w-full max-w-6xl flex-col gap-5 px-6 py-6">
+    <div className="flex w-full flex-col gap-7">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <Button
-            variant="secondary"
-            size="sm"
-            prependIcon={<ChevronLeft className="size-4" />}
-            onClick={() => setMonth(previousMonth(year, month))}
-          >
-            {t("hr.team_time.earlier")}
-          </Button>
-          <h1 className="text-custom-text-100 text-lg min-w-44 text-center font-semibold">{monthLabel}</h1>
-          <Button
-            variant="secondary"
-            size="sm"
-            appendIcon={<ChevronRight className="size-4" />}
-            onClick={() => setMonth(nextMonth(year, month))}
-          >
-            {t("hr.team_time.later")}
-          </Button>
-        </div>
+        <HrPeriodStepper
+          label={monthLabel}
+          onPrevious={() => setMonth(previousMonth(year, month))}
+          onNext={() => setMonth(nextMonth(year, month))}
+        />
 
+        {/* Four of these six were links to other pages, dressed as actions and
+            weighted the same as the exports. Somewhere to go is not something to
+            do, and a row of six identical buttons makes the reader sort out
+            which is which. */}
         <div className="flex items-center gap-2">
-          <Link to={`/${workspaceSlug}/team-time/import`}>
-            <Button variant="secondary" size="sm" prependIcon={<Upload className="size-4" />}>
-              {t("hr.imports.title")}
-            </Button>
-          </Link>
-          <Link to={`/${workspaceSlug}/team-time/people`}>
-            <Button variant="secondary" size="sm" prependIcon={<UserCog className="size-4" />}>
+          <nav className="flex items-center gap-1">
+            <HrNavLink to={`/${workspaceSlug}/team-time/detail`} icon={<ListTree className="size-4" />}>
+              {t("hr.detail.title")}
+            </HrNavLink>
+            <HrNavLink to={`/${workspaceSlug}/team-time/people`} icon={<UserCog className="size-4" />}>
               {t("hr.people.title")}
-            </Button>
-          </Link>
-          <Link to={`/${workspaceSlug}/team-time/absences`}>
-            <Button variant="secondary" size="sm" prependIcon={<CalendarOff className="size-4" />}>
+            </HrNavLink>
+            <HrNavLink to={`/${workspaceSlug}/team-time/absences`} icon={<CalendarOff className="size-4" />}>
               {t("hr.absences.title")}
-            </Button>
-          </Link>
-          <Link to={`/${workspaceSlug}/team-time/holidays`}>
-            <Button variant="secondary" size="sm" prependIcon={<CalendarDays className="size-4" />}>
+            </HrNavLink>
+            <HrNavLink to={`/${workspaceSlug}/team-time/holidays`} icon={<CalendarDays className="size-4" />}>
               {t("hr.holidays.title")}
-            </Button>
-          </Link>
-          <a href={hrService.monthExportUrl(year, month, "csv")} download>
-            <Button variant="secondary" size="sm" prependIcon={<Download className="size-4" />}>
+            </HrNavLink>
+            <HrNavLink to={`/${workspaceSlug}/team-time/import`} icon={<Upload className="size-4" />}>
+              {t("hr.imports.title")}
+            </HrNavLink>
+          </nav>
+
+          <span className="mx-1 h-4 w-px bg-layer-3" aria-hidden />
+
+          <CustomMenu
+            customButton={
+              <span className="grid size-7 place-items-center rounded-md text-tertiary transition-colors hover:bg-layer-2 hover:text-primary">
+                <MoreHorizontal className="size-4" />
+              </span>
+            }
+            placement="bottom-end"
+            closeOnSelect
+          >
+            <CustomMenu.MenuItem
+              onClick={() => window.open(hrService.monthExportUrl(year, month, "csv"), "_self")}
+              className="flex items-center gap-2"
+            >
+              <Download className="size-3 shrink-0" />
               {t("hr.team_time.export_csv")}
-            </Button>
-          </a>
-          <a href={hrService.monthExportUrl(year, month, "xlsx")} download>
-            <Button variant="secondary" size="sm" prependIcon={<Download className="size-4" />}>
+            </CustomMenu.MenuItem>
+            <CustomMenu.MenuItem
+              onClick={() => window.open(hrService.monthExportUrl(year, month, "xlsx"), "_self")}
+              className="flex items-center gap-2"
+            >
+              <Download className="size-3 shrink-0" />
               {t("hr.team_time.export_excel")}
-            </Button>
-          </a>
+            </CustomMenu.MenuItem>
+          </CustomMenu>
         </div>
       </div>
 
@@ -149,52 +162,75 @@ export const HrTeamMonthRoot = observer(function HrTeamMonthRoot() {
           <Loader.Item height="72px" />
           <Loader.Item height="320px" />
         </Loader>
-      ) : error ? (
-        <div className="border-custom-border-200 bg-custom-background-90 rounded-md border px-4 py-6">
-          <p className="text-custom-text-200 text-sm font-medium">{t("hr.team_time.not_permitted")}</p>
-          <p className="text-custom-text-300 text-sm mt-1">
-            {t("hr.team_time.not_permitted_detail", { page: t("hr.my_time.title") })}
-          </p>
-        </div>
+      ) : error && (notAllowed || !data) ? (
+        <EmptyStateCompact
+          title={notAllowed ? t("hr.team_time.not_permitted") : t("hr.shared.load_failed")}
+          description={
+            notAllowed
+              ? t("hr.team_time.not_permitted_detail", { page: t("hr.my_time.title") })
+              : t("hr.shared.load_failed_detail")
+          }
+          assetKey={notAllowed ? "members" : "unknown"}
+          assetClassName="size-20"
+          rootClassName="py-16"
+          actions={
+            notAllowed
+              ? undefined
+              : [{ label: t("hr.shared.retry"), variant: "secondary", onClick: () => void mutate() }]
+          }
+        />
       ) : (
         <>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-            <div className="border-custom-border-200 bg-custom-background-100 flex flex-col gap-0.5 rounded-md border px-4 py-3">
-              <span className="text-custom-text-400 text-xs font-medium tracking-wide uppercase">
-                {t("hr.summary.owed")}
-              </span>
-              <span className="text-custom-text-100 text-2xl font-semibold tabular-nums">{formatMinutes(owed)}</span>
-            </div>
-            <div className="border-custom-border-200 bg-custom-background-100 flex flex-col gap-0.5 rounded-md border px-4 py-3">
-              <span className="text-custom-text-400 text-xs font-medium tracking-wide uppercase">
-                {t("hr.summary.worked")}
-              </span>
-              <span className="text-custom-text-100 text-2xl font-semibold tabular-nums">{formatMinutes(worked)}</span>
-            </div>
-            <div className="border-custom-border-200 bg-custom-background-100 flex flex-col gap-0.5 rounded-md border px-4 py-3">
-              <span className="text-custom-text-400 text-xs font-medium tracking-wide uppercase">
-                {t("hr.summary.balance")}
-              </span>
-              <span className={`text-2xl font-semibold tabular-nums ${balanceTone(balance)}`}>
-                {formatBalance(balance)}
-              </span>
-            </div>
-            <div className="border-custom-border-200 bg-custom-background-100 flex flex-col gap-0.5 rounded-md border px-4 py-3">
-              <span className="text-custom-text-400 text-xs font-medium tracking-wide uppercase">
-                {t("hr.team_time.still_open")}
-              </span>
-              <span className="text-custom-text-100 text-2xl font-semibold tabular-nums">
-                {t("hr.team_time.open_count", { open: outstanding, total: rows.length })}
-              </span>
-            </div>
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+            <HrFigure label={t("hr.summary.owed")} value={formatMinutes(owed)} />
+            <HrFigure label={t("hr.summary.worked")} value={formatMinutes(worked)} />
+            <HrFigure
+              label={t("hr.summary.balance")}
+              value={formatBalance(balance)}
+              tone={balanceTone(balance)}
+              accent={balance < 0 ? "border-danger-strong/40 bg-danger-subtle" : "border-subtle bg-surface-1"}
+            />
+            <HrFigure
+              label={t("hr.team_time.still_open")}
+              value={t("hr.team_time.open_count", { open: outstanding, total: rows.length })}
+            />
           </div>
 
           <HrOverviewTable
             rows={rows}
             busyPeriodId={busyPeriodId}
             onApprove={(row) => void act(row, () => hrService.approve(row.id), t("hr.team_time.toasts.agreed"))}
-            onLock={(row) => void act(row, () => hrService.lock(row.id), t("hr.team_time.toasts.closed"))}
+            onLock={setClosing}
             onReopen={setReopening}
+            onReview={setReviewing}
+          />
+
+          <AlertModalCore
+            isOpen={closing !== null}
+            handleClose={() => setClosing(null)}
+            handleSubmit={() =>
+              void act(closing!, () => hrService.lock(closing!.id), t("hr.team_time.toasts.closed")).then(() =>
+                setClosing(null)
+              )
+            }
+            isSubmitting={busyPeriodId === closing?.id}
+            variant="primary"
+            title={t("hr.team_time.confirm_close_title", { person: closing?.member_display_name ?? "" })}
+            content={t("hr.team_time.confirm_close_body")}
+            primaryButtonText={{
+              default: t("hr.overview_table.close"),
+              loading: t("hr.team_time.closing"),
+            }}
+          />
+
+          {/* Keyed by the row, so opening a second person's flagged days is a
+              fresh form rather than the first person's notes still in the boxes. */}
+          <HrReviewDaysModal
+            key={reviewing?.id ?? "none"}
+            periodId={reviewing?.id ?? null}
+            personName={reviewing?.member_display_name ?? ""}
+            onClose={() => setReviewing(null)}
+            onSettled={() => void mutate()}
           />
 
           <HrReasonModal
@@ -210,7 +246,7 @@ export const HrTeamMonthRoot = observer(function HrTeamMonthRoot() {
             onConfirm={(reason) => void handleReopen(reason)}
           />
 
-          <p className="text-custom-text-400 text-xs">
+          <p className="text-13 text-tertiary">
             {partialThrough
               ? `${t("hr.team_time.as_things_stand", { date: formatDayLabel(partialThrough, currentLocale) })} `
               : ""}

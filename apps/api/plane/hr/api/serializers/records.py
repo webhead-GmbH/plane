@@ -208,7 +208,11 @@ class HrAbsenceTypeSerializer(HrBaseSerializer):
 
 class HrAbsenceSerializer(HrBaseSerializer):
     absence_type_code = serializers.CharField(source="absence_type.code", read_only=True)
+    # Both names, so the screen can show the reader's. Flattening only the German
+    # one here is why an English list said "Urlaub": the choice of language was
+    # being made in the serializer, where nothing knows who is reading.
     absence_type_name = serializers.CharField(source="absence_type.name_de", read_only=True)
+    absence_type_name_en = serializers.CharField(source="absence_type.name_en", read_only=True)
 
     class Meta:
         model = HrAbsence
@@ -218,6 +222,7 @@ class HrAbsenceSerializer(HrBaseSerializer):
             "absence_type",
             "absence_type_code",
             "absence_type_name",
+            "absence_type_name_en",
             "start_date",
             "end_date",
             "granularity",
@@ -238,8 +243,16 @@ class HrAbsenceSerializer(HrBaseSerializer):
             "workspace",
             "profile",
             "total_minutes",
+            # Whether an absence has been agreed to is not a field on a form. It is
+            # settled by the decision endpoint, which refuses to let anybody decide
+            # on their own — including a manager. Leaving it writable here made
+            # that refusal avoidable by editing the row instead of deciding on it,
+            # and an absence could reach "approved" with nobody named as having
+            # approved it.
+            "state",
             "approved_by",
             "approved_at",
+            "rejection_reason",
             "locked_period",
             "created_at",
             "updated_at",
@@ -310,6 +323,11 @@ class HrTimeEntrySerializer(HrBaseSerializer):
 
 
 class HrAttendanceDaySerializer(HrBaseSerializer):
+    # Whoever is recording their own day does not state their own zone — the view
+    # takes it from them. It stays writable because an import may need to say a day
+    # was worked somewhere else, and that cannot be inferred afterwards.
+    local_timezone = serializers.CharField(max_length=64, required=False)
+
     class Meta:
         model = HrAttendanceDay
         fields = [
@@ -321,6 +339,7 @@ class HrAttendanceDaySerializer(HrBaseSerializer):
             "local_timezone",
             "break_minutes",
             "crosses_midnight",
+            "work_location",
             "net_minutes",
             "recording_method",
             "note",

@@ -31,6 +31,7 @@ from .period import (
     HrPeriodListEndpoint,
     HrPeriodLockEndpoint,
     HrPeriodRecomputeEndpoint,
+    HrWorklogDetailEndpoint,
     HrPeriodReopenEndpoint,
     HrPeriodSubmitEndpoint,
 )
@@ -47,6 +48,7 @@ from .records import (
     HrAbsenceCalendarEndpoint,
     HrAbsenceDecisionEndpoint,
     HrAbsenceEndpoint,
+    HrAttendanceDayEndpoint,
     HrTimeEntryEndpoint,
 )
 
@@ -80,10 +82,12 @@ __all__ = [
     "HrPeriodListEndpoint",
     "HrPeriodLockEndpoint",
     "HrPeriodRecomputeEndpoint",
+    "HrWorklogDetailEndpoint",
     "HrPeriodReopenEndpoint",
     "HrPeriodSubmitEndpoint",
     "HrRateCardEndpoint",
     "HrStatementEndpoint",
+    "HrAttendanceDayEndpoint",
     "HrTimeEntryEndpoint",
     "HrWorkScheduleEndpoint",
     "HrSetupEndpoint",

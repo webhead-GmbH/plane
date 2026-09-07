@@ -4,33 +4,34 @@
  * See the LICENSE file for details.
  */
 
-import { AlertTriangle, Clock, Timer } from "lucide-react";
+import { AlertTriangle, Clock, House, Palmtree, Timer } from "lucide-react";
 // plane imports
 import { useTranslation } from "@plane/i18n";
 import { cn } from "@plane/utils";
 // local imports
-import { EHrPeriodState, type THrPeriod } from "@/services/hr.service";
-import { balanceTone, figuresToShow, formatBalance, formatDayLabel, formatMinutes, periodStateKey } from "./utils";
-
-type TFigureProps = {
-  label: string;
-  value: string;
-  hint?: string;
-  tone?: string;
-};
-
-const Figure = ({ label, value, hint, tone }: TFigureProps) => (
-  <div className="border-custom-border-200 bg-custom-background-100 flex flex-col gap-0.5 rounded-md border px-4 py-3">
-    <span className="text-xs text-custom-text-400 font-medium tracking-wide uppercase">{label}</span>
-    <span className={cn("text-2xl font-semibold tabular-nums", tone ?? "text-custom-text-100")}>{value}</span>
-    {hint ? <span className="text-xs text-custom-text-400">{hint}</span> : null}
-  </div>
-);
+import { EHrPeriodState, type THrLeaveStanding, type THrWorkSchedule } from "@/services/hr.service";
+import { type THrPeriod } from "@/services/hr.service";
+import {
+  balanceTone,
+  figuresToShow,
+  formatBalance,
+  formatDayLabel,
+  formatMinutes,
+  inDays,
+  periodStateKey,
+} from "./utils";
+import { HrFigure } from "./figure";
 
 type TProps = {
   period: THrPeriod | null;
   hasRunningTimer: boolean;
   contractedWeeklyMinutes?: number | null;
+  /** Days worked from home so far this calendar year. Null where none are kept. */
+  teleworkDaysThisYear?: number | null;
+  /** What is left of this leave year. Null where no leave account is kept. */
+  leave?: THrLeaveStanding | null;
+  /** Only to say what a day is worth, so leave can be shown in days. */
+  schedule?: THrWorkSchedule | null;
 };
 
 /**
@@ -40,17 +41,36 @@ type TProps = {
  * something about it, so the balance is given the same weight as the hours and is
  * not tucked into a total at the bottom of a table.
  */
-export const HrMonthSummary = ({ period, hasRunningTimer, contractedWeeklyMinutes }: TProps) => {
+export const HrMonthSummary = ({
+  period,
+  hasRunningTimer,
+  contractedWeeklyMinutes,
+  teleworkDaysThisYear,
+  leave,
+  schedule,
+}: TProps) => {
+  // Before the early return: a hook that runs only sometimes breaks the moment
+  // this month goes from nothing to something, which is the ordinary case.
+  const { t, currentLocale } = useTranslation();
+
   if (!period)
     return (
-      <div className="border-custom-border-200 bg-custom-background-90 text-sm text-custom-text-300 rounded-md border px-4 py-6">
-        Nothing has been worked out for this month yet.
+      <div className="rounded-md border border-subtle bg-layer-1 px-4 py-6 text-13 text-tertiary">
+        {t("hr.summary.nothing_yet")}
       </div>
     );
 
   const needsReview = (period.days ?? []).some((day) => day.needs_review);
   const isFinal = period.state === EHrPeriodState.LOCKED;
-  const { t, currentLocale } = useTranslation();
+  // Leave is the one figure people think about in days rather than hours, so it
+  // is shown that way wherever the schedule says what a day is worth. The unit
+  // is named either way: "8.4" on its own was a number nobody could act on.
+  const leaveInDays = leave ? inDays(leave.remaining_minutes, schedule) : null;
+  const leaveLeft = leave
+    ? leaveInDays !== null
+      ? t("hr.summary.leave_left_days", { amount: leaveInDays })
+      : t("hr.summary.leave_left_hours", { amount: formatMinutes(leave.remaining_minutes) })
+    : null;
   const shown = figuresToShow(period);
   const wholeMonthAway = (period.absence_minutes ?? 0) + (period.holiday_minutes ?? 0);
   const soFarAway = (period.to_date?.absence_minutes ?? 0) + (period.to_date?.holiday_minutes ?? 0);
@@ -58,7 +78,7 @@ export const HrMonthSummary = ({ period, hasRunningTimer, contractedWeeklyMinute
   return (
     <div className="flex flex-col gap-3">
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-        <Figure
+        <HrFigure
           label={t("hr.summary.owed")}
           value={formatMinutes(shown.target)}
           hint={
@@ -69,7 +89,7 @@ export const HrMonthSummary = ({ period, hasRunningTimer, contractedWeeklyMinute
                 : undefined
           }
         />
-        <Figure
+        <HrFigure
           label={t("hr.summary.worked")}
           value={formatMinutes(shown.actual)}
           hint={
@@ -80,21 +100,29 @@ export const HrMonthSummary = ({ period, hasRunningTimer, contractedWeeklyMinute
               : undefined
           }
         />
-        <Figure
+        <HrFigure
           label={t("hr.summary.balance")}
           value={formatBalance(shown.balance)}
           tone={balanceTone(shown.balance)}
+          accent={
+            // A balance nobody has worked out yet is not a shortfall.
+            (shown.balance ?? 0) < 0 ? "border-danger-strong/40 bg-danger-subtle" : "border-subtle bg-layer-1"
+          }
           hint={
             period.closing_balance_minutes !== null
               ? t("hr.summary.carried_forward", { duration: formatBalance(period.closing_balance_minutes) })
-              : undefined
+              : shown.balance
+                ? t(shown.balance < 0 ? "hr.summary.behind_so_far" : "hr.summary.ahead_so_far", {
+                    duration: formatMinutes(Math.abs(shown.balance)),
+                  })
+                : undefined
           }
         />
       </div>
 
-      <div className="text-xs text-custom-text-300 flex flex-wrap items-center gap-3">
+      <div className="flex flex-wrap items-center gap-3 text-13 text-tertiary">
         {shown.isPartial ? (
-          <span className="text-custom-text-400">
+          <span className="text-tertiary">
             {shown.countedThrough
               ? t("hr.summary.as_of", { date: formatDayLabel(shown.countedThrough, currentLocale) })
               : t("hr.summary.not_started")}
@@ -103,9 +131,7 @@ export const HrMonthSummary = ({ period, hasRunningTimer, contractedWeeklyMinute
         <span
           className={cn(
             "inline-flex items-center gap-1 rounded px-2 py-0.5 font-medium",
-            isFinal
-              ? "bg-custom-background-80 text-custom-text-200"
-              : "bg-custom-primary-100/10 text-custom-primary-100"
+            isFinal ? "bg-layer-2 text-secondary" : "bg-accent-primary/10 text-accent-primary"
           )}
         >
           <Clock className="size-3" />
@@ -113,14 +139,30 @@ export const HrMonthSummary = ({ period, hasRunningTimer, contractedWeeklyMinute
         </span>
 
         {hasRunningTimer ? (
-          <span className="text-custom-text-300 inline-flex items-center gap-1">
+          <span className="inline-flex items-center gap-1 text-tertiary">
             <Timer className="size-3" />
             {t("hr.summary.timer_running")}
           </span>
         ) : null}
 
+        {leaveLeft !== null ? (
+          <span className="inline-flex items-center gap-1 text-tertiary">
+            <Palmtree className="size-3" />
+            {leaveLeft}
+          </span>
+        ) : null}
+
+        {/* The year's figure, not the month's: it is reported per calendar year
+            and is what somebody actually needs to know before booking another. */}
+        {teleworkDaysThisYear ? (
+          <span className="inline-flex items-center gap-1 text-tertiary">
+            <House className="size-3" />
+            {t("hr.summary.telework_days", { count: teleworkDaysThisYear })}
+          </span>
+        ) : null}
+
         {needsReview ? (
-          <span className="text-amber-600 inline-flex items-center gap-1">
+          <span className="inline-flex items-center gap-1 text-warning-primary">
             <AlertTriangle className="size-3" />
             {t("hr.summary.needs_review")}
           </span>

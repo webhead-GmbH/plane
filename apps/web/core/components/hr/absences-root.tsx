@@ -6,14 +6,14 @@
 
 import { useState } from "react";
 import { observer } from "mobx-react";
-import { Link } from "react-router";
-import { CalendarClock, Check, ChevronLeft, ChevronRight, Plus, Settings2, Trash2, X } from "lucide-react";
+import { Check, ChevronLeft, ChevronRight, Pencil, Plus, Settings2, Trash2, X } from "lucide-react";
 import useSWR from "swr";
 // plane imports
 import { useTranslation } from "@plane/i18n";
 import { Button } from "@plane/propel/button";
+import { EmptyStateCompact } from "@plane/propel/empty-state";
 import { setToast, TOAST_TYPE } from "@plane/propel/toast";
-import { Loader } from "@plane/ui";
+import { AlertModalCore, Loader } from "@plane/ui";
 import { cn } from "@plane/utils";
 // services
 import {
@@ -26,7 +26,17 @@ import {
 // local imports
 import { HrAbsenceModal, type TAbsenceDraft } from "./absence-modal";
 import { HrAbsenceTypesModal } from "./absence-types-modal";
-import { formatDayLabel, formatMinutes, formatMonthLabel, nextMonth, previousMonth, refusalMessage } from "./utils";
+import { HrReasonModal } from "./reason-modal";
+import { HrRowAction } from "./row-action";
+import {
+  formatDayLabel,
+  formatMinutes,
+  formatMonthLabel,
+  localName,
+  nextMonth,
+  previousMonth,
+  refusalMessage,
+} from "./utils";
 
 const hrService = new HrService();
 
@@ -39,17 +49,26 @@ const STATE_KEY: Record<number, string> = {
 };
 
 const STATE_TONE: Record<number, string> = {
-  [EHrAbsenceState.DRAFT]: "bg-custom-background-80 text-custom-text-300",
-  [EHrAbsenceState.REQUESTED]: "bg-amber-500/10 text-amber-600",
-  [EHrAbsenceState.APPROVED]: "bg-green-500/10 text-green-600",
-  [EHrAbsenceState.REJECTED]: "bg-red-500/10 text-red-600",
-  [EHrAbsenceState.CANCELLED]: "bg-custom-background-80 text-custom-text-400 line-through",
+  [EHrAbsenceState.DRAFT]: "bg-layer-2 text-tertiary",
+  [EHrAbsenceState.REQUESTED]: "bg-warning-subtle text-warning-primary",
+  [EHrAbsenceState.APPROVED]: "bg-success-subtle text-success-primary",
+  [EHrAbsenceState.REJECTED]: "bg-danger-subtle text-danger-primary",
+  [EHrAbsenceState.CANCELLED]: "bg-layer-2 text-tertiary line-through",
 };
 
-/** First and last day of a month, as the window the list is asked for. */
+/**
+ * First and last day of a month, as the window the list is asked for.
+ *
+ * Written out rather than taken from a Date, because `new Date(year, month, 0)`
+ * is local midnight and `toISOString` reads it back in UTC — so anywhere east of
+ * Greenwich the last day of the month came out as the second to last, and an
+ * absence on the 31st was simply missing from the list.
+ */
+const lastDayOfMonth = (year: number, month: number) => new Date(year, month, 0).getDate();
+
 const monthWindow = (year: number, month: number) => ({
   from: `${year}-${String(month).padStart(2, "0")}-01`,
-  to: new Date(year, month, 0).toISOString().slice(0, 10),
+  to: `${year}-${String(month).padStart(2, "0")}-${String(lastDayOfMonth(year, month)).padStart(2, "0")}`,
 });
 
 /**
@@ -61,12 +80,14 @@ const monthWindow = (year: number, month: number) => ({
  * appears in both — dropping it from the second would hide days that are missing
  * from that month's target.
  */
-export const HrAbsencesRoot = observer(function HrAbsencesRoot({ workspaceSlug }: { workspaceSlug: string }) {
-  const { t } = useTranslation();
+export const HrAbsencesRoot = observer(function HrAbsencesRoot() {
+  const { t, currentLocale } = useTranslation();
   const now = new Date();
   const [year, setYear] = useState(now.getFullYear());
   const [month, setMonth] = useState(now.getMonth() + 1);
   const [personFilter, setPersonFilter] = useState("");
+  const [removing, setRemoving] = useState<THrAbsence | null>(null);
+  const [refusing, setRefusing] = useState<THrAbsence | null>(null);
   const [recording, setRecording] = useState(false);
   const [editing, setEditing] = useState<THrAbsence | null>(null);
   const [managingTypes, setManagingTypes] = useState(false);
@@ -84,12 +105,17 @@ export const HrAbsencesRoot = observer(function HrAbsencesRoot({ workspaceSlug }
   );
   const { data: people } = useSWR("HR_EMPLOYEES", () => hrService.employees());
   const { data: types, mutate: refreshTypes } = useSWR("HR_ABSENCE_TYPES", () => hrService.absenceTypes());
+  // Deciding on absences and editing the reasons belong to whoever looks after
+  // the team. Showing those controls to everybody meant an ordinary employee
+  // could press them and get an English refusal from the server.
+  const { data: me } = useSWR("HR_ME_ROLE", () => hrService.me());
+  const isManager = Boolean(me?.is_hr_manager);
 
   const complain = (failure: unknown) =>
     setToast({
       type: TOAST_TYPE.ERROR,
       title: t("hr.absences.toasts.refused"),
-      message: refusalMessage(failure) ?? t("hr.absences.toasts.try_again"),
+      message: refusalMessage(failure, t, currentLocale) ?? t("hr.absences.toasts.try_again"),
     });
 
   const step = (move: (year: number, month: number) => [number, number]) => {
@@ -114,10 +140,10 @@ export const HrAbsencesRoot = observer(function HrAbsencesRoot({ workspaceSlug }
     }
   };
 
-  const handleDecide = async (absence: THrAbsence, decision: "approve" | "reject" | "cancel") => {
+  const handleDecide = async (absence: THrAbsence, decision: "approve" | "cancel", reason?: string) => {
     setIsBusy(true);
     try {
-      await hrService.decideAbsence(absence.id, decision);
+      await hrService.decideAbsence(absence.id, decision, reason);
       await mutate();
     } catch (failure) {
       complain(failure);
@@ -126,11 +152,26 @@ export const HrAbsencesRoot = observer(function HrAbsencesRoot({ workspaceSlug }
     }
   };
 
-  const handleRemove = async (absence: THrAbsence) => {
+  const handleRefuse = async (absence: THrAbsence, reason: string) => {
     setIsBusy(true);
     try {
-      await hrService.removeAbsence(absence.id);
+      await hrService.decideAbsence(absence.id, "reject", reason);
       await mutate();
+      setRefusing(null);
+    } catch (failure) {
+      complain(failure);
+    } finally {
+      setIsBusy(false);
+    }
+  };
+
+  const handleRemove = async () => {
+    if (!removing) return;
+    setIsBusy(true);
+    try {
+      await hrService.removeAbsence(removing.id);
+      await mutate();
+      setRemoving(null);
       setToast({ type: TOAST_TYPE.SUCCESS, title: t("hr.absences.toasts.removed") });
     } catch (failure) {
       complain(failure);
@@ -139,13 +180,26 @@ export const HrAbsencesRoot = observer(function HrAbsencesRoot({ workspaceSlug }
     }
   };
 
-  if (error)
+  const notAllowed = (error as { status?: number } | undefined)?.status === 403;
+  const hasData = Boolean(absences);
+
+  // Only when there is nothing to show: a revalidation that failed while the
+  // screen already holds good data must not replace it with an error.
+  if (error && (notAllowed || !hasData))
     return (
-      <div className="mx-auto w-full max-w-6xl px-6 py-6">
-        <div className="border-custom-border-200 bg-custom-background-90 rounded-md border px-4 py-6">
-          <p className="text-custom-text-200 text-sm font-medium">{t("hr.team_time.not_permitted")}</p>
-          <p className="text-custom-text-300 text-sm mt-1">{t("hr.absences.not_permitted_detail")}</p>
-        </div>
+      <div className="w-full">
+        <EmptyStateCompact
+          title={notAllowed ? t("hr.team_time.not_permitted") : t("hr.shared.load_failed")}
+          description={notAllowed ? t("hr.absences.not_permitted_detail") : t("hr.shared.load_failed_detail")}
+          assetKey={notAllowed ? "members" : "unknown"}
+          assetClassName="size-20"
+          rootClassName="py-16"
+          actions={
+            notAllowed
+              ? undefined
+              : [{ label: t("hr.shared.retry"), variant: "secondary", onClick: () => void mutate() }]
+          }
+        />
       </div>
     );
 
@@ -156,54 +210,48 @@ export const HrAbsencesRoot = observer(function HrAbsencesRoot({ workspaceSlug }
   const monthLabel = formatMonthLabel(from);
 
   return (
-    <div className="mx-auto flex w-full max-w-6xl flex-col gap-5 px-6 py-6">
+    <div className="flex w-full flex-col gap-7">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-custom-text-100 text-lg font-semibold">{t("hr.absences.title")}</h1>
-          <p className="text-custom-text-300 text-sm">{t("hr.absences.subtitle")}</p>
-        </div>
+        <p className="text-13 text-tertiary">{t("hr.absences.subtitle")}</p>
         <div className="flex items-center gap-2">
-          <Link to={`/${workspaceSlug}/team-time`}>
-            <Button variant="secondary" size="sm" prependIcon={<CalendarClock className="size-4" />}>
-              {t("hr.people.back_to_month")}
+          {isManager ? (
+            <Button
+              variant="secondary"
+              size="lg"
+              prependIcon={<Settings2 className="size-4" />}
+              onClick={() => setManagingTypes(true)}
+            >
+              {t("hr.absences.manage_types")}
             </Button>
-          </Link>
-          <Button
-            variant="secondary"
-            size="sm"
-            prependIcon={<Settings2 className="size-4" />}
-            onClick={() => setManagingTypes(true)}
-          >
-            {t("hr.absences.manage_types")}
-          </Button>
+          ) : null}
           <Button
             variant="primary"
-            size="sm"
-            prependIcon={<Plus className="size-4" />}
+            size="lg"
+            prependIcon={<Plus />}
             onClick={() => {
               setEditing(null);
               setRecording(true);
             }}
           >
-            {t("hr.absences.record")}
+            {isManager ? t("hr.absences.record") : t("hr.absences.request")}
           </Button>
         </div>
       </div>
 
       <div className="flex flex-wrap items-center gap-3">
-        <div className="border-custom-border-200 flex items-center gap-1 rounded-md border px-1 py-0.5">
+        <div className="flex items-center gap-1 rounded-md border border-subtle px-1 py-0.5">
           <button
             type="button"
-            className="text-custom-text-300 hover:text-custom-text-100 p-1"
+            className="p-1 text-tertiary hover:text-primary"
             aria-label={t("hr.absences.previous_month")}
             onClick={() => step(previousMonth)}
           >
             <ChevronLeft className="size-4" />
           </button>
-          <span className="text-custom-text-200 text-sm min-w-[9rem] text-center font-medium">{monthLabel}</span>
+          <span className="min-w-[9rem] text-center text-13 font-medium text-secondary">{monthLabel}</span>
           <button
             type="button"
-            className="text-custom-text-300 hover:text-custom-text-100 p-1"
+            className="p-1 text-tertiary hover:text-primary"
             aria-label={t("hr.absences.next_month")}
             onClick={() => step(nextMonth)}
           >
@@ -212,7 +260,8 @@ export const HrAbsencesRoot = observer(function HrAbsencesRoot({ workspaceSlug }
         </div>
 
         <select
-          className="border-custom-border-200 bg-custom-background-100 text-custom-text-200 text-sm rounded-md border px-3 py-1.5"
+          aria-label={t("hr.absences.filter_person")}
+          className="rounded-md border border-subtle bg-layer-1 px-3 py-1.5 text-13 text-secondary"
           value={personFilter}
           onChange={(event) => setPersonFilter(event.target.value)}
         >
@@ -238,6 +287,38 @@ export const HrAbsencesRoot = observer(function HrAbsencesRoot({ workspaceSlug }
         onSave={(draft) => void handleSave(draft)}
       />
 
+      {/* Refusing has to say why: the endpoint requires it, and the person whose
+          leave it was is going to ask. */}
+      <HrReasonModal
+        isOpen={refusing !== null}
+        title={t("hr.absences.refuse_title", { person: refusing ? nameFor(refusing.profile) : "" })}
+        body={t("hr.absences.refuse_body")}
+        label={t("hr.absences.refuse_label")}
+        placeholder={t("hr.absences.refuse_placeholder")}
+        confirmLabel={t("hr.absences.reject")}
+        cancelLabel={t("hr.absences.refuse_cancel")}
+        isBusy={isBusy}
+        onClose={() => setRefusing(null)}
+        onConfirm={async (reason) => {
+          if (!refusing) return;
+          await handleRefuse(refusing, reason);
+        }}
+      />
+
+      <AlertModalCore
+        isOpen={removing !== null}
+        handleClose={() => setRemoving(null)}
+        handleSubmit={() => void handleRemove()}
+        isSubmitting={isBusy}
+        variant="danger"
+        title={t("hr.absences.confirm_remove_title")}
+        content={t("hr.absences.confirm_remove_body", {
+          person: removing ? nameFor(removing.profile) : "",
+          duration: removing ? formatMinutes(removing.total_minutes) : "",
+        })}
+        primaryButtonText={{ default: t("hr.absences.delete"), loading: t("hr.absences.removing") }}
+      />
+
       <HrAbsenceTypesModal
         isOpen={managingTypes}
         types={types ?? []}
@@ -251,20 +332,23 @@ export const HrAbsencesRoot = observer(function HrAbsencesRoot({ workspaceSlug }
           <Loader.Item height="220px" />
         </Loader>
       ) : rows.length === 0 ? (
-        <div className="border-custom-border-200 bg-custom-background-90 text-custom-text-300 text-sm rounded-md border px-4 py-8 text-center">
-          {t("hr.absences.none_this_month")}
-        </div>
+        <EmptyStateCompact
+          title={t("hr.absences.none_this_month")}
+          assetKey="note"
+          assetClassName="size-20"
+          rootClassName="py-16"
+        />
       ) : (
-        <div className="border-custom-border-200 overflow-x-auto rounded-md border">
-          <table className="text-sm w-full min-w-[52rem]">
-            <thead className="bg-custom-background-90 text-custom-text-400 text-xs tracking-wide uppercase">
+        <div className="overflow-x-auto rounded-md border border-subtle">
+          <table className="w-full min-w-[52rem] text-13">
+            <thead className="border-b border-subtle text-13 text-placeholder">
               <tr>
-                <th className="px-4 py-2 text-left font-medium">{t("hr.absences.column_person")}</th>
-                <th className="px-4 py-2 text-left font-medium">{t("hr.absences.column_reason")}</th>
-                <th className="px-4 py-2 text-left font-medium">{t("hr.absences.column_when")}</th>
-                <th className="px-4 py-2 text-right font-medium">{t("hr.absences.column_away")}</th>
-                <th className="px-4 py-2 text-left font-medium">{t("hr.absences.column_state")}</th>
-                <th className="px-4 py-2 text-right font-medium">{t("hr.absences.column_action")}</th>
+                <th className="px-4 py-2.5 text-left font-medium">{t("hr.absences.column_person")}</th>
+                <th className="px-4 py-2.5 text-left font-medium">{t("hr.absences.column_reason")}</th>
+                <th className="px-4 py-2.5 text-left font-medium">{t("hr.absences.column_when")}</th>
+                <th className="px-4 py-2.5 text-right font-medium">{t("hr.absences.column_away")}</th>
+                <th className="px-4 py-2.5 text-left font-medium">{t("hr.absences.column_state")}</th>
+                <th className="px-4 py-2.5 text-right font-medium">{t("hr.absences.column_action")}</th>
               </tr>
             </thead>
             <tbody>
@@ -274,79 +358,79 @@ export const HrAbsencesRoot = observer(function HrAbsencesRoot({ workspaceSlug }
                   absence.state === EHrAbsenceState.CANCELLED || absence.state === EHrAbsenceState.REJECTED;
 
                 return (
-                  <tr key={absence.id} className="border-custom-border-200 hover:bg-custom-background-90/60 border-t">
-                    <td className="text-custom-text-100 px-4 py-2">{nameFor(absence.profile)}</td>
-                    <td className="text-custom-text-200 px-4 py-2">
-                      {absence.absence_type_name || absence.absence_type_code}
-                      {absence.reason && <span className="text-custom-text-400 text-xs ml-2">{absence.reason}</span>}
+                  <tr key={absence.id} className="border-t border-subtle hover:bg-layer-1/60">
+                    <td className="px-4 py-2 text-primary">{nameFor(absence.profile)}</td>
+                    <td className="px-4 py-2 text-secondary">
+                      {localName(
+                        { name_de: absence.absence_type_name, name_en: absence.absence_type_name_en },
+                        currentLocale
+                      ) || absence.absence_type_code}
+                      {absence.reason && <span className="ml-2 text-13 text-tertiary">{absence.reason}</span>}
                     </td>
-                    <td className="text-custom-text-200 px-4 py-2">
+                    <td className="px-4 py-2 text-secondary">
                       {absence.start_date === absence.end_date
-                        ? formatDayLabel(absence.start_date)
-                        : `${formatDayLabel(absence.start_date)} – ${formatDayLabel(absence.end_date)}`}
+                        ? formatDayLabel(absence.start_date, currentLocale)
+                        : `${formatDayLabel(absence.start_date, currentLocale)} – ${formatDayLabel(absence.end_date, currentLocale)}`}
                       {absence.granularity !== EHrGranularity.FULL_DAY && (
-                        <span className="text-custom-text-400 text-xs ml-2">
+                        <span className="ml-2 text-13 text-tertiary">
                           {absence.granularity === EHrGranularity.HALF_DAY
-                            ? t("hr.absences.granularity.half_day")
+                            ? t(
+                                absence.start_date === absence.end_date
+                                  ? "hr.absences.granularity.half_day_single"
+                                  : "hr.absences.granularity.half_day"
+                              )
                             : t("hr.absences.granularity.hours")}
                         </span>
                       )}
                     </td>
-                    <td className="text-custom-text-200 px-4 py-2 text-right tabular-nums">
+                    <td className="px-4 py-2 text-right text-secondary tabular-nums">
                       {formatMinutes(absence.total_minutes)}
                     </td>
                     <td className="px-4 py-2">
-                      <span className={cn("text-xs rounded px-1.5 py-0.5 font-medium", STATE_TONE[absence.state])}>
+                      <span className={cn("rounded px-1.5 py-0.5 text-13 font-medium", STATE_TONE[absence.state])}>
                         {t(`hr.absences.state.${STATE_KEY[absence.state]}`)}
                       </span>
-                      {locked && (
-                        <span className="text-custom-text-400 text-xs ml-2">{t("hr.absences.month_locked")}</span>
-                      )}
+                      {locked && <span className="ml-2 text-13 text-tertiary">{t("hr.absences.month_locked")}</span>}
                     </td>
                     <td className="px-4 py-2 text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        {absence.state === EHrAbsenceState.REQUESTED && !locked && (
+                      <div className="flex items-center justify-end gap-0.5">
+                        {isManager && absence.state === EHrAbsenceState.REQUESTED && !locked && (
                           <>
-                            <button
-                              type="button"
-                              className="text-custom-text-300 hover:text-green-600"
-                              aria-label={t("hr.absences.approve")}
+                            <HrRowAction
+                              icon={<Check className="size-4" />}
+                              label={t("hr.absences.approve")}
+                              subject={nameFor(absence.profile)}
                               disabled={isBusy}
                               onClick={() => void handleDecide(absence, "approve")}
-                            >
-                              <Check className="size-4" />
-                            </button>
-                            <button
-                              type="button"
-                              className="text-custom-text-300 hover:text-red-500"
-                              aria-label={t("hr.absences.reject")}
+                            />
+                            <HrRowAction
+                              icon={<X className="size-4" />}
+                              label={t("hr.absences.reject")}
+                              subject={nameFor(absence.profile)}
+                              danger
                               disabled={isBusy}
-                              onClick={() => void handleDecide(absence, "reject")}
-                            >
-                              <X className="size-4" />
-                            </button>
+                              onClick={() => setRefusing(absence)}
+                            />
                           </>
                         )}
                         {!locked && !settled && (
-                          <button
-                            type="button"
-                            className="text-custom-text-300 hover:text-custom-text-100 text-xs"
+                          <HrRowAction
+                            icon={<Pencil className="size-4" />}
+                            label={t("common.edit")}
+                            subject={nameFor(absence.profile)}
                             disabled={isBusy}
                             onClick={() => setEditing(absence)}
-                          >
-                            {t("common.edit")}
-                          </button>
+                          />
                         )}
-                        {!locked && (
-                          <button
-                            type="button"
-                            className="text-custom-text-400 hover:text-red-500"
-                            aria-label={t("hr.absences.delete")}
+                        {isManager && !locked && (
+                          <HrRowAction
+                            icon={<Trash2 className="size-4" />}
+                            label={t("hr.absences.delete")}
+                            subject={nameFor(absence.profile)}
+                            danger
                             disabled={isBusy}
-                            onClick={() => void handleRemove(absence)}
-                          >
-                            <Trash2 className="size-4" />
-                          </button>
+                            onClick={() => setRemoving(absence)}
+                          />
                         )}
                       </div>
                     </td>

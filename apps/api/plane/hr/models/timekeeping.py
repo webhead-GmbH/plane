@@ -125,6 +125,20 @@ class HrAttendanceDay(HrBaseModel):
         CORRECTED = 20, "Corrected afterwards"
         IMPORTED = 30, "Imported"
 
+    class WorkLocation(models.IntegerChoices):
+        """Where the day was worked.
+
+        Recorded because working from home is a payroll input here rather than a
+        detail: days worked away from the employer's premises are counted for the
+        year, and the count cannot be reconstructed afterwards from anything else
+        the system holds. Kept coarse on purpose — this is not a record of where
+        somebody was, which is a different and much heavier thing to hold.
+        """
+
+        OFFICE = 10, "At the employer's premises"
+        HOME = 20, "Telearbeit"
+        ELSEWHERE = 30, "Somewhere else"
+
     workspace = models.ForeignKey(
         "db.Workspace",
         on_delete=models.CASCADE,
@@ -144,6 +158,10 @@ class HrAttendanceDay(HrBaseModel):
     local_timezone = models.CharField(max_length=64)
     break_minutes = models.PositiveSmallIntegerField(default=0)
     crosses_midnight = models.BooleanField(default=False)
+    work_location = models.PositiveSmallIntegerField(
+        choices=WorkLocation.choices,
+        default=WorkLocation.OFFICE,
+    )
 
     # Materialised at save, never recomputed on read.
     net_minutes = models.IntegerField(default=0)

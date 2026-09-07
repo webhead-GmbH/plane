@@ -11,11 +11,13 @@ import useSWR from "swr";
 import { useTranslation } from "@plane/i18n";
 import { Button } from "@plane/propel/button";
 import { setToast, TOAST_TYPE } from "@plane/propel/toast";
-import { EModalPosition, EModalWidth, ModalCore } from "@plane/ui";
+import { AlertModalCore, EModalPosition, EModalWidth, ModalCore } from "@plane/ui";
 // services
 import { EHrRateBasis, HrService, type THrEmploymentProfile, type THrRateCard } from "@/services/hr.service";
 // local imports
 import { formatDayWithYear, refusalMessage, tidyAmount } from "./utils";
+
+import { HrRowAction } from "./row-action";
 
 const hrService = new HrService();
 
@@ -46,13 +48,14 @@ type TProps = {
  * no business reading another's.
  */
 export const HrRateCardModal = ({ person, onClose }: TProps) => {
-  const { t } = useTranslation();
+  const { t, currentLocale } = useTranslation();
   const [validFrom, setValidFrom] = useState("");
   const [basis, setBasis] = useState<EHrRateBasis>(EHrRateBasis.HOURLY);
   const [amount, setAmount] = useState("");
   const [currency, setCurrency] = useState("EUR");
   const [problem, setProblem] = useState<string | null>(null);
   const [isBusy, setIsBusy] = useState(false);
+  const [removing, setRemoving] = useState<THrRateCard | null>(null);
 
   const { data: rows, mutate } = useSWR(person ? `HR_RATES_${person.id}` : null, () =>
     person ? hrService.rateCards(person.id) : null
@@ -71,7 +74,7 @@ export const HrRateCardModal = ({ person, onClose }: TProps) => {
     setToast({
       type: TOAST_TYPE.ERROR,
       title: t("hr.rates.toasts.refused"),
-      message: refusalMessage(failure) ?? t("hr.rates.toasts.try_again"),
+      message: refusalMessage(failure, t, currentLocale) ?? t("hr.rates.toasts.try_again"),
     });
 
   const isHourly = basis === EHrRateBasis.HOURLY;
@@ -111,11 +114,13 @@ export const HrRateCardModal = ({ person, onClose }: TProps) => {
     }
   };
 
-  const handleRemove = async (row: THrRateCard) => {
+  const handleRemove = async () => {
+    if (!removing) return;
     setIsBusy(true);
     try {
-      await hrService.removeRateCard(row.id);
+      await hrService.removeRateCard(removing.id);
       await mutate();
+      setRemoving(null);
       setToast({ type: TOAST_TYPE.SUCCESS, title: t("hr.rates.toasts.removed") });
     } catch (failure) {
       complain(failure);
@@ -130,27 +135,27 @@ export const HrRateCardModal = ({ person, onClose }: TProps) => {
     <ModalCore isOpen={person !== null} handleClose={onClose} position={EModalPosition.CENTER} width={EModalWidth.XXXL}>
       <div className="flex max-h-[80vh] flex-col gap-4 overflow-y-auto p-5">
         <div>
-          <h3 className="text-custom-text-100 text-lg font-medium">
+          <h3 className="text-16 font-medium text-primary">
             {t("hr.rates.title", { person: person?.member_display_name || person?.member_email || "" })}
           </h3>
-          <p className="text-custom-text-300 text-sm">{t("hr.rates.hint")}</p>
+          <p className="text-13 text-tertiary">{t("hr.rates.hint")}</p>
         </div>
 
         {rates.length === 0 ? (
-          <p className="text-custom-text-400 text-sm">{t("hr.rates.none_yet")}</p>
+          <p className="text-13 text-tertiary">{t("hr.rates.none_yet")}</p>
         ) : (
-          <div className="border-custom-border-200 divide-custom-border-100 divide-y rounded-md border">
+          <div className="divide-y divide-subtle rounded-md border border-subtle">
             {rates.map((row) => (
               <div key={row.id} className="flex flex-wrap items-center gap-3 px-3 py-2">
-                <span className="text-custom-text-100 text-sm tabular-nums">
+                <span className="text-13 text-primary tabular-nums">
                   {row.basis === EHrRateBasis.HOURLY
                     ? t("hr.rates.per_hour", { amount: tidyAmount(row.hourly_rate), currency: row.currency })
                     : t("hr.rates.per_month", { amount: tidyAmount(row.monthly_amount), currency: row.currency })}
                 </span>
-                <span className="bg-custom-background-80 text-custom-text-300 text-xs rounded px-1.5 py-0.5">
+                <span className="rounded bg-layer-2 px-1.5 py-0.5 text-13 text-tertiary">
                   {t(`hr.rates.basis.${BASIS_KEY[row.basis]}`)}
                 </span>
-                <span className="text-custom-text-400 text-xs flex-1">
+                <span className="flex-1 text-13 text-tertiary">
                   {row.valid_to
                     ? t("hr.rates.between", {
                         from: formatDayWithYear(row.valid_from),
@@ -158,26 +163,25 @@ export const HrRateCardModal = ({ person, onClose }: TProps) => {
                       })
                     : t("hr.rates.from", { date: formatDayWithYear(row.valid_from) })}
                 </span>
-                <button
-                  type="button"
-                  className="text-custom-text-400 hover:text-red-500 disabled:opacity-50"
+                <HrRowAction
+                  icon={<Trash2 className="size-4" />}
+                  label={t("hr.rates.remove")}
+                  subject={person?.member_display_name || person?.member_email || ""}
+                  danger
                   disabled={isBusy}
-                  title={t("hr.rates.remove")}
-                  onClick={() => void handleRemove(row)}
-                >
-                  <Trash2 className="size-4" />
-                </button>
+                  onClick={() => setRemoving(row)}
+                />
               </div>
             ))}
           </div>
         )}
 
-        <div className="border-custom-border-200 flex flex-col gap-3 rounded-md border p-3">
-          <p className="text-custom-text-200 text-sm font-medium">{t("hr.rates.add")}</p>
+        <div className="flex flex-col gap-3 rounded-md border border-subtle p-3">
+          <p className="text-13 font-medium text-secondary">{t("hr.rates.add")}</p>
 
           <div className="grid gap-3 sm:grid-cols-2">
             <div>
-              <label className="text-custom-text-300 text-xs" htmlFor="hr-rate-from">
+              <label className="text-13 text-tertiary" htmlFor="hr-rate-from">
                 {t("hr.rates.valid_from")}
               </label>
               <input
@@ -185,19 +189,19 @@ export const HrRateCardModal = ({ person, onClose }: TProps) => {
                 type="date"
                 value={validFrom}
                 onChange={(event) => setValidFrom(event.target.value)}
-                className="border-custom-border-200 bg-custom-background-100 text-custom-text-100 text-sm w-full rounded border px-2 py-1"
+                className="w-full rounded border border-subtle bg-layer-1 px-2 py-1 text-13 text-primary"
               />
             </div>
 
             <div>
-              <label className="text-custom-text-300 text-xs" htmlFor="hr-rate-basis">
+              <label className="text-13 text-tertiary" htmlFor="hr-rate-basis">
                 {t("hr.rates.basis_label")}
               </label>
               <select
                 id="hr-rate-basis"
                 value={basis}
                 onChange={(event) => setBasis(Number(event.target.value) as EHrRateBasis)}
-                className="border-custom-border-200 bg-custom-background-100 text-custom-text-100 text-sm w-full rounded border px-2 py-1"
+                className="w-full rounded border border-subtle bg-layer-1 px-2 py-1 text-13 text-primary"
               >
                 {BASES.map((option) => (
                   <option key={option} value={option}>
@@ -208,7 +212,7 @@ export const HrRateCardModal = ({ person, onClose }: TProps) => {
             </div>
 
             <div>
-              <label className="text-custom-text-300 text-xs" htmlFor="hr-rate-amount">
+              <label className="text-13 text-tertiary" htmlFor="hr-rate-amount">
                 {isHourly ? t("hr.rates.hourly_rate") : t("hr.rates.monthly_amount")}
               </label>
               <input
@@ -218,12 +222,12 @@ export const HrRateCardModal = ({ person, onClose }: TProps) => {
                 value={amount}
                 placeholder={t("hr.rates.amount_placeholder")}
                 onChange={(event) => setAmount(event.target.value)}
-                className="border-custom-border-200 bg-custom-background-100 text-custom-text-100 text-sm w-full rounded border px-2 py-1"
+                className="w-full rounded border border-subtle bg-layer-1 px-2 py-1 text-13 text-primary"
               />
             </div>
 
             <div>
-              <label className="text-custom-text-300 text-xs" htmlFor="hr-rate-currency">
+              <label className="text-13 text-tertiary" htmlFor="hr-rate-currency">
                 {t("hr.rates.currency")}
               </label>
               <input
@@ -232,26 +236,37 @@ export const HrRateCardModal = ({ person, onClose }: TProps) => {
                 maxLength={3}
                 value={currency}
                 onChange={(event) => setCurrency(event.target.value)}
-                className="border-custom-border-200 bg-custom-background-100 text-custom-text-100 text-sm w-full rounded border px-2 py-1 uppercase"
+                className="w-full rounded border border-subtle bg-layer-1 px-2 py-1 text-13 text-primary uppercase"
               />
             </div>
           </div>
 
-          {problem && <p className="text-xs text-red-500">{problem}</p>}
+          {problem && <p className="text-13 text-danger-primary">{problem}</p>}
 
           <div className="flex justify-end">
-            <Button variant="primary" size="sm" loading={isBusy} onClick={() => void handleAdd()}>
+            <Button variant="primary" size="lg" loading={isBusy} onClick={() => void handleAdd()}>
               {t("hr.rates.add_button")}
             </Button>
           </div>
         </div>
 
         <div className="flex justify-end">
-          <Button variant="secondary" size="sm" onClick={onClose}>
+          <Button variant="secondary" size="lg" onClick={onClose}>
             {t("hr.rates.close")}
           </Button>
         </div>
       </div>
+
+      <AlertModalCore
+        isOpen={removing !== null}
+        handleClose={() => setRemoving(null)}
+        handleSubmit={() => void handleRemove()}
+        isSubmitting={isBusy}
+        variant="danger"
+        title={t("hr.rates.confirm_remove_title")}
+        content={t("hr.rates.confirm_remove_body")}
+        primaryButtonText={{ default: t("hr.rates.remove"), loading: t("hr.rates.removing") }}
+      />
     </ModalCore>
   );
 };

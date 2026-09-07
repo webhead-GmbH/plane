@@ -111,6 +111,73 @@ def _slice_for_day(absence, day, absence_type, records_leave_account=True):
     )
 
 
+def _keeps_a_leave_account(contract):
+    """Whether leave is drawn down for this person on this day.
+
+    Switching it off is a decision somebody takes, recorded on the contract for
+    the self-invoicing arrangements. No contract covering the day is not that
+    decision — nobody has said anything — and reading silence as "no leave
+    account" charges nothing against an entitlement that was granted, so the
+    balance shows the whole year still available however much has been taken.
+    That is the direction that lets somebody book leave they do not have.
+
+    Deliberately unlike the target, which stays off without a contract: a target
+    is an obligation and inventing one manufactures a shortfall against somebody,
+    whereas leave here is only spent against a figure already granted to them.
+    """
+    return contract.records_leave_account if contract else True
+
+
+def leave_charged_between(profile, first, last):
+    """Leave drawn down between two days, inclusive, by the month's own arithmetic.
+
+    The same question the ledger answers when it builds a day, asked over a window
+    that need not be a month and need not have been built. It reads no stored day:
+    a leave year runs from a hire anniversary and reaches back across months nobody
+    has had reason to open, and a balance that counted only the built ones would
+    overstate what is left — the direction that lets somebody book leave they do
+    not have.
+
+    Kept here rather than worked out again from the absences alone, because two
+    answers to how much leave a week off cost is worse than either answer. A public
+    holiday inside the range costs no leave, and a sickness recorded over booked
+    leave takes the day instead of it; counting the range day by day without
+    knowing that charges for both.
+    """
+    contracts = list(HrContract.objects.filter(profile_id=profile.id))
+    personal_schedules = list(HrWorkSchedule.objects.filter(profile_id=profile.id))
+    default_schedules = list(HrWorkSchedule.objects.filter(profile__isnull=True))
+    holidays = _holiday_lookup(profile, first, last)
+    absences = _absence_lookup(profile, first, last)
+
+    total = 0
+    for day in iter_days(first, last):
+        covering = absences.covering(day)
+        if not covering:
+            continue
+
+        contract = effective(contracts, day)
+        records_target = contract.records_target_hours if contract else False
+        records_leave = _keeps_a_leave_account(contract)
+        schedule = effective_schedule(personal_schedules, default_schedules, day)
+        holiday = holidays.get(day)
+
+        total += compute_day(
+            DayInput(
+                day=day,
+                records_target=records_target,
+                scheduled_minutes=scheduled_minutes(schedule, day) if records_target else 0,
+                credited_day_minutes=credited_day_minutes(schedule, day),
+                holiday_fraction=holiday.day_fraction if (holiday and records_target) else None,
+                absences=[
+                    _slice_for_day(absence, day, absence.absence_type, records_leave_account=records_leave)
+                    for absence in covering
+                ],
+            )
+        ).leave_minutes
+    return total
+
+
 def _worklog_minutes_by_day(profile, first, last, tz):
     """Hours logged against work items, bucketed by day and rounded once each.
 
@@ -220,8 +287,15 @@ def _records_disappeared(previous_ids, current_ids):
 
 
 @transaction.atomic
-def rebuild_period(profile, year, month, actor=None):
-    """Recompute one person's month. Returns the period, or None if it is closed."""
+def rebuild_period(profile, year, month, actor=None, settling=False):
+    """Recompute one person's month. Returns the period, or None if it is closed.
+
+    `settling` is for the one caller that is itself deciding the month: closing it.
+    The gate below exists to stop a passing GET rewriting figures somebody has
+    already read, which is exactly right for every other caller — but it also
+    silently skipped the final rebuild inside lock(), so a month was frozen on
+    whatever was computed the last time it happened to be open.
+    """
     first, last = month_range(year, month)
     HrPeriod.objects.get_or_create(
         profile_id=profile.id,
@@ -238,7 +312,7 @@ def rebuild_period(profile, year, month, actor=None):
     # submitted or approved one has figures somebody has already looked at —
     # rewriting those underneath them, on a passing GET, would mean approving one
     # set of numbers and locking another.
-    if period.state not in (HrPeriod.State.OPEN, HrPeriod.State.REOPENED):
+    if not settling and period.state not in (HrPeriod.State.OPEN, HrPeriod.State.REOPENED):
         return None
 
     tz = _profile_timezone(profile)
@@ -272,7 +346,7 @@ def rebuild_period(profile, year, month, actor=None):
         # self-invoicing arrangements the first is deliberately off, which must not
         # silently switch off the second.
         records_target = contract.records_target_hours if contract else False
-        records_leave = contract.records_leave_account if contract else False
+        records_leave = _keeps_a_leave_account(contract)
         schedule = effective_schedule(personal_schedules, default_schedules, day)
 
         holiday = holidays.get(day)

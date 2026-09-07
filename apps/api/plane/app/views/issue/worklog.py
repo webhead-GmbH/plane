@@ -4,7 +4,7 @@
 
 # Django imports
 from django.db import IntegrityError
-from django.db.models import Sum, Q
+from django.db.models import Sum
 from django.utils import timezone
 
 # Third Party imports
@@ -94,15 +94,50 @@ class IssueWorkLogViewSet(BaseViewSet):
             )
 
         serializer = IssueWorkLogSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save(
-                project_id=project_id,
-                issue_id=issue_id,
-                logged_by_id=logged_by_id,
-                workspace=Issue.objects.get(pk=issue_id).workspace,
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        # A manual entry names its own day, so it can be written straight into a
+        # month that has already been settled — where it would sit in the records
+        # without ever reaching the figures, because that month is never rebuilt
+        # again. Editing one was refused from the start; adding one was not, which
+        # left the harder half of the same hole open.
+        entered = serializer.validated_data
+        settled = self._settled_month_for_a_new_row(logged_by_id, entered.get("started_at"), entered.get("logged_at"))
+        if settled is not None:
+            return Response(
+                {
+                    "error": (
+                        "These hours fall in a month that has already been settled. "
+                        "Reopen it first if they genuinely belong there."
+                    ),
+                    "period_start": settled.period_start,
+                },
+                status=status.HTTP_409_CONFLICT,
             )
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer.save(
+            project_id=project_id,
+            issue_id=issue_id,
+            logged_by_id=logged_by_id,
+            workspace=Issue.objects.get(pk=issue_id).workspace,
+        )
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def _settled_month_for_a_new_row(self, logged_by_id, started_at, logged_at):
+        """The settled month a row about to be written would land in, or None.
+
+        Asked of the moments the payload carries rather than of a saved row, since
+        there is nothing saved yet. An entry that names neither falls on today,
+        and today cannot be in a settled month — a month is refused closure until
+        it has finished happening.
+        """
+        from plane.hr.services.settled import settled_month_for
+
+        moment = started_at or logged_at
+        if moment is None:
+            return None
+        return settled_month_for(logged_by_id, moment)
 
     def _can_modify_worklog(self, request, slug, project_id, worklog):
         """Admins may modify any worklog; everyone else only their own (by logged_by)."""
@@ -116,31 +151,76 @@ class IssueWorkLogViewSet(BaseViewSet):
             is_active=True,
         ).exists()
 
+    def _settled_month(self, worklog, *proposed):
+        """The closed month this change would disturb, or None.
+
+        An hour that a settled month counted is part of a figure somebody has
+        already read — approved, handed to payroll, or invoiced on. That month is
+        never rebuilt again, so changing the hour now cannot correct it: it only
+        makes the record and the figure disagree. Moving an hour out of one bills
+        it a second time in the month it lands in.
+
+        Asked here rather than in the serializer because it is a fact about the
+        person's month, not about the row.
+        """
+        from plane.hr.services.settled import occurred_at, settled_month_for
+
+        return settled_month_for(worklog.logged_by_id, occurred_at(worklog), *proposed)
+
     @allow_permission([ROLE.ADMIN, ROLE.MEMBER])
     def partial_update(self, request, slug, project_id, issue_id, pk):
-        worklog = IssueWorkLog.objects.get(
-            workspace__slug=slug, project_id=project_id, issue_id=issue_id, pk=pk
-        )
+        worklog = IssueWorkLog.objects.get(workspace__slug=slug, project_id=project_id, issue_id=issue_id, pk=pk)
         if not self._can_modify_worklog(request, slug, project_id, worklog):
             return Response(
                 {"error": "You can only edit your own worklogs."},
                 status=status.HTTP_403_FORBIDDEN,
             )
         serializer = IssueWorkLogSerializer(worklog, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        # Both the day it is on and the day it would move to: leaving a settled
+        # month double-counts the hours, arriving in one loses them. The second is
+        # worked out from the row as the edit would leave it rather than from the
+        # payload, because clearing the start moves the day to the logged time
+        # without the payload saying anything about it.
+        after = serializer.validated_data
+        moving_to = after.get("started_at", worklog.started_at) or after.get("logged_at", worklog.logged_at)
+        settled = self._settled_month(worklog, moving_to)
+        if settled is not None:
+            return Response(
+                {
+                    "error": (
+                        "These hours belong to a month that has already been settled. "
+                        "Reopen it first if they genuinely need to change."
+                    ),
+                    "period_start": settled.period_start,
+                },
+                status=status.HTTP_409_CONFLICT,
+            )
+
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     @allow_permission([ROLE.ADMIN, ROLE.MEMBER])
     def destroy(self, request, slug, project_id, issue_id, pk):
-        worklog = IssueWorkLog.objects.get(
-            workspace__slug=slug, project_id=project_id, issue_id=issue_id, pk=pk
-        )
+        worklog = IssueWorkLog.objects.get(workspace__slug=slug, project_id=project_id, issue_id=issue_id, pk=pk)
         if not self._can_modify_worklog(request, slug, project_id, worklog):
             return Response(
                 {"error": "You can only delete your own worklogs."},
                 status=status.HTTP_403_FORBIDDEN,
+            )
+        settled = self._settled_month(worklog)
+        if settled is not None:
+            return Response(
+                {
+                    "error": (
+                        "These hours belong to a month that has already been settled. "
+                        "Reopen it first if they genuinely need to be removed."
+                    ),
+                    "period_start": settled.period_start,
+                },
+                status=status.HTTP_409_CONFLICT,
             )
         worklog.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)

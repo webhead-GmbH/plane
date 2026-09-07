@@ -11,7 +11,7 @@ import { cn } from "@plane/utils";
 // services
 import { EHrArrangement, EHrRateBasis, HrService } from "@/services/hr.service";
 // local imports
-import { tidyAmount } from "./utils";
+import { formatMinutes, tidyAmount } from "./utils";
 
 const hrService = new HrService();
 
@@ -52,23 +52,27 @@ export const HrStatementPanel = ({ periodId, arrangement }: TProps) => {
   if (!shows || !data) return null;
 
   return (
-    <div className="border-custom-border-200 flex flex-col gap-3 rounded-md border p-4">
+    <div className="flex flex-col gap-3 rounded-md border border-subtle p-4">
       <div>
-        <h2 className="text-custom-text-100 text-sm font-semibold">{t("hr.statement.title")}</h2>
-        <p className="text-custom-text-300 text-xs">{t("hr.statement.hint")}</p>
+        <h2 className="text-13 font-semibold text-primary">{t("hr.statement.title")}</h2>
+        <p className="text-13 text-tertiary">{t("hr.statement.hint")}</p>
       </div>
 
       <div className="flex flex-wrap items-end gap-x-8 gap-y-3">
         <div>
-          <p className="text-custom-text-400 text-xs">{t("hr.statement.hours")}</p>
-          <p className="text-custom-text-100 text-lg font-semibold tabular-nums">{data.hours}</p>
+          <p className="text-13 text-tertiary">{t("hr.statement.hours")}</p>
+          <p className="text-16 font-medium text-primary tabular-nums">{formatMinutes(data.minutes)}</p>
+          {/* The decimal form beneath, labelled, because that is what goes on an
+              invoice — but it no longer sits alone contradicting the h:mm that
+              every other figure in the module is written in. */}
+          <p className="text-11 text-tertiary tabular-nums">{t("hr.statement.decimal_hours", { hours: data.hours })}</p>
         </div>
 
         {data.has_rate ? (
           <>
             <div>
-              <p className="text-custom-text-400 text-xs">{t("hr.statement.rate")}</p>
-              <p className="text-custom-text-200 text-sm tabular-nums">
+              <p className="text-13 text-tertiary">{t("hr.statement.rate")}</p>
+              <p className="text-13 text-secondary tabular-nums">
                 {data.rate_basis === EHrRateBasis.HOURLY
                   ? t("hr.rates.per_hour", { amount: tidyAmount(data.hourly_rate), currency: data.currency })
                   : t("hr.statement.monthly_rate")}
@@ -77,19 +81,19 @@ export const HrStatementPanel = ({ periodId, arrangement }: TProps) => {
 
             {data.expected_amount !== null ? (
               <div>
-                <p className="text-custom-text-400 text-xs">{t("hr.statement.expected")}</p>
-                <p className="text-custom-text-100 text-lg font-semibold tabular-nums">
+                <p className="text-13 text-tertiary">{t("hr.statement.expected")}</p>
+                <p className="text-16 font-medium text-primary tabular-nums">
                   {tidyAmount(data.expected_amount)} {data.currency}
                 </p>
               </div>
             ) : null}
           </>
         ) : (
-          <p className="text-custom-text-300 text-sm">{t("hr.statement.no_rate")}</p>
+          <p className="text-13 text-tertiary">{t("hr.statement.no_rate")}</p>
         )}
       </div>
 
-      <p className={cn("text-xs", data.is_final ? "text-custom-text-400" : "text-amber-600")}>
+      <p className={cn("text-13", data.is_final ? "text-tertiary" : "text-warning-primary")}>
         {data.is_final ? t("hr.statement.settled") : t("hr.statement.still_moving")}
       </p>
     </div>

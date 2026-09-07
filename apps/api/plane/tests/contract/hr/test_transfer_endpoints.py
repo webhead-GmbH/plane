@@ -497,7 +497,10 @@ class TestExport:
         response = client_for(manager).get(url(workspace, "export/?year=2026&month=3"))
 
         rows = list(csv.reader(StringIO(response.content.decode("utf-8"))))
-        assert rows[0][18:] == [
+        # Where they are, not that the file ends here — the same rule the fixed
+        # order above states. An open-ended slice would have said no column could
+        # ever be added after these, which is not what is being guarded.
+        assert rows[0][18:21] == [
             "Counted Through",
             "Balance Minutes To Date",
             "Balance Hours To Date",

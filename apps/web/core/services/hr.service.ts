@@ -171,6 +171,23 @@ export type THrWorkSchedule = {
   notional_daily_minutes: number | null;
 };
 
+/**
+ * What somebody's leave account comes to, for the leave year a day falls in.
+ *
+ * Minutes, like everything else. Days are worked out for display against the
+ * schedule in force at the time, and never stored — a balance kept in days stops
+ * meaning one thing the moment contracted hours change.
+ */
+export type THrLeaveStanding = {
+  leave_year_start: string;
+  leave_year_end: string;
+  granted_minutes: number;
+  taken_minutes: number;
+  /** Signed: somebody allowed leave in advance is over, and that is worth seeing. */
+  remaining_minutes: number;
+  is_final: boolean;
+};
+
 /** Everything the personal view needs, in one response. */
 export type THrMe = {
   profile: THrEmploymentProfile | null;
@@ -179,6 +196,95 @@ export type THrMe = {
   schedule: THrWorkSchedule | null;
   period: THrPeriod | null;
   has_running_timer: boolean;
+  /**
+   * Days worked from home so far this calendar year. Null where attendance is
+   * not kept for this person — there is no count, and zero would read as one.
+   */
+  telework_days_this_year: number | null;
+  /**
+   * Null where no leave account is kept for this person, and null again where one
+   * is kept but nobody has yet said what the year's entitlement is — which is not
+   * the same as having none.
+   */
+  leave: THrLeaveStanding | null;
+};
+
+/** How the detail rows may be gathered. The server offers exactly these. */
+export type THrWorklogGrouping = "day" | "work_item" | "project" | "workspace" | "week";
+
+/** One hour logged against a work item, as the month counts it. */
+export type THrWorklogRow = {
+  id: string;
+  /** The day it counts on, in the subject's timezone — not the reader's. */
+  day: string;
+  /**
+   * Raw seconds, deliberately. Minutes are rounded once per day and project on
+   * the summed seconds, so a row that arrived pre-rounded could not be added up
+   * to the figure it explains.
+   */
+  seconds: number | null;
+  /** A timer with no length yet. Shown, but counts nothing. */
+  is_running: boolean;
+  /** Written down afterwards rather than timed — it has no start time. */
+  entered_by_hand: boolean;
+  /**
+   * Closed by the sweeper at the cap because it was left running, so the figure
+   * beside it is a ceiling awaiting correction rather than a measurement.
+   */
+  auto_stopped: boolean;
+  started_at: string | null;
+  logged_at: string;
+  note: string;
+  issue_id: string | null;
+  issue_name: string;
+  issue_sequence_id: number | null;
+  project_id: string | null;
+  project_name: string;
+  project_identifier: string;
+  workspace_id: string | null;
+  workspace_name: string;
+  /** Counted by a settled month and since removed. */
+  gone: boolean;
+};
+
+export type THrWorklogGroup = {
+  key: string;
+  label: string;
+  minutes: number;
+  entries: number;
+  first_day: string;
+  rows: THrWorklogRow[];
+};
+
+/** An hour with no work item behind it, kept as its own lane. */
+export type THrWorklogOtherRow = {
+  id: string;
+  day: string;
+  /** Already minutes, and signed: a correction subtracts. */
+  minutes: number;
+  category: EHrTimeCategory;
+  source: EHrTimeSource;
+  note: string;
+  project_id: string | null;
+  project_name: string;
+};
+
+export type THrWorklogDetail = {
+  year: number;
+  month: number;
+  grouping: THrWorklogGrouping;
+  /** Whether these are the month's own record or today's answer to it. */
+  is_settled: boolean;
+  period_state: EHrPeriodState | null;
+  work_item_minutes: number;
+  other_minutes: number;
+  running: number;
+  /** Rows the month counted that are no longer there. */
+  missing: number;
+  /** Whether the group subtotals add up to the figure above them. */
+  totals_reconcile: boolean;
+  groups: THrWorklogGroup[];
+  other: THrWorklogOtherRow[];
 };
 
 /** One person's row in the manager's month. */
@@ -257,6 +363,14 @@ export enum EHrImportState {
 }
 
 export type THrImportRow = {
+  /**
+   * A stable name for why this row was refused or skipped, and the values that
+   * name mentions. Empty on a preview stored before rows carried one, which is
+   * why `message` — the server's English sentence — is still sent and still used
+   * when nothing better is available.
+   */
+  reason?: string;
+  detail?: Record<string, string>;
   row: number;
   verdict: "ok" | "error" | "skip";
   message: string;
@@ -318,6 +432,46 @@ export type THrHoliday = {
   day_fraction: string;
   /** A statutory holiday carries a pay entitlement; a granted day does not. */
   is_statutory: boolean;
+};
+
+/** Where a day was worked. Coarse on purpose — not a record of where somebody was. */
+export enum EHrWorkLocation {
+  OFFICE = 10,
+  /** Telearbeit. Counted per person per year, and required as payroll input. */
+  HOME = 20,
+  ELSEWHERE = 30,
+}
+
+export enum EHrRecordingMethod {
+  MANUAL = 10,
+  CORRECTED = 20,
+  IMPORTED = 30,
+}
+
+/**
+ * When somebody was at work on one day, and where.
+ *
+ * Times are the local wall clock the person stated, plus the zone they meant it
+ * in — not instants. `net_minutes` is resolved server-side, which is what makes
+ * the two clock-change days a year come out right, so it is never worked out
+ * here from the two times.
+ */
+export type THrAttendanceDay = {
+  id: string;
+  profile: string;
+  work_date: string;
+  /** "HH:MM:SS". */
+  started_at_local: string;
+  /** Null while the day is still running. */
+  ended_at_local: string | null;
+  local_timezone: string;
+  break_minutes: number;
+  crosses_midnight: boolean;
+  work_location: EHrWorkLocation;
+  net_minutes: number;
+  recording_method: EHrRecordingMethod;
+  note: string;
+  locked_period: string | null;
 };
 
 /**
@@ -429,7 +583,9 @@ export type THrAbsence = {
   profile: string;
   absence_type: string;
   absence_type_code: string;
+  /** The German name, kept under its old key so nothing that reads it breaks. */
   absence_type_name: string;
+  absence_type_name_en: string;
   start_date: string;
   end_date: string;
   granularity: EHrGranularity;
@@ -444,6 +600,26 @@ export type THrAbsence = {
   /** Set once the month it falls in has been locked, after which it cannot change. */
   locked_period: string | null;
 };
+
+/**
+ * The refusal body, carrying the status that produced it.
+ *
+ * Every call here used to throw `error.response.data` alone, which reads well
+ * for a refusal the server explained and tells a screen nothing about a network
+ * failure — so a dropped connection and a 403 arrived identically, and the
+ * screens reported both as "you are not allowed to see this". The body is still
+ * the thing `refusalMessage` reads; the status simply rides along with it.
+ */
+function withStatus(error: unknown): unknown {
+  const response = (error as { response?: { data?: unknown; status?: number } })?.response;
+  const body = response?.data;
+  if (body && typeof body === "object") return Object.assign({}, body, { status: response?.status });
+  // A non-object body is a gateway's HTML page or a bare string from something
+  // that is not this API. It is kept for debugging but deliberately not under a
+  // key refusalMessage reads, so it can never be rendered to somebody as if it
+  // were a sentence the server wrote for them.
+  return { raw: body, status: response?.status };
+}
 
 export class HrService extends APIService {
   constructor() {
@@ -460,7 +636,7 @@ export class HrService extends APIService {
     return this.get(`${this.base}/me/${query}`)
       .then((response) => response?.data)
       .catch((error) => {
-        throw error?.response?.data;
+        throw withStatus(error);
       });
   }
 
@@ -469,7 +645,7 @@ export class HrService extends APIService {
     return this.get(`${this.base}/overview/${query}`)
       .then((response) => response?.data)
       .catch((error) => {
-        throw error?.response?.data;
+        throw withStatus(error);
       });
   }
 
@@ -477,7 +653,7 @@ export class HrService extends APIService {
     return this.post(`${this.base}/periods/${periodId}/approve/`)
       .then((response) => response?.data)
       .catch((error) => {
-        throw error?.response?.data;
+        throw withStatus(error);
       });
   }
 
@@ -485,7 +661,7 @@ export class HrService extends APIService {
     return this.post(`${this.base}/periods/${periodId}/lock/`)
       .then((response) => response?.data)
       .catch((error) => {
-        throw error?.response?.data;
+        throw withStatus(error);
       });
   }
 
@@ -493,7 +669,7 @@ export class HrService extends APIService {
     return this.post(`${this.base}/periods/${periodId}/reopen/`, { reason })
       .then((response) => response?.data)
       .catch((error) => {
-        throw error?.response?.data;
+        throw withStatus(error);
       });
   }
 
@@ -530,7 +706,7 @@ export class HrService extends APIService {
     return this.get(`${this.base}/periods/${query}`)
       .then((response) => response?.data)
       .catch((error) => {
-        throw error?.response?.data;
+        throw withStatus(error);
       });
   }
 
@@ -538,7 +714,43 @@ export class HrService extends APIService {
     return this.get(`${this.base}/periods/${periodId}/days/`)
       .then((response) => response?.data)
       .catch((error) => {
-        throw error?.response?.data;
+        throw withStatus(error);
+      });
+  }
+
+  /**
+   * Record that a flagged day has been looked at.
+   *
+   * A month refuses to close while any day is flagged, and the flag says only
+   * that hours counted earlier are no longer there — whether they were withdrawn
+   * on purpose or lost by accident is a question only a person can answer. The
+   * note is what the month is then closed on, so the server refuses an empty one.
+   */
+  async settleDay(periodId: string, dayId: string, note: string): Promise<THrPeriodDay> {
+    return this.post(`${this.base}/periods/${periodId}/days/${dayId}/settle/`, { note })
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw withStatus(error);
+      });
+  }
+
+  /**
+   * Where a month's hours went, entry by entry.
+   *
+   * Always for one person. Unscoped this would return every work item name and
+   * note the caller may see, which for a manager is the whole company — a great
+   * deal more than the number it exists to explain.
+   */
+  async worklogDetail(
+    profileId: string,
+    year: number,
+    month: number,
+    groupBy: THrWorklogGrouping
+  ): Promise<THrWorklogDetail> {
+    return this.get(`${this.base}/worklogs/?profile_id=${profileId}&year=${year}&month=${month}&group_by=${groupBy}`)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw withStatus(error);
       });
   }
 
@@ -546,7 +758,7 @@ export class HrService extends APIService {
     return this.post(`${this.base}/periods/${periodId}/recompute/`)
       .then((response) => response?.data)
       .catch((error) => {
-        throw error?.response?.data;
+        throw withStatus(error);
       });
   }
 
@@ -554,7 +766,7 @@ export class HrService extends APIService {
     return this.post(`${this.base}/periods/${periodId}/submit/`)
       .then((response) => response?.data)
       .catch((error) => {
-        throw error?.response?.data;
+        throw withStatus(error);
       });
   }
 
@@ -562,7 +774,7 @@ export class HrService extends APIService {
     return this.get(`${this.base}/periods/${periodId}/statement/`)
       .then((response) => response?.data)
       .catch((error) => {
-        throw error?.response?.data;
+        throw withStatus(error);
       });
   }
 
@@ -570,7 +782,7 @@ export class HrService extends APIService {
     return this.post(`${this.base}/time-entries/`, data)
       .then((response) => response?.data)
       .catch((error) => {
-        throw error?.response?.data;
+        throw withStatus(error);
       });
   }
 
@@ -578,7 +790,7 @@ export class HrService extends APIService {
     return this.patch(`${this.base}/time-entries/${entryId}/`, data)
       .then((response) => response?.data)
       .catch((error) => {
-        throw error?.response?.data;
+        throw withStatus(error);
       });
   }
 
@@ -586,7 +798,7 @@ export class HrService extends APIService {
     return this.delete(`${this.base}/time-entries/${entryId}/`)
       .then((response) => response?.data)
       .catch((error) => {
-        throw error?.response?.data;
+        throw withStatus(error);
       });
   }
 
@@ -601,7 +813,7 @@ export class HrService extends APIService {
     return this.get(`${this.base}/time-entries/?from=${from}&to=${to}&profile_id=${profileId}`)
       .then((response) => response?.data)
       .catch((error) => {
-        throw error?.response?.data;
+        throw withStatus(error);
       });
   }
 
@@ -614,7 +826,7 @@ export class HrService extends APIService {
     return this.get(`${this.base}/candidates/`)
       .then((response) => response?.data)
       .catch((error) => {
-        throw error?.response?.data;
+        throw withStatus(error);
       });
   }
 
@@ -622,7 +834,7 @@ export class HrService extends APIService {
     return this.get(`${this.base}/employees/`)
       .then((response) => response?.data)
       .catch((error) => {
-        throw error?.response?.data;
+        throw withStatus(error);
       });
   }
 
@@ -630,7 +842,7 @@ export class HrService extends APIService {
     return this.post(`${this.base}/employees/`, payload)
       .then((response) => response?.data)
       .catch((error) => {
-        throw error?.response?.data;
+        throw withStatus(error);
       });
   }
 
@@ -638,7 +850,7 @@ export class HrService extends APIService {
     return this.patch(`${this.base}/employees/${profileId}/`, payload)
       .then((response) => response?.data)
       .catch((error) => {
-        throw error?.response?.data;
+        throw withStatus(error);
       });
   }
 
@@ -647,7 +859,7 @@ export class HrService extends APIService {
     return this.delete(`${this.base}/employees/${profileId}/`)
       .then((response) => response?.data)
       .catch((error) => {
-        throw error?.response?.data;
+        throw withStatus(error);
       });
   }
 
@@ -655,7 +867,7 @@ export class HrService extends APIService {
     return this.get(`${this.base}/employees/${profileId}/contracts/`)
       .then((response) => response?.data)
       .catch((error) => {
-        throw error?.response?.data;
+        throw withStatus(error);
       });
   }
 
@@ -663,7 +875,7 @@ export class HrService extends APIService {
     return this.post(`${this.base}/employees/${profileId}/contracts/`, payload)
       .then((response) => response?.data)
       .catch((error) => {
-        throw error?.response?.data;
+        throw withStatus(error);
       });
   }
 
@@ -671,7 +883,7 @@ export class HrService extends APIService {
     return this.patch(`${this.base}/employees/${profileId}/contracts/${contractId}/`, payload)
       .then((response) => response?.data)
       .catch((error) => {
-        throw error?.response?.data;
+        throw withStatus(error);
       });
   }
 
@@ -679,7 +891,7 @@ export class HrService extends APIService {
     return this.delete(`${this.base}/employees/${profileId}/contracts/${contractId}/`)
       .then((response) => response?.data)
       .catch((error) => {
-        throw error?.response?.data;
+        throw withStatus(error);
       });
   }
 
@@ -687,7 +899,7 @@ export class HrService extends APIService {
     return this.get(`${this.base}/schedules/`)
       .then((response) => response?.data)
       .catch((error) => {
-        throw error?.response?.data;
+        throw withStatus(error);
       });
   }
 
@@ -695,7 +907,7 @@ export class HrService extends APIService {
     return this.post(`${this.base}/schedules/`, payload)
       .then((response) => response?.data)
       .catch((error) => {
-        throw error?.response?.data;
+        throw withStatus(error);
       });
   }
 
@@ -703,7 +915,7 @@ export class HrService extends APIService {
     return this.patch(`${this.base}/schedules/${scheduleId}/`, payload)
       .then((response) => response?.data)
       .catch((error) => {
-        throw error?.response?.data;
+        throw withStatus(error);
       });
   }
 
@@ -711,7 +923,7 @@ export class HrService extends APIService {
     return this.delete(`${this.base}/schedules/${scheduleId}/`)
       .then((response) => response?.data)
       .catch((error) => {
-        throw error?.response?.data;
+        throw withStatus(error);
       });
   }
 
@@ -723,7 +935,22 @@ export class HrService extends APIService {
     return this.get(`${this.base}/imports/`)
       .then((response) => response?.data)
       .catch((error) => {
-        throw error?.response?.data;
+        throw withStatus(error);
+      });
+  }
+
+  /**
+   * One import with its checked rows.
+   *
+   * The list omits them deliberately — a hundred batches of a thousand rows is
+   * not a page — so anything that renders the preview has to ask for the batch
+   * itself.
+   */
+  async importBatch(batchId: string): Promise<THrImportBatch> {
+    return this.get(`${this.base}/imports/${batchId}/`)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw withStatus(error);
       });
   }
 
@@ -737,7 +964,7 @@ export class HrService extends APIService {
     return this.post(`${this.base}/imports/`, body)
       .then((response) => response?.data)
       .catch((error) => {
-        throw error?.response?.data;
+        throw withStatus(error);
       });
   }
 
@@ -745,7 +972,7 @@ export class HrService extends APIService {
     return this.post(`${this.base}/imports/${batchId}/commit/`)
       .then((response) => response?.data)
       .catch((error) => {
-        throw error?.response?.data;
+        throw withStatus(error);
       });
   }
 
@@ -753,7 +980,7 @@ export class HrService extends APIService {
     return this.post(`${this.base}/imports/${batchId}/undo/`, { reason })
       .then((response) => response?.data)
       .catch((error) => {
-        throw error?.response?.data;
+        throw withStatus(error);
       });
   }
 
@@ -765,7 +992,7 @@ export class HrService extends APIService {
     return this.get(`${this.base}/employees/${profileId}/opening-balances/`)
       .then((response) => response?.data)
       .catch((error) => {
-        throw error?.response?.data;
+        throw withStatus(error);
       });
   }
 
@@ -773,7 +1000,7 @@ export class HrService extends APIService {
     return this.post(`${this.base}/employees/${profileId}/opening-balances/`, payload)
       .then((response) => response?.data)
       .catch((error) => {
-        throw error?.response?.data;
+        throw withStatus(error);
       });
   }
 
@@ -782,7 +1009,7 @@ export class HrService extends APIService {
     return this.patch(`${this.base}/employees/${profileId}/opening-balances/${balanceId}/`, payload)
       .then((response) => response?.data)
       .catch((error) => {
-        throw error?.response?.data;
+        throw withStatus(error);
       });
   }
 
@@ -791,7 +1018,7 @@ export class HrService extends APIService {
     return this.post(`${this.base}/employees/${profileId}/opening-balances/${balanceId}/agree/`)
       .then((response) => response?.data)
       .catch((error) => {
-        throw error?.response?.data;
+        throw withStatus(error);
       });
   }
 
@@ -801,7 +1028,7 @@ export class HrService extends APIService {
     return this.get(`${this.base}/absence-types/`)
       .then((response) => response?.data)
       .catch((error) => {
-        throw error?.response?.data;
+        throw withStatus(error);
       });
   }
 
@@ -809,7 +1036,7 @@ export class HrService extends APIService {
     return this.post(`${this.base}/absence-types/`, payload)
       .then((response) => response?.data)
       .catch((error) => {
-        throw error?.response?.data;
+        throw withStatus(error);
       });
   }
 
@@ -817,7 +1044,7 @@ export class HrService extends APIService {
     return this.patch(`${this.base}/absence-types/${typeId}/`, payload)
       .then((response) => response?.data)
       .catch((error) => {
-        throw error?.response?.data;
+        throw withStatus(error);
       });
   }
 
@@ -825,7 +1052,7 @@ export class HrService extends APIService {
     return this.delete(`${this.base}/absence-types/${typeId}/`)
       .then((response) => response?.data)
       .catch((error) => {
-        throw error?.response?.data;
+        throw withStatus(error);
       });
   }
 
@@ -841,7 +1068,7 @@ export class HrService extends APIService {
     return this.get(`${this.base}/absences/?from=${from}&to=${to}${scope}`)
       .then((response) => response?.data)
       .catch((error) => {
-        throw error?.response?.data;
+        throw withStatus(error);
       });
   }
 
@@ -849,7 +1076,7 @@ export class HrService extends APIService {
     return this.post(`${this.base}/absences/`, payload)
       .then((response) => response?.data)
       .catch((error) => {
-        throw error?.response?.data;
+        throw withStatus(error);
       });
   }
 
@@ -857,7 +1084,7 @@ export class HrService extends APIService {
     return this.patch(`${this.base}/absences/${absenceId}/`, payload)
       .then((response) => response?.data)
       .catch((error) => {
-        throw error?.response?.data;
+        throw withStatus(error);
       });
   }
 
@@ -865,16 +1092,16 @@ export class HrService extends APIService {
     return this.delete(`${this.base}/absences/${absenceId}/`)
       .then((response) => response?.data)
       .catch((error) => {
-        throw error?.response?.data;
+        throw withStatus(error);
       });
   }
 
   /** `approve`, `reject` or `cancel`. Nobody may decide on their own absence. */
   async decideAbsence(absenceId: string, decision: "approve" | "reject" | "cancel", reason?: string) {
-    return this.post(`${this.base}/absences/${absenceId}/${decision}/`, reason ? { rejection_reason: reason } : {})
+    return this.post(`${this.base}/absences/${absenceId}/${decision}/`, reason ? { reason } : {})
       .then((response) => response?.data)
       .catch((error) => {
-        throw error?.response?.data;
+        throw withStatus(error);
       });
   }
 
@@ -887,7 +1114,7 @@ export class HrService extends APIService {
     return this.get(`${this.base}/rate-cards/${query}`)
       .then((response) => response?.data)
       .catch((error) => {
-        throw error?.response?.data;
+        throw withStatus(error);
       });
   }
 
@@ -895,7 +1122,7 @@ export class HrService extends APIService {
     return this.post(`${this.base}/rate-cards/`, payload)
       .then((response) => response?.data)
       .catch((error) => {
-        throw error?.response?.data;
+        throw withStatus(error);
       });
   }
 
@@ -903,7 +1130,7 @@ export class HrService extends APIService {
     return this.patch(`${this.base}/rate-cards/${rateId}/`, payload)
       .then((response) => response?.data)
       .catch((error) => {
-        throw error?.response?.data;
+        throw withStatus(error);
       });
   }
 
@@ -911,7 +1138,7 @@ export class HrService extends APIService {
     return this.delete(`${this.base}/rate-cards/${rateId}/`)
       .then((response) => response?.data)
       .catch((error) => {
-        throw error?.response?.data;
+        throw withStatus(error);
       });
   }
 
@@ -920,7 +1147,7 @@ export class HrService extends APIService {
     return this.get(`${this.base}/employees/${profileId}/leave/`)
       .then((response) => response?.data)
       .catch((error) => {
-        throw error?.response?.data;
+        throw withStatus(error);
       });
   }
 
@@ -928,7 +1155,7 @@ export class HrService extends APIService {
     return this.post(`${this.base}/employees/${profileId}/leave/`, payload)
       .then((response) => response?.data)
       .catch((error) => {
-        throw error?.response?.data;
+        throw withStatus(error);
       });
   }
 
@@ -941,7 +1168,7 @@ export class HrService extends APIService {
     return this.patch(`${this.base}/employees/${profileId}/leave/${entitlementId}/`, payload)
       .then((response) => response?.data)
       .catch((error) => {
-        throw error?.response?.data;
+        throw withStatus(error);
       });
   }
 
@@ -949,7 +1176,7 @@ export class HrService extends APIService {
     return this.get(`${this.base}/holiday-calendars/`)
       .then((response) => response?.data)
       .catch((error) => {
-        throw error?.response?.data;
+        throw withStatus(error);
       });
   }
 
@@ -957,7 +1184,7 @@ export class HrService extends APIService {
     return this.post(`${this.base}/holiday-calendars/`, payload)
       .then((response) => response?.data)
       .catch((error) => {
-        throw error?.response?.data;
+        throw withStatus(error);
       });
   }
 
@@ -966,7 +1193,7 @@ export class HrService extends APIService {
     return this.get(`${this.base}/holidays/?calendar=${calendarId}&year=${year}`)
       .then((response) => response?.data)
       .catch((error) => {
-        throw error?.response?.data;
+        throw withStatus(error);
       });
   }
 
@@ -974,7 +1201,7 @@ export class HrService extends APIService {
     return this.post(`${this.base}/holidays/`, payload)
       .then((response) => response?.data)
       .catch((error) => {
-        throw error?.response?.data;
+        throw withStatus(error);
       });
   }
 
@@ -982,7 +1209,7 @@ export class HrService extends APIService {
     return this.patch(`${this.base}/holidays/${holidayId}/`, payload)
       .then((response) => response?.data)
       .catch((error) => {
-        throw error?.response?.data;
+        throw withStatus(error);
       });
   }
 
@@ -990,7 +1217,46 @@ export class HrService extends APIService {
     return this.delete(`${this.base}/holidays/${holidayId}/`)
       .then((response) => response?.data)
       .catch((error) => {
-        throw error?.response?.data;
+        throw withStatus(error);
+      });
+  }
+
+  /**
+   * The days somebody was at work, within a window.
+   *
+   * One row per person per day, so a window of one day is how a single day is
+   * read — there is no endpoint for "the day", only for days.
+   */
+  async attendanceDays(from: string, to: string, profileId?: string): Promise<THrAttendanceDay[]> {
+    const scope = profileId ? `&profile_id=${profileId}` : "";
+    return this.get(`${this.base}/attendance/?from=${from}&to=${to}${scope}`)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw withStatus(error);
+      });
+  }
+
+  async createAttendanceDay(payload: Record<string, unknown>): Promise<THrAttendanceDay> {
+    return this.post(`${this.base}/attendance/`, payload)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw withStatus(error);
+      });
+  }
+
+  async updateAttendanceDay(dayId: string, payload: Record<string, unknown>): Promise<THrAttendanceDay> {
+    return this.patch(`${this.base}/attendance/${dayId}/`, payload)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw withStatus(error);
+      });
+  }
+
+  async deleteAttendanceDay(dayId: string) {
+    return this.delete(`${this.base}/attendance/${dayId}/`)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw withStatus(error);
       });
   }
 }

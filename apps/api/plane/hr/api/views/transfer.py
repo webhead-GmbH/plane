@@ -12,6 +12,7 @@ from uuid import uuid4
 from django.db import transaction
 from django.http import HttpResponse
 from django.utils import timezone
+from django.utils.text import slugify
 
 # Third-party imports
 from rest_framework import status
@@ -225,8 +226,12 @@ class HrPeriodExportEndpoint(BaseAPIView):
             return Response({"error": str(invalid)}, status=status.HTTP_400_BAD_REQUEST)
 
         stamp = period.period_start.strftime("%Y-%m")
+        # Named after the person as well as the month. Every one of these was
+        # called the same thing, so a manager saving the team's files into one
+        # folder ended up with one file and a row of "(1)", "(2)" beside it.
+        who = slugify(period.profile.member.display_name or period.profile.member.email or "") or "person"
         response = HttpResponse(payload, content_type=content_type)
-        response["Content-Disposition"] = f'attachment; filename="hr-{stamp}-detail.{file_format}"'
+        response["Content-Disposition"] = f'attachment; filename="hr-{stamp}-{who}.{file_format}"'
         return response
 
 

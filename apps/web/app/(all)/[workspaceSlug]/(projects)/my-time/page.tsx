@@ -6,6 +6,7 @@
 
 // components
 import { useTranslation } from "@plane/i18n";
+import { ContentWrapper } from "@plane/ui";
 import { PageHead } from "@/components/core/page-title";
 import { MyTimeRoot } from "@/components/hr";
 
@@ -15,9 +16,9 @@ export default function MyTimePage() {
   return (
     <>
       <PageHead title={t("hr.my_time.title")} />
-      <div className="relative h-full w-full overflow-hidden overflow-y-auto">
+      <ContentWrapper className="gap-7">
         <MyTimeRoot />
-      </div>
+      </ContentWrapper>
     </>
   );
 }

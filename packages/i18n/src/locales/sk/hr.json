@@ -22,7 +22,9 @@
       },
       "opening": "Počiatočné saldo",
       "export_csv": "CSV",
-      "export_excel": "Excel"
+      "export_excel": "Excel",
+      "record_time": "Zaznamenať čas",
+      "no_record_detail": "Vaše hodiny sa v tomto priestore neevidujú. Ak by mali, ozvite sa tomu, kto vedie tím."
     },
     "team_time": {
       "title": "Čas tímu",
@@ -42,10 +44,13 @@
       },
       "earlier": "Staršie",
       "later": "Novšie",
-      "not_permitted_detail": "Hodiny celého tímu si môže pozrieť len ten, kto tím vedie. Váš vlastný mesiac nájdete na stránke {page}."
+      "not_permitted_detail": "Hodiny celého tímu si môže pozrieť len ten, kto tím vedie. Váš vlastný mesiac nájdete na stránke {page}.",
+      "closing": "Uzatvára sa…",
+      "confirm_close_title": "Uzavrieť mesiac: {person}?",
+      "confirm_close_body": "Hodnoty sa zmrazia tak, ako sú, a hodiny, neprítomnosti a dochádzka za nimi prestanú prijímať zmeny. Opätovné otvorenie je možné, ale zanechá stopu."
     },
     "summary": {
-      "owed": "Predpísané",
+      "owed": "Fond",
       "worked": "Odpracované",
       "balance": "Saldo",
       "whole_month": "{duration} za celý mesiac",
@@ -55,34 +60,47 @@
       "as_of": "Stav k tomuto dňu: {date}. Mesiac ešte neskončil.",
       "not_started": "Tento mesiac sa ešte nezačal.",
       "needs_review": "Niektoré dni treba skontrolovať – hodiny, ktoré tu boli započítané predtým, už tu nie sú.",
-      "timer_running": "Časovač stále beží, takže tento mesiac sa zatiaľ nedá odovzdať."
+      "timer_running": "Časovač stále beží, takže tento mesiac sa zatiaľ nedá odovzdať.",
+      "telework_days": "Práca z domu tento rok: {count}",
+      "nothing_yet": "Za tento mesiac zatiaľ nebolo nič vypočítané.",
+      "leave_left_days": "Zostáva {amount} dní dovolenky",
+      "leave_left_hours": "Zostáva {amount} dovolenky",
+      "behind_so_far": "{duration} manko za tento mesiac",
+      "ahead_so_far": "{duration} nadčas za tento mesiac"
     },
     "day_table": {
       "day": "Deň",
       "what_it_was": "Druh dňa",
-      "owed": "Predpísané",
+      "owed": "Fond",
       "work_items": "Pracovné položky",
-      "other": "Iné",
+      "other": "Iná práca",
       "away": "Neprítomnosť",
       "worked": "Odpracované",
       "balance": "Saldo",
       "not_yet": "Tento deň ešte nenastal.",
-      "needs_review": "Hodiny, ktoré tu boli započítané predtým, už tu nie sú"
+      "needs_review": "Hodiny, ktoré tu boli započítané predtým, už tu nie sú",
+      "nothing_yet": "Za tento mesiac zatiaľ nebolo nič vypočítané.",
+      "rest_of_month": "{count, plural, one {Zobraziť zvyšok mesiaca (# deň)} few {Zobraziť zvyšok mesiaca (# dni)} many {Zobraziť zvyšok mesiaca (# dňa)} other {Zobraziť zvyšok mesiaca (# dní)}}",
+      "open_day": "Zaznamenať čas pre {day}",
+      "hide_rest_of_month": "Skryť zvyšok mesiaca"
     },
     "overview_table": {
       "person": "Osoba",
       "state": "Stav",
-      "owed": "Predpísané",
+      "owed": "Fond",
       "worked": "Odpracované",
-      "hours": "Hodiny",
       "balance": "Saldo",
       "carried": "Prenesené",
       "action": "Akcia",
-      "not_handed_in": "Neodovzdané",
       "agree": "Schváliť",
       "close": "Uzavrieť",
       "reopen": "Znovu otvoriť",
-      "nobody_yet": "Zatiaľ nikto nemá záznam o pracovnom pomere."
+      "nobody_yet": "Zatiaľ nikto nemá záznam o pracovnom pomere.",
+      "timer_running": "Časovač stále beží",
+      "needs_review": "Niektoré dni treba skontrolovať",
+      "blocked_by_review": "Skontrolovať tieto dni",
+      "month_running": "Mesiac ešte neskončil",
+      "waiting_for": "Čaká sa na: {person}"
     },
     "reopen": {
       "title": "Znovu otvoriť {month}?",
@@ -101,7 +119,7 @@
       "partial_absence": "Čiastočná neprítomnosť"
     },
     "state": {
-      "open": "Otvorené",
+      "open": "Neodovzdané",
       "submitted": "Odovzdané",
       "approved": "Schválené",
       "closed": "Uzavreté",
@@ -114,6 +132,7 @@
       "back_to_month": "Mesiac",
       "edit": "Upraviť",
       "remove": "Zaznamenať odchod",
+      "bring_back": "Znova zamestnať",
       "manager": "Vedie tím",
       "employee": "Zamestnanec",
       "left": "už nepracuje",
@@ -137,7 +156,7 @@
       "section_schedule": "Pracovný týždeň",
       "hire_date": "Dátum nástupu",
       "timezone": "Časové pásmo",
-      "is_manager": "Vedie tím a vidí hodiny všetkých",
+      "is_manager": "Vedie tím — vidí a mení hodiny, neprítomnosti a dovolenky všetkých, vo všetkých priestoroch",
       "arrangement": "Forma spolupráce",
       "valid_from": "Platí od",
       "records_target": "Evidovať predpísané hodiny a priebežné saldo",
@@ -157,14 +176,17 @@
       },
       "errors": {
         "bad_duration": "Jeden z dní neobsahuje časový údaj. Zadajte 7:42 alebo 7,7, prípadne ho nechajte prázdny.",
-        "hire_date_required": "Uveďte, kedy táto osoba nastúpila, aby jej prvý mesiac vedel, kde začať."
+        "hire_date_required": "Uveďte, kedy táto osoba nastúpila, aby jej prvý mesiac vedel, kde začať.",
+        "week_required": "Zadajte dĺžku pracovného dňa, inak nemá mesiac k čomu sa vzťahovať.",
+        "bad_crm_staff_id": "ID zamestnanca v CRM je celé číslo. Nechajte pole prázdne, aby sa párovalo podľa e-mailovej adresy."
       },
       "toasts": {
         "added": "Pridané",
         "saved": "Uložené",
         "removed": "Odchod zaznamenaný",
         "refused": "Nepodarilo sa to",
-        "try_again": "Skúste to prosím znova."
+        "try_again": "Skúste to prosím znova.",
+        "brought_back": "Späť medzi zamestnancami"
       },
       "opening": "Počiatočné saldo",
       "rates": "Sadzby",
@@ -177,7 +199,16 @@
         "set": "Zadané tu, takže hodiny pôjdu na tento účet bez ohľadu na e-mailové adresy.",
         "email": "Priradenie podľa e-mailovej adresy. Funguje dovtedy, kým v jednom z tých dvoch systémov nebude iná.",
         "none": "Túto osobu nespája s CRM nič, takže z jej hodín sa nikdy nestane časovač v CRM."
-      }
+      },
+      "confirm_remove_title": "Označiť ako odídeného?",
+      "confirm_remove_body": "{person} sa prestane objavovať v nových mesiacoch. Všetko už zaznamenané zostáva bez zmeny.",
+      "removing": "Označuje sa…",
+      "no_hours_yet": "Hodiny nenastavené",
+      "confirm_remove_permanent": "Ak sa vráti, môžete ju neskôr znova zamestnať.",
+      "pick_somebody_first": "Najprv vyberte niekoho zo zoznamu",
+      "pick_date_first": "Zadajte dátum nástupu",
+      "nobody_matches_detail": "Personálny záznam možno založiť len ľuďom, ktorí tu už majú účet. Účty sa zakladajú v nastaveniach priestoru v sekcii Členovia.",
+      "everybody_added_detail": "Všetci, ktorí tu majú účet, už majú personálny záznam."
     },
     "arrangement": {
       "onsite_full_time": "Na pracovisku, plný úväzok",
@@ -186,7 +217,7 @@
       "remote_part_time_invoicing": "Na diaľku, čiastočný úväzok, na faktúru"
     },
     "entries": {
-      "hint": "Hodiny v tomto dni, ku ktorým sa neviaže žiadna pracovná položka. Zadávajú sa sem aj mesiace z obdobia, keď firma ešte nepoužívala Plane.",
+      "hint": "Čas, ktorý nepatrí k žiadnej položke práce — stretnutia, administratíva, školenia, cestovanie.",
       "none_yet": "V tomto dni zatiaľ nie je nič zaznamenané.",
       "day_total": "Za tento deň",
       "how_long": "Ako dlho",
@@ -194,10 +225,9 @@
       "note": "Poznámka",
       "note_placeholder": "Na čo bol tento čas vynaložený",
       "add": "Pridať",
-      "done": "Hotovo",
       "remove": "Odstrániť",
       "imported": "Importované",
-      "month_closed": "Tento mesiac je uzavretý, takže jeho hodiny sa už nedajú meniť. Ak treba niečo opraviť, najprv ho znovu otvorte.",
+      "month_closed": "Tento mesiac je uzavretý, jeho hodiny sa už nedajú meniť. Ak treba niečo opraviť, ozvite sa tomu, kto vedie tím.",
       "category": {
         "meeting": "Interná porada",
         "training": "Školenie",
@@ -214,7 +244,46 @@
         "added": "Pridané",
         "refused": "Nepodarilo sa to",
         "try_again": "Skúste to prosím znova."
-      }
+      },
+      "close": "Zavrieť",
+      "not_added_yet": "Zatiaľ nepridané",
+      "confirm_remove_title": "Odstrániť tieto hodiny?",
+      "confirm_remove_body": "{duration} sa odpočíta z tohto dňa aj z mesačného súčtu.",
+      "removing": "Odstraňuje sa…"
+    },
+    "attendance": {
+      "title": "Kedy ste boli v práci",
+      "hint": "Začiatok, koniec a prestávky tohto dňa — zaznamenané oddelene od toho, na čo hodiny padli.",
+      "still_running": "Stále prebieha",
+      "from": "Od",
+      "to": "Do",
+      "break": "Prestávka (minúty)",
+      "where": "Kde",
+      "past_midnight": "Počíta sa ako pokračujúce po polnoci.",
+      "record": "Zaznamenať",
+      "update": "Aktualizovať",
+      "remove": "Odstrániť",
+      "closed_with": "Od {from} do {to}, {duration}. Tento mesiac je uzavretý a už sa nedá zmeniť.",
+      "closed_without": "Pre tento deň nebolo nič zaznamenané a mesiac je uzavretý.",
+      "location": {
+        "office": "V kancelárii",
+        "home": "Práca z domu",
+        "elsewhere": "Inde"
+      },
+      "errors": {
+        "start_required": "Uveďte, o koľkej ste začali.",
+        "bad_break": "Uveďte prestávku v celých minútach."
+      },
+      "toasts": {
+        "saved": "Uložené",
+        "removed": "Odstránené",
+        "refused": "Nepodarilo sa to",
+        "try_again": "Skúste to prosím znova."
+      },
+      "confirm_remove_title": "Odstrániť tento záznam dochádzky?",
+      "confirm_remove_body": "Začiatok, koniec a prestávka tohto dňa budú odstránené. Ide o evidenciu pracovného času vyžadovanú zákonom.",
+      "removing": "Odstraňuje sa…",
+      "past_midnight_length": "Prechádza cez polnoc a vychádza {duration}. Ak to tak nie je, skontrolujte čas konca."
     },
     "imports": {
       "title": "Importovať hodiny",
@@ -237,7 +306,7 @@
       "will_write": "na zápis",
       "cannot_read": "nečitateľné",
       "skipped": "preskočené",
-      "apply": "Použiť {count} riadkov",
+      "apply": "{count, plural, one {Použiť # riadok} few {Použiť # riadky} many {Použiť # riadka} other {Použiť # riadkov}}",
       "discard": "Zahodiť",
       "column_row": "Riadok",
       "column_verdict": "Vyhodnotenie",
@@ -249,7 +318,7 @@
       },
       "past": "Predtým importované súbory",
       "none_yet": "Zatiaľ sa nič neimportovalo.",
-      "row_summary": "{valid} z {total} riadkov",
+      "row_summary": "{total, plural, one {{valid} z # riadka} few {{valid} z # riadkov} many {{valid} z # riadkov} other {{valid} z # riadka}}",
       "state": {
         "10": "Nahraté",
         "20": "Kontroluje sa",
@@ -268,11 +337,26 @@
       "undo_cancel": "Ponechať bez zmeny",
       "toasts": {
         "applied": "Použité",
-        "written": "Zapísaných riadkov: {count}",
+        "written": "{count, plural, one {Zapísaný # riadok} few {Zapísané # riadky} many {Zapísaných # riadka} other {Zapísaných # riadkov}}",
         "undone": "Vrátené späť",
-        "removed": "Odstránených riadkov: {count}",
+        "removed": "{count, plural, one {Odobraný # riadok} few {Odobrané # riadky} many {Odobraných # riadka} other {Odobraných # riadkov}}",
         "refused": "Nepodarilo sa to",
         "try_again": "Skúste to prosím znova."
+      },
+      "template": "Stiahnuť šablónu",
+      "resume": "Skontrolovať a použiť",
+      "reasons": {
+        "unknown_person": "Nikto sa tu neprihlasuje ako {email}.",
+        "bad_date": "Dátum sa nepodarilo prečítať.",
+        "bad_duration": "Dĺžku sa nepodarilo prečítať.",
+        "more_than_a_day": "Viac než deň v jedinom dni.",
+        "month_settled": "Tento mesiac je už uzavretý.",
+        "bad_balance": "Zostatok sa nepodarilo prečítať.",
+        "kind_missing": "Uveďte, či ide o čas, alebo dovolenku.",
+        "basis_missing": "Uveďte, na čom sa toto číslo zakladá.",
+        "bad_start_date": "Dátum začiatku sa nepodarilo prečítať.",
+        "ends_before_it_starts": "Končí skôr, než začne.",
+        "unknown_absence_type": "Typ neprítomnosti „{code}“ neexistuje."
       }
     },
     "opening": {
@@ -314,7 +398,14 @@
         "agreed": "Odsúhlasené",
         "refused": "Nepodarilo sa to",
         "try_again": "Skúste to prosím znova."
-      }
+      },
+      "correct": "Opraviť túto hodnotu",
+      "agreeing": "Zaznamenáva sa…",
+      "confirm_agree_title": "Potvrdiť tento zostatok?",
+      "confirm_agree_body": "Potvrdzujete, že {amount} je správne. Nedá sa to vziať späť. Ak číslo nesedí, nepotvrdzujte ho a ozvite sa tomu, kto vedie tím.",
+      "correcting_heading": "Opraviť hodnotu",
+      "stop_correcting": "Namiesto toho zaznamenať nový",
+      "correct_confirm": "Uložiť opravu"
     },
     "absences": {
       "title": "Neprítomnosti",
@@ -346,7 +437,8 @@
       "granularity": {
         "full_day": "Celé dni",
         "half_day": "Pol dňa na začiatku a na konci",
-        "hours": "Pevný počet hodín denne"
+        "hours": "Pevný počet hodín denne",
+        "half_day_single": "Pol dňa"
       },
       "half": {
         "morning": "Dopoludnie",
@@ -371,7 +463,8 @@
         "hours_hint": "Zapísané ako 3:30, 3.5 alebo 210m.",
         "note": "Poznámka",
         "note_placeholder": "Voliteľné",
-        "record": "Zaznamenať"
+        "record": "Zaznamenať",
+        "hours_unreadable": "To nie je dĺžka času. Skúste 1:30, 1,5 alebo 90."
       },
       "toasts": {
         "saved": "Neprítomnosť uložená",
@@ -397,9 +490,23 @@
         "name_placeholder": "Názov, ktorý uvidia ľudia",
         "counts_as_worked": "Deň sa počíta ako odpracovaný",
         "draws_on_leave": "Deň sa odpočíta z konta dovolenky",
-        "refused": "Nepodarilo sa uložiť",
-        "try_again": "Skúste to znova."
-      }
+        "refused": "To sa nedalo vykonať",
+        "try_again": "Skúste to znova.",
+        "confirm_remove_title": "Odstrániť tento typ neprítomnosti?",
+        "confirm_remove_body": "„{kind}“ sa už nebude ponúkať pri zápise neprítomnosti. Ak ho chcete iba odobrať zo zoznamu, radšej ho vypnite.",
+        "deleting": "Odstraňuje sa"
+      },
+      "filter_person": "Zobraziť neprítomnosti pre",
+      "confirm_remove_title": "Odstrániť túto neprítomnosť?",
+      "confirm_remove_body": "{person} má v tieto dni opäť plný fond a {duration} sa vracia do dovolenky.",
+      "removing": "Odstraňuje sa…",
+      "refuse_title": "Zamietnuť neprítomnosť: {person}",
+      "refuse_body": "Dotyčný uvidí, čo sem napíšete — napíšte to tak, aby to dávalo zmysel samo o sebe.",
+      "refuse_label": "Dôvod",
+      "refuse_placeholder": "Ten týždeň sú už dvaja preč",
+      "refuse_cancel": "Zrušiť",
+      "request": "Požiadať o neprítomnosť",
+      "errors": {}
     },
     "rates": {
       "title": "Hodnota času používateľa {person}",
@@ -433,7 +540,10 @@
         "removed": "Sadzba odstránená",
         "refused": "Nepodarilo sa uložiť",
         "try_again": "Skúste to prosím znova."
-      }
+      },
+      "removing": "Odstraňuje sa…",
+      "confirm_remove_title": "Odstrániť túto sadzbu?",
+      "confirm_remove_body": "Už spočítané mesiace si svoje sumy ponechajú. Nasledujúce mesiace o túto sadzbu prídu."
     },
     "statement": {
       "title": "Pred fakturáciou",
@@ -444,7 +554,8 @@
       "monthly_rate": "Pevná suma každý mesiac",
       "no_rate": "Zatiaľ pre vás nie je zaznamenaná žiadna sadzba, takže sa tu zobrazujú len hodiny. Obráťte sa na toho, kto tím vedie.",
       "still_moving": "Mesiac je ešte otvorený, takže tieto čísla sa ešte môžu zmeniť.",
-      "settled": "Mesiac je uzavretý, takže tieto čísla sú konečné."
+      "settled": "Mesiac je uzavretý, takže tieto čísla sú konečné.",
+      "decimal_hours": "{hours} v desatinných hodinách"
     },
     "leave": {
       "title": "Dovolenka používateľa {person}",
@@ -462,21 +573,28 @@
       "basis": "Z čoho to vychádza",
       "basis_placeholder": "Voliteľné",
       "between": "{from} – {to}",
-      "about_days": "približný počet dní: {days}",
+      "about_days": "{days, plural, one {približne # deň} few {približne # dni} many {približne # dňa} other {približne # dní}}",
       "carried": "Prenesené: {duration}",
       "agree": "Odsúhlasiť",
       "agreed": "Odsúhlasené",
       "errors": {
         "dates_required": "Uveďte, kedy sa dovolenkový rok začína a kedy končí.",
         "backwards": "Dovolenkový rok sa nemôže skončiť skôr, ako sa začne.",
-        "bad_duration": "Čas zapíšte ako 200:00, 200 alebo 12000m."
+        "bad_duration": "Čas zapíšte ako 200:00, 200 alebo 12000m.",
+        "already_there": "Pre tento rok dovolenky už záznam existuje."
       },
       "toasts": {
         "added": "Dovolenkový rok pridaný",
         "agreed": "Označené ako odsúhlasené",
         "refused": "Nepodarilo sa uložiť",
         "try_again": "Skúste to prosím znova."
-      }
+      },
+      "entitlement_with_unit": "Dovolenka na rok (hodiny:minúty)",
+      "echo_days": "{duration} · {days, plural, one {približne # deň} few {približne # dni} many {približne # dňa} other {približne # dní}}",
+      "echo_hours": "{duration}",
+      "agreeing": "Zaznamenáva sa…",
+      "confirm_agree_title": "Zaznamenať túto hodnotu ako konečnú?",
+      "confirm_agree_body": "{duration} sa už nedá upraviť. Neskoršia zmena sa zaznamená zvlášť, s vlastným dôvodom."
     },
     "holidays": {
       "title": "Sviatky",
@@ -501,14 +619,92 @@
       "only_half": "Len pol dňa",
       "name_placeholder": "Ako sa tento deň volá",
       "errors": {
-        "date_and_name": "Zadajte dátum a názov dňa."
+        "date_and_name": "Zadajte dátum a názov dňa.",
+        "already_there": "V tento deň už je {day}."
       },
       "toasts": {
         "added": "Deň pridaný",
         "removed": "Deň odstránený",
         "refused": "Nepodarilo sa uložiť",
         "try_again": "Skúste to prosím znova."
+      },
+      "column_length": "Dĺžka",
+      "whole_day": "Celý deň",
+      "half_day": "Pol dňa",
+      "confirm_remove_title": "Odstrániť tento deň?",
+      "confirm_remove_body": "{day} prestane byť sviatkom, takže sa úväzok všetkých na tento deň opäť zvýši.",
+      "removing": "Odstraňuje sa…"
+    },
+    "shared": {
+      "load_failed": "Nepodarilo sa načítať",
+      "load_failed_detail": "Niečo sa pokazilo. Skúste to znova a ak to pretrváva, povedzte tomu, kto vedie tím.",
+      "retry": "Skúsiť znova"
+    },
+    "review_days": {
+      "title": "Dni na kontrolu u {person}",
+      "body": "Hodiny započítané v týchto dňoch už tam nie sú. Uveďte, čo sa pri každom stalo, a mesiac sa bude dať uzavrieť.",
+      "all_settled": "Niet je čo kontrolovať. Tento mesiac sa dá uzavrieť.",
+      "counts_now": "Teraz sa počíta ako {duration}",
+      "what_happened": "Čo sa stalo?",
+      "placeholder": "Zapísané na nesprávny deň a presunuté",
+      "settle": "Vybaviť tento deň",
+      "close": "Zavrieť",
+      "toasts": {
+        "settled": "Deň vybavený",
+        "refused": "Nepodarilo sa to vybaviť",
+        "try_again": "Skúste to o chvíľu znova."
       }
+    },
+    "refusals": {
+      "absence_type_in_use": "{in_use, plural, one {S týmto typom je zapísaná # neprítomnosť, preto sa nedá odstrániť — jej záznam by prestal dávať zmysel.} few {S týmto typom sú zapísané # neprítomnosti, preto sa nedá odstrániť — ich záznamy by prestali dávať zmysel.} many {S týmto typom je zapísaných # neprítomnosti, preto sa nedá odstrániť — ich záznamy by prestali dávať zmysel.} other {S týmto typom je zapísaných # neprítomností, preto sa nedá odstrániť — ich záznamy by prestali dávať zmysel.}} Radšej ho vypnite: zmizne zo zoznamu na výber a existujúce záznamy zostanú čitateľné.",
+      "month_settled": "{month} je {month_state}, preto sa jeho záznamy už nemôžu meniť. Požiadajte o znovuotvorenie mesiaca, ak to tam má ísť.",
+      "month_state": {
+        "handed_in": "odovzdaný",
+        "agreed": "schválený",
+        "closed": "uzavretý"
+      },
+      "last_manager": "Toto je jediný človek, ktorý vedie tím. Odobratím by sa nikto nedostal k žiadnemu mesiacu a nikto by to nemohol vrátiť. Najprv určte niekoho iného."
+    },
+    "detail": {
+      "title": "Hodiny podrobne",
+      "whose": "Čie hodiny",
+      "mine": "Moje hodiny",
+      "group_by": "Zoskupiť podľa",
+      "on_work_items": "Na pracovné položky",
+      "other_hours": "Všetko ostatné",
+      "entries": "Záznamy",
+      "month_state": "Tieto čísla",
+      "frozen": "Zmrazené",
+      "frozen_hint": "Čo mesiac započítal",
+      "live": "Aktuálne",
+      "live_hint": "Mesiac je stále otvorený",
+      "column_what": "Čo",
+      "column_when": "Kedy",
+      "column_note": "Poznámka",
+      "column_long": "Dĺžka",
+      "unnamed": "Bez názvu",
+      "still_running": "Stále beží — zatiaľ nemá dĺžku a nepočíta sa",
+      "gone": "Tento mesiac to započítal a už to tam nie je",
+      "by_hand": "· zapísané ručne",
+      "nothing_logged": "Tento mesiac nebolo nič zapísané na pracovnú položku.",
+      "other_title": "Hodiny bez pracovnej položky",
+      "other_subtitle": "Stretnutia, administratíva, školenia, cesty — a všetko prevzaté z minulosti. Aj to sa do mesiaca počíta.",
+      "footnote": "Hodiny sa počítajú tam, kde boli zapísané, vo všetkých priestoroch.",
+      "rounding_note": "Minúty sa zaokrúhľujú raz za deň a projekt, takže tieto medzisúčty nemusia dať číslo vyššie.",
+      "entry_count": "{count, plural, one {· # záznam} few {· # záznamy} many {· # záznamu} other {· # záznamov}}",
+      "running_note": "{count, plural, one {# stopky stále bežia. Zatiaľ nemajú dĺžku, takže sa sem nepočítajú.} few {# stopky stále bežia. Zatiaľ nemajú dĺžku, takže sa sem nepočítajú.} many {# stopiek stále beží. Zatiaľ nemajú dĺžku, takže sa sem nepočítajú.} other {# stopiek stále beží. Zatiaľ nemajú dĺžku, takže sa sem nepočítajú.}}",
+      "missing_note": "{count, plural, one {# záznam, ktorý tento mesiac započítal, sa už nedá nájsť. Zostal len jeho identifikátor, niet čo ukázať.} few {# záznamy, ktoré tento mesiac započítal, sa už nedajú nájsť. Zostali len ich identifikátory, niet čo ukázať.} many {# záznamu, ktoré tento mesiac započítal, sa už nedajú nájsť. Zostali len ich identifikátory, niet čo ukázať.} other {# záznamov, ktoré tento mesiac započítal, sa už nedá nájsť. Zostali len ich identifikátory, niet čo ukázať.}}",
+      "week_of": "Týždeň od {date}",
+      "grouping": {
+        "day": "Deň",
+        "work_item": "Pracovná položka",
+        "project": "Projekt",
+        "week": "Týždeň",
+        "workspace": "Priestor"
+      },
+      "under_a_minute": "menej než minúta",
+      "auto_stopped": "· zastavené systémom",
+      "auto_stopped_hint": "Tieto stopky zostali bežať a boli zastavené na maxime. Dĺžka je strop, nie meranie — treba ju opraviť."
     }
   }
 }

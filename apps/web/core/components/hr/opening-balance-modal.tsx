@@ -5,13 +5,13 @@
  */
 
 import { useEffect, useState } from "react";
-import { Check } from "lucide-react";
+import { Check, Pencil } from "lucide-react";
 import useSWR from "swr";
 // plane imports
 import { useTranslation } from "@plane/i18n";
 import { Button } from "@plane/propel/button";
 import { setToast, TOAST_TYPE } from "@plane/propel/toast";
-import { EModalPosition, EModalWidth, ModalCore } from "@plane/ui";
+import { AlertModalCore, EModalPosition, EModalWidth, ModalCore } from "@plane/ui";
 import { cn } from "@plane/utils";
 // services
 import {
@@ -22,7 +22,9 @@ import {
   type THrOpeningBalance,
 } from "@/services/hr.service";
 // local imports
-import { balanceTone, formatBalance, formatDayLabel, parseDuration, refusalMessage } from "./utils";
+import { balanceTone, formatBalance, formatDayWithYear, formatMinutes, parseDuration, refusalMessage } from "./utils";
+
+import { HrRowAction } from "./row-action";
 
 const hrService = new HrService();
 
@@ -63,7 +65,7 @@ type TProps = {
  * argue about afterwards.
  */
 export const HrOpeningBalanceModal = ({ person, isOwn, canRecord, onClose }: TProps) => {
-  const { t } = useTranslation();
+  const { t, currentLocale } = useTranslation();
   const [amount, setAmount] = useState("");
   const [kind, setKind] = useState<EHrBalanceKind>(EHrBalanceKind.TIME_BALANCE);
   const [confidence, setConfidence] = useState<EHrConfidence>(EHrConfidence.AGREED);
@@ -71,6 +73,8 @@ export const HrOpeningBalanceModal = ({ person, isOwn, canRecord, onClose }: TPr
   const [basis, setBasis] = useState("");
   const [problem, setProblem] = useState<string | null>(null);
   const [isBusy, setIsBusy] = useState(false);
+  const [agreeing, setAgreeing] = useState<THrOpeningBalance | null>(null);
+  const [correcting, setCorrecting] = useState<THrOpeningBalance | null>(null);
 
   const { data: rows, mutate } = useSWR(person ? `HR_OPENING_${person.id}` : null, () =>
     person ? hrService.openingBalances(person.id) : null
@@ -90,7 +94,7 @@ export const HrOpeningBalanceModal = ({ person, isOwn, canRecord, onClose }: TPr
     setToast({
       type: TOAST_TYPE.ERROR,
       title: t("hr.opening.toasts.refused"),
-      message: refusalMessage(failure) ?? t("hr.opening.toasts.try_again"),
+      message: refusalMessage(failure, t, currentLocale) ?? t("hr.opening.toasts.try_again"),
     });
 
   const handleRecord = async () => {
@@ -112,16 +116,28 @@ export const HrOpeningBalanceModal = ({ person, isOwn, canRecord, onClose }: TPr
     }
     setIsBusy(true);
     try {
-      await hrService.recordOpeningBalance(person.id, {
-        effective_on: effectiveOn,
-        kind,
-        minutes: negative ? -size : size,
-        confidence,
-        basis: basis.trim(),
-      });
+      // A correction replaces one particular figure, so its date and kind come
+      // from the row being corrected — the server reads them from there and
+      // ignores anything sent. Sending them anyway meant the two fields could be
+      // changed on screen and silently have no effect.
+      const payload = correcting
+        ? { minutes: negative ? -size : size, confidence, basis: basis.trim() }
+        : {
+            effective_on: effectiveOn,
+            kind,
+            minutes: negative ? -size : size,
+            confidence,
+            basis: basis.trim(),
+          };
+      // Correcting supersedes the figure it replaces. Recording a second one of
+      // the same kind instead would leave two rows both reading as current, and
+      // the month would quietly count only one of them.
+      if (correcting) await hrService.correctOpeningBalance(person.id, correcting.id, payload);
+      else await hrService.recordOpeningBalance(person.id, payload);
       setAmount("");
       setBasis("");
       setProblem(null);
+      setCorrecting(null);
       await mutate();
       setToast({ type: TOAST_TYPE.SUCCESS, title: t("hr.opening.toasts.recorded") });
     } catch (failure) {
@@ -131,12 +147,14 @@ export const HrOpeningBalanceModal = ({ person, isOwn, canRecord, onClose }: TPr
     }
   };
 
-  const handleAgree = async (row: THrOpeningBalance) => {
-    if (!person) return;
+  const handleAgree = async () => {
+    const row = agreeing;
+    if (!person || !row) return;
     setIsBusy(true);
     try {
       await hrService.agreeOpeningBalance(person.id, row.id);
       await mutate();
+      setAgreeing(null);
       setToast({ type: TOAST_TYPE.SUCCESS, title: t("hr.opening.toasts.agreed") });
     } catch (failure) {
       complain(failure);
@@ -152,40 +170,57 @@ export const HrOpeningBalanceModal = ({ person, isOwn, canRecord, onClose }: TPr
     <ModalCore isOpen={person !== null} handleClose={onClose} position={EModalPosition.CENTER} width={EModalWidth.XXXL}>
       <div className="flex max-h-[80vh] flex-col gap-4 overflow-y-auto p-5">
         <div>
-          <h3 className="text-custom-text-100 text-lg font-medium">
+          <h3 className="text-16 font-medium text-primary">
             {t("hr.opening.title", { person: person?.member_display_name || person?.member_email || "" })}
           </h3>
-          <p className="text-custom-text-300 text-sm">{t("hr.opening.hint")}</p>
+          <p className="text-13 text-tertiary">{t("hr.opening.hint")}</p>
         </div>
 
         {current.length === 0 ? (
-          <p className="text-custom-text-400 text-sm">{t("hr.opening.none_yet")}</p>
+          <p className="text-13 text-tertiary">{t("hr.opening.none_yet")}</p>
         ) : (
-          <div className="border-custom-border-200 divide-custom-border-100 divide-y rounded-md border">
+          <div className="divide-y divide-subtle rounded-md border border-subtle">
             {current.map((row) => (
               <div key={row.id} className="flex flex-wrap items-center gap-3 px-3 py-2">
-                <span className={cn("text-sm w-20 tabular-nums", balanceTone(row.minutes))}>
+                <span className={cn("w-20 text-13 tabular-nums", balanceTone(row.minutes))}>
                   {formatBalance(row.minutes)}
                 </span>
-                <span className="text-custom-text-200 text-sm">{t(`hr.opening.kind.${KIND_KEY[row.kind]}`)}</span>
-                <span className="text-custom-text-400 text-xs">
-                  {t("hr.opening.from", { date: formatDayLabel(row.effective_on) })}
+                <span className="text-13 text-secondary">{t(`hr.opening.kind.${KIND_KEY[row.kind]}`)}</span>
+                <span className="text-13 text-tertiary">
+                  {t("hr.opening.from", { date: formatDayWithYear(row.effective_on, currentLocale) })}
                 </span>
-                <span className="bg-custom-background-80 text-custom-text-300 text-xs rounded px-1.5 py-0.5">
+                <span className="rounded bg-layer-2 px-1.5 py-0.5 text-13 text-tertiary">
                   {t(`hr.opening.confidence.${CONFIDENCE_KEY[row.confidence]}`)}
                 </span>
-                <span className="text-custom-text-400 text-xs flex-1 truncate">{row.basis}</span>
+                <span className="flex-1 truncate text-13 text-tertiary">{row.basis}</span>
+                {!isOwn && !row.acknowledged_at ? (
+                  <HrRowAction
+                    icon={<Pencil className="size-4" />}
+                    label={t("hr.opening.correct")}
+                    disabled={isBusy}
+                    onClick={() => {
+                      setCorrecting(row);
+                      setKind(row.kind);
+                      setEffectiveOn(row.effective_on);
+                      // formatBalance adds a leading "+", which the parser reads
+                      // as part of the number and refuses.
+                      setAmount(formatMinutes(row.minutes));
+                      setConfidence(row.confidence);
+                      setBasis(row.basis);
+                    }}
+                  />
+                ) : null}
                 {row.acknowledged_at ? (
-                  <span className="text-xs text-green-600 flex items-center gap-1">
+                  <span className="flex items-center gap-1 text-13 text-success-primary">
                     <Check className="size-3.5" />
                     {t("hr.opening.agreed")}
                   </span>
                 ) : isOwn ? (
-                  <Button variant="link" size="sm" loading={isBusy} onClick={() => void handleAgree(row)}>
+                  <Button variant="secondary" size="lg" loading={isBusy} onClick={() => setAgreeing(row)}>
                     {t("hr.opening.agree")}
                   </Button>
                 ) : (
-                  <span className="text-xs text-amber-600">{t("hr.opening.not_agreed")}</span>
+                  <span className="text-13 text-warning-primary">{t("hr.opening.not_agreed")}</span>
                 )}
               </div>
             ))}
@@ -193,12 +228,12 @@ export const HrOpeningBalanceModal = ({ person, isOwn, canRecord, onClose }: TPr
         )}
 
         {replaced.length > 0 ? (
-          <details className="text-custom-text-400 text-xs">
+          <details className="text-13 text-tertiary">
             <summary className="cursor-pointer">{t("hr.opening.replaced", { count: replaced.length })}</summary>
             <div className="mt-2 flex flex-col gap-1">
               {replaced.map((row) => (
                 <span key={row.id} className="tabular-nums">
-                  {formatBalance(row.minutes)} · {formatDayLabel(row.effective_on)} · {row.basis}
+                  {formatBalance(row.minutes)} · {formatDayWithYear(row.effective_on, currentLocale)} · {row.basis}
                 </span>
               ))}
             </div>
@@ -206,8 +241,26 @@ export const HrOpeningBalanceModal = ({ person, isOwn, canRecord, onClose }: TPr
         ) : null}
 
         {canRecord ? (
-          <div className="border-custom-border-200 flex flex-col gap-3 rounded-md border p-3">
-            <p className="text-custom-text-200 text-sm font-medium">{t("hr.opening.record")}</p>
+          <div className="flex flex-col gap-3 rounded-md border border-subtle p-3">
+            <div className="flex items-center justify-between gap-3">
+              <p className="text-13 font-medium text-secondary">
+                {correcting ? t("hr.opening.correcting_heading") : t("hr.opening.record")}
+              </p>
+              {correcting ? (
+                <Button
+                  variant="link"
+                  size="lg"
+                  onClick={() => {
+                    setCorrecting(null);
+                    setAmount("");
+                    setBasis("");
+                    setProblem(null);
+                  }}
+                >
+                  {t("hr.opening.stop_correcting")}
+                </Button>
+              ) : null}
+            </div>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               <Field label={t("hr.opening.amount")}>
                 <input
@@ -218,10 +271,15 @@ export const HrOpeningBalanceModal = ({ person, isOwn, canRecord, onClose }: TPr
                 />
               </Field>
               <Field label={t("hr.opening.what_for")}>
+                {/* Fixed while correcting: these say which figure is being
+                    replaced, and the replacement is that figure or it is a
+                    different balance entirely. Shown rather than hidden, because
+                    what is being corrected is the thing worth being sure of. */}
                 <select
                   value={kind}
                   onChange={(e) => setKind(Number(e.target.value) as EHrBalanceKind)}
-                  className={inputClass}
+                  disabled={correcting !== null}
+                  className={cn(inputClass, correcting && "text-tertiary")}
                 >
                   {KINDS.map((value) => (
                     <option key={value} value={value}>
@@ -235,7 +293,8 @@ export const HrOpeningBalanceModal = ({ person, isOwn, canRecord, onClose }: TPr
                   type="date"
                   value={effectiveOn}
                   onChange={(e) => setEffectiveOn(e.target.value)}
-                  className={inputClass}
+                  disabled={correcting !== null}
+                  className={cn(inputClass, correcting && "text-tertiary")}
                 />
               </Field>
               <Field label={t("hr.opening.how_sure")}>
@@ -260,31 +319,44 @@ export const HrOpeningBalanceModal = ({ person, isOwn, canRecord, onClose }: TPr
                 className={inputClass}
               />
             </Field>
-            {problem ? <p className="text-sm text-red-500">{problem}</p> : null}
+            {problem ? <p className="text-13 text-danger-primary">{problem}</p> : null}
             <div className="flex justify-end">
-              <Button variant="primary" size="sm" loading={isBusy} onClick={() => void handleRecord()}>
-                {t("hr.opening.record_confirm")}
+              <Button variant="primary" size="lg" loading={isBusy} onClick={() => void handleRecord()}>
+                {correcting ? t("hr.opening.correct_confirm") : t("hr.opening.record_confirm")}
               </Button>
             </div>
           </div>
         ) : null}
 
         <div className="flex items-center justify-end">
-          <Button variant="secondary" size="sm" onClick={onClose}>
+          <Button variant="secondary" size="lg" onClick={onClose}>
             {t("hr.opening.done")}
           </Button>
         </div>
       </div>
+
+      <AlertModalCore
+        isOpen={agreeing !== null}
+        handleClose={() => setAgreeing(null)}
+        handleSubmit={() => void handleAgree()}
+        isSubmitting={isBusy}
+        variant="primary"
+        title={t("hr.opening.confirm_agree_title")}
+        content={t("hr.opening.confirm_agree_body", {
+          amount: agreeing ? formatBalance(agreeing.minutes) : "",
+        })}
+        primaryButtonText={{ default: t("hr.opening.agree"), loading: t("hr.opening.agreeing") }}
+      />
     </ModalCore>
   );
 };
 
 const inputClass =
-  "border-custom-border-200 bg-custom-background-100 text-custom-text-100 focus:border-custom-primary-100 w-full rounded-md border px-3 py-1.5 text-sm outline-none";
+  "border-subtle bg-layer-1 text-primary focus:border-accent-strong w-full rounded-md border px-3 py-1.5 text-13 outline-none";
 
 const Field = ({ label, children }: { label: string; children: React.ReactNode }) => (
   <label className="flex flex-col gap-1">
-    <span className="text-custom-text-300 text-xs font-medium">{label}</span>
+    <span className="text-13 font-medium text-tertiary">{label}</span>
     {children}
   </label>
 );

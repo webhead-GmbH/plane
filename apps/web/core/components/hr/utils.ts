@@ -4,7 +4,7 @@
  * See the LICENSE file for details.
  */
 
-import { EHrDayKind, EHrPeriodState, type THrPeriod } from "@/services/hr.service";
+import { EHrDayKind, EHrPeriodState, type THrPeriod, type THrWorkSchedule } from "@/services/hr.service";
 
 /**
  * Everything the server sends is minutes. These turn that into something a person
@@ -35,9 +35,18 @@ export function formatDecimalHours(minutes: number | null | undefined): string {
   return (minutes / 60).toFixed(2);
 }
 
+/**
+ * What colour a balance is.
+ *
+ * The balance is the one figure this module exists to surface, and owing time
+ * looks nothing like being owed it — so it is carried by hue, not by a minus
+ * sign at the far left of a right-aligned number. Accent is deliberately not
+ * used: that is reserved for the current thing and the primary action, and a
+ * figure is neither.
+ */
 export function balanceTone(minutes: number | null | undefined): string {
-  if (!minutes) return "text-custom-text-200";
-  return minutes > 0 ? "text-custom-primary-100" : "text-red-500";
+  if (!minutes) return "text-secondary";
+  return minutes > 0 ? "text-success-primary" : "text-danger-primary";
 }
 
 // These map to translation keys rather than to text, because the mapping is
@@ -107,6 +116,23 @@ export function formatDayWithYear(isoDate: string, locale?: string): string {
   const date = new Date(`${isoDate}T00:00:00`);
   if (Number.isNaN(date.getTime())) return isoDate;
   return date.toLocaleDateString(locale, { day: "numeric", month: "short", year: "numeric" });
+}
+
+/**
+ * The name of a holiday or a kind of absence, in the reader's language.
+ *
+ * Both are stored with a German and an English name, and the seeding fills in
+ * both — but every screen read the German one and nothing ever read the English,
+ * so an English-speaking reader was shown "Christi Himmelfahrt" in an otherwise
+ * English table. Only those two names exist, so a reader in any third language
+ * gets the English one, which is the likelier of the two to be understood.
+ */
+export function localName(row: { name_de?: string; name_en?: string } | null | undefined, locale?: string): string {
+  if (!row) return "";
+  const german = (row.name_de ?? "").trim();
+  const english = (row.name_en ?? "").trim();
+  if ((locale ?? "").toLowerCase().startsWith("de")) return german || english;
+  return english || german;
 }
 
 export function formatMonthLabel(isoDate: string, locale?: string): string {
@@ -204,10 +230,40 @@ export function parseDuration(input: string): number | null {
  * again", which is wrong twice over: it says nothing about what is wrong, and
  * trying again does exactly the same thing.
  */
-export function refusalMessage(failure: unknown): string | null {
+export function refusalMessage(
+  failure: unknown,
+  /**
+   * Given a translator, a refusal that names its reason is said in the reader's
+   * language instead of in the English the server wrote. Optional so the callers
+   * that have nothing to translate stay as they were, and so a reason this
+   * version has no wording for still shows the server's sentence rather than a
+   * blank toast.
+   */
+  translate?: (key: string, values?: Record<string, unknown>) => string,
+  /** The reader's locale, for a reason that names a month. */
+  locale?: string
+): string | null {
   if (!failure || typeof failure !== "object") return null;
 
   const body = failure as Record<string, unknown>;
+
+  if (translate && typeof body.reason === "string" && body.reason) {
+    const prefix = "hr.refusals.";
+    const key = `${prefix}${body.reason}`;
+    const values: Record<string, unknown> = { ...body };
+    if (typeof body.month === "string") values.month = formatMonthLabel(body.month, locale);
+    // The state arrives as a name — "closed", "handed_in" — because the word for
+    // it is a different word in every language, and picking one server-side is
+    // the mistake this whole mechanism exists to undo.
+    if (typeof body.month_state === "string") {
+      const word = translate(`${prefix}month_state.${body.month_state}`);
+      values.month_state = word.startsWith(prefix) ? body.month_state : word;
+    }
+    const wording = translate(key, values);
+    // i18next hands back the key itself when it knows nothing about it.
+    if (!wording.startsWith(prefix)) return wording;
+  }
+
   if (typeof body.error === "string" && body.error) return body.error;
 
   // Whatever the serializer objected to first. Field order is the serializer's,
@@ -218,4 +274,42 @@ export function refusalMessage(failure: unknown): string | null {
   }
 
   return null;
+}
+
+/**
+ * What one day is worth, in minutes, for turning a duration into days.
+ *
+ * Under a flexitime agreement it is the notional day that agreement names,
+ * because the daily distribution is the person's to choose and there is no "what
+ * they would have worked" to read off the schedule. Otherwise it is the average
+ * of the days they are actually scheduled to work — a five-day week of uneven
+ * days still has a meaningful day, and dividing by seven or by five regardless
+ * would not give it.
+ *
+ * Null where the schedule says nothing, because a day count guessed from nothing
+ * is worse than no day count.
+ */
+export function dailyMinutes(schedule: THrWorkSchedule | null | undefined): number | null {
+  if (!schedule) return null;
+  if (schedule.is_flexible && schedule.notional_daily_minutes) return schedule.notional_daily_minutes;
+
+  const worked = [
+    schedule.monday_minutes,
+    schedule.tuesday_minutes,
+    schedule.wednesday_minutes,
+    schedule.thursday_minutes,
+    schedule.friday_minutes,
+    schedule.saturday_minutes,
+    schedule.sunday_minutes,
+  ].filter((minutes) => minutes > 0);
+
+  if (worked.length === 0) return null;
+  return worked.reduce((total, minutes) => total + minutes, 0) / worked.length;
+}
+
+/** The same duration in days, to one decimal, where a day has a length. */
+export function inDays(minutes: number, schedule: THrWorkSchedule | null | undefined): string | null {
+  const daily = dailyMinutes(schedule);
+  if (!daily) return null;
+  return (minutes / daily).toFixed(1);
 }

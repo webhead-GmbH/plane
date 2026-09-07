@@ -310,6 +310,70 @@ class TestAbsences:
         response = client_for(manager).post(url(workspace, f"absences/{absence.id}/approve/"))
         assert response.status_code == 403
 
+    def test_the_decision_cannot_be_taken_by_editing_the_row_instead(self, workspace, leave_type):
+        """Whether an absence was agreed to is not a field on a form.
+
+        The decision endpoint refuses to let anybody decide on their own — a
+        manager included. If the state were writable through the ordinary edit,
+        that refusal would only be a matter of choosing a different URL, and the
+        absence would come out approved with nobody named as having approved it.
+        """
+        user, profile = employ(workspace)
+        absence = HrAbsence.objects.create(
+            workspace=workspace,
+            profile=profile,
+            absence_type=leave_type,
+            start_date=date(2026, 3, 2),
+            end_date=date(2026, 3, 2),
+            state=HrAbsence.State.REQUESTED,
+        )
+        response = client_for(user).patch(
+            url(workspace, f"absences/{absence.id}/"),
+            {"state": HrAbsence.State.APPROVED},
+            format="json",
+        )
+        assert response.status_code == 200, "the edit itself is allowed; the state is what is ignored"
+        absence.refresh_from_db()
+        assert absence.state == HrAbsence.State.REQUESTED
+        assert absence.approved_by_id is None
+
+    def test_a_manager_cannot_reach_round_the_refusal_that_way_either(self, workspace, leave_type):
+        manager, profile = employ(workspace, is_hr_manager=True)
+        absence = HrAbsence.objects.create(
+            workspace=workspace,
+            profile=profile,
+            absence_type=leave_type,
+            start_date=date(2026, 3, 2),
+            end_date=date(2026, 3, 2),
+            state=HrAbsence.State.REQUESTED,
+        )
+        client_for(manager).patch(
+            url(workspace, f"absences/{absence.id}/"),
+            {"state": HrAbsence.State.APPROVED},
+            format="json",
+        )
+        absence.refresh_from_db()
+        assert absence.state == HrAbsence.State.REQUESTED
+
+    def test_the_reason_it_was_refused_is_not_the_asker_to_rewrite(self, workspace, leave_type):
+        user, profile = employ(workspace)
+        absence = HrAbsence.objects.create(
+            workspace=workspace,
+            profile=profile,
+            absence_type=leave_type,
+            start_date=date(2026, 3, 2),
+            end_date=date(2026, 3, 2),
+            state=HrAbsence.State.DRAFT,
+            rejection_reason="Too much already booked that week",
+        )
+        client_for(user).patch(
+            url(workspace, f"absences/{absence.id}/"),
+            {"rejection_reason": "Approved by phone"},
+            format="json",
+        )
+        absence.refresh_from_db()
+        assert absence.rejection_reason == "Too much already booked that week"
+
     def test_a_manager_approves_somebody_elses(self, workspace, leave_type):
         manager, _ = employ(workspace, is_hr_manager=True)
         _, profile = employ(workspace)

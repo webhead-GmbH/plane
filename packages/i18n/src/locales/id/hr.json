@@ -22,7 +22,9 @@
       },
       "opening": "Saldo awal",
       "export_csv": "CSV",
-      "export_excel": "Excel"
+      "export_excel": "Excel",
+      "record_time": "Catat waktu",
+      "no_record_detail": "Jam kerja Anda tidak dicatat di ruang kerja ini. Jika seharusnya dicatat, hubungi penanggung jawab tim."
     },
     "team_time": {
       "title": "Waktu tim",
@@ -42,10 +44,13 @@
       },
       "earlier": "Sebelumnya",
       "later": "Berikutnya",
-      "not_permitted_detail": "Jam semua orang hanya dapat dilihat oleh orang yang mengelola tim. Bulan Anda sendiri ada di halaman {page}."
+      "not_permitted_detail": "Jam semua orang hanya dapat dilihat oleh orang yang mengelola tim. Bulan Anda sendiri ada di halaman {page}.",
+      "closing": "Menutup…",
+      "confirm_close_title": "Tutup bulan {person}?",
+      "confirm_close_body": "Angka dibekukan apa adanya, dan jam kerja, absen, serta kehadiran di baliknya berhenti menerima perubahan. Membuka kembali nanti dimungkinkan tetapi meninggalkan jejak."
     },
     "summary": {
-      "owed": "Jam wajib",
+      "owed": "Harus dikerjakan",
       "worked": "Jam tercatat",
       "balance": "Saldo",
       "whole_month": "{duration} untuk satu bulan penuh",
@@ -55,34 +60,47 @@
       "as_of": "Keadaan per {date}. Bulan ini belum berakhir.",
       "not_started": "Bulan ini belum dimulai.",
       "needs_review": "Ada hari yang perlu diperiksa — jam yang sebelumnya dihitung kini sudah tidak ada.",
-      "timer_running": "Pengatur waktu masih berjalan, sehingga bulan ini belum dapat diserahkan."
+      "timer_running": "Pengatur waktu masih berjalan, sehingga bulan ini belum dapat diserahkan.",
+      "telework_days": "Bekerja dari rumah tahun ini: {count}",
+      "nothing_yet": "Belum ada perhitungan untuk bulan ini.",
+      "leave_left_days": "Sisa cuti {amount} hari",
+      "leave_left_hours": "Sisa cuti {amount}",
+      "behind_so_far": "Kurang {duration} bulan ini",
+      "ahead_so_far": "Lebih {duration} bulan ini"
     },
     "day_table": {
       "day": "Hari",
       "what_it_was": "Jenis hari",
-      "owed": "Jam wajib",
+      "owed": "Harus dikerjakan",
       "work_items": "Item kerja",
-      "other": "Lainnya",
-      "away": "Tidak hadir",
+      "other": "Pekerjaan lain",
+      "away": "Absen",
       "worked": "Jam tercatat",
       "balance": "Saldo",
       "not_yet": "Hari tersebut belum terjadi.",
-      "needs_review": "Jam yang sebelumnya dihitung di sini kini sudah tidak ada"
+      "needs_review": "Jam yang sebelumnya dihitung di sini kini sudah tidak ada",
+      "nothing_yet": "Belum ada perhitungan untuk bulan ini.",
+      "rest_of_month": "{count, plural, other {Tampilkan sisa bulan (# hari)}}",
+      "open_day": "Catat waktu untuk {day}",
+      "hide_rest_of_month": "Sembunyikan sisa bulan"
     },
     "overview_table": {
       "person": "Orang",
       "state": "Status",
-      "owed": "Jam wajib",
+      "owed": "Harus dikerjakan",
       "worked": "Jam tercatat",
-      "hours": "Jam",
       "balance": "Saldo",
       "carried": "Saldo awal",
       "action": "Tindakan",
-      "not_handed_in": "Belum diserahkan",
       "agree": "Setujui",
       "close": "Tutup",
       "reopen": "Buka kembali",
-      "nobody_yet": "Belum ada seorang pun yang memiliki catatan kepegawaian."
+      "nobody_yet": "Belum ada seorang pun yang memiliki catatan kepegawaian.",
+      "timer_running": "Timer masih berjalan",
+      "needs_review": "Beberapa hari perlu diperiksa",
+      "blocked_by_review": "Periksa hari-hari itu",
+      "month_running": "Bulan ini belum berakhir",
+      "waiting_for": "Menunggu {person}"
     },
     "reopen": {
       "title": "Buka kembali {month}?",
@@ -101,8 +119,8 @@
       "partial_absence": "Sebagian tidak hadir"
     },
     "state": {
-      "open": "Terbuka",
-      "submitted": "Diserahkan",
+      "open": "Belum diserahkan",
+      "submitted": "Sudah diserahkan",
       "approved": "Disetujui",
       "closed": "Ditutup",
       "reopened": "Dibuka kembali"
@@ -114,6 +132,7 @@
       "back_to_month": "Bulan ini",
       "edit": "Ubah",
       "remove": "Tandai telah keluar",
+      "bring_back": "Pekerjakan lagi",
       "manager": "Mengelola tim",
       "employee": "Karyawan",
       "left": "telah keluar",
@@ -137,7 +156,7 @@
       "section_schedule": "Minggu kerja",
       "hire_date": "Mulai bekerja pada",
       "timezone": "Zona waktu",
-      "is_manager": "Mengelola tim, dan dapat melihat jam semua orang",
+      "is_manager": "Menangani tim — bisa melihat dan mengubah jam, ketidakhadiran, dan cuti semua orang, di semua ruang kerja",
       "arrangement": "Skema kerja",
       "valid_from": "Berlaku sejak",
       "records_target": "Catat jam wajib dan saldo berjalan",
@@ -157,14 +176,17 @@
       },
       "errors": {
         "bad_duration": "Salah satu hari bukan berupa durasi waktu. Ketik 7:42 atau 7,7, atau kosongkan.",
-        "hire_date_required": "Sebutkan kapan orang ini mulai bekerja, agar bulan pertamanya punya titik awal."
+        "hire_date_required": "Sebutkan kapan orang ini mulai bekerja, agar bulan pertamanya punya titik awal.",
+        "week_required": "Isi berapa lama satu hari kerja, agar bulan itu punya acuan.",
+        "bad_crm_staff_id": "ID staf CRM berupa bilangan bulat. Kosongkan agar dicocokkan lewat alamat email."
       },
       "toasts": {
         "added": "Ditambahkan",
         "saved": "Disimpan",
         "removed": "Ditandai telah keluar",
         "refused": "Tindakan itu tidak berhasil",
-        "try_again": "Silakan coba lagi."
+        "try_again": "Silakan coba lagi.",
+        "brought_back": "Kembali terdaftar"
       },
       "opening": "Saldo awal",
       "rates": "Tarif",
@@ -177,7 +199,16 @@
         "set": "Ditetapkan di sini, sehingga jamnya masuk ke akun ini apa pun alamat email yang tercatat.",
         "email": "Dicocokkan lewat alamat email. Cara ini bekerja sampai salah satu dari kedua sistem memuat alamat yang berbeda.",
         "none": "Tidak ada yang menghubungkan orang ini dengan CRM, sehingga jamnya tidak pernah menjadi pengatur waktu di CRM."
-      }
+      },
+      "confirm_remove_title": "Tandai sudah keluar?",
+      "confirm_remove_body": "{person} tidak akan muncul lagi di bulan-bulan baru. Semua yang sudah tercatat tetap sama.",
+      "removing": "Menandai…",
+      "no_hours_yet": "Jam belum diatur",
+      "confirm_remove_permanent": "Jika kembali, Anda bisa mempekerjakannya lagi nanti.",
+      "pick_somebody_first": "Pilih seseorang dari daftar dulu",
+      "pick_date_first": "Isi tanggal mulai",
+      "nobody_matches_detail": "Hanya orang yang sudah punya akun di sini yang bisa dibuatkan catatan kepegawaian. Akun dibuat di pengaturan ruang kerja, bagian Anggota.",
+      "everybody_added_detail": "Semua orang yang punya akun di sini sudah memiliki catatan kepegawaian."
     },
     "arrangement": {
       "onsite_full_time": "Di kantor, penuh waktu",
@@ -186,7 +217,7 @@
       "remote_part_time_invoicing": "Jarak jauh, paruh waktu, penagihan mandiri"
     },
     "entries": {
-      "hint": "Jam pada hari ini yang tidak tercakup oleh item kerja mana pun. Bulan-bulan yang berlalu sebelum perusahaan menggunakan Plane juga dimasukkan di sini.",
+      "hint": "Waktu yang tidak termasuk item pekerjaan mana pun — rapat, administrasi, pelatihan, perjalanan.",
       "none_yet": "Belum ada yang tercatat pada hari ini.",
       "day_total": "Pada hari ini",
       "how_long": "Durasi",
@@ -194,10 +225,9 @@
       "note": "Catatan",
       "note_placeholder": "Untuk apa waktu ini digunakan",
       "add": "Tambahkan",
-      "done": "Selesai",
       "remove": "Hapus",
       "imported": "Diimpor",
-      "month_closed": "Bulan ini sudah ditutup, sehingga jamnya tidak dapat diubah lagi. Buka kembali bulan ini terlebih dahulu jika ada yang perlu diperbaiki.",
+      "month_closed": "Bulan ini sudah ditutup sehingga jamnya tidak bisa diubah lagi. Hubungi penanggung jawab tim jika ada yang perlu diperbaiki.",
       "category": {
         "meeting": "Rapat internal",
         "training": "Pelatihan",
@@ -214,7 +244,46 @@
         "added": "Ditambahkan",
         "refused": "Tindakan itu tidak berhasil",
         "try_again": "Silakan coba lagi."
-      }
+      },
+      "close": "Tutup",
+      "not_added_yet": "Belum ditambahkan",
+      "confirm_remove_title": "Hapus jam ini?",
+      "confirm_remove_body": "{duration} dikurangi dari hari ini dan dari total bulan.",
+      "removing": "Menghapus…"
+    },
+    "attendance": {
+      "title": "Kapan Anda bekerja",
+      "hint": "Awal, akhir, dan istirahat pada hari ini, dicatat terpisah dari untuk apa jam-jam itu dipakai.",
+      "still_running": "Masih berjalan",
+      "from": "Dari",
+      "to": "Sampai",
+      "break": "Istirahat (menit)",
+      "where": "Di mana",
+      "past_midnight": "Dihitung berlanjut melewati tengah malam.",
+      "record": "Catat",
+      "update": "Perbarui",
+      "remove": "Hapus",
+      "closed_with": "Dari {from} sampai {to}, {duration}. Bulan ini sudah ditutup dan tidak dapat diubah lagi.",
+      "closed_without": "Tidak ada yang dicatat untuk hari ini, dan bulannya sudah ditutup.",
+      "location": {
+        "office": "Di kantor",
+        "home": "Bekerja dari rumah",
+        "elsewhere": "Di tempat lain"
+      },
+      "errors": {
+        "start_required": "Sebutkan pukul berapa Anda mulai.",
+        "bad_break": "Isi istirahat dalam menit bulat."
+      },
+      "toasts": {
+        "saved": "Tersimpan",
+        "removed": "Dihapus",
+        "refused": "Tindakan itu tidak berhasil",
+        "try_again": "Silakan coba lagi."
+      },
+      "confirm_remove_title": "Hapus catatan kehadiran ini?",
+      "confirm_remove_body": "Waktu mulai, selesai, dan istirahat hari ini akan dihapus. Ini adalah catatan jam kerja yang diwajibkan hukum.",
+      "removing": "Menghapus…",
+      "past_midnight_length": "Ini melewati tengah malam dan menjadi {duration}. Periksa jam selesai jika tidak sesuai."
     },
     "imports": {
       "title": "Impor jam",
@@ -237,7 +306,7 @@
       "will_write": "akan ditulis",
       "cannot_read": "tidak dapat dibaca",
       "skipped": "dilewati",
-      "apply": "Terapkan {count} baris",
+      "apply": "{count, plural, other {Terapkan # baris}}",
       "discard": "Buang",
       "column_row": "Baris",
       "column_verdict": "Hasil",
@@ -249,7 +318,7 @@
       },
       "past": "File yang pernah diimpor",
       "none_yet": "Belum ada yang diimpor.",
-      "row_summary": "{valid} dari {total} baris",
+      "row_summary": "{total, plural, other {{valid} dari # baris}}",
       "state": {
         "10": "Diunggah",
         "20": "Sedang diperiksa",
@@ -268,11 +337,26 @@
       "undo_cancel": "Biarkan apa adanya",
       "toasts": {
         "applied": "Diterapkan",
-        "written": "{count} baris ditulis",
+        "written": "{count, plural, other {# baris ditulis}}",
         "undone": "Diurungkan",
-        "removed": "{count} baris dihapus",
+        "removed": "{count, plural, other {# baris dihapus}}",
         "refused": "Tindakan itu tidak berhasil",
         "try_again": "Silakan coba lagi."
+      },
+      "template": "Unduh templat",
+      "resume": "Periksa dan terapkan",
+      "reasons": {
+        "unknown_person": "Tidak ada yang masuk sebagai {email} di sini.",
+        "bad_date": "Tanggal tidak terbaca.",
+        "bad_duration": "Durasi tidak terbaca.",
+        "more_than_a_day": "Lebih dari satu hari dalam satu hari.",
+        "month_settled": "Bulan itu sudah ditutup.",
+        "bad_balance": "Saldo tidak terbaca.",
+        "kind_missing": "Sebutkan apakah ini jam atau cuti.",
+        "basis_missing": "Sebutkan dasar angka ini.",
+        "bad_start_date": "Tanggal mulai tidak terbaca.",
+        "ends_before_it_starts": "Berakhir sebelum dimulai.",
+        "unknown_absence_type": "Tidak ada jenis ketidakhadiran “{code}”."
       }
     },
     "opening": {
@@ -314,7 +398,14 @@
         "agreed": "Diterima",
         "refused": "Tindakan itu tidak berhasil",
         "try_again": "Silakan coba lagi."
-      }
+      },
+      "correct": "Perbaiki angka ini",
+      "agreeing": "Mencatat…",
+      "confirm_agree_title": "Setujui saldo ini?",
+      "confirm_agree_body": "Anda menyetujui bahwa {amount} sudah benar. Ini tidak bisa dibatalkan. Jika angkanya salah, jangan setujui — sampaikan ke penanggung jawab tim.",
+      "correcting_heading": "Perbaiki angka",
+      "stop_correcting": "Catat yang baru saja",
+      "correct_confirm": "Simpan perbaikan"
     },
     "absences": {
       "title": "Ketidakhadiran",
@@ -346,7 +437,8 @@
       "granularity": {
         "full_day": "Hari penuh",
         "half_day": "Setengah hari di awal dan akhir",
-        "hours": "Sejumlah jam tetap per hari"
+        "hours": "Sejumlah jam tetap per hari",
+        "half_day_single": "Setengah hari"
       },
       "half": {
         "morning": "Pagi",
@@ -371,7 +463,8 @@
         "hours_hint": "Ditulis sebagai 3:30, 3.5 atau 210m.",
         "note": "Catatan",
         "note_placeholder": "Opsional",
-        "record": "Catat"
+        "record": "Catat",
+        "hours_unreadable": "Ini bukan durasi. Coba 1:30, 1,5, atau 90."
       },
       "toasts": {
         "saved": "Ketidakhadiran tersimpan",
@@ -397,9 +490,23 @@
         "name_placeholder": "Nama yang dibaca orang",
         "counts_as_worked": "Hari itu tetap dihitung sebagai kerja",
         "draws_on_leave": "Hari itu dipotong dari jatah cuti",
-        "refused": "Tidak dapat disimpan",
-        "try_again": "Silakan coba lagi."
-      }
+        "refused": "Tidak dapat dilakukan",
+        "try_again": "Silakan coba lagi.",
+        "confirm_remove_title": "Hapus jenis ketidakhadiran ini?",
+        "confirm_remove_body": "“{kind}” tidak akan ditawarkan lagi saat mencatat ketidakhadiran. Jika hanya ingin menghilangkannya dari daftar, nonaktifkan saja.",
+        "deleting": "Menghapus"
+      },
+      "filter_person": "Tampilkan absen untuk",
+      "confirm_remove_title": "Hapus absen ini?",
+      "confirm_remove_body": "{person} kembali ke target penuh untuk hari-hari itu dan {duration} kembali ke cutinya.",
+      "removing": "Menghapus…",
+      "refuse_title": "Tolak absen {person}",
+      "refuse_body": "Orang tersebut akan melihat yang Anda tulis, jadi jelaskan secukupnya.",
+      "refuse_label": "Alasan",
+      "refuse_placeholder": "Minggu itu sudah ada dua orang yang tidak masuk",
+      "refuse_cancel": "Batal",
+      "request": "Ajukan cuti",
+      "errors": {}
     },
     "rates": {
       "title": "Nilai waktu kerja {person}",
@@ -433,7 +540,10 @@
         "removed": "Tarif dihapus",
         "refused": "Tidak dapat disimpan",
         "try_again": "Silakan coba lagi."
-      }
+      },
+      "removing": "Menghapus…",
+      "confirm_remove_title": "Hapus tarif ini?",
+      "confirm_remove_body": "Bulan yang sudah dihitung tetap dengan angkanya. Bulan berikutnya kehilangan tarif ini."
     },
     "leave": {
       "title": "Cuti {person}",
@@ -451,21 +561,28 @@
       "basis": "Dasar penetapannya",
       "basis_placeholder": "Opsional",
       "between": "{from} sampai {to}",
-      "about_days": "sekitar {days} hari",
+      "about_days": "{days, plural, other {sekitar # hari}}",
       "carried": "{duration} dibawa dari tahun lalu",
       "agree": "Terima",
       "agreed": "Diterima",
       "errors": {
         "dates_required": "Sebutkan kapan tahun cuti ini mulai dan berakhir.",
         "backwards": "Tahun cuti tidak boleh berakhir sebelum tanggal mulainya.",
-        "bad_duration": "Tulis durasinya sebagai 200:00, 200 atau 12000m."
+        "bad_duration": "Tulis durasinya sebagai 200:00, 200 atau 12000m.",
+        "already_there": "Sudah ada entri untuk tahun cuti ini."
       },
       "toasts": {
         "added": "Tahun cuti ditambahkan",
         "agreed": "Ditandai sebagai diterima",
         "refused": "Tidak dapat disimpan",
         "try_again": "Silakan coba lagi."
-      }
+      },
+      "entitlement_with_unit": "Cuti setahun (jam:menit)",
+      "echo_days": "{duration} · {days, plural, other {sekitar # hari}}",
+      "echo_hours": "{duration}",
+      "agreeing": "Mencatat…",
+      "confirm_agree_title": "Tetapkan angka ini sebagai final?",
+      "confirm_agree_body": "{duration} tidak dapat diubah setelahnya. Perubahan berikutnya dicatat terpisah dengan alasannya."
     },
     "holidays": {
       "title": "Hari libur nasional",
@@ -490,14 +607,21 @@
       "only_half": "Hanya setengah hari",
       "name_placeholder": "Nama hari libur ini",
       "errors": {
-        "date_and_name": "Sebutkan tanggal dan nama hari libur ini."
+        "date_and_name": "Sebutkan tanggal dan nama hari libur ini.",
+        "already_there": "Hari ini sudah ada {day}."
       },
       "toasts": {
         "added": "Hari libur ditambahkan",
         "removed": "Hari libur dihapus",
         "refused": "Tidak dapat disimpan",
         "try_again": "Silakan coba lagi."
-      }
+      },
+      "column_length": "Durasi",
+      "whole_day": "Sehari penuh",
+      "half_day": "Setengah hari",
+      "confirm_remove_title": "Hapus hari ini?",
+      "confirm_remove_body": "{day} tidak lagi menjadi hari libur, sehingga target semua orang untuk hari itu kembali naik.",
+      "removing": "Menghapus…"
     },
     "statement": {
       "title": "Sebelum Anda menagih",
@@ -508,7 +632,79 @@
       "monthly_rate": "Jumlah tetap tiap bulan",
       "no_rate": "Belum ada tarif yang tercatat untuk Anda, jadi bagian ini hanya menampilkan jam. Tanyakan kepada orang yang mengelola tim.",
       "still_moving": "Bulan ini masih terbuka, sehingga angka-angka ini masih dapat berubah.",
-      "settled": "Bulan ini sudah ditutup, sehingga angka-angka ini sudah tetap."
+      "settled": "Bulan ini sudah ditutup, sehingga angka-angka ini sudah tetap.",
+      "decimal_hours": "{hours} dalam jam desimal"
+    },
+    "shared": {
+      "load_failed": "Tidak dapat dimuat",
+      "load_failed_detail": "Ada yang salah. Coba lagi, dan beri tahu penanggung jawab tim jika terus terjadi.",
+      "retry": "Coba lagi"
+    },
+    "review_days": {
+      "title": "Hari yang perlu diperiksa untuk {person}",
+      "body": "Jam yang tadinya dihitung pada hari-hari ini sudah tidak ada. Tuliskan apa yang terjadi pada masing-masing, lalu bulan bisa ditutup.",
+      "all_settled": "Tidak ada lagi yang perlu diperiksa. Bulan ini bisa ditutup.",
+      "counts_now": "Sekarang dihitung {duration}",
+      "what_happened": "Apa yang terjadi?",
+      "placeholder": "Salah tanggal, sudah dipindahkan",
+      "settle": "Selesaikan hari ini",
+      "close": "Tutup",
+      "toasts": {
+        "settled": "Hari diselesaikan",
+        "refused": "Tidak dapat diselesaikan",
+        "try_again": "Coba lagi sebentar."
+      }
+    },
+    "refusals": {
+      "absence_type_in_use": "{in_use, plural, other {Ada # ketidakhadiran tercatat dengan jenis ini, jadi tidak bisa dihapus — catatannya akan kehilangan makna.}} Nonaktifkan saja: ia hilang dari daftar pilihan, dan catatan yang ada tetap terbaca.",
+      "month_settled": "{month} sudah {month_state}, sehingga catatannya tidak bisa berubah lagi. Mintalah bulan itu dibuka kembali jika ini harus masuk.",
+      "month_state": {
+        "handed_in": "diserahkan",
+        "agreed": "disetujui",
+        "closed": "ditutup"
+      },
+      "last_manager": "Ini satu-satunya orang yang menangani tim. Mencabutnya membuat tidak ada yang bisa mengakses bulan mana pun, dan tidak ada yang bisa mengembalikannya. Jadikan orang lain pengelola dulu."
+    },
+    "detail": {
+      "title": "Rincian jam",
+      "whose": "Jam siapa",
+      "mine": "Jam saya",
+      "group_by": "Kelompokkan menurut",
+      "on_work_items": "Untuk item pekerjaan",
+      "other_hours": "Selebihnya",
+      "entries": "Entri",
+      "month_state": "Angka-angka ini",
+      "frozen": "Beku",
+      "frozen_hint": "Yang dihitung bulan ini",
+      "live": "Langsung",
+      "live_hint": "Bulan ini masih terbuka",
+      "column_what": "Apa",
+      "column_when": "Kapan",
+      "column_note": "Catatan",
+      "column_long": "Durasi",
+      "unnamed": "Tanpa nama",
+      "still_running": "Masih berjalan — belum punya durasi dan tidak dihitung",
+      "gone": "Bulan ini menghitungnya, dan sekarang sudah tidak ada",
+      "by_hand": "· dicatat manual",
+      "nothing_logged": "Bulan ini tidak ada yang dicatat pada item pekerjaan.",
+      "other_title": "Jam tanpa item pekerjaan",
+      "other_subtitle": "Rapat, administrasi, pelatihan, perjalanan — dan semua yang dibawa dari sebelumnya. Ini juga dihitung dalam bulan.",
+      "footnote": "Jam dihitung di tempat ia dicatat, di semua ruang kerja.",
+      "rounding_note": "Menit dibulatkan sekali per hari dan proyek, jadi subtotal ini tidak harus sama dengan angka di atas.",
+      "entry_count": "{count, plural, other {· # entri}}",
+      "running_note": "{count, plural, other {# pengatur waktu masih berjalan. Belum punya durasi, jadi tidak dihitung di sini.}}",
+      "missing_note": "{count, plural, other {# entri yang dihitung bulan ini tidak dapat ditemukan lagi. Hanya pengenalnya yang disimpan, jadi tidak ada yang bisa ditampilkan.}}",
+      "week_of": "Minggu {date}",
+      "grouping": {
+        "day": "Hari",
+        "work_item": "Item pekerjaan",
+        "project": "Proyek",
+        "week": "Minggu",
+        "workspace": "Ruang kerja"
+      },
+      "under_a_minute": "kurang dari semenit",
+      "auto_stopped": "· dihentikan sistem",
+      "auto_stopped_hint": "Pengatur waktu ini dibiarkan berjalan dan dihentikan pada batas maksimum. Durasinya adalah batas, bukan hasil ukur — perlu diperbaiki."
     }
   }
 }

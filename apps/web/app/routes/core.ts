@@ -112,6 +112,9 @@ export const coreRoutes: RouteConfigEntry[] = [
         layout("./(all)/[workspaceSlug]/(projects)/team-time/import/layout.tsx", [
           route(":workspaceSlug/team-time/import", "./(all)/[workspaceSlug]/(projects)/team-time/import/page.tsx"),
         ]),
+        layout("./(all)/[workspaceSlug]/(projects)/team-time/detail/layout.tsx", [
+          route(":workspaceSlug/team-time/detail", "./(all)/[workspaceSlug]/(projects)/team-time/detail/page.tsx"),
+        ]),
         layout("./(all)/[workspaceSlug]/(projects)/team-time/people/layout.tsx", [
           route(":workspaceSlug/team-time/people", "./(all)/[workspaceSlug]/(projects)/team-time/people/page.tsx"),
         ]),

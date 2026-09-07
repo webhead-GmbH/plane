@@ -149,7 +149,7 @@
             },
             "error": {
               "title": "Erreur !",
-              "message": "Échec de l'{action} de la propriété. Veuillez réessayer !"
+              "message": "Échec de l''{action} de la propriété. Veuillez réessayer !"
             }
           }
         },
@@ -345,7 +345,7 @@
         },
         "error": {
           "title": "Erreur !",
-          "message": "Échec de l'{action} du type d'élément de travail. Veuillez réessayer !"
+          "message": "Échec de l''{action} du type d'élément de travail. Veuillez réessayer !"
         }
       },
       "tooltip": "Cliquer pour {action}"

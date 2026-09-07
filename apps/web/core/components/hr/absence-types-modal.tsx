@@ -10,11 +10,11 @@ import { Plus, Trash2 } from "lucide-react";
 import { useTranslation } from "@plane/i18n";
 import { Button } from "@plane/propel/button";
 import { setToast, TOAST_TYPE } from "@plane/propel/toast";
-import { EModalPosition, EModalWidth, ModalCore } from "@plane/ui";
+import { AlertModalCore, EModalPosition, EModalWidth, ModalCore } from "@plane/ui";
 // services
 import { HrService, type THrAbsenceType } from "@/services/hr.service";
 
-import { refusalMessage } from "./utils";
+import { localName, refusalMessage } from "./utils";
 
 const hrService = new HrService();
 
@@ -46,15 +46,20 @@ const BLANK = {
  * meaning — so it is retired instead and stops being offered for anything new.
  */
 export const HrAbsenceTypesModal = ({ isOpen, types, onClose, onChanged }: TProps) => {
-  const { t } = useTranslation();
+  const { t, currentLocale } = useTranslation();
   const [draft, setDraft] = useState(BLANK);
   const [isBusy, setIsBusy] = useState(false);
+  // Removing a kind of absence is asked about first, like every other deletion
+  // here. The server refuses it outright once anything has been recorded as
+  // that kind, so the ones that do go through are exactly the ones nobody would
+  // notice were gone until they went looking for them.
+  const [removing, setRemoving] = useState<THrAbsenceType | null>(null);
 
   const complain = (failure: unknown) =>
     setToast({
       type: TOAST_TYPE.ERROR,
       title: t("hr.absences.types.refused"),
-      message: refusalMessage(failure) ?? t("hr.absences.types.try_again"),
+      message: refusalMessage(failure, t, currentLocale) ?? t("hr.absences.types.try_again"),
     });
 
   const handleAdd = async () => {
@@ -66,6 +71,10 @@ export const HrAbsenceTypesModal = ({ isOpen, types, onClose, onChanged }: TProp
         ...draft,
         code: draft.code.trim().toUpperCase(),
         name_de: draft.name_de.trim(),
+        // The same name in both. A kind of absence somebody adds by hand has
+        // one name — the one they typed — and putting it only in the German
+        // field hides it from every screen that is not in German.
+        name_en: draft.name_de.trim(),
       });
       await onChanged();
       setDraft(BLANK);
@@ -88,10 +97,12 @@ export const HrAbsenceTypesModal = ({ isOpen, types, onClose, onChanged }: TProp
     }
   };
 
-  const handleRemove = async (type: THrAbsenceType) => {
+  const handleRemove = async () => {
+    if (!removing) return;
     setIsBusy(true);
     try {
-      await hrService.removeAbsenceType(type.id);
+      await hrService.removeAbsenceType(removing.id);
+      setRemoving(null);
       await onChanged();
     } catch (failure) {
       // The server refuses to delete a type that absences still point at, which
@@ -102,20 +113,19 @@ export const HrAbsenceTypesModal = ({ isOpen, types, onClose, onChanged }: TProp
     }
   };
 
-  const field =
-    "border-custom-border-200 bg-custom-background-100 text-custom-text-100 w-full rounded-md border px-3 py-1.5 text-sm";
+  const field = "border-subtle bg-layer-1 text-primary w-full rounded-md border px-3 py-1.5 text-13";
 
   return (
     <ModalCore isOpen={isOpen} handleClose={onClose} position={EModalPosition.CENTER} width={EModalWidth.XXL}>
       <div className="flex flex-col gap-4 p-5">
         <div>
-          <h3 className="text-custom-text-100 text-base font-semibold">{t("hr.absences.types.title")}</h3>
-          <p className="text-custom-text-300 text-sm">{t("hr.absences.types.subtitle")}</p>
+          <h3 className="text-14 font-semibold text-primary">{t("hr.absences.types.title")}</h3>
+          <p className="text-13 text-tertiary">{t("hr.absences.types.subtitle")}</p>
         </div>
 
-        <div className="border-custom-border-200 overflow-x-auto rounded-md border">
-          <table className="text-sm w-full min-w-[40rem]">
-            <thead className="bg-custom-background-90 text-custom-text-400 text-xs tracking-wide uppercase">
+        <div className="overflow-x-auto rounded-md border border-subtle">
+          <table className="w-full min-w-[40rem] text-13">
+            <thead className="border-b border-subtle text-13 text-placeholder">
               <tr>
                 <th className="px-3 py-2 text-left font-medium">{t("hr.absences.types.column_code")}</th>
                 <th className="px-3 py-2 text-left font-medium">{t("hr.absences.types.column_name")}</th>
@@ -127,30 +137,30 @@ export const HrAbsenceTypesModal = ({ isOpen, types, onClose, onChanged }: TProp
             <tbody>
               {types.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="text-custom-text-300 px-3 py-6 text-center">
+                  <td colSpan={5} className="px-3 py-6 text-center text-tertiary">
                     {t("hr.absences.types.none_yet")}
                   </td>
                 </tr>
               )}
               {types.map((type) => (
-                <tr key={type.id} className="border-custom-border-200 border-t">
-                  <td className="text-custom-text-200 font-mono text-xs px-3 py-2">{type.code}</td>
+                <tr key={type.id} className="border-t border-subtle">
+                  <td className="px-3 py-2 text-13 tracking-wide text-secondary tabular-nums">{type.code}</td>
                   <td className="px-3 py-2">
-                    <span className={type.is_active ? "text-custom-text-100" : "text-custom-text-400 line-through"}>
-                      {type.name_de || type.name_en}
+                    <span className={type.is_active ? "text-primary" : "text-tertiary line-through"}>
+                      {localName(type, currentLocale)}
                     </span>
                   </td>
-                  <td className="text-custom-text-300 px-3 py-2 text-center">
+                  <td className="px-3 py-2 text-center text-tertiary">
                     {type.credits_actual ? t("common.yes") : t("common.no")}
                   </td>
-                  <td className="text-custom-text-300 px-3 py-2 text-center">
+                  <td className="px-3 py-2 text-center text-tertiary">
                     {type.consumes_leave_entitlement ? t("common.yes") : t("common.no")}
                   </td>
                   <td className="px-3 py-2 text-right">
                     <div className="flex items-center justify-end gap-2">
                       <button
                         type="button"
-                        className="text-custom-text-300 hover:text-custom-text-100 text-xs"
+                        className="text-13 text-tertiary hover:text-primary"
                         disabled={isBusy}
                         onClick={() => void handleToggleActive(type)}
                       >
@@ -158,10 +168,10 @@ export const HrAbsenceTypesModal = ({ isOpen, types, onClose, onChanged }: TProp
                       </button>
                       <button
                         type="button"
-                        className="text-custom-text-400 hover:text-red-500"
+                        className="text-tertiary hover:text-danger-primary"
                         aria-label={t("hr.absences.types.delete")}
                         disabled={isBusy}
-                        onClick={() => void handleRemove(type)}
+                        onClick={() => setRemoving(type)}
                       >
                         <Trash2 className="size-4" />
                       </button>
@@ -173,8 +183,8 @@ export const HrAbsenceTypesModal = ({ isOpen, types, onClose, onChanged }: TProp
           </table>
         </div>
 
-        <div className="border-custom-border-200 flex flex-col gap-3 rounded-md border p-3">
-          <p className="text-custom-text-200 text-sm font-medium">{t("hr.absences.types.add")}</p>
+        <div className="flex flex-col gap-3 rounded-md border border-subtle p-3">
+          <p className="text-13 font-medium text-secondary">{t("hr.absences.types.add")}</p>
           <div className="grid gap-3 sm:grid-cols-2">
             <input
               className={field}
@@ -189,7 +199,7 @@ export const HrAbsenceTypesModal = ({ isOpen, types, onClose, onChanged }: TProp
               onChange={(event) => setDraft({ ...draft, name_de: event.target.value })}
             />
           </div>
-          <label className="text-custom-text-300 text-sm flex items-center gap-2">
+          <label className="flex items-center gap-2 text-13 text-tertiary">
             <input
               type="checkbox"
               checked={draft.credits_actual}
@@ -197,7 +207,7 @@ export const HrAbsenceTypesModal = ({ isOpen, types, onClose, onChanged }: TProp
             />
             {t("hr.absences.types.counts_as_worked")}
           </label>
-          <label className="text-custom-text-300 text-sm flex items-center gap-2">
+          <label className="flex items-center gap-2 text-13 text-tertiary">
             <input
               type="checkbox"
               checked={draft.consumes_leave_entitlement}
@@ -208,8 +218,8 @@ export const HrAbsenceTypesModal = ({ isOpen, types, onClose, onChanged }: TProp
           <div className="flex justify-end">
             <Button
               variant="primary"
-              size="sm"
-              prependIcon={<Plus className="size-4" />}
+              size="lg"
+              prependIcon={<Plus />}
               disabled={isBusy || !draft.code.trim() || !draft.name_de.trim()}
               onClick={() => void handleAdd()}
             >
@@ -219,11 +229,26 @@ export const HrAbsenceTypesModal = ({ isOpen, types, onClose, onChanged }: TProp
         </div>
 
         <div className="flex items-center justify-end">
-          <Button variant="secondary" size="sm" onClick={onClose}>
+          <Button variant="secondary" size="lg" onClick={onClose}>
             {t("close")}
           </Button>
         </div>
       </div>
+      <AlertModalCore
+        isOpen={removing !== null}
+        handleClose={() => setRemoving(null)}
+        handleSubmit={() => void handleRemove()}
+        isSubmitting={isBusy}
+        variant="danger"
+        title={t("hr.absences.types.confirm_remove_title")}
+        content={t("hr.absences.types.confirm_remove_body", {
+          kind: removing ? localName(removing, currentLocale) : "",
+        })}
+        primaryButtonText={{
+          default: t("hr.absences.types.delete"),
+          loading: t("hr.absences.types.deleting"),
+        }}
+      />
     </ModalCore>
   );
 };

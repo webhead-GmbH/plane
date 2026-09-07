@@ -4,22 +4,21 @@
  * See the LICENSE file for details.
  */
 
-import { useParams } from "react-router";
 // components
 import { useTranslation } from "@plane/i18n";
+import { ContentWrapper } from "@plane/ui";
 import { PageHead } from "@/components/core/page-title";
 import { HrPeopleRoot } from "@/components/hr";
 
 export default function HrPeoplePage() {
   const { t } = useTranslation();
-  const { workspaceSlug } = useParams();
 
   return (
     <>
       <PageHead title={t("hr.people.title")} />
-      <div className="relative h-full w-full overflow-hidden overflow-y-auto">
-        <HrPeopleRoot workspaceSlug={String(workspaceSlug)} />
-      </div>
+      <ContentWrapper className="gap-7">
+        <HrPeopleRoot />
+      </ContentWrapper>
     </>
   );
 }

@@ -6,39 +6,50 @@
 
 import { useState } from "react";
 import { observer } from "mobx-react";
-import { Link, useParams } from "react-router";
-import { ChevronLeft, ChevronRight, Download, RefreshCw, Scale, Send, Users } from "lucide-react";
+import { useNavigate, useParams } from "react-router";
+import { Download, ListTree, MoreHorizontal, Plus, RefreshCw, Scale, Send, Users } from "lucide-react";
 import useSWR from "swr";
 // plane imports
 import { Button } from "@plane/propel/button";
 import { useTranslation } from "@plane/i18n";
 import { setToast, TOAST_TYPE } from "@plane/propel/toast";
-import { Loader } from "@plane/ui";
+import { EmptyStateCompact } from "@plane/propel/empty-state";
+import { CustomMenu, Loader, Tooltip } from "@plane/ui";
 // local imports
 import { EHrPeriodState, HrService } from "@/services/hr.service";
 import { HrDayTable } from "./day-table";
 import { HrDayEntriesModal } from "./day-entries-modal";
 import { HrOpeningBalanceModal } from "./opening-balance-modal";
 import { HrMonthSummary } from "./month-summary";
+import { HrPeriodStepper } from "./period-stepper";
 import { HrStatementPanel } from "./statement-panel";
 import { formatMonthLabel, isPeriodEditable, nextMonth, previousMonth, refusalMessage } from "./utils";
 
 const hrService = new HrService();
 
 export const MyTimeRoot = observer(function MyTimeRoot() {
-  // Only used to build the link, not to decide what the figures are.
+  // Only used to navigate, never to decide what the figures are: the month comes
+  // from the server against the signed-in person, not from the address bar.
   const { workspaceSlug } = useParams();
+  const navigate = useNavigate();
   const now = new Date();
+  // Recording time is about today, so the button opens today rather than asking.
+  const todayIso = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
   const [[year, month], setMonth] = useState<[number, number]>([now.getFullYear(), now.getMonth() + 1]);
   const [isBusy, setIsBusy] = useState(false);
   const [openDay, setOpenDay] = useState<string | null>(null);
   const [showOpening, setShowOpening] = useState(false);
 
   const { t, currentLocale } = useTranslation();
-  const { data, isLoading, mutate } = useSWR(`HR_ME_${year}_${month}`, () => hrService.me(year, month));
+  const { data, isLoading, error, mutate } = useSWR(`HR_ME_${year}_${month}`, () => hrService.me(year, month));
 
   const period = data?.period ?? null;
   const days = period?.days ?? [];
+  // Only a day this month's period can answer for. Whether a day may be edited
+  // is the period's answer, and the period on hand is the one being viewed — so
+  // a day from any other month would be judged by the wrong month's state.
+  const viewedMonth = `${year}-${String(month).padStart(2, "0")}`;
+  const openDayInThisMonth = openDay && openDay.startsWith(viewedMonth) ? openDay : null;
   const monthLabel = formatMonthLabel(`${year}-${String(month).padStart(2, "0")}-01`, currentLocale);
 
   const handleRecompute = async () => {
@@ -48,11 +59,11 @@ export const MyTimeRoot = observer(function MyTimeRoot() {
       await hrService.recompute(period.id);
       await mutate();
       setToast({ type: TOAST_TYPE.SUCCESS, title: t("hr.my_time.toasts.recomputed") });
-    } catch (error) {
+    } catch (failure) {
       setToast({
         type: TOAST_TYPE.ERROR,
         title: t("hr.my_time.toasts.not_recomputed"),
-        message: refusalMessage(error) ?? t("hr.my_time.toasts.try_again"),
+        message: refusalMessage(failure, t, currentLocale) ?? t("hr.my_time.toasts.try_again"),
       });
     } finally {
       setIsBusy(false);
@@ -70,11 +81,11 @@ export const MyTimeRoot = observer(function MyTimeRoot() {
         title: t("hr.my_time.toasts.handed_in"),
         message: t("hr.my_time.toasts.handed_in_message", { month: monthLabel }),
       });
-    } catch (error) {
+    } catch (failure) {
       setToast({
         type: TOAST_TYPE.ERROR,
         title: t("hr.my_time.toasts.not_handed_in"),
-        message: refusalMessage(error) ?? t("hr.my_time.toasts.try_again"),
+        message: refusalMessage(failure, t, currentLocale) ?? t("hr.my_time.toasts.try_again"),
       });
     } finally {
       setIsBusy(false);
@@ -83,11 +94,28 @@ export const MyTimeRoot = observer(function MyTimeRoot() {
 
   if (isLoading)
     return (
-      <Loader className="flex flex-col gap-3 p-4">
+      <Loader className="flex w-full flex-col gap-3">
         <Loader.Item height="96px" />
         <Loader.Item height="40px" />
         <Loader.Item height="320px" />
       </Loader>
+    );
+
+  // A failed request is not the same as having no employment record, and telling
+  // somebody their hours are not being tracked when the network merely dropped
+  // sends them to ask for something they already have.
+  if (error)
+    return (
+      <div className="w-full">
+        <EmptyStateCompact
+          title={t("hr.shared.load_failed")}
+          description={t("hr.shared.load_failed_detail")}
+          assetKey="unknown"
+          assetClassName="size-20"
+          rootClassName="py-16"
+          actions={[{ label: t("hr.shared.retry"), variant: "secondary", onClick: () => void mutate() }]}
+        />
+      </div>
     );
 
   // Somebody can be a member of the workspace without being employed through it —
@@ -95,14 +123,14 @@ export const MyTimeRoot = observer(function MyTimeRoot() {
   // and saying so is better than an empty table.
   if (!data?.profile)
     return (
-      <div className="p-4">
-        <div className="border-custom-border-200 bg-custom-background-90 rounded-md border px-4 py-6">
-          <p className="text-sm text-custom-text-200 font-medium">{t("hr.my_time.no_record")}</p>
-          <p className="text-sm text-custom-text-300 mt-1">
-            Your hours are not being tracked in this workspace. If they should be, ask whoever looks after the team to
-            set you up.
-          </p>
-        </div>
+      <div className="w-full">
+        <EmptyStateCompact
+          title={t("hr.my_time.no_record")}
+          description={t("hr.my_time.no_record_detail")}
+          assetKey="unknown"
+          assetClassName="size-20"
+          rootClassName="py-16"
+        />
       </div>
     );
 
@@ -113,82 +141,122 @@ export const MyTimeRoot = observer(function MyTimeRoot() {
   const canHandIn = period && isPeriodEditable(period.state) && !data.has_running_timer && !monthIsRunning;
 
   return (
-    <div className="flex flex-col gap-5 p-4">
+    <div className="flex w-full flex-col gap-7">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-1">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setMonth(previousMonth(year, month))}
-            aria-label={t("hr.my_time.previous_month")}
-          >
-            <ChevronLeft className="size-4" />
-          </Button>
-          <span className="text-sm text-custom-text-100 min-w-[10rem] text-center font-medium">{monthLabel}</span>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setMonth(nextMonth(year, month))}
-            aria-label={t("hr.my_time.next_month")}
-          >
-            <ChevronRight className="size-4" />
-          </Button>
-        </div>
+        <HrPeriodStepper
+          label={monthLabel}
+          onPrevious={() => setMonth(previousMonth(year, month))}
+          onNext={() => setMonth(nextMonth(year, month))}
+        />
 
         <div className="flex items-center gap-2">
-          {data.is_hr_manager ? (
-            <Link to={`/${workspaceSlug}/team-time`}>
-              <Button variant="secondary" size="sm">
-                <Users className="size-3.5" />
-                {t("hr.my_time.everyone")}
-              </Button>
-            </Link>
-          ) : null}
-          <Button variant="secondary" size="sm" onClick={() => setShowOpening(true)}>
-            <Scale className="size-3.5" />
-            {t("hr.my_time.opening")}
+          {/* One thing to do, and it is the thing somebody opened this page for.
+              Everything else — the exports, the starting balance, the rebuild —
+              is occasional and lives behind the menu, because six buttons of
+              equal weight is a wall rather than a choice. */}
+          {/* Recording time is about today, so the month comes with it. Opening
+              today's form while the page still showed March asked the March
+              period whether the day was editable — so a closed March made
+              today's form read-only, and a closed today would have let March be
+              edited. */}
+          <Button
+            variant="secondary"
+            size="lg"
+            onClick={() => {
+              setMonth([now.getFullYear(), now.getMonth() + 1]);
+              setOpenDay(todayIso);
+            }}
+            prependIcon={<Plus />}
+          >
+            {t("hr.my_time.record_time")}
           </Button>
-          {period && isPeriodEditable(period.state) ? (
-            <Button variant="secondary" size="sm" onClick={handleRecompute} loading={isBusy}>
-              <RefreshCw className="size-3.5" />
-              {t("hr.my_time.bring_up_to_date")}
-            </Button>
-          ) : null}
-          {period ? (
-            <>
-              <a href={hrService.periodExportUrl(period.id, "csv")} download>
-                <Button variant="secondary" size="sm">
-                  <Download className="size-3.5" />
-                  {t("hr.my_time.export_csv")}
-                </Button>
-              </a>
-              <a href={hrService.periodExportUrl(period.id, "xlsx")} download>
-                <Button variant="secondary" size="sm">
-                  <Download className="size-3.5" />
-                  {t("hr.my_time.export_excel")}
-                </Button>
-              </a>
-            </>
-          ) : null}
+
           {period && period.state !== EHrPeriodState.LOCKED ? (
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={handleSubmit}
-              disabled={!canHandIn}
-              loading={isBusy}
-              title={
+            <Tooltip
+              tooltipContent={
                 monthIsRunning
                   ? t("hr.my_time.cannot_hand_in.month_running")
-                  : data.has_running_timer
-                    ? t("hr.my_time.cannot_hand_in.timer_running")
-                    : undefined
+                  : t("hr.my_time.cannot_hand_in.timer_running")
               }
+              disabled={canHandIn ?? false}
+              position="bottom"
             >
-              <Send className="size-3.5" />
-              {t("hr.my_time.hand_in")}
-            </Button>
+              {/* A wrapper, because a disabled button receives no pointer events
+                  of its own and would leave somebody staring at a grey control
+                  with no way to find out why. */}
+              <span>
+                <Button
+                  variant="primary"
+                  size="lg"
+                  onClick={handleSubmit}
+                  disabled={!canHandIn}
+                  loading={isBusy}
+                  prependIcon={<Send />}
+                >
+                  {t("hr.my_time.hand_in")}
+                </Button>
+              </span>
+            </Tooltip>
           ) : null}
+
+          <CustomMenu
+            customButton={
+              <span className="grid size-7 place-items-center rounded-md text-tertiary transition-colors hover:bg-layer-2 hover:text-primary">
+                <MoreHorizontal className="size-4" />
+              </span>
+            }
+            placement="bottom-end"
+            closeOnSelect
+          >
+            <CustomMenu.MenuItem onClick={() => setShowOpening(true)} className="flex items-center gap-2">
+              <Scale className="size-3 shrink-0" />
+              {t("hr.my_time.opening")}
+            </CustomMenu.MenuItem>
+            {period ? (
+              <>
+                <CustomMenu.MenuItem
+                  onClick={() => window.open(hrService.periodExportUrl(period.id, "csv"), "_self")}
+                  className="flex items-center gap-2"
+                >
+                  <Download className="size-3 shrink-0" />
+                  {t("hr.my_time.export_csv")}
+                </CustomMenu.MenuItem>
+                <CustomMenu.MenuItem
+                  onClick={() => window.open(hrService.periodExportUrl(period.id, "xlsx"), "_self")}
+                  className="flex items-center gap-2"
+                >
+                  <Download className="size-3 shrink-0" />
+                  {t("hr.my_time.export_excel")}
+                </CustomMenu.MenuItem>
+              </>
+            ) : null}
+            {period && isPeriodEditable(period.state) ? (
+              <CustomMenu.MenuItem onClick={handleRecompute} className="flex items-center gap-2">
+                <RefreshCw className="size-3 shrink-0" />
+                {t("hr.my_time.bring_up_to_date")}
+              </CustomMenu.MenuItem>
+            ) : null}
+            {/* Everybody's own hours, not just a manager's view of somebody's.
+                The month has only ever shown a figure a day, and the question it
+                invites — on what — belongs to the person being asked about it
+                first. */}
+            <CustomMenu.MenuItem
+              onClick={() => navigate(`/${workspaceSlug}/team-time/detail`)}
+              className="flex items-center gap-2"
+            >
+              <ListTree className="size-3 shrink-0" />
+              {t("hr.detail.title")}
+            </CustomMenu.MenuItem>
+            {data.is_hr_manager ? (
+              <CustomMenu.MenuItem
+                onClick={() => navigate(`/${workspaceSlug}/team-time`)}
+                className="flex items-center gap-2"
+              >
+                <Users className="size-3 shrink-0" />
+                {t("hr.my_time.everyone")}
+              </CustomMenu.MenuItem>
+            ) : null}
+          </CustomMenu>
         </div>
       </div>
 
@@ -196,6 +264,9 @@ export const MyTimeRoot = observer(function MyTimeRoot() {
         period={period}
         hasRunningTimer={data.has_running_timer}
         contractedWeeklyMinutes={data.schedule?.weekly_minutes ?? data.contract?.weekly_minutes ?? null}
+        teleworkDaysThisYear={data.telework_days_this_year}
+        leave={data.leave}
+        schedule={data.schedule}
       />
 
       <HrStatementPanel periodId={period?.id ?? null} arrangement={data.contract?.arrangement ?? null} />
@@ -206,10 +277,15 @@ export const MyTimeRoot = observer(function MyTimeRoot() {
         onPickDay={setOpenDay}
       />
 
+      {/* Keyed by the day: opening a different one is a different form, and the
+          key is what empties it rather than an effect that fires after a render
+          with the previous day's entry still in the boxes. */}
       <HrDayEntriesModal
-        workDate={openDay}
+        key={openDay ?? "none"}
+        workDate={openDayInThisMonth}
         profileId={data.profile?.id ?? null}
         isLocked={!period || !isPeriodEditable(period.state)}
+        recordsAttendance={!!data.contract?.records_attendance}
         onClose={() => setOpenDay(null)}
         onChanged={() => void mutate()}
       />

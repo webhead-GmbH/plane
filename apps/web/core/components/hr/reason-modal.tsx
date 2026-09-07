@@ -59,17 +59,17 @@ export const HrReasonModal = ({
     <ModalCore isOpen={isOpen} handleClose={onClose} position={EModalPosition.CENTER} width={EModalWidth.XL}>
       <div className="flex flex-col gap-4 p-5">
         <div className="flex items-start gap-3">
-          <span className="bg-amber-500/15 flex size-9 flex-shrink-0 items-center justify-center rounded-full">
-            <AlertTriangle className="text-amber-600 size-4" />
+          <span className="flex size-9 flex-shrink-0 items-center justify-center rounded-full bg-warning-subtle">
+            <AlertTriangle className="size-4 text-warning-primary" />
           </span>
           <div className="flex flex-col gap-1">
-            <h3 className="text-custom-text-100 text-lg font-medium">{title}</h3>
-            <p className="text-custom-text-300 text-sm">{body}</p>
+            <h3 className="text-16 font-medium text-primary">{title}</h3>
+            <p className="text-13 text-tertiary">{body}</p>
           </div>
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <label htmlFor="hr-reason" className="text-custom-text-200 text-sm font-medium">
+          <label htmlFor="hr-reason" className="text-13 font-medium text-secondary">
             {label}
           </label>
           <textarea
@@ -79,17 +79,17 @@ export const HrReasonModal = ({
             onChange={(event) => setReason(event.target.value)}
             rows={3}
             placeholder={placeholder}
-            className="border-custom-border-200 bg-custom-background-100 text-custom-text-100 placeholder:text-custom-text-400 focus:border-custom-primary-100 text-sm w-full resize-none rounded-md border px-3 py-2 outline-none"
+            className="w-full resize-none rounded-md border border-subtle bg-layer-1 px-3 py-2 text-13 text-primary outline-none placeholder:text-tertiary focus:border-accent-strong"
           />
         </div>
 
         <div className="flex items-center justify-end gap-2">
-          <Button variant="secondary" size="sm" onClick={onClose}>
+          <Button variant="secondary" size="lg" onClick={onClose}>
             {cancelLabel}
           </Button>
           <Button
             variant="primary"
-            size="sm"
+            size="lg"
             disabled={reason.trim().length === 0 || isBusy}
             loading={isBusy}
             onClick={() => onConfirm(reason.trim())}

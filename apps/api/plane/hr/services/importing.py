@@ -35,6 +35,7 @@ from plane.hr.models import (
     HrPeriod,
     HrTimeEntry,
 )
+from plane.hr.services.settled import settled_month_across
 from plane.utils.porters.formatters import CSVFormatter, XLSXFormatter
 
 # What a row may be: a good one, one that cannot be used, or one that is already
@@ -129,18 +130,32 @@ def _as_minutes(value, unit="minutes"):
 
 
 class RowResult:
-    __slots__ = ("index", "verdict", "message", "data")
+    """One row of an upload, and what is to be done with it.
 
-    def __init__(self, index, verdict, message="", data=None):
+    ``reason`` is a stable name for why, and ``detail`` the handful of values that
+    name mentions. The English sentence is kept alongside them: it is what an
+    older preview already stored, and what anybody reading the batch straight out
+    of the database sees. Sending only the sentence meant the one screen in this
+    module a person meets a wall on — an upload that was refused — was the one
+    screen that could not be in their language.
+    """
+
+    __slots__ = ("index", "verdict", "message", "data", "reason", "detail")
+
+    def __init__(self, index, verdict, message="", data=None, reason="", detail=None):
         self.index = index
         self.verdict = verdict
         self.message = message
         self.data = data or {}
+        self.reason = reason
+        self.detail = detail or {}
 
     def as_dict(self):
         return {
             "row": self.index,
             "verdict": self.verdict,
+            "reason": self.reason,
+            "detail": self.detail,
             "message": self.message,
             "data": {key: str(value) for key, value in self.data.items()},
         }
@@ -166,13 +181,31 @@ class _Loader:
             )
         return self._profiles[key]
 
-    def month_is_closed(self, profile, day):
-        return HrPeriod.objects.filter(
-            profile=profile,
-            state=HrPeriod.State.LOCKED,
-            period_start__lte=day,
-            period_end__gte=day,
-        ).exists()
+    def month_is_closed(self, profile, day, until=None):
+        """Whether any month this touches has stopped being rebuilt.
+
+        A range rather than a day, because an absence has two ends and can lie
+        across a month boundary. Asking only about the day it starts on let a week
+        beginning on the 28th of an open January be written straight through into
+        a February that was already closed — where it would reduce a target nobody
+        will recompute, so the closed figure and the records behind it disagree
+        and neither says which is right.
+
+        Handed in and approved count as closed here. Neither is rebuilt again, so
+        an import into one is just as invisible as an import into a locked month.
+        """
+        return settled_month_across(profile, day, until or day) is not None
+
+    def counted_into_a_closed_month(self, batch):
+        """Whether anything this import wrote has since been counted into a closed month.
+
+        Asked of the loader rather than of one table, because each kind of import
+        writes somewhere different and each has to answer for its own rows. Asking
+        only about hours meant an import of absences — which reduce the target, so
+        they move the same balance — could be taken back out of a month that had
+        already been agreed.
+        """
+        raise NotImplementedError
 
 
 class TimeEntryLoader(_Loader):
@@ -189,15 +222,24 @@ class TimeEntryLoader(_Loader):
             minutes = _as_minutes(*_length_column(row))
 
             if profile is None:
-                results.append(RowResult(index, ERROR, f"Nobody here logs in as {email or '(blank)'}.", row))
+                results.append(
+                    RowResult(
+                        index,
+                        ERROR,
+                        f"Nobody here logs in as {email or '(blank)'}.",
+                        row,
+                        "unknown_person",
+                        {"email": email or ""},
+                    )
+                )
             elif day is None:
-                results.append(RowResult(index, ERROR, "The date could not be read.", row))
+                results.append(RowResult(index, ERROR, "The date could not be read.", row, "bad_date"))
             elif minutes is None or minutes == 0:
-                results.append(RowResult(index, ERROR, "The amount of time could not be read.", row))
+                results.append(RowResult(index, ERROR, "The amount of time could not be read.", row, "bad_duration"))
             elif abs(minutes) > 1440:
-                results.append(RowResult(index, ERROR, "More than a day in a single day.", row))
+                results.append(RowResult(index, ERROR, "More than a day in a single day.", row, "more_than_a_day"))
             elif self.month_is_closed(profile, day):
-                results.append(RowResult(index, SKIP, "That month has been closed already.", row))
+                results.append(RowResult(index, SKIP, "That month has been closed already.", row, "month_settled"))
             else:
                 results.append(
                     RowResult(
@@ -231,6 +273,9 @@ class TimeEntryLoader(_Loader):
         ]
         HrTimeEntry.objects.bulk_create(entries, batch_size=100)
         return len(entries)
+
+    def counted_into_a_closed_month(self, batch):
+        return HrTimeEntry.objects.filter(import_batch=batch, locked_period__isnull=False).exists()
 
     def undo(self, batch):
         return HrTimeEntry.objects.filter(import_batch=batch).delete()[0]
@@ -267,17 +312,26 @@ class OpeningBalanceLoader(_Loader):
             basis = (row.get("basis") or row.get("grundlage") or "").strip()
 
             if profile is None:
-                results.append(RowResult(index, ERROR, f"Nobody here logs in as {email or '(blank)'}.", row))
+                results.append(
+                    RowResult(
+                        index,
+                        ERROR,
+                        f"Nobody here logs in as {email or '(blank)'}.",
+                        row,
+                        "unknown_person",
+                        {"email": email or ""},
+                    )
+                )
             elif day is None:
-                results.append(RowResult(index, ERROR, "The date could not be read.", row))
+                results.append(RowResult(index, ERROR, "The date could not be read.", row, "bad_date"))
             elif minutes is None:
-                results.append(RowResult(index, ERROR, "The balance could not be read.", row))
+                results.append(RowResult(index, ERROR, "The balance could not be read.", row, "bad_balance"))
             elif kind is None:
-                results.append(RowResult(index, ERROR, "Say whether this is time or leave.", row))
+                results.append(RowResult(index, ERROR, "Say whether this is time or leave.", row, "kind_missing"))
             elif not basis:
                 # An opening balance without a stated basis is a number nobody can
                 # defend when the person it belongs to disagrees with it.
-                results.append(RowResult(index, ERROR, "Say what this figure is based on.", row))
+                results.append(RowResult(index, ERROR, "Say what this figure is based on.", row, "basis_missing"))
             else:
                 results.append(
                     RowResult(
@@ -317,6 +371,24 @@ class OpeningBalanceLoader(_Loader):
         HrOpeningBalance.objects.bulk_create(rows, batch_size=100)
         return len(rows)
 
+    def counted_into_a_closed_month(self, batch):
+        """An opening balance carries no lock of its own — it is not inside a month.
+
+        It is what every later month is counted from, so the question is whether
+        any month it opened has since been closed. Removing it afterwards would
+        move a balance that has already been carried forward, agreed and paid on.
+        """
+        for profile_id, effective_on in (
+            HrOpeningBalance.objects.filter(import_batch=batch).values_list("profile_id", "effective_on").distinct()
+        ):
+            if HrPeriod.objects.filter(
+                profile_id=profile_id,
+                state=HrPeriod.State.LOCKED,
+                period_end__gte=effective_on,
+            ).exists():
+                return True
+        return False
+
     def undo(self, batch):
         return HrOpeningBalance.objects.filter(import_batch=batch).delete()[0]
 
@@ -344,15 +416,33 @@ class AbsenceLoader(_Loader):
             absence_type = self._types.get(code)
 
             if profile is None:
-                results.append(RowResult(index, ERROR, f"Nobody here logs in as {email or '(blank)'}.", row))
+                results.append(
+                    RowResult(
+                        index,
+                        ERROR,
+                        f"Nobody here logs in as {email or '(blank)'}.",
+                        row,
+                        "unknown_person",
+                        {"email": email or ""},
+                    )
+                )
             elif start is None:
-                results.append(RowResult(index, ERROR, "The start date could not be read.", row))
+                results.append(RowResult(index, ERROR, "The start date could not be read.", row, "bad_start_date"))
             elif end < start:
-                results.append(RowResult(index, ERROR, "It ends before it starts.", row))
+                results.append(RowResult(index, ERROR, "It ends before it starts.", row, "ends_before_it_starts"))
             elif absence_type is None:
-                results.append(RowResult(index, ERROR, f"There is no absence type '{code}'.", row))
-            elif self.month_is_closed(profile, start):
-                results.append(RowResult(index, SKIP, "That month has been closed already.", row))
+                results.append(
+                    RowResult(
+                        index,
+                        ERROR,
+                        f"There is no absence type '{code}'.",
+                        row,
+                        "unknown_absence_type",
+                        {"code": code},
+                    )
+                )
+            elif self.month_is_closed(profile, start, end):
+                results.append(RowResult(index, SKIP, "That month has been closed already.", row, "month_settled"))
             else:
                 results.append(
                     RowResult(
@@ -383,17 +473,19 @@ class AbsenceLoader(_Loader):
                 start_date=result.data["start_date"],
                 end_date=result.data["end_date"],
                 state=HrAbsence.State.APPROVED,
-                reason=f"Imported from a previous system (batch {batch.id}).",
+                import_batch=batch,
+                reason="Imported from a previous system.",
             )
             absence.total_minutes = resolve_total_minutes(absence)
             absence.save(update_fields=["total_minutes", "updated_at"])
             written += 1
         return written
 
+    def counted_into_a_closed_month(self, batch):
+        return HrAbsence.objects.filter(import_batch=batch, locked_period__isnull=False).exists()
+
     def undo(self, batch):
-        # Absences carry no batch reference of their own, so they are found by the
-        # note the import left on them.
-        return HrAbsence.objects.filter(reason__contains=f"batch {batch.id}").delete()[0]
+        return HrAbsence.objects.filter(import_batch=batch).delete()[0]
 
 
 LOADERS = {
@@ -428,7 +520,17 @@ def commit(batch):
 
     loader = LOADERS[batch.kind](batch.workspace)
     results = [
-        RowResult(row["row"], row["verdict"], row["message"], row["data"]) for row in batch.preview.get("rows", [])
+        RowResult(
+            row["row"],
+            row["verdict"],
+            row["message"],
+            row["data"],
+            # Absent from previews stored before rows carried a reason. The
+            # sentence is still there, so such a batch reads as it always did.
+            row.get("reason", ""),
+            row.get("detail"),
+        )
+        for row in batch.preview.get("rows", [])
     ]
     written = loader.write(batch, results)
 
@@ -451,12 +553,10 @@ def undo(batch, actor, reason):
     if not (reason or "").strip():
         raise ValueError("Say why the import is being undone.")
 
-    if HrTimeEntry.objects.filter(import_batch=batch, locked_period__isnull=False).exists():
-        raise ValueError(
-            "Some of these hours have been counted into a month that is now closed. Reopen the month first."
-        )
-
     loader = LOADERS[batch.kind](batch.workspace)
+    if loader.counted_into_a_closed_month(batch):
+        raise ValueError("Some of this has been counted into a month that is now closed. Reopen the month first.")
+
     removed = loader.undo(batch)
 
     batch.state = HrImportBatch.State.ROLLED_BACK

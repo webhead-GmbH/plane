@@ -140,6 +140,18 @@ class HrAbsence(HrBaseModel):
         blank=True,
         related_name="hr_absence_documents",
     )
+    # The import that wrote this row, so undoing that import can find it again.
+    # Named rather than described: it was previously recognised by a phrase left in
+    # the reason, which is a field the person whose absence it is can edit — so an
+    # absence could be kept out of an undo by rewriting a sentence, or swept into
+    # somebody else's undo by copying one in.
+    import_batch = models.ForeignKey(
+        "hr.HrImportBatch",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="absences",
+    )
     # Set once the month containing this absence is closed, after which it can no
     # longer be edited or removed.
     locked_period = models.ForeignKey(

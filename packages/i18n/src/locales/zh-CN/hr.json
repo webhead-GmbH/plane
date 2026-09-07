@@ -22,7 +22,9 @@
       },
       "opening": "期初结余",
       "export_csv": "CSV",
-      "export_excel": "Excel"
+      "export_excel": "Excel",
+      "record_time": "记录工时",
+      "no_record_detail": "此工作区未记录您的工时。如果应当记录，请联系团队负责人。"
     },
     "team_time": {
       "title": "团队工时",
@@ -42,7 +44,10 @@
       },
       "earlier": "更早",
       "later": "更晚",
-      "not_permitted_detail": "所有人的工时仅限团队负责人查看。您本人的月度工时可在“{page}”中查看。"
+      "not_permitted_detail": "所有人的工时仅限团队负责人查看。您本人的月度工时可在“{page}”中查看。",
+      "closing": "正在关闭…",
+      "confirm_close_title": "关闭 {person} 的月份？",
+      "confirm_close_body": "数字将按现状冻结，其背后的工时、缺勤和考勤将不再接受更改。之后可以重新打开，但会留下记录。"
     },
     "summary": {
       "owed": "应工作",
@@ -55,34 +60,47 @@
       "as_of": "截至{date}的情况。该月尚未结束。",
       "not_started": "该月尚未开始。",
       "needs_review": "部分日期需要核对：此前计入的工时现已不存在。",
-      "timer_running": "计时器仍在运行，因此该月暂时无法提交。"
+      "timer_running": "计时器仍在运行，因此该月暂时无法提交。",
+      "telework_days": "今年居家办公：{count}",
+      "nothing_yet": "本月尚未计算任何数据。",
+      "leave_left_days": "剩余假期 {amount} 天",
+      "leave_left_hours": "剩余假期 {amount}",
+      "behind_so_far": "本月落后 {duration}",
+      "ahead_so_far": "本月超出 {duration}"
     },
     "day_table": {
       "day": "日期",
       "what_it_was": "日期类型",
       "owed": "应工作",
       "work_items": "工作项",
-      "other": "其他",
+      "other": "其他工作",
       "away": "缺勤",
       "worked": "已工作",
       "balance": "结余",
       "not_yet": "这一天尚未到来。",
-      "needs_review": "此前计入这一天的工时现已不存在"
+      "needs_review": "此前计入这一天的工时现已不存在",
+      "nothing_yet": "本月尚未计算任何数据。",
+      "rest_of_month": "{count, plural, other {显示本月剩余（# 天）}}",
+      "open_day": "记录 {day} 的工时",
+      "hide_rest_of_month": "隐藏本月剩余"
     },
     "overview_table": {
       "person": "成员",
       "state": "状态",
       "owed": "应工作",
       "worked": "已工作",
-      "hours": "小时数",
       "balance": "结余",
       "carried": "结转",
       "action": "操作",
-      "not_handed_in": "未提交",
       "agree": "批准",
       "close": "关闭",
       "reopen": "重新打开",
-      "nobody_yet": "还没有人拥有雇佣记录。"
+      "nobody_yet": "还没有人拥有雇佣记录。",
+      "timer_running": "计时器仍在运行",
+      "needs_review": "有些日期需要查看",
+      "blocked_by_review": "查看这些日期",
+      "month_running": "本月尚未结束",
+      "waiting_for": "等待 {person} 提交"
     },
     "reopen": {
       "title": "重新打开{month}？",
@@ -101,7 +119,7 @@
       "partial_absence": "部分缺勤"
     },
     "state": {
-      "open": "进行中",
+      "open": "未提交",
       "submitted": "已提交",
       "approved": "已批准",
       "closed": "已关闭",
@@ -114,6 +132,7 @@
       "back_to_month": "月度工时",
       "edit": "编辑",
       "remove": "标记为已离职",
+      "bring_back": "重新录用",
       "manager": "团队负责人",
       "employee": "员工",
       "left": "已离职",
@@ -137,7 +156,7 @@
       "section_schedule": "每周工作安排",
       "hire_date": "入职日期",
       "timezone": "时区",
-      "is_manager": "担任团队负责人，可以查看所有人的工时",
+      "is_manager": "负责团队 — 可在所有工作区查看和修改所有人的工时、缺勤和假期",
       "arrangement": "用工方式",
       "valid_from": "生效日期",
       "records_target": "记录应工作工时与累计结余",
@@ -157,14 +176,17 @@
       },
       "errors": {
         "bad_duration": "其中有一天填写的不是时长。请输入 7:42 或 7.7，或者留空。",
-        "hire_date_required": "请填写该成员的入职日期，第一个月才知道从哪天开始计算。"
+        "hire_date_required": "请填写该成员的入职日期，第一个月才知道从哪天开始计算。",
+        "week_required": "请填写每个工作日的时长，否则该月没有参照。",
+        "bad_crm_staff_id": "CRM 员工 ID 是整数。留空则改为按邮箱地址匹配。"
       },
       "toasts": {
         "added": "已添加",
         "saved": "已保存",
         "removed": "已标记为离职",
         "refused": "操作未成功",
-        "try_again": "请重试。"
+        "try_again": "请重试。",
+        "brought_back": "已恢复在职"
       },
       "opening": "期初结余",
       "rates": "费率",
@@ -177,7 +199,16 @@
         "set": "在此填写后，无论两边的邮箱地址如何，工时都会计入该账户。",
         "email": "当前按邮箱地址匹配。一旦两个系统中的邮箱不一致，匹配就会失效。",
         "none": "该成员与 CRM 之间没有任何关联，其工时永远不会进入 CRM 计时。"
-      }
+      },
+      "confirm_remove_title": "标记为已离职？",
+      "confirm_remove_body": "{person} 将不再出现在新的月份中。已记录的内容保持不变。",
+      "removing": "正在标记…",
+      "no_hours_yet": "未设置工时",
+      "confirm_remove_permanent": "如果之后回来，可以重新录用。",
+      "pick_somebody_first": "请先从列表中选择一个人",
+      "pick_date_first": "请填写入职日期",
+      "nobody_matches_detail": "只有已在此拥有账号的人才能建立雇佣记录。账号在工作区设置的成员中创建。",
+      "everybody_added_detail": "所有拥有账号的人都已有雇佣记录。"
     },
     "arrangement": {
       "onsite_full_time": "现场办公，全职",
@@ -186,7 +217,7 @@
       "remote_part_time_invoicing": "远程办公，兼职，自行开票"
     },
     "entries": {
-      "hint": "这一天没有对应工作项的工时。公司启用 Plane 之前的月份也在此处录入。",
+      "hint": "不属于任何工作项的时间——会议、行政、培训、出差。",
       "none_yet": "这一天还没有任何记录。",
       "day_total": "当天合计",
       "how_long": "时长",
@@ -194,10 +225,9 @@
       "note": "备注",
       "note_placeholder": "这段时间用于做什么",
       "add": "添加",
-      "done": "完成",
       "remove": "删除",
       "imported": "已导入",
-      "month_closed": "该月已关闭，其工时不能再更改。如需更正，请先重新打开该月。",
+      "month_closed": "本月已关闭，工时不能再更改。如需更正，请联系团队负责人。",
       "category": {
         "meeting": "内部会议",
         "training": "培训",
@@ -214,7 +244,46 @@
         "added": "已添加",
         "refused": "操作未成功",
         "try_again": "请重试。"
-      }
+      },
+      "close": "关闭",
+      "not_added_yet": "尚未添加",
+      "confirm_remove_title": "删除这些工时？",
+      "confirm_remove_body": "{duration} 将从这一天和本月合计中扣除。",
+      "removing": "正在删除…"
+    },
+    "attendance": {
+      "title": "在岗时间",
+      "hint": "这一天的开始、结束和休息时间，与这些工时用在什么上分开记录。",
+      "still_running": "仍在进行",
+      "from": "从",
+      "to": "到",
+      "break": "休息（分钟）",
+      "where": "地点",
+      "past_midnight": "按跨过午夜计算。",
+      "record": "记录",
+      "update": "更新",
+      "remove": "删除",
+      "closed_with": "{from} 至 {to}，{duration}。该月已关闭，不能再更改。",
+      "closed_without": "这一天没有任何记录，且该月已关闭。",
+      "location": {
+        "office": "在办公室",
+        "home": "居家办公",
+        "elsewhere": "其他地点"
+      },
+      "errors": {
+        "start_required": "请填写开始的时间。",
+        "bad_break": "请以整分钟填写休息时间。"
+      },
+      "toasts": {
+        "saved": "已保存",
+        "removed": "已删除",
+        "refused": "操作未成功",
+        "try_again": "请重试。"
+      },
+      "confirm_remove_title": "删除这条考勤记录？",
+      "confirm_remove_body": "这一天的开始、结束和休息将被删除。这是法律要求保存的工时记录。",
+      "removing": "正在删除…",
+      "past_midnight_length": "这跨过午夜，合计 {duration}。如果不对，请检查结束时间。"
     },
     "imports": {
       "title": "导入工时",
@@ -237,7 +306,7 @@
       "will_write": "将写入",
       "cannot_read": "无法读取",
       "skipped": "已跳过",
-      "apply": "应用 {count} 行",
+      "apply": "{count, plural, other {导入 # 行}}",
       "discard": "放弃",
       "column_row": "行",
       "column_verdict": "结果",
@@ -249,7 +318,7 @@
       },
       "past": "以往导入的文件",
       "none_yet": "还没有导入任何内容。",
-      "row_summary": "{valid} / {total} 行",
+      "row_summary": "{total, plural, other {# 行中 {valid} 行}}",
       "state": {
         "10": "已上传",
         "20": "核对中",
@@ -268,11 +337,26 @@
       "undo_cancel": "保持现状",
       "toasts": {
         "applied": "已应用",
-        "written": "已写入 {count} 行",
+        "written": "{count, plural, other {已写入 # 行}}",
         "undone": "已撤销",
-        "removed": "已删除 {count} 行",
+        "removed": "{count, plural, other {已移除 # 行}}",
         "refused": "操作未成功",
         "try_again": "请重试。"
+      },
+      "template": "下载模板",
+      "resume": "查看并应用",
+      "reasons": {
+        "unknown_person": "这里没有人使用 {email} 登录。",
+        "bad_date": "无法读取日期。",
+        "bad_duration": "无法读取时长。",
+        "more_than_a_day": "一天内超过一天的工时。",
+        "month_settled": "该月已关闭。",
+        "bad_balance": "无法读取余额。",
+        "kind_missing": "请说明这是工时还是假期。",
+        "basis_missing": "请说明该数字的依据。",
+        "bad_start_date": "无法读取开始日期。",
+        "ends_before_it_starts": "结束早于开始。",
+        "unknown_absence_type": "不存在名为“{code}”的缺勤类型。"
       }
     },
     "opening": {
@@ -314,7 +398,14 @@
         "agreed": "已商定",
         "refused": "操作未成功",
         "try_again": "请重试。"
-      }
+      },
+      "correct": "更正此数字",
+      "agreeing": "正在记录…",
+      "confirm_agree_title": "确认此结余？",
+      "confirm_agree_body": "您确认 {amount} 无误。此操作无法撤销。如果数字有误，请不要确认，改为告知团队负责人。",
+      "correcting_heading": "更正数字",
+      "stop_correcting": "改为新增一条",
+      "correct_confirm": "保存更正"
     },
     "absences": {
       "title": "缺勤",
@@ -346,7 +437,8 @@
       "granularity": {
         "full_day": "整天",
         "half_day": "首尾各半天",
-        "hours": "每天固定小时数"
+        "hours": "每天固定小时数",
+        "half_day_single": "半天"
       },
       "half": {
         "morning": "上午",
@@ -371,7 +463,8 @@
         "hours_hint": "可写作 3:30、3.5 或 210m。",
         "note": "备注",
         "note_placeholder": "选填",
-        "record": "登记"
+        "record": "登记",
+        "hours_unreadable": "这不是时长。可以试试 1:30、1,5 或 90。"
       },
       "toasts": {
         "saved": "缺勤已保存",
@@ -397,9 +490,23 @@
         "name_placeholder": "显示给员工的名称",
         "counts_as_worked": "当天仍计为工作时间",
         "draws_on_leave": "当天从年假额度中扣除",
-        "refused": "无法保存",
-        "try_again": "请重试。"
-      }
+        "refused": "无法完成",
+        "try_again": "请重试。",
+        "confirm_remove_title": "要删除这种缺勤类型吗？",
+        "confirm_remove_body": "记录缺勤时将不再提供“{kind}”。如果只是想让它不出现在列表中，请改为停用。",
+        "deleting": "正在删除"
+      },
+      "filter_person": "显示谁的缺勤",
+      "confirm_remove_title": "删除这次缺勤？",
+      "confirm_remove_body": "{person} 这些天恢复完整应工作时长，{duration} 退回其假期。",
+      "removing": "正在删除…",
+      "refuse_title": "驳回 {person} 的缺勤",
+      "refuse_body": "对方会看到你写的内容，请写清楚到能独立看懂。",
+      "refuse_label": "原因",
+      "refuse_placeholder": "那一周已经有两个人休假",
+      "refuse_cancel": "取消",
+      "request": "申请休假",
+      "errors": {}
     },
     "rates": {
       "title": "{person} 的工时价值",
@@ -433,7 +540,10 @@
         "removed": "费率已删除",
         "refused": "无法保存",
         "try_again": "请重试。"
-      }
+      },
+      "removing": "正在删除…",
+      "confirm_remove_title": "删除此费率？",
+      "confirm_remove_body": "已计算的月份保留原有数字。此后的月份将失去此费率。"
     },
     "statement": {
       "title": "开票之前",
@@ -444,7 +554,8 @@
       "monthly_rate": "每月固定金额",
       "no_rate": "尚未记录您的费率，因此这里只显示工时。请联系团队负责人。",
       "still_moving": "该月尚未关闭，因此这些数据仍可能变动。",
-      "settled": "该月已关闭，因此这些数据已经确定。"
+      "settled": "该月已关闭，因此这些数据已经确定。",
+      "decimal_hours": "十进制小时 {hours}"
     },
     "leave": {
       "title": "{person} 的年假",
@@ -462,21 +573,28 @@
       "basis": "依据",
       "basis_placeholder": "选填",
       "between": "{from} 至 {to}",
-      "about_days": "约 {days} 天",
+      "about_days": "{days, plural, other {约 # 天}}",
       "carried": "结转 {duration}",
       "agree": "确认无误",
       "agreed": "已商定",
       "errors": {
         "dates_required": "请填写该年假年度的起止日期。",
         "backwards": "年假年度的结束日期不能早于开始日期。",
-        "bad_duration": "请将时长写作 200:00、200 或 12000m。"
+        "bad_duration": "请将时长写作 200:00、200 或 12000m。",
+        "already_there": "该假期年度已有记录。"
       },
       "toasts": {
         "added": "年假年度已添加",
         "agreed": "已标记为商定",
         "refused": "无法保存",
         "try_again": "请重试。"
-      }
+      },
+      "entitlement_with_unit": "本年度假期（小时:分钟）",
+      "echo_days": "{duration} · {days, plural, other {约 # 天}}",
+      "echo_hours": "{duration}",
+      "agreeing": "正在记录…",
+      "confirm_agree_title": "将此数字确定为最终值？",
+      "confirm_agree_body": "{duration} 之后无法修改。日后的更改需另行记录并附上理由。"
     },
     "holidays": {
       "title": "节假日",
@@ -501,14 +619,92 @@
       "only_half": "仅半天",
       "name_placeholder": "这一天的名称",
       "errors": {
-        "date_and_name": "请填写日期和名称。"
+        "date_and_name": "请填写日期和名称。",
+        "already_there": "这一天已有 {day}。"
       },
       "toasts": {
         "added": "日期已添加",
         "removed": "日期已删除",
         "refused": "无法保存",
         "try_again": "请重试。"
+      },
+      "column_length": "时长",
+      "whole_day": "全天",
+      "half_day": "半天",
+      "confirm_remove_title": "删除这一天？",
+      "confirm_remove_body": "{day} 将不再是假日，因此所有人当天的应工作时长会恢复。",
+      "removing": "正在删除…"
+    },
+    "shared": {
+      "load_failed": "无法加载",
+      "load_failed_detail": "中途出错了。请重试，如果一直这样请告知团队负责人。",
+      "retry": "重试"
+    },
+    "review_days": {
+      "title": "需要查看的 {person} 的日期",
+      "body": "这些日期上原本计入的工时不见了。为每一天说明发生了什么，本月即可关闭。",
+      "all_settled": "没有需要查看的内容了。本月可以关闭。",
+      "counts_now": "现在计为 {duration}",
+      "what_happened": "发生了什么？",
+      "placeholder": "记错了日期，已移动",
+      "settle": "确认此日",
+      "close": "关闭",
+      "toasts": {
+        "settled": "该日已确认",
+        "refused": "无法确认",
+        "try_again": "请稍后重试。"
       }
+    },
+    "refusals": {
+      "absence_type_in_use": "{in_use, plural, other {已有 # 条缺勤记录使用这种类型，因此无法删除——那些记录会失去意义。}} 请改为停用：它会从可选列表中消失，而已有记录仍可读。",
+      "month_settled": "{month} 已{month_state}，其记录不能再更改。如果这条必须计入，请申请重新打开该月。",
+      "month_state": {
+        "handed_in": "提交",
+        "agreed": "批准",
+        "closed": "关闭"
+      },
+      "last_manager": "这是唯一负责团队的人。取消后将没有人能访问任何月份，也没有人能恢复。请先指定另一个人。"
+    },
+    "detail": {
+      "title": "工时明细",
+      "whose": "谁的工时",
+      "mine": "我的工时",
+      "group_by": "分组方式",
+      "on_work_items": "工作项上",
+      "other_hours": "其他全部",
+      "entries": "条目",
+      "month_state": "这些数字",
+      "frozen": "已冻结",
+      "frozen_hint": "本月计入的内容",
+      "live": "实时",
+      "live_hint": "本月仍处于打开状态",
+      "column_what": "内容",
+      "column_when": "日期",
+      "column_note": "备注",
+      "column_long": "时长",
+      "unnamed": "未命名",
+      "still_running": "仍在计时——尚无时长，不计入",
+      "gone": "本月计入了它，但它已不存在",
+      "by_hand": "· 手动录入",
+      "nothing_logged": "本月没有记录到任何工作项上的工时。",
+      "other_title": "没有工作项的工时",
+      "other_subtitle": "会议、行政、培训、差旅——以及从以前导入的一切。这些同样计入本月。",
+      "footnote": "工时在记录它们的地方计入，涵盖所有工作区。",
+      "rounding_note": "分钟按天和项目各舍入一次，因此这些小计不一定等于上面的数字。",
+      "entry_count": "{count, plural, other {· # 条}}",
+      "running_note": "{count, plural, other {有 # 个计时器仍在运行。尚无时长，因此这里不计入。}}",
+      "missing_note": "{count, plural, other {本月计入的 # 条记录已无法找到。只保留了标识符，因此没有可显示的内容。}}",
+      "week_of": "{date} 当周",
+      "grouping": {
+        "day": "按天",
+        "work_item": "工作项",
+        "project": "项目",
+        "week": "按周",
+        "workspace": "工作区"
+      },
+      "under_a_minute": "不到一分钟",
+      "auto_stopped": "· 系统已停止",
+      "auto_stopped_hint": "该计时器一直在运行，已按上限停止。时长是上限而非实测值，需要更正。"
     }
   }
 }

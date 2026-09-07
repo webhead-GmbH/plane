@@ -22,7 +22,9 @@
         "not_handed_in": "제출되지 않았습니다",
         "try_again": "잠시 후 다시 시도해 주세요."
       },
-      "opening": "기초 누적 차이"
+      "opening": "기초 누적 차이",
+      "record_time": "시간 기록",
+      "no_record_detail": "이 워크스페이스에서는 회원님의 근무시간이 기록되지 않습니다. 기록되어야 한다면 팀 담당자에게 문의하세요."
     },
     "team_time": {
       "title": "팀 근무 시간",
@@ -42,10 +44,13 @@
       },
       "earlier": "이전 달",
       "later": "다음 달",
-      "not_permitted_detail": "모든 구성원의 시간은 팀을 관리하는 담당자만 볼 수 있습니다. 본인의 월별 기록은 {page} 페이지에서 확인할 수 있습니다."
+      "not_permitted_detail": "모든 구성원의 시간은 팀을 관리하는 담당자만 볼 수 있습니다. 본인의 월별 기록은 {page} 페이지에서 확인할 수 있습니다.",
+      "closing": "마감하는 중…",
+      "confirm_close_title": "{person}님의 달을 마감할까요?",
+      "confirm_close_body": "수치가 그대로 고정되고, 그 근거가 되는 근무시간·부재·근태는 더 이상 변경되지 않습니다. 나중에 다시 열 수 있지만 기록이 남습니다."
     },
     "summary": {
-      "owed": "소정 시간",
+      "owed": "소정 근로",
       "worked": "실근무 시간",
       "balance": "차이",
       "whole_month": "해당 월 전체 {duration}",
@@ -55,34 +60,47 @@
       "as_of": "{date} 기준입니다. 해당 월은 아직 끝나지 않았습니다.",
       "not_started": "해당 월은 아직 시작되지 않았습니다.",
       "needs_review": "확인이 필요한 날이 있습니다. 이전에 집계되었던 시간이 지금은 없습니다.",
-      "timer_running": "타이머가 아직 실행 중이므로 해당 월은 아직 제출할 수 없습니다."
+      "timer_running": "타이머가 아직 실행 중이므로 해당 월은 아직 제출할 수 없습니다.",
+      "telework_days": "올해 재택근무: {count}",
+      "nothing_yet": "이번 달은 아직 집계되지 않았습니다.",
+      "leave_left_days": "남은 휴가 {amount}일",
+      "leave_left_hours": "남은 휴가 {amount}",
+      "behind_so_far": "이번 달 {duration} 부족",
+      "ahead_so_far": "이번 달 {duration} 초과"
     },
     "day_table": {
       "day": "날짜",
       "what_it_was": "구분",
-      "owed": "소정 시간",
+      "owed": "소정 근로",
       "work_items": "작업 항목",
-      "other": "기타",
+      "other": "기타 업무",
       "away": "부재",
       "worked": "실근무 시간",
       "balance": "차이",
       "not_yet": "아직 지나지 않은 날입니다.",
-      "needs_review": "이전에 여기에 집계되었던 시간이 더 이상 없습니다"
+      "needs_review": "이전에 여기에 집계되었던 시간이 더 이상 없습니다",
+      "nothing_yet": "이번 달은 아직 집계되지 않았습니다.",
+      "rest_of_month": "{count, plural, other {이번 달 남은 날 표시 (#일)}}",
+      "open_day": "{day} 시간 기록",
+      "hide_rest_of_month": "이번 달 남은 날 숨기기"
     },
     "overview_table": {
       "person": "구성원",
       "state": "상태",
-      "owed": "소정 시간",
+      "owed": "소정 근로",
       "worked": "실근무 시간",
-      "hours": "시간 수",
       "balance": "차이",
       "carried": "이월",
       "action": "처리",
-      "not_handed_in": "미제출",
       "agree": "승인",
       "close": "마감",
       "reopen": "다시 열기",
-      "nobody_yet": "아직 고용 기록이 있는 사람이 없습니다."
+      "nobody_yet": "아직 고용 기록이 있는 사람이 없습니다.",
+      "timer_running": "타이머가 아직 실행 중입니다",
+      "needs_review": "확인이 필요한 날이 있습니다",
+      "blocked_by_review": "해당 날짜 확인",
+      "month_running": "이번 달은 아직 끝나지 않았습니다",
+      "waiting_for": "{person}님의 제출 대기"
     },
     "reopen": {
       "title": "{month}을(를) 다시 여시겠습니까?",
@@ -101,7 +119,7 @@
       "partial_absence": "부분 부재"
     },
     "state": {
-      "open": "열림",
+      "open": "미제출",
       "submitted": "제출됨",
       "approved": "승인됨",
       "closed": "마감됨",
@@ -114,6 +132,7 @@
       "back_to_month": "월별 현황",
       "edit": "편집",
       "remove": "퇴사 처리",
+      "bring_back": "다시 등록",
       "manager": "팀 관리 담당",
       "employee": "직원",
       "left": "퇴사함",
@@ -137,7 +156,7 @@
       "section_schedule": "주간 근무 일정",
       "hire_date": "입사일",
       "timezone": "시간대",
-      "is_manager": "팀을 관리하며, 모든 구성원의 시간을 볼 수 있습니다",
+      "is_manager": "팀을 담당 — 모든 워크스페이스에서 전원의 근무시간·부재·휴가를 보고 변경할 수 있습니다",
       "arrangement": "근무 형태",
       "valid_from": "적용 시작일",
       "records_target": "소정 시간과 누적 차이를 기록",
@@ -157,14 +176,17 @@
       },
       "errors": {
         "bad_duration": "시간 형식이 아닌 요일이 있습니다. 7:42 또는 7.7 형식으로 입력하거나 비워 두세요.",
-        "hire_date_required": "첫 달을 어디서부터 집계할지 알 수 있도록 입사일을 입력해 주세요."
+        "hire_date_required": "첫 달을 어디서부터 집계할지 알 수 있도록 입사일을 입력해 주세요.",
+        "week_required": "하루 근무시간을 입력하세요. 기준이 없으면 월을 계산할 수 없습니다.",
+        "bad_crm_staff_id": "CRM 직원 ID는 정수입니다. 이메일 주소로 대조하려면 비워 두세요."
       },
       "toasts": {
         "added": "추가되었습니다",
         "saved": "저장되었습니다",
         "removed": "퇴사 처리되었습니다",
         "refused": "처리되지 않았습니다",
-        "try_again": "다시 시도해 주세요."
+        "try_again": "다시 시도해 주세요.",
+        "brought_back": "다시 재직 상태가 되었습니다"
       },
       "opening": "기초 누적 차이",
       "rates": "단가",
@@ -177,7 +199,16 @@
         "set": "여기에 직접 지정했으므로 이메일 주소가 무엇이든 근무 시간은 이 계정으로 전송됩니다.",
         "email": "이메일 주소로 연결되어 있습니다. 두 시스템 중 한쪽의 주소가 달라지는 순간까지만 유효합니다.",
         "none": "이 구성원을 CRM과 이어 주는 것이 없으므로, 이 사람의 근무 시간은 CRM 타이머가 되지 못합니다."
-      }
+      },
+      "confirm_remove_title": "퇴사로 표시할까요?",
+      "confirm_remove_body": "{person} 님은 이후 달에 표시되지 않습니다. 이미 기록된 내용은 그대로 유지됩니다.",
+      "removing": "표시하는 중…",
+      "no_hours_yet": "근무시간 미설정",
+      "confirm_remove_permanent": "나중에 다시 돌아오면 재등록할 수 있습니다.",
+      "pick_somebody_first": "먼저 목록에서 선택하세요",
+      "pick_date_first": "입사일을 입력하세요",
+      "nobody_matches_detail": "이곳에 계정이 있는 사람만 고용 기록을 만들 수 있습니다. 계정은 워크스페이스 설정의 멤버에서 생성합니다.",
+      "everybody_added_detail": "계정이 있는 모든 사람에게 이미 고용 기록이 있습니다."
     },
     "arrangement": {
       "onsite_full_time": "사무실 근무, 풀타임",
@@ -186,7 +217,7 @@
       "remote_part_time_invoicing": "원격 근무, 파트타임, 직접 청구"
     },
     "entries": {
-      "hint": "어떤 작업 항목에도 해당하지 않는 이날의 근무 시간입니다. 회사가 Plane을 사용하기 전의 월도 여기에 입력합니다.",
+      "hint": "작업 항목에 속하지 않는 시간 — 회의, 행정, 교육, 이동.",
       "none_yet": "이날 기록된 내용이 아직 없습니다.",
       "day_total": "이날 합계",
       "how_long": "시간",
@@ -194,10 +225,9 @@
       "note": "메모",
       "note_placeholder": "이 시간에 무엇을 했는지",
       "add": "추가",
-      "done": "닫기",
       "remove": "삭제",
       "imported": "가져옴",
-      "month_closed": "해당 월은 마감되어 기록된 시간을 더 이상 변경할 수 없습니다. 수정할 내용이 있으면 먼저 월을 다시 여세요.",
+      "month_closed": "이 달은 마감되어 시간을 변경할 수 없습니다. 수정이 필요하면 팀 담당자에게 문의하세요.",
       "category": {
         "meeting": "내부 회의",
         "training": "교육",
@@ -214,7 +244,46 @@
         "added": "추가되었습니다",
         "refused": "처리되지 않았습니다",
         "try_again": "다시 시도해 주세요."
-      }
+      },
+      "close": "닫기",
+      "not_added_yet": "아직 추가되지 않음",
+      "confirm_remove_title": "이 시간을 삭제할까요?",
+      "confirm_remove_body": "{duration}이(가) 이 날과 이번 달 합계에서 빠집니다.",
+      "removing": "삭제하는 중…"
+    },
+    "attendance": {
+      "title": "근무한 시간",
+      "hint": "이 날의 시작, 종료, 휴식입니다. 그 시간을 무엇에 썼는지와는 별도로 기록됩니다.",
+      "still_running": "진행 중",
+      "from": "시작",
+      "to": "종료",
+      "break": "휴식(분)",
+      "where": "근무 장소",
+      "past_midnight": "자정을 넘겨 이어진 근무로 계산됩니다.",
+      "record": "기록",
+      "update": "수정",
+      "remove": "삭제",
+      "closed_with": "{from}부터 {to}까지, {duration}. 해당 월은 마감되어 더 이상 변경할 수 없습니다.",
+      "closed_without": "이 날에는 기록된 내용이 없으며, 해당 월은 마감되었습니다.",
+      "location": {
+        "office": "사무실",
+        "home": "재택근무",
+        "elsewhere": "그 밖의 장소"
+      },
+      "errors": {
+        "start_required": "시작한 시각을 입력해 주세요.",
+        "bad_break": "휴식 시간을 분 단위 정수로 입력해 주세요."
+      },
+      "toasts": {
+        "saved": "저장되었습니다",
+        "removed": "삭제되었습니다",
+        "refused": "처리되지 않았습니다",
+        "try_again": "다시 시도해 주세요."
+      },
+      "confirm_remove_title": "이 근태 기록을 삭제할까요?",
+      "confirm_remove_body": "이 날의 시작·종료·휴게 기록이 삭제됩니다. 법이 보존을 요구하는 근로시간 기록입니다.",
+      "removing": "삭제하는 중…",
+      "past_midnight_length": "자정을 넘겨 {duration}이 됩니다. 맞지 않으면 종료 시각을 확인하세요."
     },
     "imports": {
       "title": "근무 시간 가져오기",
@@ -237,7 +306,7 @@
       "will_write": "기록 예정",
       "cannot_read": "읽을 수 없음",
       "skipped": "건너뜀",
-      "apply": "{count}개 행 적용",
+      "apply": "{count, plural, other {#행 적용}}",
       "discard": "버리기",
       "column_row": "행",
       "column_verdict": "판정",
@@ -249,7 +318,7 @@
       },
       "past": "이전에 가져온 파일",
       "none_yet": "아직 가져온 것이 없습니다.",
-      "row_summary": "{total}개 행 중 {valid}개",
+      "row_summary": "{total, plural, other {#행 중 {valid}행}}",
       "state": {
         "10": "업로드됨",
         "20": "확인 중",
@@ -268,11 +337,26 @@
       "undo_cancel": "그대로 유지",
       "toasts": {
         "applied": "적용되었습니다",
-        "written": "{count}개 행이 기록되었습니다",
+        "written": "{count, plural, other {#행을 기록했습니다}}",
         "undone": "되돌렸습니다",
-        "removed": "{count}개 행이 삭제되었습니다",
+        "removed": "{count, plural, other {#행을 되돌렸습니다}}",
         "refused": "처리되지 않았습니다",
         "try_again": "다시 시도해 주세요."
+      },
+      "template": "양식 내려받기",
+      "resume": "확인 후 적용",
+      "reasons": {
+        "unknown_person": "{email}(으)로 로그인하는 사람이 없습니다.",
+        "bad_date": "날짜를 읽을 수 없습니다.",
+        "bad_duration": "시간을 읽을 수 없습니다.",
+        "more_than_a_day": "하루에 하루치를 넘습니다.",
+        "month_settled": "해당 월은 이미 마감되었습니다.",
+        "bad_balance": "잔액을 읽을 수 없습니다.",
+        "kind_missing": "시간인지 휴가인지 지정하세요.",
+        "basis_missing": "이 수치의 근거를 적어 주세요.",
+        "bad_start_date": "시작일을 읽을 수 없습니다.",
+        "ends_before_it_starts": "시작보다 종료가 앞섭니다.",
+        "unknown_absence_type": "“{code}” 부재 유형이 없습니다."
       }
     },
     "opening": {
@@ -314,7 +398,14 @@
         "agreed": "합의되었습니다",
         "refused": "처리되지 않았습니다",
         "try_again": "다시 시도해 주세요."
-      }
+      },
+      "correct": "이 수치 수정",
+      "agreeing": "기록하는 중…",
+      "confirm_agree_title": "이 잔액에 동의할까요?",
+      "confirm_agree_body": "{amount}이(가) 맞다는 데 동의합니다. 되돌릴 수 없습니다. 수치가 틀리면 동의하지 말고 팀 담당자에게 알리세요.",
+      "correcting_heading": "수치 수정",
+      "stop_correcting": "대신 새로 기록",
+      "correct_confirm": "수정 저장"
     },
     "absences": {
       "title": "부재",
@@ -346,7 +437,8 @@
       "granularity": {
         "full_day": "종일",
         "half_day": "첫날과 마지막 날 반일",
-        "hours": "하루 지정 시간"
+        "hours": "하루 지정 시간",
+        "half_day_single": "반일"
       },
       "half": {
         "morning": "오전",
@@ -371,7 +463,8 @@
         "hours_hint": "3:30, 3.5 또는 210m 형식으로 입력합니다.",
         "note": "메모",
         "note_placeholder": "선택 사항",
-        "record": "기록"
+        "record": "기록",
+        "hours_unreadable": "시간 길이가 아닙니다. 1:30, 1,5, 90 등으로 입력하세요."
       },
       "toasts": {
         "saved": "부재를 저장했습니다",
@@ -397,9 +490,23 @@
         "name_placeholder": "표시될 이름",
         "counts_as_worked": "해당일을 근무로 인정",
         "draws_on_leave": "해당일을 연차에서 차감",
-        "refused": "저장하지 못했습니다",
-        "try_again": "다시 시도해 주십시오."
-      }
+        "refused": "처리하지 못했습니다",
+        "try_again": "다시 시도해 주십시오.",
+        "confirm_remove_title": "이 부재 유형을 삭제할까요?",
+        "confirm_remove_body": "부재를 기록할 때 “{kind}”이(가) 더 이상 표시되지 않습니다. 목록에서만 빼려면 대신 사용 중지하세요.",
+        "deleting": "삭제 중"
+      },
+      "filter_person": "표시할 대상",
+      "confirm_remove_title": "이 부재를 삭제할까요?",
+      "confirm_remove_body": "{person}님의 해당 일자 소정 근로가 원래대로 돌아가고 {duration}이(가) 휴가로 복구됩니다.",
+      "removing": "삭제하는 중…",
+      "refuse_title": "{person}님의 부재 반려",
+      "refuse_body": "본인이 여기에 적은 내용을 봅니다. 그것만으로 이해되도록 적어 주세요.",
+      "refuse_label": "사유",
+      "refuse_placeholder": "그 주에 이미 두 명이 부재입니다",
+      "refuse_cancel": "취소",
+      "request": "휴가 신청",
+      "errors": {}
     },
     "rates": {
       "title": "{person}님의 시간 단가",
@@ -433,7 +540,10 @@
         "removed": "단가를 삭제했습니다",
         "refused": "저장하지 못했습니다",
         "try_again": "다시 시도해 주세요."
-      }
+      },
+      "removing": "삭제하는 중…",
+      "confirm_remove_title": "이 요율을 삭제할까요?",
+      "confirm_remove_body": "이미 계산된 달은 그대로 유지됩니다. 이후의 달은 이 요율이 사라집니다."
     },
     "leave": {
       "title": "{person}님의 연차",
@@ -451,21 +561,28 @@
       "basis": "근거",
       "basis_placeholder": "선택 사항",
       "between": "{from}부터 {to}까지",
-      "about_days": "약 {days}일",
+      "about_days": "{days, plural, other {약 #일}}",
       "carried": "{duration} 이월됨",
       "agree": "합의하기",
       "agreed": "합의됨",
       "errors": {
         "dates_required": "연차 연도가 언제 시작하고 언제 끝나는지 입력해 주세요.",
         "backwards": "연차 연도의 종료일은 시작일보다 앞설 수 없습니다.",
-        "bad_duration": "시간은 200:00, 200 또는 12000m 형식으로 입력해 주세요."
+        "bad_duration": "시간은 200:00, 200 또는 12000m 형식으로 입력해 주세요.",
+        "already_there": "이 휴가 연도의 항목이 이미 있습니다."
       },
       "toasts": {
         "added": "연차 연도를 추가했습니다",
         "agreed": "합의됨으로 표시했습니다",
         "refused": "저장하지 못했습니다",
         "try_again": "다시 시도해 주세요."
-      }
+      },
+      "entitlement_with_unit": "연간 휴가(시간:분)",
+      "echo_days": "{duration} · {days, plural, other {약 #일}}",
+      "echo_hours": "{duration}",
+      "agreeing": "기록하는 중…",
+      "confirm_agree_title": "이 수치를 확정할까요?",
+      "confirm_agree_body": "{duration}은(는) 이후 수정할 수 없습니다. 이후 변경은 사유와 함께 별도로 기록합니다."
     },
     "statement": {
       "title": "청구하기 전에",
@@ -476,7 +593,8 @@
       "monthly_rate": "매월 정액",
       "no_rate": "아직 본인에게 기록된 단가가 없어 시간만 표시됩니다. 팀을 관리하는 담당자에게 문의하세요.",
       "still_moving": "해당 월이 아직 열려 있으므로 이 수치는 달라질 수 있습니다.",
-      "settled": "해당 월이 마감되어 이 수치는 확정되었습니다."
+      "settled": "해당 월이 마감되어 이 수치는 확정되었습니다.",
+      "decimal_hours": "소수 시간으로 {hours}"
     },
     "holidays": {
       "title": "공휴일",
@@ -501,14 +619,92 @@
       "only_half": "반일만 휴일로 처리",
       "name_placeholder": "이날의 이름",
       "errors": {
-        "date_and_name": "날짜와 이름을 모두 입력해 주세요."
+        "date_and_name": "날짜와 이름을 모두 입력해 주세요.",
+        "already_there": "이 날에는 이미 {day}이(가) 있습니다."
       },
       "toasts": {
         "added": "휴일을 추가했습니다",
         "removed": "휴일을 삭제했습니다",
         "refused": "저장하지 못했습니다",
         "try_again": "다시 시도해 주세요."
+      },
+      "column_length": "길이",
+      "whole_day": "하루 종일",
+      "half_day": "반일",
+      "confirm_remove_title": "이 날을 삭제할까요?",
+      "confirm_remove_body": "{day}은(는) 공휴일에서 제외되어 그날 모두의 소정 근로시간이 다시 늘어납니다.",
+      "removing": "삭제하는 중…"
+    },
+    "shared": {
+      "load_failed": "불러오지 못했습니다",
+      "load_failed_detail": "도중에 문제가 발생했습니다. 다시 시도하고, 계속되면 팀 담당자에게 알려 주세요.",
+      "retry": "다시 시도"
+    },
+    "review_days": {
+      "title": "{person}님의 확인이 필요한 날",
+      "body": "이 날짜들에 집계되었던 시간이 사라졌습니다. 각각 무슨 일이 있었는지 적으면 월을 마감할 수 있습니다.",
+      "all_settled": "확인할 항목이 없습니다. 이 달은 마감할 수 있습니다.",
+      "counts_now": "현재 {duration}(으)로 집계",
+      "what_happened": "무슨 일이 있었나요?",
+      "placeholder": "잘못된 날짜에 입력해 옮김",
+      "settle": "이 날 확인 완료",
+      "close": "닫기",
+      "toasts": {
+        "settled": "해당 날짜를 확인했습니다",
+        "refused": "확인 처리하지 못했습니다",
+        "try_again": "잠시 후 다시 시도해 주세요."
       }
+    },
+    "refusals": {
+      "absence_type_in_use": "{in_use, plural, other {이 유형으로 #건의 부재가 기록되어 있어 삭제할 수 없습니다. 기록의 의미가 사라집니다.}} 대신 사용 중지하세요. 선택 목록에서는 사라지지만 기존 기록은 그대로 남습니다.",
+      "month_settled": "{month}은(는) {month_state} 상태여서 기록을 변경할 수 없습니다. 이것을 넣어야 한다면 월을 다시 열어 달라고 요청하세요.",
+      "month_state": {
+        "handed_in": "제출됨",
+        "agreed": "승인됨",
+        "closed": "마감됨"
+      },
+      "last_manager": "팀을 담당하는 사람은 이 사람뿐입니다. 해제하면 아무도 어떤 월에도 접근할 수 없고, 되돌릴 사람도 없습니다. 먼저 다른 사람을 담당자로 지정하세요."
+    },
+    "detail": {
+      "title": "시간 상세",
+      "whose": "누구의 시간",
+      "mine": "내 시간",
+      "group_by": "묶기 기준",
+      "on_work_items": "작업 항목에",
+      "other_hours": "그 밖의 모든 것",
+      "entries": "건수",
+      "month_state": "이 수치",
+      "frozen": "확정됨",
+      "frozen_hint": "이 달이 집계한 내용",
+      "live": "실시간",
+      "live_hint": "이 달은 아직 열려 있습니다",
+      "column_what": "내용",
+      "column_when": "날짜",
+      "column_note": "메모",
+      "column_long": "시간",
+      "unnamed": "이름 없음",
+      "still_running": "아직 진행 중입니다. 길이가 없어 집계되지 않습니다",
+      "gone": "이 달이 집계했지만 지금은 없습니다",
+      "by_hand": "· 수기 입력",
+      "nothing_logged": "이번 달에는 작업 항목에 기록된 시간이 없습니다.",
+      "other_title": "작업 항목이 없는 시간",
+      "other_subtitle": "회의, 관리 업무, 교육, 이동 — 그리고 이전에서 가져온 모든 것. 이것도 월에 집계됩니다.",
+      "footnote": "시간은 기록된 곳에서 집계됩니다. 모든 워크스페이스가 대상입니다.",
+      "rounding_note": "분은 날짜와 프로젝트마다 한 번만 반올림되므로 이 소계가 위 수치와 맞지 않을 수 있습니다.",
+      "entry_count": "{count, plural, other {· #건}}",
+      "running_note": "{count, plural, other {#개의 타이머가 진행 중입니다. 길이가 없어 여기서는 집계되지 않습니다.}}",
+      "missing_note": "{count, plural, other {이 달이 집계한 #건을 더 이상 찾을 수 없습니다. 식별자만 남아 있어 보여줄 것이 없습니다.}}",
+      "week_of": "{date} 주간",
+      "grouping": {
+        "day": "일",
+        "work_item": "작업 항목",
+        "project": "프로젝트",
+        "week": "주",
+        "workspace": "워크스페이스"
+      },
+      "under_a_minute": "1분 미만",
+      "auto_stopped": "· 시스템이 중지",
+      "auto_stopped_hint": "이 타이머는 계속 켜져 있다가 최대치에서 중지되었습니다. 길이는 상한이지 측정값이 아니므로 수정이 필요합니다."
     }
   }
 }

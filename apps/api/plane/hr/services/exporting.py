@@ -18,6 +18,11 @@ from io import BytesIO, StringIO
 
 # Module imports
 from plane.hr.models import HrPeriod, HrPeriodDay
+from plane.hr.services.attendance import (
+    locations_by_day,
+    telework_days_between,
+    telework_days_in_year,
+)
 from plane.hr.services.ledger import (
     counted_through_for,
     period_totals,
@@ -52,6 +57,12 @@ MONTH_COLUMNS = [
     "counted_through",
     "balance_minutes_to_date",
     "balance_hours_to_date",
+    # Appended rather than filed next to the other counts, because whatever reads
+    # this takes the columns it knows by position. A new column at the end is
+    # invisible to it; one inserted in the middle silently moves every figure
+    # after it into the wrong heading.
+    "telework_days",
+    "telework_days_this_year",
 ]
 
 DAY_COLUMNS = [
@@ -67,6 +78,12 @@ DAY_COLUMNS = [
     "needs_review",
     "note",
     "has_happened",
+    # Appended for the same reason as above. Who this is would read better at the
+    # front, but the front is where the positions are — and a file separated from
+    # its filename still needs the name somewhere, which is what this is for.
+    "employee",
+    "email",
+    "work_location",
 ]
 
 
@@ -75,6 +92,17 @@ def _hours(minutes):
     if minutes is None:
         return ""
     return round(minutes / 60, 2)
+
+
+def _figure_or_blank(minutes):
+    """A number, or an empty cell where there genuinely is no figure.
+
+    Written out rather than `minutes or ""`, which turns a balance of exactly
+    zero into a blank. In a payroll sheet those two say different things — level,
+    and not worked out yet — and the reader has no way to tell them apart. Level
+    is also the ordinary case for somebody's first month.
+    """
+    return "" if minutes is None else minutes
 
 
 def _figures(period):
@@ -143,8 +171,12 @@ def month_rows(periods):
                 "absence_minutes": figures["absence_minutes"],
                 "holiday_minutes": figures["holiday_minutes"],
                 "leave_consumed_minutes": figures["leave_consumed_minutes"],
-                "opening_balance_minutes": period.opening_balance_minutes or "",
-                "closing_balance_minutes": period.closing_balance_minutes or "",
+                "telework_days": telework_days_between(period.profile, period.period_start, period.period_end),
+                "telework_days_this_year": telework_days_in_year(
+                    period.profile, period.period_start.year, up_to=period.period_end
+                ),
+                "opening_balance_minutes": _figure_or_blank(period.opening_balance_minutes),
+                "closing_balance_minutes": _figure_or_blank(period.closing_balance_minutes),
                 "counted_through": through.isoformat() if through else "",
                 "balance_minutes_to_date": balance_to_date,
                 "balance_hours_to_date": _hours(balance_to_date),
@@ -157,8 +189,12 @@ def day_rows(period):
     """One row per day, for a single person's month."""
     days = HrPeriodDay.objects.filter(period_id=period.id).order_by("work_date")
     through, _ = _so_far(period)
+    member = period.profile.member
+    where = locations_by_day(period.profile, period.period_start, period.period_end)
     return [
         {
+            "employee": member.display_name or "",
+            "email": member.email or "",
             "date": day.work_date.isoformat(),
             "day_kind": day.get_day_kind_display(),
             "target_minutes": day.target_minutes,
@@ -168,6 +204,9 @@ def day_rows(period):
             "holiday_minutes": day.holiday_minutes,
             "actual_minutes": day.actual_minutes,
             "balance_minutes": day.balance_minutes,
+            # Blank where no attendance was recorded for the day, which is most
+            # days for most people: the record is kept only where it is switched on.
+            "work_location": where.get(day.work_date, ""),
             "needs_review": "yes" if day.needs_review else "",
             "note": day.note or "",
             # Blank rather than "no" for a day still to come, so a reader scanning

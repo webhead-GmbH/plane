@@ -22,7 +22,9 @@
       },
       "opening": "開始時の過不足",
       "export_csv": "CSV",
-      "export_excel": "Excel"
+      "export_excel": "Excel",
+      "record_time": "時間を記録",
+      "no_record_detail": "このワークスペースではあなたの時間は記録されていません。記録されるべき場合はチーム担当者にご連絡ください。"
     },
     "team_time": {
       "title": "チームの勤怠",
@@ -42,10 +44,13 @@
       },
       "earlier": "前の月",
       "later": "次の月",
-      "not_permitted_detail": "全員の時間を閲覧できるのは、チームを管理する担当者のみです。自分の月は「{page}」で確認できます。"
+      "not_permitted_detail": "全員の時間を閲覧できるのは、チームを管理する担当者のみです。自分の月は「{page}」で確認できます。",
+      "closing": "締めています…",
+      "confirm_close_title": "{person} の月を締めますか？",
+      "confirm_close_body": "数値はそのまま凍結され、その裏にある勤務時間・休暇・勤怠は変更を受け付けなくなります。後から再開できますが記録が残ります。"
     },
     "summary": {
-      "owed": "所定時間",
+      "owed": "所定",
       "worked": "実働時間",
       "balance": "過不足",
       "whole_month": "月全体で{duration}",
@@ -55,34 +60,47 @@
       "as_of": "{date}時点の数値です。月はまだ終わっていません。",
       "not_started": "この月はまだ始まっていません。",
       "needs_review": "確認が必要な日があります。以前計上されていた時間が見つかりません。",
-      "timer_running": "タイマーが実行中のため、この月はまだ提出できません。"
+      "timer_running": "タイマーが実行中のため、この月はまだ提出できません。",
+      "telework_days": "今年の在宅勤務: {count}",
+      "nothing_yet": "今月の集計はまだありません。",
+      "leave_left_days": "残りの休暇 {amount} 日",
+      "leave_left_hours": "残りの休暇 {amount}",
+      "behind_so_far": "今月は {duration} 不足",
+      "ahead_so_far": "今月は {duration} 超過"
     },
     "day_table": {
       "day": "日付",
       "what_it_was": "区分",
-      "owed": "所定時間",
+      "owed": "所定",
       "work_items": "作業項目",
-      "other": "その他",
-      "away": "休暇",
+      "other": "その他の業務",
+      "away": "休み",
       "worked": "実働時間",
       "balance": "過不足",
       "not_yet": "この日はまだ来ていません。",
-      "needs_review": "以前ここに計上されていた時間が見つかりません"
+      "needs_review": "以前ここに計上されていた時間が見つかりません",
+      "nothing_yet": "今月の集計はまだありません。",
+      "rest_of_month": "{count, plural, other {今月の残りを表示（#日）}}",
+      "open_day": "{day} の時間を記録",
+      "hide_rest_of_month": "今月の残りを隠す"
     },
     "overview_table": {
       "person": "メンバー",
       "state": "ステータス",
-      "owed": "所定時間",
+      "owed": "所定",
       "worked": "実働時間",
-      "hours": "時間数",
       "balance": "過不足",
       "carried": "繰越",
       "action": "操作",
-      "not_handed_in": "未提出",
       "agree": "承認",
       "close": "確定",
       "reopen": "再オープン",
-      "nobody_yet": "雇用記録が登録されているメンバーはまだいません。"
+      "nobody_yet": "雇用記録が登録されているメンバーはまだいません。",
+      "timer_running": "タイマーがまだ動いています",
+      "needs_review": "確認が必要な日があります",
+      "blocked_by_review": "該当日を確認",
+      "month_running": "今月はまだ終わっていません",
+      "waiting_for": "{person} の提出待ち"
     },
     "reopen": {
       "title": "{month}を再オープンしますか？",
@@ -101,7 +119,7 @@
       "partial_absence": "一部休暇"
     },
     "state": {
-      "open": "オープン",
+      "open": "未提出",
       "submitted": "提出済み",
       "approved": "承認済み",
       "closed": "確定済み",
@@ -114,6 +132,7 @@
       "back_to_month": "月の勤怠",
       "edit": "編集",
       "remove": "退職として記録",
+      "bring_back": "再度雇用する",
       "manager": "チーム管理担当",
       "employee": "従業員",
       "left": "退職済み",
@@ -137,7 +156,7 @@
       "section_schedule": "週の勤務パターン",
       "hire_date": "入社日",
       "timezone": "タイムゾーン",
-      "is_manager": "チームを管理する担当者にする（全員の時間を閲覧できます）",
+      "is_manager": "チームを担当 — すべてのワークスペースで、全員の時間・不在・休暇を閲覧および変更できます",
       "arrangement": "勤務形態",
       "valid_from": "適用開始日",
       "records_target": "所定時間と過不足を記録する",
@@ -157,14 +176,17 @@
       },
       "errors": {
         "bad_duration": "時間として読み取れない曜日があります。7:42または7.7のように入力するか、空欄にしてください。",
-        "hire_date_required": "最初の月をどこから数えるか決まるよう、入社日を入力してください。"
+        "hire_date_required": "最初の月をどこから数えるか決まるよう、入社日を入力してください。",
+        "week_required": "1 日の所定時間を入力してください。基準がないと月を計算できません。",
+        "bad_crm_staff_id": "CRM のスタッフ ID は整数です。メールアドレスで照合する場合は空欄のままにしてください。"
       },
       "toasts": {
         "added": "追加しました",
         "saved": "保存しました",
         "removed": "退職として記録しました",
         "refused": "処理できませんでした",
-        "try_again": "もう一度お試しください。"
+        "try_again": "もう一度お試しください。",
+        "brought_back": "再び在籍となりました"
       },
       "opening": "開始時の過不足",
       "rates": "単価",
@@ -177,7 +199,16 @@
         "set": "ここで指定しているため、メールアドレスが何であっても、時間はこのアカウントに記録されます。",
         "email": "メールアドレスで照合しています。2つのシステムのどちらかが別のアドレスになった時点で、機能しなくなります。",
         "none": "このメンバーとCRMを結び付けるものがないため、記録された時間がCRMのタイマーになることはありません。"
-      }
+      },
+      "confirm_remove_title": "退職として記録しますか？",
+      "confirm_remove_body": "{person} は今後の月に表示されなくなります。すでに記録された内容はそのまま残ります。",
+      "removing": "記録しています…",
+      "no_hours_yet": "勤務時間 未設定",
+      "confirm_remove_permanent": "戻ってきた場合は、あとから再度雇用できます。",
+      "pick_somebody_first": "まずリストから選んでください",
+      "pick_date_first": "入社日を入力してください",
+      "nobody_matches_detail": "ここにアカウントがある人にのみ雇用記録を作成できます。アカウントはワークスペース設定のメンバーで作成します。",
+      "everybody_added_detail": "アカウントを持つ全員に雇用記録があります。"
     },
     "rates": {
       "title": "{person}さんの単価",
@@ -211,7 +242,10 @@
         "removed": "単価を削除しました",
         "refused": "保存できませんでした",
         "try_again": "もう一度お試しください。"
-      }
+      },
+      "removing": "削除しています…",
+      "confirm_remove_title": "この単価を削除しますか？",
+      "confirm_remove_body": "計算済みの月はその金額のまま残ります。以降の月はこの単価を失います。"
     },
     "leave": {
       "title": "{person}さんの年次休暇",
@@ -229,21 +263,28 @@
       "basis": "根拠",
       "basis_placeholder": "任意",
       "between": "{from}から{to}まで",
-      "about_days": "約{days}日",
+      "about_days": "{days, plural, other {約#日}}",
       "carried": "{duration}を繰り越し",
       "agree": "合意する",
       "agreed": "合意済み",
       "errors": {
         "dates_required": "年次休暇の年度の開始日と終了日を入力してください。",
         "backwards": "年度の終了日を開始日より前にはできません。",
-        "bad_duration": "時間は200:00、200、12000mのように入力してください。"
+        "bad_duration": "時間は200:00、200、12000mのように入力してください。",
+        "already_there": "この休暇年度の記録はすでにあります。"
       },
       "toasts": {
         "added": "年次休暇の年度を追加しました",
         "agreed": "合意済みにしました",
         "refused": "保存できませんでした",
         "try_again": "もう一度お試しください。"
-      }
+      },
+      "entitlement_with_unit": "年間の休暇（時間:分）",
+      "echo_days": "{duration} · {days, plural, other {約#日}}",
+      "echo_hours": "{duration}",
+      "agreeing": "記録しています…",
+      "confirm_agree_title": "この数値を確定しますか？",
+      "confirm_agree_body": "{duration} は以降変更できません。後の変更は理由を添えて別途記録します。"
     },
     "holidays": {
       "title": "祝日",
@@ -268,14 +309,21 @@
       "only_half": "半日のみ",
       "name_placeholder": "祝日の名称",
       "errors": {
-        "date_and_name": "日付と名称を入力してください。"
+        "date_and_name": "日付と名称を入力してください。",
+        "already_there": "この日にはすでに {day} があります。"
       },
       "toasts": {
         "added": "祝日を追加しました",
         "removed": "祝日を削除しました",
         "refused": "保存できませんでした",
         "try_again": "もう一度お試しください。"
-      }
+      },
+      "column_length": "長さ",
+      "whole_day": "終日",
+      "half_day": "半日",
+      "confirm_remove_title": "この日を削除しますか？",
+      "confirm_remove_body": "{day} は祝日ではなくなり、その日の全員の所定時間が元に戻ります。",
+      "removing": "削除しています…"
     },
     "arrangement": {
       "onsite_full_time": "出社・フルタイム",
@@ -284,7 +332,7 @@
       "remote_part_time_invoicing": "リモート・パートタイム・本人請求"
     },
     "entries": {
-      "hint": "この日の時間のうち、どの作業項目にも紐づかないものです。会社がPlaneを使い始める前の月も、ここに入力します。",
+      "hint": "作業項目に紐づかない時間 — 会議、事務、研修、移動。",
       "none_yet": "この日にはまだ何も記録されていません。",
       "day_total": "この日の合計",
       "how_long": "時間",
@@ -292,10 +340,9 @@
       "note": "メモ",
       "note_placeholder": "この時間で何をしていたか",
       "add": "追加",
-      "done": "閉じる",
       "remove": "削除",
       "imported": "インポート済み",
-      "month_closed": "この月は確定済みのため、時間を変更できません。修正が必要な場合は、先に再オープンしてください。",
+      "month_closed": "この月は締められており、時間は変更できません。修正が必要な場合はチーム担当者にご連絡ください。",
       "category": {
         "meeting": "社内ミーティング",
         "training": "研修",
@@ -312,7 +359,46 @@
         "added": "追加しました",
         "refused": "処理できませんでした",
         "try_again": "もう一度お試しください。"
-      }
+      },
+      "close": "閉じる",
+      "not_added_yet": "まだ追加されていません",
+      "confirm_remove_title": "この時間を削除しますか？",
+      "confirm_remove_body": "{duration} がこの日と今月の合計から差し引かれます。",
+      "removing": "削除しています…"
+    },
+    "attendance": {
+      "title": "勤務した時間帯",
+      "hint": "この日の開始・終了・休憩です。その時間が何に使われたかとは別に記録されます。",
+      "still_running": "進行中",
+      "from": "開始",
+      "to": "終了",
+      "break": "休憩（分）",
+      "where": "勤務場所",
+      "past_midnight": "日付をまたいだ勤務として計算されます。",
+      "record": "記録する",
+      "update": "更新する",
+      "remove": "削除",
+      "closed_with": "{from} から {to}、{duration}。この月は確定済みのため、変更できません。",
+      "closed_without": "この日は何も記録されておらず、この月は確定済みです。",
+      "location": {
+        "office": "オフィス",
+        "home": "在宅勤務",
+        "elsewhere": "その他の場所"
+      },
+      "errors": {
+        "start_required": "開始した時刻を入力してください。",
+        "bad_break": "休憩は分単位の整数で入力してください。"
+      },
+      "toasts": {
+        "saved": "保存しました",
+        "removed": "削除しました",
+        "refused": "処理できませんでした",
+        "try_again": "もう一度お試しください。"
+      },
+      "confirm_remove_title": "この勤怠記録を削除しますか？",
+      "confirm_remove_body": "この日の開始・終了・休憩が削除されます。これは法が保存を求める労働時間の記録です。",
+      "removing": "削除しています…",
+      "past_midnight_length": "深夜 0 時をまたぎ、{duration} になります。違う場合は終了時刻を確認してください。"
     },
     "imports": {
       "title": "時間数の取り込み",
@@ -335,7 +421,7 @@
       "will_write": "書き込み予定",
       "cannot_read": "読み取り不可",
       "skipped": "スキップ",
-      "apply": "{count}行を適用",
+      "apply": "{count, plural, other {#行を取り込む}}",
       "discard": "破棄",
       "column_row": "行",
       "column_verdict": "判定",
@@ -347,7 +433,7 @@
       },
       "past": "これまでに取り込んだファイル",
       "none_yet": "まだ何も取り込まれていません。",
-      "row_summary": "{total}行中{valid}行",
+      "row_summary": "{total, plural, other {#行中 {valid} 行}}",
       "state": {
         "10": "アップロード済み",
         "20": "確認中",
@@ -366,11 +452,26 @@
       "undo_cancel": "そのままにする",
       "toasts": {
         "applied": "適用しました",
-        "written": "{count}行を書き込みました",
+        "written": "{count, plural, other {#行を書き込みました}}",
         "undone": "取り消しました",
-        "removed": "{count}行を削除しました",
+        "removed": "{count, plural, other {#行を取り消しました}}",
         "refused": "処理できませんでした",
         "try_again": "もう一度お試しください。"
+      },
+      "template": "テンプレートをダウンロード",
+      "resume": "確認して適用",
+      "reasons": {
+        "unknown_person": "{email} でログインする人はいません。",
+        "bad_date": "日付を読み取れませんでした。",
+        "bad_duration": "時間を読み取れませんでした。",
+        "more_than_a_day": "1日に1日分を超えています。",
+        "month_settled": "その月はすでに締められています。",
+        "bad_balance": "残高を読み取れませんでした。",
+        "kind_missing": "時間か休暇かを指定してください。",
+        "basis_missing": "この数値の根拠を記入してください。",
+        "bad_start_date": "開始日を読み取れませんでした。",
+        "ends_before_it_starts": "開始より前に終了しています。",
+        "unknown_absence_type": "「{code}」という不在の種類はありません。"
       }
     },
     "opening": {
@@ -412,7 +513,14 @@
         "agreed": "合意しました",
         "refused": "処理できませんでした",
         "try_again": "もう一度お試しください。"
-      }
+      },
+      "correct": "この数値を修正",
+      "agreeing": "記録しています…",
+      "confirm_agree_title": "この残高に同意しますか？",
+      "confirm_agree_body": "{amount} が正しいことに同意します。取り消せません。数値が違う場合は同意せず、チーム担当者に伝えてください。",
+      "correcting_heading": "数値を修正",
+      "stop_correcting": "代わりに新規登録",
+      "correct_confirm": "修正を保存"
     },
     "absences": {
       "title": "休暇・欠勤",
@@ -444,7 +552,8 @@
       "granularity": {
         "full_day": "終日",
         "half_day": "初日と最終日が半日",
-        "hours": "1日あたり指定時間"
+        "hours": "1日あたり指定時間",
+        "half_day_single": "半日"
       },
       "half": {
         "morning": "午前",
@@ -469,7 +578,8 @@
         "hours_hint": "3:30、3.5、210m のように入力します。",
         "note": "メモ",
         "note_placeholder": "任意",
-        "record": "登録"
+        "record": "登録",
+        "hours_unreadable": "時間の長さではありません。1:30、1,5、90 などをお試しください。"
       },
       "toasts": {
         "saved": "休暇・欠勤を保存しました",
@@ -495,9 +605,23 @@
         "name_placeholder": "表示される名称",
         "counts_as_worked": "その日を勤務として扱う",
         "draws_on_leave": "その日を年次休暇の残日数から差し引く",
-        "refused": "保存できませんでした",
-        "try_again": "もう一度お試しください。"
-      }
+        "refused": "実行できませんでした",
+        "try_again": "もう一度お試しください。",
+        "confirm_remove_title": "この不在の種類を削除しますか？",
+        "confirm_remove_body": "不在を記録するときに「{kind}」は表示されなくなります。一覧から外したいだけの場合は、無効にしてください。",
+        "deleting": "削除中"
+      },
+      "filter_person": "表示する対象",
+      "confirm_remove_title": "この休みを削除しますか？",
+      "confirm_remove_body": "{person} のその期間の所定時間が元に戻り、{duration} が休暇に戻ります。",
+      "removing": "削除しています…",
+      "refuse_title": "{person} の休みを却下",
+      "refuse_body": "本人がここに書かれた内容を見ます。それだけで伝わるように書いてください。",
+      "refuse_label": "理由",
+      "refuse_placeholder": "その週はすでに 2 名が不在です",
+      "refuse_cancel": "キャンセル",
+      "request": "休みを申請",
+      "errors": {}
     },
     "statement": {
       "title": "請求書を発行する前に",
@@ -508,7 +632,79 @@
       "monthly_rate": "毎月の固定額",
       "no_rate": "ご自身の単価はまだ記録されていないため、ここには時間数のみが表示されます。チームを管理する担当者にお問い合わせください。",
       "still_moving": "この月はまだ確定していないため、これらの数値は変わる可能性があります。",
-      "settled": "この月は確定済みのため、これらの数値はもう変わりません。"
+      "settled": "この月は確定済みのため、これらの数値はもう変わりません。",
+      "decimal_hours": "小数時間で {hours}"
+    },
+    "shared": {
+      "load_failed": "読み込めませんでした",
+      "load_failed_detail": "途中で問題が起きました。もう一度お試しください。続く場合はチーム担当者にお知らせください。",
+      "retry": "再試行"
+    },
+    "review_days": {
+      "title": "{person} さんの確認が必要な日",
+      "body": "これらの日に計上されていた時間がなくなっています。それぞれ何があったかを記録すると、月を締められます。",
+      "all_settled": "確認が必要な日はありません。この月は締められます。",
+      "counts_now": "現在は {duration} として計上",
+      "what_happened": "何がありましたか？",
+      "placeholder": "誤った日に登録したため移動",
+      "settle": "この日を確定",
+      "close": "閉じる",
+      "toasts": {
+        "settled": "この日を確定しました",
+        "refused": "確定できませんでした",
+        "try_again": "少ししてからもう一度お試しください。"
+      }
+    },
+    "refusals": {
+      "absence_type_in_use": "{in_use, plural, other {この種類で#件の不在が記録されているため削除できません。記録の意味が失われてしまいます。}} 代わりに無効にしてください。選択一覧から消えますが、既存の記録はそのまま読めます。",
+      "month_settled": "{month} は{month_state}のため、記録を変更できません。これを入れる必要がある場合は、月の再オープンを依頼してください。",
+      "month_state": {
+        "handed_in": "提出済み",
+        "agreed": "承認済み",
+        "closed": "締め済み"
+      },
+      "last_manager": "チームを担当しているのはこの人だけです。外すと誰もどの月にも到達できなくなり、戻せる人もいなくなります。先に別の人を担当者にしてください。"
+    },
+    "detail": {
+      "title": "時間の内訳",
+      "whose": "誰の時間",
+      "mine": "自分の時間",
+      "group_by": "グループ化",
+      "on_work_items": "作業アイテムに",
+      "other_hours": "その他すべて",
+      "entries": "件数",
+      "month_state": "この数値",
+      "frozen": "確定済み",
+      "frozen_hint": "この月が数えた内容",
+      "live": "最新",
+      "live_hint": "この月はまだ開いています",
+      "column_what": "内容",
+      "column_when": "日付",
+      "column_note": "メモ",
+      "column_long": "時間",
+      "unnamed": "名称なし",
+      "still_running": "まだ計測中です。長さがないため計上されません",
+      "gone": "この月は計上しましたが、もう存在しません",
+      "by_hand": "· 手入力",
+      "nothing_logged": "今月は作業アイテムに記録された時間がありません。",
+      "other_title": "作業アイテムのない時間",
+      "other_subtitle": "会議、事務、研修、移動、そして以前から取り込んだもの。これらも月に計上されます。",
+      "footnote": "時間は記録された場所で計上されます。すべてのワークスペースが対象です。",
+      "rounding_note": "分は日とプロジェクトごとに一度だけ丸められるため、これらの小計は上の数値と一致しないことがあります。",
+      "entry_count": "{count, plural, other {· #件}}",
+      "running_note": "{count, plural, other {#件のタイマーが計測中です。長さがないため、ここでは計上されません。}}",
+      "missing_note": "{count, plural, other {この月が計上した #件 が見つかりません。識別子しか残っていないため、表示できるものがありません。}}",
+      "week_of": "{date} の週",
+      "grouping": {
+        "day": "日",
+        "work_item": "作業アイテム",
+        "project": "プロジェクト",
+        "week": "週",
+        "workspace": "ワークスペース"
+      },
+      "under_a_minute": "1分未満",
+      "auto_stopped": "· システムが停止",
+      "auto_stopped_hint": "このタイマーは動いたままになり、上限で停止されました。長さは上限であって計測値ではないため、修正が必要です。"
     }
   }
 }

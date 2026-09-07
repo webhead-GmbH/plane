@@ -8,10 +8,11 @@ import { AlertTriangle, Timer } from "lucide-react";
 // plane imports
 import { Button } from "@plane/propel/button";
 import { useTranslation } from "@plane/i18n";
+import { Tooltip } from "@plane/ui";
 import { cn } from "@plane/utils";
 // local imports
 import { EHrPeriodState, type THrOverviewRow } from "@/services/hr.service";
-import { balanceTone, figuresToShow, formatBalance, formatDecimalHours, formatMinutes, periodStateKey } from "./utils";
+import { balanceTone, figuresToShow, formatBalance, formatMinutes, periodStateKey } from "./utils";
 
 type TProps = {
   rows: THrOverviewRow[];
@@ -19,6 +20,7 @@ type TProps = {
   onApprove: (row: THrOverviewRow) => void;
   onLock: (row: THrOverviewRow) => void;
   onReopen: (row: THrOverviewRow) => void;
+  onReview: (row: THrOverviewRow) => void;
 };
 
 const StateChip = ({ state }: { state: EHrPeriodState }) => {
@@ -26,14 +28,14 @@ const StateChip = ({ state }: { state: EHrPeriodState }) => {
   return (
     <span
       className={cn(
-        "text-xs inline-flex rounded px-2 py-0.5 font-medium whitespace-nowrap",
+        "inline-flex rounded px-2 py-0.5 text-13 font-medium whitespace-nowrap",
         state === EHrPeriodState.LOCKED
-          ? "bg-custom-background-80 text-custom-text-200"
+          ? "bg-layer-2 text-secondary"
           : state === EHrPeriodState.APPROVED
-            ? "bg-green-500/10 text-green-600"
+            ? "bg-success-subtle text-success-primary"
             : state === EHrPeriodState.SUBMITTED
-              ? "bg-custom-primary-100/10 text-custom-primary-100"
-              : "bg-custom-background-90 text-custom-text-300"
+              ? "bg-accent-primary/10 text-accent-primary"
+              : "bg-layer-1 text-tertiary"
       )}
     >
       {t(periodStateKey(state))}
@@ -49,29 +51,32 @@ const StateChip = ({ state }: { state: EHrPeriodState }) => {
  * the payroll sheet — and having to convert between them by hand is how a figure
  * ends up transcribed wrong.
  */
-export const HrOverviewTable = ({ rows, busyPeriodId, onApprove, onLock, onReopen }: TProps) => {
+export const HrOverviewTable = ({ rows, busyPeriodId, onApprove, onLock, onReopen, onReview }: TProps) => {
   const { t } = useTranslation();
 
   if (rows.length === 0)
     return (
-      <div className="border-custom-border-200 bg-custom-background-90 text-sm text-custom-text-300 rounded-md border px-4 py-6">
+      <div className="rounded-md border border-subtle bg-layer-1 px-4 py-6 text-13 text-tertiary">
         {t("hr.overview_table.nobody_yet")}
       </div>
     );
 
+  // A month that has not ended cannot be handed in, so nobody is being waited on.
+  const today = new Date().toISOString().slice(0, 10);
+  const monthStillRunning = rows.length > 0 && rows[0].period_end >= today;
+
   return (
-    <div className="border-custom-border-200 overflow-x-auto rounded-md border">
-      <table className="text-sm w-full min-w-[54rem]">
-        <thead className="bg-custom-background-90 text-custom-text-400 text-xs tracking-wide uppercase">
+    <div className="overflow-x-auto rounded-md border border-subtle">
+      <table className="w-full min-w-[54rem] text-13">
+        <thead className="border-b border-subtle text-13 text-placeholder">
           <tr>
-            <th className="px-4 py-2 text-left font-medium">{t("hr.overview_table.person")}</th>
-            <th className="px-4 py-2 text-left font-medium">{t("hr.overview_table.state")}</th>
-            <th className="px-4 py-2 text-right font-medium">{t("hr.overview_table.owed")}</th>
-            <th className="px-4 py-2 text-right font-medium">{t("hr.overview_table.worked")}</th>
-            <th className="px-4 py-2 text-right font-medium">{t("hr.overview_table.hours")}</th>
-            <th className="px-4 py-2 text-right font-medium">{t("hr.overview_table.balance")}</th>
-            <th className="px-4 py-2 text-right font-medium">{t("hr.overview_table.carried")}</th>
-            <th className="px-4 py-2 text-right font-medium">{t("hr.overview_table.action")}</th>
+            <th className="px-4 py-2.5 text-left font-medium">{t("hr.overview_table.person")}</th>
+            <th className="px-4 py-2.5 text-left font-medium">{t("hr.overview_table.state")}</th>
+            <th className="px-4 py-2.5 text-right font-medium">{t("hr.overview_table.owed")}</th>
+            <th className="px-4 py-2.5 text-right font-medium">{t("hr.overview_table.worked")}</th>
+            <th className="px-4 py-2.5 text-right font-medium">{t("hr.overview_table.balance")}</th>
+            <th className="px-4 py-2.5 text-right font-medium">{t("hr.overview_table.carried")}</th>
+            <th className="px-4 py-2.5 text-right font-medium">{t("hr.overview_table.action")}</th>
           </tr>
         </thead>
         <tbody>
@@ -81,15 +86,29 @@ export const HrOverviewTable = ({ rows, busyPeriodId, onApprove, onLock, onReope
             // of the column under it rather than a different question's answer.
             const shown = figuresToShow(row);
             return (
-              <tr key={row.id} className="border-custom-border-200 hover:bg-custom-background-90/60 border-t">
+              <tr key={row.id} className="border-t border-subtle hover:bg-layer-1/60">
                 <td className="px-4 py-2">
                   <div className="flex items-center gap-2">
-                    <span className="text-custom-text-100 font-medium">{row.member_display_name}</span>
+                    <span className="font-medium text-primary">{row.member_display_name}</span>
                     {row.has_running_timer ? (
-                      <Timer className="text-custom-text-400 size-3.5" aria-label="A timer is still running" />
+                      <Tooltip tooltipContent={t("hr.overview_table.timer_running")} position="top">
+                        <Timer className="size-3.5 text-tertiary" aria-label={t("hr.overview_table.timer_running")} />
+                      </Tooltip>
                     ) : null}
                     {row.needs_review ? (
-                      <AlertTriangle className="text-amber-600 size-3.5" aria-label="Some days need looking at" />
+                      <Tooltip tooltipContent={t("hr.overview_table.needs_review")} position="top">
+                        {/* A button rather than an icon: the flag is the one thing
+                            on this row somebody has to act on, and pointing at it
+                            without offering the action left the month stuck. */}
+                        <button
+                          type="button"
+                          onClick={() => onReview(row)}
+                          aria-label={t("hr.overview_table.needs_review")}
+                          className="text-warning-primary hover:text-warning-primary/80"
+                        >
+                          <AlertTriangle className="size-3.5" />
+                        </button>
+                      </Tooltip>
                     ) : null}
                   </div>
                 </td>
@@ -97,7 +116,7 @@ export const HrOverviewTable = ({ rows, busyPeriodId, onApprove, onLock, onReope
                   <StateChip state={row.state} />
                 </td>
                 <td
-                  className="text-custom-text-200 px-4 py-2 text-right tabular-nums"
+                  className="px-4 py-2 text-right text-secondary tabular-nums"
                   title={
                     shown.isPartial
                       ? t("hr.summary.whole_month", { duration: formatMinutes(shown.monthTarget) })
@@ -106,33 +125,36 @@ export const HrOverviewTable = ({ rows, busyPeriodId, onApprove, onLock, onReope
                 >
                   {formatMinutes(shown.target)}
                 </td>
-                <td className="text-custom-text-100 px-4 py-2 text-right tabular-nums">
-                  {formatMinutes(shown.actual)}
-                </td>
-                <td className="text-custom-text-300 px-4 py-2 text-right tabular-nums">
-                  {formatDecimalHours(shown.actual)}
-                </td>
+                <td className="px-4 py-2 text-right text-primary tabular-nums">{formatMinutes(shown.actual)}</td>
                 <td className={cn("px-4 py-2 text-right font-medium tabular-nums", balanceTone(shown.balance))}>
                   {formatBalance(shown.balance)}
                 </td>
-                <td className="text-custom-text-300 px-4 py-2 text-right tabular-nums">
+                <td className="px-4 py-2 text-right text-tertiary tabular-nums">
                   {formatBalance(row.closing_balance_minutes)}
                 </td>
                 <td className="px-4 py-2 text-right">
                   {row.state === EHrPeriodState.SUBMITTED ? (
-                    <Button variant="primary" size="sm" loading={isBusy} onClick={() => onApprove(row)}>
+                    <Button variant="primary" size="lg" loading={isBusy} onClick={() => onApprove(row)}>
                       {t("hr.overview_table.agree")}
                     </Button>
                   ) : row.state === EHrPeriodState.APPROVED ? (
-                    <Button variant="primary" size="sm" loading={isBusy} onClick={() => onLock(row)}>
+                    <Button variant="primary" size="lg" loading={isBusy} onClick={() => onLock(row)}>
                       {t("hr.overview_table.close")}
                     </Button>
                   ) : row.state === EHrPeriodState.LOCKED ? (
-                    <Button variant="link" size="sm" loading={isBusy} onClick={() => onReopen(row)}>
+                    <Button variant="link" size="lg" loading={isBusy} onClick={() => onReopen(row)}>
                       {t("hr.overview_table.reopen")}
                     </Button>
+                  ) : row.needs_review ? (
+                    <Button variant="secondary" size="lg" prependIcon={<AlertTriangle />} onClick={() => onReview(row)}>
+                      {t("hr.overview_table.blocked_by_review")}
+                    </Button>
                   ) : (
-                    <span className="text-custom-text-400 text-xs">{t("hr.overview_table.not_handed_in")}</span>
+                    <span className="text-13 text-tertiary">
+                      {monthStillRunning
+                        ? t("hr.overview_table.month_running")
+                        : t("hr.overview_table.waiting_for", { person: row.member_display_name })}
+                    </span>
                   )}
                 </td>
               </tr>
