@@ -4,7 +4,7 @@
  * See the LICENSE file for details.
  */
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 // plane imports
 import { useTranslation } from "@plane/i18n";
 import { Button } from "@plane/propel/button";
@@ -65,42 +65,28 @@ type TProps = {
 export const HrPersonModal = ({ isOpen, person, contract, schedule, isBusy, onClose, onSave }: TProps) => {
   const { t } = useTranslation();
 
-  const [hireDate, setHireDate] = useState("");
-  const [timezone, setTimezone] = useState("Europe/Vienna");
-  const [isManager, setIsManager] = useState(false);
-  const [crmStaffId, setCrmStaffId] = useState("");
-  const [arrangement, setArrangement] = useState<EHrArrangement>(EHrArrangement.ONSITE_FULL_TIME);
-  const [recordsTarget, setRecordsTarget] = useState(true);
-  const [validFrom, setValidFrom] = useState("");
-  const [days, setDays] = useState<Record<string, string>>({});
+  // Seeded once, when this dialog is built. The caller keys it on the person,
+  // the terms and the schedule together, so any of those arriving or changing
+  // builds a new dialog — and a revalidation that hands back the same three
+  // records leaves whoever is typing alone.
+  const [hireDate, setHireDate] = useState(person?.hire_date ?? "");
+  const [timezone, setTimezone] = useState(person?.timezone || "Europe/Vienna");
+  const [isManager, setIsManager] = useState(person?.is_hr_manager ?? false);
+  const [crmStaffId, setCrmStaffId] = useState(person?.crm_staff_id ? String(person.crm_staff_id) : "");
+  const [arrangement, setArrangement] = useState<EHrArrangement>(
+    (contract?.arrangement as EHrArrangement) ?? EHrArrangement.ONSITE_FULL_TIME
+  );
+  const [recordsTarget, setRecordsTarget] = useState(contract?.records_target_hours ?? true);
+  const [validFrom, setValidFrom] = useState(contract?.valid_from ?? person?.hire_date ?? "");
+  const [days, setDays] = useState<Record<string, string>>(() =>
+    Object.fromEntries(
+      WEEKDAYS.map(({ key }) => {
+        const minutes = schedule?.[key] ?? 0;
+        return [key, minutes ? formatMinutes(minutes) : ""];
+      })
+    )
+  );
   const [problem, setProblem] = useState<string | null>(null);
-
-  // Seeded from what these things are, not from the objects holding them. The
-  // terms and the schedule are fetched, so the objects are new on every
-  // revalidation while the ids are not — depending on the objects emptied the
-  // form under whoever was filling it in. An id still moves when a different
-  // person is opened, or when the terms arrive for the first time, which is
-  // when seeding is wanted.
-  useEffect(() => {
-    if (!isOpen) return;
-    setProblem(null);
-    setHireDate(person?.hire_date ?? "");
-    setTimezone(person?.timezone || "Europe/Vienna");
-    setIsManager(person?.is_hr_manager ?? false);
-    setCrmStaffId(person?.crm_staff_id ? String(person.crm_staff_id) : "");
-    setArrangement((contract?.arrangement as EHrArrangement) ?? EHrArrangement.ONSITE_FULL_TIME);
-    setRecordsTarget(contract?.records_target_hours ?? true);
-    setValidFrom(contract?.valid_from ?? person?.hire_date ?? "");
-    setDays(
-      Object.fromEntries(
-        WEEKDAYS.map(({ key }) => {
-          const minutes = schedule?.[key] ?? 0;
-          return [key, minutes ? formatMinutes(minutes) : ""];
-        })
-      )
-    );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOpen, person?.id, contract?.id, schedule?.id]);
 
   const weekMinutes = WEEKDAYS.reduce((total, { key }) => total + (parseDuration(days[key] ?? "") ?? 0), 0);
 

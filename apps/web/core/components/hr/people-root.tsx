@@ -186,6 +186,10 @@ export const HrPeopleRoot = observer(function HrPeopleRoot() {
   const rows = people ?? [];
   const scheduleFor = (profileId: string) => (schedules ?? []).find((row) => row.profile === profileId) ?? null;
 
+  // Named here rather than inline, because the dialog below is keyed on them.
+  const terms = pickCurrent(contracts ?? []);
+  const ownSchedule = editing ? scheduleFor(editing.id) : null;
+
   return (
     <div className="flex w-full flex-col gap-7">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -206,11 +210,16 @@ export const HrPeopleRoot = observer(function HrPeopleRoot() {
         onAdd={(memberId, hireDate) => void handleAdd(memberId, hireDate)}
       />
 
+      {/* Keyed on all three records, because the terms and the schedule are
+          fetched after the dialog is asked for and each has to seed it when it
+          lands. A revalidation returning the same three leaves the key alone,
+          which is how typed input survives one. */}
       <HrPersonModal
+        key={`${editing?.id ?? "none"}:${terms?.id ?? "none"}:${ownSchedule?.id ?? "none"}`}
         isOpen={editing !== null}
         person={editing}
-        contract={pickCurrent(contracts ?? [])}
-        schedule={editing ? scheduleFor(editing.id) : null}
+        contract={terms}
+        schedule={ownSchedule}
         isBusy={isBusy}
         onClose={() => setEditing(null)}
         onSave={(draft) => void handleSave(draft)}
