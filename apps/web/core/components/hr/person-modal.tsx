@@ -4,7 +4,7 @@
  * See the LICENSE file for details.
  */
 
-import { useState } from "react";
+import { useId, useState } from "react";
 // plane imports
 import { useTranslation } from "@plane/i18n";
 import { Button } from "@plane/propel/button";
@@ -236,14 +236,12 @@ export const HrPersonModal = ({ isOpen, person, contract, schedule, isBusy, onCl
           <p className="text-13 text-tertiary">{t("hr.people.schedule_hint")}</p>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-7">
             {WEEKDAYS.map(({ key, label }) => (
-              <Field key={key} label={t(label)}>
-                <input
-                  value={days[key] ?? ""}
-                  onChange={(e) => setDays((prev) => ({ ...prev, [key]: e.target.value }))}
-                  placeholder="0:00"
-                  className={cn(inputClass, "text-right tabular-nums")}
-                />
-              </Field>
+              <WeekdayField
+                key={key}
+                label={t(label)}
+                value={days[key] ?? ""}
+                onChange={(value) => setDays((prev) => ({ ...prev, [key]: value }))}
+              />
             ))}
           </div>
         </section>
@@ -266,9 +264,33 @@ export const HrPersonModal = ({ isOpen, person, contract, schedule, isBusy, onCl
 const inputClass =
   "border-subtle bg-layer-1 text-primary focus:border-accent-strong w-full rounded-md border px-3 py-1.5 text-13 outline-none";
 
-const Field = ({ label, children }: { label: string; children: React.ReactNode }) => (
-  <label className="flex flex-col gap-1">
+const Field = ({ label, htmlFor, children }: { label: string; htmlFor?: string; children: React.ReactNode }) => (
+  <label className="flex flex-col gap-1" htmlFor={htmlFor}>
     <span className="text-13 font-medium text-tertiary">{label}</span>
     {children}
   </label>
 );
+
+/** One day of the week's hours, as a duration somebody types the way they say it: 7:30. */
+const WeekdayField = ({
+  label,
+  value,
+  onChange,
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+}) => {
+  const id = useId();
+  return (
+    <Field label={label} htmlFor={id}>
+      <input
+        id={id}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder="0:00"
+        className={cn(inputClass, "text-right tabular-nums")}
+      />
+    </Field>
+  );
+};

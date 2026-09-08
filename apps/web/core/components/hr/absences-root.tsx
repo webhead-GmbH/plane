@@ -21,6 +21,7 @@ import {
   EHrGranularity,
   HrService,
   type THrAbsence,
+  type THrAbsenceType,
   type THrEmploymentProfile,
 } from "@/services/hr.service";
 // local imports
@@ -70,6 +71,14 @@ const monthWindow = (year: number, month: number) => ({
   from: `${year}-${String(month).padStart(2, "0")}-01`,
   to: `${year}-${String(month).padStart(2, "0")}-${String(lastDayOfMonth(year, month)).padStart(2, "0")}`,
 });
+
+/**
+ * Whose absence this is, by the name the rest of the product knows them by.
+ *
+ * A dash while the roster is still on its way, so a row is never blank.
+ */
+const nameOf = (people: THrEmploymentProfile[], profileId: string) =>
+  people.find((person: THrEmploymentProfile) => person.id === profileId)?.member_display_name ?? "—";
 
 /**
  * Who is away, and when.
@@ -186,26 +195,11 @@ export const HrAbsencesRoot = observer(function HrAbsencesRoot() {
   // Only when there is nothing to show: a revalidation that failed while the
   // screen already holds good data must not replace it with an error.
   if (error && (notAllowed || !hasData))
-    return (
-      <div className="w-full">
-        <EmptyStateCompact
-          title={notAllowed ? t("hr.team_time.not_permitted") : t("hr.shared.load_failed")}
-          description={notAllowed ? t("hr.absences.not_permitted_detail") : t("hr.shared.load_failed_detail")}
-          assetKey={notAllowed ? "members" : "unknown"}
-          assetClassName="size-20"
-          rootClassName="py-16"
-          actions={
-            notAllowed
-              ? undefined
-              : [{ label: t("hr.shared.retry"), variant: "secondary", onClick: () => void mutate() }]
-          }
-        />
-      </div>
-    );
+    return <AbsencesUnavailable notAllowed={notAllowed} onRetry={() => void mutate()} />;
 
   const rows = absences ?? [];
-  const nameFor = (profileId: string) =>
-    (people ?? []).find((person: THrEmploymentProfile) => person.id === profileId)?.member_display_name ?? "—";
+  const roster = people ?? [];
+  const absenceTypes = types ?? [];
 
   const monthLabel = formatMonthLabel(from);
 
@@ -266,7 +260,7 @@ export const HrAbsencesRoot = observer(function HrAbsencesRoot() {
           onChange={(event) => setPersonFilter(event.target.value)}
         >
           <option value="">{t("hr.absences.everyone")}</option>
-          {(people ?? []).map((person) => (
+          {roster.map((person) => (
             <option key={person.id} value={person.id}>
               {person.member_display_name}
             </option>
@@ -274,17 +268,116 @@ export const HrAbsencesRoot = observer(function HrAbsencesRoot() {
         </select>
       </div>
 
-      <HrAbsenceModal
-        isOpen={recording || editing !== null}
-        absence={editing}
-        people={people ?? []}
-        types={types ?? []}
+      <AbsenceDialogs
+        recording={recording}
+        editing={editing}
+        refusing={refusing}
+        removing={removing}
+        managingTypes={managingTypes}
+        people={roster}
+        types={absenceTypes}
         isBusy={isBusy}
-        onClose={() => {
+        onCloseAbsence={() => {
           setRecording(false);
           setEditing(null);
         }}
         onSave={(draft) => void handleSave(draft)}
+        onCloseRefusal={() => setRefusing(null)}
+        onRefuse={handleRefuse}
+        onCloseRemoval={() => setRemoving(null)}
+        onRemove={() => void handleRemove()}
+        onCloseTypes={() => setManagingTypes(false)}
+        onTypesChanged={() => refreshTypes()}
+      />
+
+      <AbsencesList
+        isLoading={isLoading}
+        rows={rows}
+        people={roster}
+        isManager={isManager}
+        isBusy={isBusy}
+        onApprove={(absence) => void handleDecide(absence, "approve")}
+        onReject={setRefusing}
+        onEdit={setEditing}
+        onRemove={setRemoving}
+      />
+    </div>
+  );
+});
+
+type TUnavailableProps = {
+  /** The list was refused rather than broken: this screen is not theirs to see. */
+  notAllowed: boolean;
+  onRetry: () => void;
+};
+
+const AbsencesUnavailable = ({ notAllowed, onRetry }: TUnavailableProps) => {
+  const { t } = useTranslation();
+
+  return (
+    <div className="w-full">
+      <EmptyStateCompact
+        title={notAllowed ? t("hr.team_time.not_permitted") : t("hr.shared.load_failed")}
+        description={notAllowed ? t("hr.absences.not_permitted_detail") : t("hr.shared.load_failed_detail")}
+        assetKey={notAllowed ? "members" : "unknown"}
+        assetClassName="size-20"
+        rootClassName="py-16"
+        actions={notAllowed ? undefined : [{ label: t("hr.shared.retry"), variant: "secondary", onClick: onRetry }]}
+      />
+    </div>
+  );
+};
+
+type TDialogsProps = {
+  recording: boolean;
+  /** The absence being changed, or null when a new one is being recorded. */
+  editing: THrAbsence | null;
+  refusing: THrAbsence | null;
+  removing: THrAbsence | null;
+  managingTypes: boolean;
+  people: THrEmploymentProfile[];
+  types: THrAbsenceType[];
+  isBusy: boolean;
+  onCloseAbsence: () => void;
+  onSave: (draft: TAbsenceDraft) => void;
+  onCloseRefusal: () => void;
+  onRefuse: (absence: THrAbsence, reason: string) => Promise<void>;
+  onCloseRemoval: () => void;
+  onRemove: () => void;
+  onCloseTypes: () => void;
+  onTypesChanged: () => Promise<unknown>;
+};
+
+const AbsenceDialogs = ({
+  recording,
+  editing,
+  refusing,
+  removing,
+  managingTypes,
+  people,
+  types,
+  isBusy,
+  onCloseAbsence,
+  onSave,
+  onCloseRefusal,
+  onRefuse,
+  onCloseRemoval,
+  onRemove,
+  onCloseTypes,
+  onTypesChanged,
+}: TDialogsProps) => {
+  const { t } = useTranslation();
+
+  return (
+    <>
+      <HrAbsenceModal
+        isOpen={recording || editing !== null}
+        absence={editing}
+        people={people}
+        types={types}
+        isBusy={isBusy}
+        onClose={onCloseAbsence}
+        onSave={onSave}
       />
 
       {/* Refusing has to say why: the endpoint requires it, and the person whose
@@ -292,156 +385,224 @@ export const HrAbsencesRoot = observer(function HrAbsencesRoot() {
       <HrReasonModal
         key={refusing?.id ?? "none"}
         isOpen={refusing !== null}
-        title={t("hr.absences.refuse_title", { person: refusing ? nameFor(refusing.profile) : "" })}
+        title={t("hr.absences.refuse_title", { person: refusing ? nameOf(people, refusing.profile) : "" })}
         body={t("hr.absences.refuse_body")}
         label={t("hr.absences.refuse_label")}
         placeholder={t("hr.absences.refuse_placeholder")}
         confirmLabel={t("hr.absences.reject")}
         cancelLabel={t("hr.absences.refuse_cancel")}
         isBusy={isBusy}
-        onClose={() => setRefusing(null)}
+        onClose={onCloseRefusal}
         onConfirm={async (reason) => {
           if (!refusing) return;
-          await handleRefuse(refusing, reason);
+          await onRefuse(refusing, reason);
         }}
       />
 
       <AlertModalCore
         isOpen={removing !== null}
-        handleClose={() => setRemoving(null)}
-        handleSubmit={() => void handleRemove()}
+        handleClose={onCloseRemoval}
+        handleSubmit={onRemove}
         isSubmitting={isBusy}
         variant="danger"
         title={t("hr.absences.confirm_remove_title")}
         content={t("hr.absences.confirm_remove_body", {
-          person: removing ? nameFor(removing.profile) : "",
+          person: removing ? nameOf(people, removing.profile) : "",
           duration: removing ? formatMinutes(removing.total_minutes) : "",
         })}
         primaryButtonText={{ default: t("hr.absences.delete"), loading: t("hr.absences.removing") }}
       />
 
-      <HrAbsenceTypesModal
-        isOpen={managingTypes}
-        types={types ?? []}
-        onClose={() => setManagingTypes(false)}
-        onChanged={() => refreshTypes()}
+      <HrAbsenceTypesModal isOpen={managingTypes} types={types} onClose={onCloseTypes} onChanged={onTypesChanged} />
+    </>
+  );
+};
+
+type TRowHandlers = {
+  isManager: boolean;
+  isBusy: boolean;
+  onApprove: (absence: THrAbsence) => void;
+  onReject: (absence: THrAbsence) => void;
+  onEdit: (absence: THrAbsence) => void;
+  onRemove: (absence: THrAbsence) => void;
+};
+
+type TListProps = TRowHandlers & {
+  isLoading: boolean;
+  rows: THrAbsence[];
+  people: THrEmploymentProfile[];
+};
+
+const AbsencesList = ({ isLoading, rows, people, ...handlers }: TListProps) => {
+  const { t } = useTranslation();
+
+  if (isLoading)
+    return (
+      <Loader className="flex flex-col gap-3">
+        <Loader.Item height="48px" />
+        <Loader.Item height="220px" />
+      </Loader>
+    );
+
+  if (rows.length === 0)
+    return (
+      <EmptyStateCompact
+        title={t("hr.absences.none_this_month")}
+        assetKey="note"
+        assetClassName="size-20"
+        rootClassName="py-16"
       />
+    );
 
-      {isLoading ? (
-        <Loader className="flex flex-col gap-3">
-          <Loader.Item height="48px" />
-          <Loader.Item height="220px" />
-        </Loader>
-      ) : rows.length === 0 ? (
-        <EmptyStateCompact
-          title={t("hr.absences.none_this_month")}
-          assetKey="note"
-          assetClassName="size-20"
-          rootClassName="py-16"
+  return (
+    <div className="overflow-x-auto rounded-md border border-subtle">
+      <table className="w-full min-w-[52rem] text-13">
+        <thead className="border-b border-subtle text-13 text-placeholder">
+          <tr>
+            <th className="px-4 py-2.5 text-left font-medium">{t("hr.absences.column_person")}</th>
+            <th className="px-4 py-2.5 text-left font-medium">{t("hr.absences.column_reason")}</th>
+            <th className="px-4 py-2.5 text-left font-medium">{t("hr.absences.column_when")}</th>
+            <th className="px-4 py-2.5 text-right font-medium">{t("hr.absences.column_away")}</th>
+            <th className="px-4 py-2.5 text-left font-medium">{t("hr.absences.column_state")}</th>
+            <th className="px-4 py-2.5 text-right font-medium">{t("hr.absences.column_action")}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((absence) => (
+            <AbsenceRow key={absence.id} absence={absence} people={people} {...handlers} />
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+};
+
+type TRowProps = TRowHandlers & {
+  absence: THrAbsence;
+  people: THrEmploymentProfile[];
+};
+
+const AbsenceRow = ({ absence, people, ...handlers }: TRowProps) => {
+  const { t, currentLocale } = useTranslation();
+  const person = nameOf(people, absence.profile);
+  // A closed month is nobody's to change from here, and an absence that was
+  // cancelled or refused has nothing left worth editing.
+  const locked = Boolean(absence.locked_period);
+  const settled = absence.state === EHrAbsenceState.CANCELLED || absence.state === EHrAbsenceState.REJECTED;
+
+  return (
+    <tr className="border-t border-subtle hover:bg-layer-1/60">
+      <td className="px-4 py-2 text-primary">{person}</td>
+      <td className="px-4 py-2 text-secondary">
+        {localName({ name_de: absence.absence_type_name, name_en: absence.absence_type_name_en }, currentLocale) ||
+          absence.absence_type_code}
+        {absence.reason && <span className="ml-2 text-13 text-tertiary">{absence.reason}</span>}
+      </td>
+      <td className="px-4 py-2 text-secondary">
+        <AbsenceWhen absence={absence} />
+      </td>
+      <td className="px-4 py-2 text-right text-secondary tabular-nums">{formatMinutes(absence.total_minutes)}</td>
+      <td className="px-4 py-2">
+        <span className={cn("rounded px-1.5 py-0.5 text-13 font-medium", STATE_TONE[absence.state])}>
+          {t(`hr.absences.state.${STATE_KEY[absence.state]}`)}
+        </span>
+        {locked && <span className="ml-2 text-13 text-tertiary">{t("hr.absences.month_locked")}</span>}
+      </td>
+      <td className="px-4 py-2 text-right">
+        <AbsenceActions absence={absence} person={person} locked={locked} settled={settled} {...handlers} />
+      </td>
+    </tr>
+  );
+};
+
+/**
+ * The days somebody is away, and how much of each of them.
+ *
+ * One date rather than a range of one, and the fraction only where it is not a
+ * whole day — a column that said "full day" on every line said nothing.
+ */
+const AbsenceWhen = ({ absence }: { absence: THrAbsence }) => {
+  const { t, currentLocale } = useTranslation();
+  const isOneDay = absence.start_date === absence.end_date;
+
+  return (
+    <>
+      {isOneDay
+        ? formatDayLabel(absence.start_date, currentLocale)
+        : `${formatDayLabel(absence.start_date, currentLocale)} – ${formatDayLabel(absence.end_date, currentLocale)}`}
+      {absence.granularity !== EHrGranularity.FULL_DAY && (
+        <span className="ml-2 text-13 text-tertiary">
+          {absence.granularity === EHrGranularity.HALF_DAY
+            ? t(isOneDay ? "hr.absences.granularity.half_day_single" : "hr.absences.granularity.half_day")
+            : t("hr.absences.granularity.hours")}
+        </span>
+      )}
+    </>
+  );
+};
+
+type TActionsProps = TRowHandlers & {
+  absence: THrAbsence;
+  /** Named in every label, so a screen reader can tell the rows apart. */
+  person: string;
+  locked: boolean;
+  settled: boolean;
+};
+
+const AbsenceActions = ({
+  absence,
+  person,
+  locked,
+  settled,
+  isManager,
+  isBusy,
+  onApprove,
+  onReject,
+  onEdit,
+  onRemove,
+}: TActionsProps) => {
+  const { t } = useTranslation();
+
+  return (
+    <div className="flex items-center justify-end gap-0.5">
+      {isManager && absence.state === EHrAbsenceState.REQUESTED && !locked && (
+        <>
+          <HrRowAction
+            icon={<Check className="size-4" />}
+            label={t("hr.absences.approve")}
+            subject={person}
+            disabled={isBusy}
+            onClick={() => onApprove(absence)}
+          />
+          <HrRowAction
+            icon={<X className="size-4" />}
+            label={t("hr.absences.reject")}
+            subject={person}
+            danger
+            disabled={isBusy}
+            onClick={() => onReject(absence)}
+          />
+        </>
+      )}
+      {!locked && !settled && (
+        <HrRowAction
+          icon={<Pencil className="size-4" />}
+          label={t("common.edit")}
+          subject={person}
+          disabled={isBusy}
+          onClick={() => onEdit(absence)}
         />
-      ) : (
-        <div className="overflow-x-auto rounded-md border border-subtle">
-          <table className="w-full min-w-[52rem] text-13">
-            <thead className="border-b border-subtle text-13 text-placeholder">
-              <tr>
-                <th className="px-4 py-2.5 text-left font-medium">{t("hr.absences.column_person")}</th>
-                <th className="px-4 py-2.5 text-left font-medium">{t("hr.absences.column_reason")}</th>
-                <th className="px-4 py-2.5 text-left font-medium">{t("hr.absences.column_when")}</th>
-                <th className="px-4 py-2.5 text-right font-medium">{t("hr.absences.column_away")}</th>
-                <th className="px-4 py-2.5 text-left font-medium">{t("hr.absences.column_state")}</th>
-                <th className="px-4 py-2.5 text-right font-medium">{t("hr.absences.column_action")}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((absence) => {
-                const locked = Boolean(absence.locked_period);
-                const settled =
-                  absence.state === EHrAbsenceState.CANCELLED || absence.state === EHrAbsenceState.REJECTED;
-
-                return (
-                  <tr key={absence.id} className="border-t border-subtle hover:bg-layer-1/60">
-                    <td className="px-4 py-2 text-primary">{nameFor(absence.profile)}</td>
-                    <td className="px-4 py-2 text-secondary">
-                      {localName(
-                        { name_de: absence.absence_type_name, name_en: absence.absence_type_name_en },
-                        currentLocale
-                      ) || absence.absence_type_code}
-                      {absence.reason && <span className="ml-2 text-13 text-tertiary">{absence.reason}</span>}
-                    </td>
-                    <td className="px-4 py-2 text-secondary">
-                      {absence.start_date === absence.end_date
-                        ? formatDayLabel(absence.start_date, currentLocale)
-                        : `${formatDayLabel(absence.start_date, currentLocale)} – ${formatDayLabel(absence.end_date, currentLocale)}`}
-                      {absence.granularity !== EHrGranularity.FULL_DAY && (
-                        <span className="ml-2 text-13 text-tertiary">
-                          {absence.granularity === EHrGranularity.HALF_DAY
-                            ? t(
-                                absence.start_date === absence.end_date
-                                  ? "hr.absences.granularity.half_day_single"
-                                  : "hr.absences.granularity.half_day"
-                              )
-                            : t("hr.absences.granularity.hours")}
-                        </span>
-                      )}
-                    </td>
-                    <td className="px-4 py-2 text-right text-secondary tabular-nums">
-                      {formatMinutes(absence.total_minutes)}
-                    </td>
-                    <td className="px-4 py-2">
-                      <span className={cn("rounded px-1.5 py-0.5 text-13 font-medium", STATE_TONE[absence.state])}>
-                        {t(`hr.absences.state.${STATE_KEY[absence.state]}`)}
-                      </span>
-                      {locked && <span className="ml-2 text-13 text-tertiary">{t("hr.absences.month_locked")}</span>}
-                    </td>
-                    <td className="px-4 py-2 text-right">
-                      <div className="flex items-center justify-end gap-0.5">
-                        {isManager && absence.state === EHrAbsenceState.REQUESTED && !locked && (
-                          <>
-                            <HrRowAction
-                              icon={<Check className="size-4" />}
-                              label={t("hr.absences.approve")}
-                              subject={nameFor(absence.profile)}
-                              disabled={isBusy}
-                              onClick={() => void handleDecide(absence, "approve")}
-                            />
-                            <HrRowAction
-                              icon={<X className="size-4" />}
-                              label={t("hr.absences.reject")}
-                              subject={nameFor(absence.profile)}
-                              danger
-                              disabled={isBusy}
-                              onClick={() => setRefusing(absence)}
-                            />
-                          </>
-                        )}
-                        {!locked && !settled && (
-                          <HrRowAction
-                            icon={<Pencil className="size-4" />}
-                            label={t("common.edit")}
-                            subject={nameFor(absence.profile)}
-                            disabled={isBusy}
-                            onClick={() => setEditing(absence)}
-                          />
-                        )}
-                        {isManager && !locked && (
-                          <HrRowAction
-                            icon={<Trash2 className="size-4" />}
-                            label={t("hr.absences.delete")}
-                            subject={nameFor(absence.profile)}
-                            danger
-                            disabled={isBusy}
-                            onClick={() => setRemoving(absence)}
-                          />
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+      )}
+      {isManager && !locked && (
+        <HrRowAction
+          icon={<Trash2 className="size-4" />}
+          label={t("hr.absences.delete")}
+          subject={person}
+          danger
+          disabled={isBusy}
+          onClick={() => onRemove(absence)}
+        />
       )}
     </div>
   );
-});
+};

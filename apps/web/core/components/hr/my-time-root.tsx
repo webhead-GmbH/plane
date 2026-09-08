@@ -16,7 +16,7 @@ import { setToast, TOAST_TYPE } from "@plane/propel/toast";
 import { EmptyStateCompact } from "@plane/propel/empty-state";
 import { CustomMenu, Loader, Tooltip } from "@plane/ui";
 // local imports
-import { EHrPeriodState, HrService } from "@/services/hr.service";
+import { EHrPeriodState, HrService, type THrMe, type THrPeriod } from "@/services/hr.service";
 import { HrDayTable } from "./day-table";
 import { HrDayEntriesModal } from "./day-entries-modal";
 import { HrOpeningBalanceModal } from "./opening-balance-modal";
@@ -27,11 +27,26 @@ import { formatMonthLabel, isPeriodEditable, nextMonth, previousMonth, refusalMe
 
 const hrService = new HrService();
 
+/** Contracted hours as the schedule in force has them, and only failing that as the contract does. */
+const contractedWeeklyMinutes = (me: THrMe) => me.schedule?.weekly_minutes ?? me.contract?.weekly_minutes ?? null;
+
+type TTranslate = (key: string, values?: Record<string, unknown>) => string;
+
+/**
+ * Why the server refused, said in the reader's language where it named a reason.
+ * Often it names none, and then asking again is the only honest advice.
+ */
+const refusalOrRetry = (failure: unknown, t: TTranslate, locale: string) =>
+  refusalMessage(failure, t, locale) ?? t("hr.my_time.toasts.try_again");
+
+/**
+ * Only a day this month's period can answer for. Whether a day may be edited is
+ * the period's answer, and the period on hand is the one being viewed — so a day
+ * from any other month would be judged by the wrong month's state.
+ */
+const dayWithinMonth = (day: string | null, viewedMonth: string) => (day && day.startsWith(viewedMonth) ? day : null);
+
 export const MyTimeRoot = observer(function MyTimeRoot() {
-  // Only used to navigate, never to decide what the figures are: the month comes
-  // from the server against the signed-in person, not from the address bar.
-  const { workspaceSlug } = useParams();
-  const navigate = useNavigate();
   const now = new Date();
   // Recording time is about today, so the button opens today rather than asking.
   const todayIso = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
@@ -42,55 +57,6 @@ export const MyTimeRoot = observer(function MyTimeRoot() {
 
   const { t, currentLocale } = useTranslation();
   const { data, isLoading, error, mutate } = useSWR(`HR_ME_${year}_${month}`, () => hrService.me(year, month));
-
-  const period = data?.period ?? null;
-  const days = period?.days ?? [];
-  // Only a day this month's period can answer for. Whether a day may be edited
-  // is the period's answer, and the period on hand is the one being viewed — so
-  // a day from any other month would be judged by the wrong month's state.
-  const viewedMonth = `${year}-${String(month).padStart(2, "0")}`;
-  const openDayInThisMonth = openDay && openDay.startsWith(viewedMonth) ? openDay : null;
-  const monthLabel = formatMonthLabel(`${year}-${String(month).padStart(2, "0")}-01`, currentLocale);
-
-  const handleRecompute = async () => {
-    if (!period) return;
-    setIsBusy(true);
-    try {
-      await hrService.recompute(period.id);
-      await mutate();
-      setToast({ type: TOAST_TYPE.SUCCESS, title: t("hr.my_time.toasts.recomputed") });
-    } catch (failure) {
-      setToast({
-        type: TOAST_TYPE.ERROR,
-        title: t("hr.my_time.toasts.not_recomputed"),
-        message: refusalMessage(failure, t, currentLocale) ?? t("hr.my_time.toasts.try_again"),
-      });
-    } finally {
-      setIsBusy(false);
-    }
-  };
-
-  const handleSubmit = async () => {
-    if (!period) return;
-    setIsBusy(true);
-    try {
-      await hrService.submit(period.id);
-      await mutate();
-      setToast({
-        type: TOAST_TYPE.SUCCESS,
-        title: t("hr.my_time.toasts.handed_in"),
-        message: t("hr.my_time.toasts.handed_in_message", { month: monthLabel }),
-      });
-    } catch (failure) {
-      setToast({
-        type: TOAST_TYPE.ERROR,
-        title: t("hr.my_time.toasts.not_handed_in"),
-        message: refusalMessage(failure, t, currentLocale) ?? t("hr.my_time.toasts.try_again"),
-      });
-    } finally {
-      setIsBusy(false);
-    }
-  };
 
   if (isLoading)
     return (
@@ -134,11 +100,17 @@ export const MyTimeRoot = observer(function MyTimeRoot() {
       </div>
     );
 
-  // A month still running cannot be handed in — the server refuses it, because a
-  // submitted month stops being rebuilt and hours logged afterwards would never
-  // be counted. Saying so on the button beats letting it fail on every press.
-  const monthIsRunning = !!period?.to_date;
-  const canHandIn = period && isPeriodEditable(period.state) && !data.has_running_timer && !monthIsRunning;
+  const viewedMonth = `${year}-${String(month).padStart(2, "0")}`;
+  const monthLabel = formatMonthLabel(`${viewedMonth}-01`, currentLocale);
+
+  // Recording time is about today, so the month comes with it. Opening today's
+  // form while the page still showed March asked the March period whether the
+  // day was editable — so a closed March made today's form read-only, and a
+  // closed today would have let March be edited.
+  const openToday = () => {
+    setMonth([now.getFullYear(), now.getMonth() + 1]);
+    setOpenDay(todayIso);
+  };
 
   return (
     <div className="flex w-full flex-col gap-7">
@@ -149,157 +121,317 @@ export const MyTimeRoot = observer(function MyTimeRoot() {
           onNext={() => setMonth(nextMonth(year, month))}
         />
 
-        <div className="flex items-center gap-2">
-          {/* One thing to do, and it is the thing somebody opened this page for.
-              Everything else — the exports, the starting balance, the rebuild —
-              is occasional and lives behind the menu, because six buttons of
-              equal weight is a wall rather than a choice. */}
-          {/* Recording time is about today, so the month comes with it. Opening
-              today's form while the page still showed March asked the March
-              period whether the day was editable — so a closed March made
-              today's form read-only, and a closed today would have let March be
-              edited. */}
-          <Button
-            variant="secondary"
-            size="lg"
-            onClick={() => {
-              setMonth([now.getFullYear(), now.getMonth() + 1]);
-              setOpenDay(todayIso);
-            }}
-            prependIcon={<Plus />}
-          >
-            {t("hr.my_time.record_time")}
-          </Button>
-
-          {period && period.state !== EHrPeriodState.LOCKED ? (
-            <Tooltip
-              tooltipContent={
-                monthIsRunning
-                  ? t("hr.my_time.cannot_hand_in.month_running")
-                  : t("hr.my_time.cannot_hand_in.timer_running")
-              }
-              disabled={canHandIn ?? false}
-              position="bottom"
-            >
-              {/* A wrapper, because a disabled button receives no pointer events
-                  of its own and would leave somebody staring at a grey control
-                  with no way to find out why. */}
-              <span>
-                <Button
-                  variant="primary"
-                  size="lg"
-                  onClick={handleSubmit}
-                  disabled={!canHandIn}
-                  loading={isBusy}
-                  prependIcon={<Send />}
-                >
-                  {t("hr.my_time.hand_in")}
-                </Button>
-              </span>
-            </Tooltip>
-          ) : null}
-
-          <CustomMenu
-            customButton={
-              <span className="grid size-7 place-items-center rounded-md text-tertiary transition-colors hover:bg-layer-2 hover:text-primary">
-                <MoreHorizontal className="size-4" />
-              </span>
-            }
-            placement="bottom-end"
-            closeOnSelect
-          >
-            <CustomMenu.MenuItem onClick={() => setShowOpening(true)} className="flex items-center gap-2">
-              <Scale className="size-3 shrink-0" />
-              {t("hr.my_time.opening")}
-            </CustomMenu.MenuItem>
-            {period ? (
-              <>
-                <CustomMenu.MenuItem
-                  onClick={() => window.open(hrService.periodExportUrl(period.id, "csv"), "_self")}
-                  className="flex items-center gap-2"
-                >
-                  <Download className="size-3 shrink-0" />
-                  {t("hr.my_time.export_csv")}
-                </CustomMenu.MenuItem>
-                <CustomMenu.MenuItem
-                  onClick={() => window.open(hrService.periodExportUrl(period.id, "xlsx"), "_self")}
-                  className="flex items-center gap-2"
-                >
-                  <Download className="size-3 shrink-0" />
-                  {t("hr.my_time.export_excel")}
-                </CustomMenu.MenuItem>
-              </>
-            ) : null}
-            {period && isPeriodEditable(period.state) ? (
-              <CustomMenu.MenuItem onClick={handleRecompute} className="flex items-center gap-2">
-                <RefreshCw className="size-3 shrink-0" />
-                {t("hr.my_time.bring_up_to_date")}
-              </CustomMenu.MenuItem>
-            ) : null}
-            {/* Everybody's own hours, not just a manager's view of somebody's.
-                The month has only ever shown a figure a day, and the question it
-                invites — on what — belongs to the person being asked about it
-                first. */}
-            <CustomMenu.MenuItem
-              onClick={() => navigate(`/${workspaceSlug}/team-time/detail`)}
-              className="flex items-center gap-2"
-            >
-              <ListTree className="size-3 shrink-0" />
-              {t("hr.detail.title")}
-            </CustomMenu.MenuItem>
-            {data.is_hr_manager ? (
-              <CustomMenu.MenuItem
-                onClick={() => navigate(`/${workspaceSlug}/team-time`)}
-                className="flex items-center gap-2"
-              >
-                <Users className="size-3 shrink-0" />
-                {t("hr.my_time.everyone")}
-              </CustomMenu.MenuItem>
-            ) : null}
-          </CustomMenu>
-        </div>
+        <MonthActions
+          me={data}
+          monthLabel={monthLabel}
+          isBusy={isBusy}
+          onBusyChange={setIsBusy}
+          onRecordToday={openToday}
+          onOpeningBalance={() => setShowOpening(true)}
+          onRefresh={mutate}
+        />
       </div>
 
+      <MonthFigures me={data} onPickDay={setOpenDay} />
+
+      <MonthDialogs
+        me={data}
+        openDay={openDay}
+        viewedMonth={viewedMonth}
+        showOpening={showOpening}
+        onCloseDay={() => setOpenDay(null)}
+        onCloseOpening={() => setShowOpening(false)}
+        onChanged={() => void mutate()}
+      />
+    </div>
+  );
+});
+
+/** Everything somebody can do about the month they are looking at. */
+const MonthActions = ({
+  me,
+  monthLabel,
+  isBusy,
+  onBusyChange,
+  onRecordToday,
+  onOpeningBalance,
+  onRefresh,
+}: {
+  me: THrMe;
+  monthLabel: string;
+  isBusy: boolean;
+  onBusyChange: (value: boolean) => void;
+  onRecordToday: () => void;
+  onOpeningBalance: () => void;
+  onRefresh: () => Promise<unknown>;
+}) => {
+  const { t, currentLocale } = useTranslation();
+  const period = me.period;
+
+  const handleRecompute = async () => {
+    if (!period) return;
+    onBusyChange(true);
+    try {
+      await hrService.recompute(period.id);
+      await onRefresh();
+      setToast({ type: TOAST_TYPE.SUCCESS, title: t("hr.my_time.toasts.recomputed") });
+    } catch (failure) {
+      setToast({
+        type: TOAST_TYPE.ERROR,
+        title: t("hr.my_time.toasts.not_recomputed"),
+        message: refusalOrRetry(failure, t, currentLocale),
+      });
+    } finally {
+      onBusyChange(false);
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (!period) return;
+    onBusyChange(true);
+    try {
+      await hrService.submit(period.id);
+      await onRefresh();
+      setToast({
+        type: TOAST_TYPE.SUCCESS,
+        title: t("hr.my_time.toasts.handed_in"),
+        message: t("hr.my_time.toasts.handed_in_message", { month: monthLabel }),
+      });
+    } catch (failure) {
+      setToast({
+        type: TOAST_TYPE.ERROR,
+        title: t("hr.my_time.toasts.not_handed_in"),
+        message: refusalOrRetry(failure, t, currentLocale),
+      });
+    } finally {
+      onBusyChange(false);
+    }
+  };
+
+  return (
+    <div className="flex items-center gap-2">
+      {/* One thing to do, and it is the thing somebody opened this page for.
+          Everything else — the exports, the starting balance, the rebuild —
+          is occasional and lives behind the menu, because six buttons of
+          equal weight is a wall rather than a choice. */}
+      <Button variant="secondary" size="lg" onClick={onRecordToday} prependIcon={<Plus />}>
+        {t("hr.my_time.record_time")}
+      </Button>
+
+      <HandInButton period={period} hasRunningTimer={me.has_running_timer} isBusy={isBusy} onHandIn={handleSubmit} />
+
+      <MonthMenu
+        period={period}
+        isHrManager={me.is_hr_manager}
+        onOpeningBalance={onOpeningBalance}
+        onRecompute={handleRecompute}
+      />
+    </div>
+  );
+};
+
+/**
+ * The one press that ends a month. A closed month has nothing left to hand in,
+ * so it is not offered the button at all.
+ */
+const HandInButton = ({
+  period,
+  hasRunningTimer,
+  isBusy,
+  onHandIn,
+}: {
+  period: THrPeriod | null;
+  hasRunningTimer: boolean;
+  isBusy: boolean;
+  onHandIn: () => void;
+}) => {
+  const { t } = useTranslation();
+
+  if (!period || period.state === EHrPeriodState.LOCKED) return null;
+
+  // A month still running cannot be handed in — the server refuses it, because a
+  // submitted month stops being rebuilt and hours logged afterwards would never
+  // be counted. Saying so on the button beats letting it fail on every press.
+  const monthIsRunning = !!period.to_date;
+  const canHandIn = isPeriodEditable(period.state) && !hasRunningTimer && !monthIsRunning;
+
+  return (
+    <Tooltip
+      tooltipContent={
+        monthIsRunning ? t("hr.my_time.cannot_hand_in.month_running") : t("hr.my_time.cannot_hand_in.timer_running")
+      }
+      disabled={canHandIn}
+      position="bottom"
+    >
+      {/* A wrapper, because a disabled button receives no pointer events
+          of its own and would leave somebody staring at a grey control
+          with no way to find out why. */}
+      <span>
+        <Button
+          variant="primary"
+          size="lg"
+          onClick={onHandIn}
+          disabled={!canHandIn}
+          loading={isBusy}
+          prependIcon={<Send />}
+        >
+          {t("hr.my_time.hand_in")}
+        </Button>
+      </span>
+    </Tooltip>
+  );
+};
+
+/** The occasional things: the starting balance, the exports, a rebuild, and the ways out of one's own month. */
+const MonthMenu = ({
+  period,
+  isHrManager,
+  onOpeningBalance,
+  onRecompute,
+}: {
+  period: THrPeriod | null;
+  isHrManager: boolean;
+  onOpeningBalance: () => void;
+  onRecompute: () => void;
+}) => {
+  const { t } = useTranslation();
+  // Only used to navigate, never to decide what the figures are: the month comes
+  // from the server against the signed-in person, not from the address bar.
+  const { workspaceSlug } = useParams();
+  const navigate = useNavigate();
+
+  return (
+    <CustomMenu
+      customButton={
+        <span className="grid size-7 place-items-center rounded-md text-tertiary transition-colors hover:bg-layer-2 hover:text-primary">
+          <MoreHorizontal className="size-4" />
+        </span>
+      }
+      placement="bottom-end"
+      closeOnSelect
+    >
+      <CustomMenu.MenuItem onClick={onOpeningBalance} className="flex items-center gap-2">
+        <Scale className="size-3 shrink-0" />
+        {t("hr.my_time.opening")}
+      </CustomMenu.MenuItem>
+      {period ? (
+        <>
+          <CustomMenu.MenuItem
+            onClick={() => window.open(hrService.periodExportUrl(period.id, "csv"), "_self")}
+            className="flex items-center gap-2"
+          >
+            <Download className="size-3 shrink-0" />
+            {t("hr.my_time.export_csv")}
+          </CustomMenu.MenuItem>
+          <CustomMenu.MenuItem
+            onClick={() => window.open(hrService.periodExportUrl(period.id, "xlsx"), "_self")}
+            className="flex items-center gap-2"
+          >
+            <Download className="size-3 shrink-0" />
+            {t("hr.my_time.export_excel")}
+          </CustomMenu.MenuItem>
+        </>
+      ) : null}
+      {period && isPeriodEditable(period.state) ? (
+        <CustomMenu.MenuItem onClick={onRecompute} className="flex items-center gap-2">
+          <RefreshCw className="size-3 shrink-0" />
+          {t("hr.my_time.bring_up_to_date")}
+        </CustomMenu.MenuItem>
+      ) : null}
+      {/* Everybody's own hours, not just a manager's view of somebody's.
+          The month has only ever shown a figure a day, and the question it
+          invites — on what — belongs to the person being asked about it
+          first. */}
+      <CustomMenu.MenuItem
+        onClick={() => navigate(`/${workspaceSlug}/team-time/detail`)}
+        className="flex items-center gap-2"
+      >
+        <ListTree className="size-3 shrink-0" />
+        {t("hr.detail.title")}
+      </CustomMenu.MenuItem>
+      {isHrManager ? (
+        <CustomMenu.MenuItem
+          onClick={() => navigate(`/${workspaceSlug}/team-time`)}
+          className="flex items-center gap-2"
+        >
+          <Users className="size-3 shrink-0" />
+          {t("hr.my_time.everyone")}
+        </CustomMenu.MenuItem>
+      ) : null}
+    </CustomMenu>
+  );
+};
+
+/** What the month came to, what it is worth to whoever invoices it, and the day-by-day behind both. */
+const MonthFigures = ({ me, onPickDay }: { me: THrMe; onPickDay: (workDate: string) => void }) => {
+  const period = me.period;
+
+  return (
+    <>
       <HrMonthSummary
         period={period}
-        hasRunningTimer={data.has_running_timer}
-        contractedWeeklyMinutes={data.schedule?.weekly_minutes ?? data.contract?.weekly_minutes ?? null}
-        teleworkDaysThisYear={data.telework_days_this_year}
-        leave={data.leave}
-        schedule={data.schedule}
+        hasRunningTimer={me.has_running_timer}
+        contractedWeeklyMinutes={contractedWeeklyMinutes(me)}
+        teleworkDaysThisYear={me.telework_days_this_year}
+        leave={me.leave}
+        schedule={me.schedule}
       />
 
-      <HrStatementPanel periodId={period?.id ?? null} arrangement={data.contract?.arrangement ?? null} />
+      <HrStatementPanel periodId={period?.id ?? null} arrangement={me.contract?.arrangement ?? null} />
 
       <HrDayTable
-        days={days}
+        days={period?.days ?? []}
         countedThrough={period?.to_date ? period.to_date.counted_through : undefined}
-        onPickDay={setOpenDay}
+        onPickDay={onPickDay}
       />
+    </>
+  );
+};
 
+const MonthDialogs = ({
+  me,
+  openDay,
+  viewedMonth,
+  showOpening,
+  onCloseDay,
+  onCloseOpening,
+  onChanged,
+}: {
+  me: THrMe;
+  openDay: string | null;
+  viewedMonth: string;
+  showOpening: boolean;
+  onCloseDay: () => void;
+  onCloseOpening: () => void;
+  onChanged: () => void;
+}) => {
+  const period = me.period;
+
+  return (
+    <>
       {/* Keyed by the day: opening a different one is a different form, and the
           key is what empties it rather than an effect that fires after a render
           with the previous day's entry still in the boxes. */}
       <HrDayEntriesModal
         key={openDay ?? "none"}
-        workDate={openDayInThisMonth}
-        profileId={data.profile?.id ?? null}
+        workDate={dayWithinMonth(openDay, viewedMonth)}
+        profileId={me.profile?.id ?? null}
         isLocked={!period || !isPeriodEditable(period.state)}
-        recordsAttendance={!!data.contract?.records_attendance}
-        onClose={() => setOpenDay(null)}
-        onChanged={() => void mutate()}
+        recordsAttendance={!!me.contract?.records_attendance}
+        onClose={onCloseDay}
+        onChanged={onChanged}
       />
 
       {/* Keyed on the opening rather than reset by an effect: the profile comes
           from the fetched month, so it is a new object on every revalidation and
           an effect watching it emptied the form under whoever was using it. */}
       <HrOpeningBalanceModal
-        key={showOpening ? (data.profile?.id ?? "own") : "closed"}
-        person={showOpening ? data.profile : null}
+        key={showOpening ? (me.profile?.id ?? "own") : "closed"}
+        person={showOpening ? me.profile : null}
         isOwn
         canRecord={false}
-        onClose={() => setShowOpening(false)}
+        onClose={onCloseOpening}
       />
-    </div>
+    </>
   );
-});
+};

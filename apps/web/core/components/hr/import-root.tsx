@@ -59,42 +59,7 @@ export const HrImportRoot = observer(function HrImportRoot() {
 
   const { data: batches, isLoading, error, mutate } = useSWR("HR_IMPORTS", () => hrService.imports());
 
-  /** A spreadsheet with the right headings and one row showing the shape of each. */
-  const downloadTemplate = () => {
-    const sheets: Record<number, string[][]> = {
-      [EHrImportKind.TIME_ENTRIES]: [
-        ["email", "date", "hours", "note"],
-        ["anna.berger@example.com", "2026-03-02", "7:42", "Monatsabschluss"],
-      ],
-      [EHrImportKind.OPENING_BALANCES]: [
-        ["email", "date", "hours", "kind", "basis", "confidence"],
-        ["anna.berger@example.com", "2026-01-01", "12:30", "time", "Agreed on 12 Jan", "documented"],
-      ],
-      [EHrImportKind.ABSENCES]: [
-        ["email", "start_date", "end_date", "type"],
-        ["anna.berger@example.com", "2026-03-02", "2026-03-06", "urlaub"],
-      ],
-    };
-    const rows = sheets[kind] ?? sheets[EHrImportKind.TIME_ENTRIES];
-    // Quoted throughout: a note or a basis may hold the separator, and a file
-    // that breaks on somebody's comma is worse than no template at all.
-    const csv = rows.map((row) => row.map((cell) => `"${cell.replace(/"/g, '""')}"`).join(",")).join("\r\n");
-    // A byte-order mark, because Excel reads a UTF-8 file without one as the
-    // local codepage and turns every umlaut in a name into mojibake.
-    const url = URL.createObjectURL(new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8" }));
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `${KIND_KEY[kind]}-template.csv`;
-    link.click();
-    URL.revokeObjectURL(url);
-  };
-
-  const complain = (failure: unknown) =>
-    setToast({
-      type: TOAST_TYPE.ERROR,
-      title: t("hr.imports.toasts.refused"),
-      message: refusalMessage(failure, t, currentLocale) ?? t("hr.imports.toasts.try_again"),
-    });
+  const complain = (failure: unknown) => complainAbout(failure, t, currentLocale);
 
   const handleFile = async (file: File) => {
     setIsBusy(true);
@@ -168,28 +133,8 @@ export const HrImportRoot = observer(function HrImportRoot() {
       </Loader>
     );
 
-  const notAllowed = (error as { status?: number } | undefined)?.status === 403;
-  const hasData = Boolean(batches);
-
-  // Only when there is nothing to show: a revalidation that failed while the
-  // screen already holds good data must not replace it with an error.
-  if (error && (notAllowed || !hasData))
-    return (
-      <div className="w-full">
-        <EmptyStateCompact
-          title={notAllowed ? t("hr.team_time.not_permitted") : t("hr.shared.load_failed")}
-          description={notAllowed ? t("hr.imports.not_permitted_detail") : t("hr.shared.load_failed_detail")}
-          assetKey={notAllowed ? "members" : "unknown"}
-          assetClassName="size-20"
-          rootClassName="py-16"
-          actions={
-            notAllowed
-              ? undefined
-              : [{ label: t("hr.shared.retry"), variant: "secondary", onClick: () => void mutate() }]
-          }
-        />
-      </div>
-    );
+  const refusal = loadFailure(error, batches);
+  if (refusal) return <ImportsUnavailable reason={refusal} onRetry={() => void mutate()} />;
 
   return (
     <div className="flex w-full flex-col gap-7">
@@ -197,47 +142,13 @@ export const HrImportRoot = observer(function HrImportRoot() {
         <p className="text-13 text-tertiary">{t("hr.imports.subtitle")}</p>
       </div>
 
-      <section className="flex flex-col gap-3 rounded-md border border-subtle p-4">
-        <div className="flex flex-wrap items-end gap-3">
-          <label className="flex flex-col gap-1">
-            <span className="text-13 font-medium text-tertiary">{t("hr.imports.what_kind")}</span>
-            <select
-              value={kind}
-              onChange={(e) => setKind(Number(e.target.value) as EHrImportKind)}
-              className="rounded-md border border-subtle bg-layer-1 px-3 py-1.5 text-13 text-primary outline-none"
-            >
-              {KINDS.map((value) => (
-                <option key={value} value={value}>
-                  {t(`hr.imports.kind.${KIND_KEY[value]}`)}
-                </option>
-              ))}
-            </select>
-          </label>
-          <input
-            ref={fileField}
-            type="file"
-            accept=".csv,.xlsx,.xls"
-            className="hidden"
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (file) void handleFile(file);
-            }}
-          />
-          <Button variant="secondary" size="lg" prependIcon={<Download />} onClick={downloadTemplate}>
-            {t("hr.imports.template")}
-          </Button>
-          <Button
-            variant="primary"
-            size="lg"
-            loading={isBusy}
-            prependIcon={<Upload />}
-            onClick={() => fileField.current?.click()}
-          >
-            {t("hr.imports.choose_file")}
-          </Button>
-        </div>
-        <p className="text-13 text-tertiary">{t(`hr.imports.columns.${KIND_KEY[kind]}`)}</p>
-      </section>
+      <ImportToolbar
+        kind={kind}
+        fileField={fileField}
+        isBusy={isBusy}
+        onKindChange={setKind}
+        onFile={(file) => void handleFile(file)}
+      />
 
       {checking ? (
         <ImportPreview
@@ -248,66 +159,78 @@ export const HrImportRoot = observer(function HrImportRoot() {
         />
       ) : null}
 
-      <HrReasonModal
-        key={undoing?.id ?? "none"}
-        isOpen={undoing !== null}
-        title={t("hr.imports.undo_title", { filename: undoing?.filename ?? "" })}
-        body={t("hr.imports.undo_body")}
-        label={t("hr.imports.undo_label")}
-        placeholder={t("hr.imports.undo_placeholder")}
-        confirmLabel={t("hr.imports.undo_confirm")}
-        cancelLabel={t("hr.imports.undo_cancel")}
+      <UndoImportDialog
+        batch={undoing}
         isBusy={isBusy}
         onClose={() => setUndoing(null)}
         onConfirm={(reason) => void handleUndo(reason)}
       />
 
-      <section className="flex flex-col gap-2">
-        <h2 className="text-13 font-medium text-secondary">{t("hr.imports.past")}</h2>
-        {(batches ?? []).length === 0 ? (
-          <p className="text-13 text-tertiary">{t("hr.imports.none_yet")}</p>
-        ) : (
-          <div className="divide-y divide-subtle rounded-md border border-subtle">
-            {(batches ?? []).map((batch) => (
-              <div key={batch.id} className="flex flex-wrap items-center gap-3 px-4 py-2">
-                <span className="flex-1 truncate text-13 text-primary">{batch.filename}</span>
-                <span className="text-13 text-tertiary">{t(`hr.imports.kind.${KIND_KEY[batch.kind]}`)}</span>
-                <span className="text-13 text-tertiary tabular-nums">
-                  {t("hr.imports.row_summary", { valid: batch.valid_count, total: batch.row_count })}
-                </span>
-                <span
-                  className={cn(
-                    "rounded px-2 py-0.5 text-13",
-                    batch.state === EHrImportState.COMMITTED && "bg-success-subtle text-success-primary",
-                    batch.state === EHrImportState.ROLLED_BACK && "bg-layer-2 text-tertiary",
-                    batch.state === EHrImportState.FAILED && "bg-danger-subtle text-danger-primary"
-                  )}
-                >
-                  {t(`hr.imports.state.${batch.state}`)}
-                </span>
-                {batch.state === EHrImportState.PREVIEW_READY ? (
-                  <Button variant="secondary" size="lg" onClick={() => void handleResume(batch)}>
-                    {t("hr.imports.resume")}
-                  </Button>
-                ) : null}
-                {batch.state === EHrImportState.COMMITTED ? (
-                  <Button
-                    variant="link"
-                    size="lg"
-                    prependIcon={<Undo2 className="size-3.5" />}
-                    onClick={() => setUndoing(batch)}
-                  >
-                    {t("hr.imports.undo")}
-                  </Button>
-                ) : null}
-              </div>
-            ))}
-          </div>
-        )}
-      </section>
+      <ImportHistory batches={batches} onResume={(batch) => void handleResume(batch)} onUndo={setUndoing} />
     </div>
   );
 });
+
+/** Which sort of file is being brought in, and the two ways of starting one. */
+const ImportToolbar = ({
+  kind,
+  fileField,
+  isBusy,
+  onKindChange,
+  onFile,
+}: {
+  kind: EHrImportKind;
+  fileField: React.RefObject<HTMLInputElement>;
+  isBusy: boolean;
+  onKindChange: (kind: EHrImportKind) => void;
+  onFile: (file: File) => void;
+}) => {
+  const { t } = useTranslation();
+
+  return (
+    <section className="flex flex-col gap-3 rounded-md border border-subtle p-4">
+      <div className="flex flex-wrap items-end gap-3">
+        <label className="flex flex-col gap-1">
+          <span className="text-13 font-medium text-tertiary">{t("hr.imports.what_kind")}</span>
+          <select
+            value={kind}
+            onChange={(e) => onKindChange(Number(e.target.value) as EHrImportKind)}
+            className="rounded-md border border-subtle bg-layer-1 px-3 py-1.5 text-13 text-primary outline-none"
+          >
+            {KINDS.map((value) => (
+              <option key={value} value={value}>
+                {t(`hr.imports.kind.${KIND_KEY[value]}`)}
+              </option>
+            ))}
+          </select>
+        </label>
+        <input
+          ref={fileField}
+          type="file"
+          accept=".csv,.xlsx,.xls"
+          className="hidden"
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            if (file) onFile(file);
+          }}
+        />
+        <Button variant="secondary" size="lg" prependIcon={<Download />} onClick={() => downloadTemplate(kind)}>
+          {t("hr.imports.template")}
+        </Button>
+        <Button
+          variant="primary"
+          size="lg"
+          loading={isBusy}
+          prependIcon={<Upload />}
+          onClick={() => fileField.current?.click()}
+        >
+          {t("hr.imports.choose_file")}
+        </Button>
+      </div>
+      <p className="text-13 text-tertiary">{t(`hr.imports.columns.${KIND_KEY[kind]}`)}</p>
+    </section>
+  );
+};
 
 const ImportPreview = ({
   batch,
@@ -409,6 +332,185 @@ const Count = ({ icon, label, value }: { icon: React.ReactNode; label: string; v
     <span className="text-tertiary">{label}</span>
   </span>
 );
+
+/** What has been brought in before, and what became of each file. */
+const ImportHistory = ({
+  batches,
+  onResume,
+  onUndo,
+}: {
+  batches: THrImportBatch[] | undefined;
+  onResume: (batch: THrImportBatch) => void;
+  onUndo: (batch: THrImportBatch) => void;
+}) => {
+  const { t } = useTranslation();
+  const rows = batches ?? [];
+
+  return (
+    <section className="flex flex-col gap-2">
+      <h2 className="text-13 font-medium text-secondary">{t("hr.imports.past")}</h2>
+      {rows.length === 0 ? (
+        <p className="text-13 text-tertiary">{t("hr.imports.none_yet")}</p>
+      ) : (
+        <div className="divide-y divide-subtle rounded-md border border-subtle">
+          {rows.map((batch) => (
+            <ImportHistoryRow key={batch.id} batch={batch} onResume={onResume} onUndo={onUndo} />
+          ))}
+        </div>
+      )}
+    </section>
+  );
+};
+
+const ImportHistoryRow = ({
+  batch,
+  onResume,
+  onUndo,
+}: {
+  batch: THrImportBatch;
+  onResume: (batch: THrImportBatch) => void;
+  onUndo: (batch: THrImportBatch) => void;
+}) => {
+  const { t } = useTranslation();
+
+  return (
+    <div className="flex flex-wrap items-center gap-3 px-4 py-2">
+      <span className="flex-1 truncate text-13 text-primary">{batch.filename}</span>
+      <span className="text-13 text-tertiary">{t(`hr.imports.kind.${KIND_KEY[batch.kind]}`)}</span>
+      <span className="text-13 text-tertiary tabular-nums">
+        {t("hr.imports.row_summary", { valid: batch.valid_count, total: batch.row_count })}
+      </span>
+      <span
+        className={cn(
+          "rounded px-2 py-0.5 text-13",
+          batch.state === EHrImportState.COMMITTED && "bg-success-subtle text-success-primary",
+          batch.state === EHrImportState.ROLLED_BACK && "bg-layer-2 text-tertiary",
+          batch.state === EHrImportState.FAILED && "bg-danger-subtle text-danger-primary"
+        )}
+      >
+        {t(`hr.imports.state.${batch.state}`)}
+      </span>
+      {batch.state === EHrImportState.PREVIEW_READY ? (
+        <Button variant="secondary" size="lg" onClick={() => onResume(batch)}>
+          {t("hr.imports.resume")}
+        </Button>
+      ) : null}
+      {batch.state === EHrImportState.COMMITTED ? (
+        <Button variant="link" size="lg" prependIcon={<Undo2 className="size-3.5" />} onClick={() => onUndo(batch)}>
+          {t("hr.imports.undo")}
+        </Button>
+      ) : null}
+    </div>
+  );
+};
+
+/**
+ * Taking a file's rows back out, which nobody does without saying why.
+ *
+ * Keyed on the batch, so each file is asked about in a dialog of its own and a
+ * reason typed for one is never still sitting there for the next.
+ */
+const UndoImportDialog = ({
+  batch,
+  isBusy,
+  onClose,
+  onConfirm,
+}: {
+  batch: THrImportBatch | null;
+  isBusy: boolean;
+  onClose: () => void;
+  onConfirm: (reason: string) => void;
+}) => {
+  const { t } = useTranslation();
+
+  return (
+    <HrReasonModal
+      key={batch?.id ?? "none"}
+      isOpen={batch !== null}
+      title={t("hr.imports.undo_title", { filename: batch?.filename ?? "" })}
+      body={t("hr.imports.undo_body")}
+      label={t("hr.imports.undo_label")}
+      placeholder={t("hr.imports.undo_placeholder")}
+      confirmLabel={t("hr.imports.undo_confirm")}
+      cancelLabel={t("hr.imports.undo_cancel")}
+      isBusy={isBusy}
+      onClose={onClose}
+      onConfirm={onConfirm}
+    />
+  );
+};
+
+const ImportsUnavailable = ({ reason, onRetry }: { reason: TLoadFailure; onRetry: () => void }) => {
+  const { t } = useTranslation();
+  const notAllowed = reason === "not_permitted";
+
+  return (
+    <div className="w-full">
+      <EmptyStateCompact
+        title={notAllowed ? t("hr.team_time.not_permitted") : t("hr.shared.load_failed")}
+        description={notAllowed ? t("hr.imports.not_permitted_detail") : t("hr.shared.load_failed_detail")}
+        assetKey={notAllowed ? "members" : "unknown"}
+        assetClassName="size-20"
+        rootClassName="py-16"
+        actions={notAllowed ? undefined : [{ label: t("hr.shared.retry"), variant: "secondary", onClick: onRetry }]}
+      />
+    </div>
+  );
+};
+
+type TLoadFailure = "not_permitted" | "failed";
+
+/**
+ * Whether the screen has nothing left to show but the reason it is empty.
+ *
+ * Being told no reads differently from a load that broke, and a revalidation
+ * that failed while the screen already holds good data must not replace it with
+ * an error.
+ */
+function loadFailure(error: unknown, batches: THrImportBatch[] | undefined): TLoadFailure | null {
+  if (!error) return null;
+  if ((error as { status?: number } | undefined)?.status === 403) return "not_permitted";
+  return batches ? null : "failed";
+}
+
+/** A spreadsheet with the right headings and one row showing the shape of each. */
+function downloadTemplate(kind: EHrImportKind) {
+  const sheets: Record<number, string[][]> = {
+    [EHrImportKind.TIME_ENTRIES]: [
+      ["email", "date", "hours", "note"],
+      ["anna.berger@example.com", "2026-03-02", "7:42", "Monatsabschluss"],
+    ],
+    [EHrImportKind.OPENING_BALANCES]: [
+      ["email", "date", "hours", "kind", "basis", "confidence"],
+      ["anna.berger@example.com", "2026-01-01", "12:30", "time", "Agreed on 12 Jan", "documented"],
+    ],
+    [EHrImportKind.ABSENCES]: [
+      ["email", "start_date", "end_date", "type"],
+      ["anna.berger@example.com", "2026-03-02", "2026-03-06", "urlaub"],
+    ],
+  };
+  const rows = sheets[kind] ?? sheets[EHrImportKind.TIME_ENTRIES];
+  // Quoted throughout: a note or a basis may hold the separator, and a file
+  // that breaks on somebody's comma is worse than no template at all.
+  const csv = rows.map((row) => row.map((cell) => `"${cell.replace(/"/g, '""')}"`).join(",")).join("\r\n");
+  // A byte-order mark, because Excel reads a UTF-8 file without one as the
+  // local codepage and turns every umlaut in a name into mojibake.
+  const url = URL.createObjectURL(new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8" }));
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `${KIND_KEY[kind]}-template.csv`;
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
+/** The screen's one way of saying that the server would not do it. */
+function complainAbout(failure: unknown, t: (key: string, values?: Record<string, unknown>) => string, locale: string) {
+  setToast({
+    type: TOAST_TYPE.ERROR,
+    title: t("hr.imports.toasts.refused"),
+    message: refusalMessage(failure, t, locale) ?? t("hr.imports.toasts.try_again"),
+  });
+}
 
 /**
  * Why a row was refused or skipped, in the reader's language.

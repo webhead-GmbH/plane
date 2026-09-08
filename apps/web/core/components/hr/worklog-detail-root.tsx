@@ -61,34 +61,37 @@ const useRowDuration = () => {
 };
 
 /**
- * Where a month's hours went, entry by entry.
+ * Who is reading, and whose months they are allowed to open.
  *
- * The month has only ever shown one number a day. That answers "how much" and
- * leaves the question it invites — on what — with nowhere to be asked, so the
- * only way to check a figure was to open every work item in turn.
- *
- * Grouping is the whole point rather than a decoration: the same hours read as
- * a week's shape, as a list of work items, or as which project took the month,
- * and which of those a person needs depends entirely on why they are looking.
- *
- * What is on screen is three separate things — the controls that choose what to
- * show, the figures that summarise it, and the rows themselves — so they are
- * three components. Only this one holds any state.
+ * A manager can look at anybody, so the list of people is worth fetching only
+ * for one; everybody else only ever sees themselves.
  */
-export const HrWorklogDetailRoot = observer(function HrWorklogDetailRoot() {
-  const { t, currentLocale } = useTranslation();
-  const now = new Date();
-  const [[year, month], setMonth] = useState<[number, number]>([now.getFullYear(), now.getMonth() + 1]);
-  const [grouping, setGrouping] = useState<THrWorklogGrouping>("day");
-  const [personId, setPersonId] = useState("");
-  const [opened, setOpened] = useState<Record<string, boolean>>({});
-
-  const { data: me, isLoading: loadingMe, error: meError } = useSWR("HR_ME_ROLE", () => hrService.me());
+const useHrViewer = (personId: string) => {
+  const { data: me, isLoading, error } = useSWR("HR_ME_ROLE", () => hrService.me());
   const isManager = Boolean(me?.is_hr_manager);
   const { data: people } = useSWR(isManager ? "HR_EMPLOYEES" : null, () => hrService.employees());
 
-  // Whoever is being looked at: the person picked, or the reader themselves.
-  const subjectId = personId || me?.profile?.id || "";
+  return {
+    isManager,
+    people: people ?? [],
+    // Whoever is being looked at: the person picked, or the reader themselves.
+    subjectId: personId || me?.profile?.id || "",
+    isLoading,
+    error,
+  };
+};
+
+/**
+ * One person's month, once it is settled who that person is.
+ *
+ * Whether the screen is still waiting, and whether it has been left with
+ * nothing, are both decided here rather than in the layout, because both turn
+ * on the same thing: a month already on the table outranks a request that is
+ * still in the air or has just come back empty-handed.
+ */
+const useWorklogDetail = (personId: string, year: number, month: number, grouping: THrWorklogGrouping) => {
+  const viewer = useHrViewer(personId);
+  const { subjectId } = viewer;
 
   const { data, isLoading, error, mutate } = useSWR(
     subjectId ? `HR_WORKLOG_DETAIL_${subjectId}_${year}_${month}_${grouping}` : null,
@@ -100,17 +103,57 @@ export const HrWorklogDetailRoot = observer(function HrWorklogDetailRoot() {
     { keepPreviousData: true }
   );
 
-  const monthLabel = formatMonthLabel(`${year}-${String(month).padStart(2, "0")}-01`, currentLocale);
-  const refusal = (error ?? meError) as { status?: number } | undefined;
+  const refusal = (error ?? viewer.error) as { status?: number } | undefined;
   const notAllowed = refusal?.status === 403;
 
-  const groupLabel = (row: THrWorklogGroup) => {
-    if (grouping === "day") return formatDayLabel(row.first_day, currentLocale);
-    if (grouping === "week") return t("hr.detail.week_of", { date: formatDayWithYear(row.first_day, currentLocale) });
-    return row.label || t("hr.detail.unnamed");
+  return {
+    isManager: viewer.isManager,
+    people: viewer.people,
+    subjectId,
+    detail: data ?? null,
+    notAllowed,
+    isLoading: (isLoading || viewer.isLoading) && !data,
+    // Failed only when there is nothing good to show — a failed revalidation
+    // must not wipe a table somebody is reading.
+    hasFailed: Boolean(error || viewer.error) && (notAllowed || !data),
+    retry: () => void mutate(),
   };
+};
 
-  if ((isLoading || loadingMe) && !data)
+/**
+ * Where a month's hours went, entry by entry.
+ *
+ * The month has only ever shown one number a day. That answers "how much" and
+ * leaves the question it invites — on what — with nowhere to be asked, so the
+ * only way to check a figure was to open every work item in turn.
+ *
+ * Grouping is the whole point rather than a decoration: the same hours read as
+ * a week's shape, as a list of work items, or as which project took the month,
+ * and which of those a person needs depends entirely on why they are looking.
+ *
+ * What is on screen is a handful of separate things — the controls that choose
+ * what to show, the figures that summarise it, and the rows themselves — so
+ * each of them is its own component. Only this one holds what was chosen, and
+ * fetching what was chosen belongs to the hook above.
+ */
+export const HrWorklogDetailRoot = observer(function HrWorklogDetailRoot() {
+  const { currentLocale } = useTranslation();
+  const now = new Date();
+  const [[year, month], setMonth] = useState<[number, number]>([now.getFullYear(), now.getMonth() + 1]);
+  const [grouping, setGrouping] = useState<THrWorklogGrouping>("day");
+  const [personId, setPersonId] = useState("");
+  const [opened, setOpened] = useState<Record<string, boolean>>({});
+
+  const { isManager, people, subjectId, detail, notAllowed, isLoading, hasFailed, retry } = useWorklogDetail(
+    personId,
+    year,
+    month,
+    grouping
+  );
+
+  const monthLabel = formatMonthLabel(`${year}-${String(month).padStart(2, "0")}-01`, currentLocale);
+
+  if (isLoading)
     return (
       <Loader className="flex w-full flex-col gap-3">
         <Loader.Item height="72px" />
@@ -122,42 +165,9 @@ export const HrWorklogDetailRoot = observer(function HrWorklogDetailRoot() {
   // With nobody to ask about, no request is made at all — so without this the
   // screen would fall through to its own defaults and state four confident
   // figures about a month it never fetched.
-  if (!subjectId && !isManager)
-    return (
-      <div className="w-full">
-        <EmptyStateCompact
-          title={t("hr.my_time.no_record")}
-          description={t("hr.my_time.no_record_detail")}
-          assetKey="unknown"
-          assetClassName="size-20"
-          rootClassName="py-16"
-        />
-      </div>
-    );
+  if (!subjectId && !isManager) return <NoEmploymentRecord />;
 
-  // Only when there is nothing good to show — a failed revalidation must not
-  // wipe a table somebody is reading.
-  if ((error || meError) && (notAllowed || !data))
-    return (
-      <div className="w-full">
-        <EmptyStateCompact
-          title={notAllowed ? t("hr.team_time.not_permitted") : t("hr.shared.load_failed")}
-          description={
-            notAllowed
-              ? t("hr.team_time.not_permitted_detail", { page: t("hr.my_time.title") })
-              : t("hr.shared.load_failed_detail")
-          }
-          assetKey={notAllowed ? "members" : "unknown"}
-          assetClassName="size-20"
-          rootClassName="py-16"
-          actions={
-            notAllowed ? [] : [{ label: t("hr.shared.retry"), variant: "secondary", onClick: () => void mutate() }]
-          }
-        />
-      </div>
-    );
-
-  const groups = data?.groups ?? [];
+  if (hasFailed) return <DetailUnavailable notAllowed={notAllowed} onRetry={retry} />;
 
   return (
     <div className="flex w-full flex-col gap-7">
@@ -166,64 +176,27 @@ export const HrWorklogDetailRoot = observer(function HrWorklogDetailRoot() {
         onPreviousMonth={() => setMonth(previousMonth(year, month))}
         onNextMonth={() => setMonth(nextMonth(year, month))}
         isManager={isManager}
-        people={people ?? []}
+        people={people}
         personId={personId}
         onPersonChange={setPersonId}
         grouping={grouping}
         onGroupingChange={setGrouping}
       />
 
-      <DetailSummary detail={data ?? null} />
+      <DetailSummary detail={detail} />
 
-      {groups.length === 0 ? (
-        <div className="rounded-md border border-subtle bg-layer-1 px-4 py-6 text-13 text-tertiary">
-          {t("hr.detail.nothing_logged")}
-        </div>
-      ) : (
-        <div className="overflow-x-auto rounded-md border border-subtle">
-          <table className="w-full min-w-[52rem] text-13">
-            <thead className="border-b border-subtle text-13 text-placeholder">
-              <tr>
-                <th className="px-4 py-2.5 text-left font-medium">{t("hr.detail.column_what")}</th>
-                <th className="px-4 py-2.5 text-left font-medium">{t("hr.detail.column_when")}</th>
-                <th className="px-4 py-2.5 text-left font-medium">{t("hr.detail.column_note")}</th>
-                <th className="px-4 py-2.5 text-right font-medium">{t("hr.detail.column_long")}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {groups.map((row) => {
-                // Days open by default, because that is the shape people read a
-                // month in; the other groupings are a list to scan first.
-                //
-                // Remembered under what is being looked at as well as the group.
-                // A day's key is its date, which is the same string for every
-                // person and every month, so collapsing one person's Monday used
-                // to collapse everybody's.
-                const seat = `${subjectId}_${year}_${month}_${grouping}_${row.key}`;
-                const isOpen = opened[seat] ?? grouping === "day";
-                return (
-                  <GroupRows
-                    key={row.key}
-                    group={row}
-                    label={groupLabel(row)}
-                    isOpen={isOpen}
-                    onToggle={() => setOpened((current) => ({ ...current, [seat]: !isOpen }))}
-                    locale={currentLocale}
-                    showDay={grouping !== "day"}
-                  />
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      )}
+      <DetailTable
+        detail={detail}
+        grouping={grouping}
+        scope={`${subjectId}_${year}_${month}_${grouping}`}
+        opened={opened}
+        onToggle={(seat, nextOpen) => setOpened((current) => ({ ...current, [seat]: nextOpen }))}
+        locale={currentLocale}
+      />
 
-      <OtherHours rows={data?.other ?? []} locale={currentLocale} />
+      <OtherHours detail={detail} locale={currentLocale} />
 
-      <p className="text-13 text-tertiary">
-        {data && !data.totals_reconcile ? `${t("hr.detail.rounding_note")} ` : ""}
-        {t("hr.detail.footnote")}
-      </p>
+      <DetailFootnote detail={detail} />
     </div>
   );
 });
@@ -331,6 +304,78 @@ const DetailSummary = ({ detail }: { detail: THrWorklogDetail | null }) => {
   );
 };
 
+/** The month's work-item hours, gathered the way the reader asked for them. */
+const DetailTable = ({
+  detail,
+  grouping,
+  scope,
+  opened,
+  onToggle,
+  locale,
+}: {
+  detail: THrWorklogDetail | null;
+  grouping: THrWorklogGrouping;
+  /**
+   * Which person, month and grouping these rows belong to. A day's key is only
+   * its date — the same string for every person and every month — so without
+   * this, collapsing one person's Monday collapsed everybody's.
+   */
+  scope: string;
+  opened: Record<string, boolean>;
+  onToggle: (seat: string, nextOpen: boolean) => void;
+  locale?: string;
+}) => {
+  const { t } = useTranslation();
+  const groups = detail?.groups ?? [];
+
+  const groupLabel = (row: THrWorklogGroup) => {
+    if (grouping === "day") return formatDayLabel(row.first_day, locale);
+    if (grouping === "week") return t("hr.detail.week_of", { date: formatDayWithYear(row.first_day, locale) });
+    return row.label || t("hr.detail.unnamed");
+  };
+
+  if (groups.length === 0)
+    return (
+      <div className="rounded-md border border-subtle bg-layer-1 px-4 py-6 text-13 text-tertiary">
+        {t("hr.detail.nothing_logged")}
+      </div>
+    );
+
+  return (
+    <div className="overflow-x-auto rounded-md border border-subtle">
+      <table className="w-full min-w-[52rem] text-13">
+        <thead className="border-b border-subtle text-13 text-placeholder">
+          <tr>
+            <th className="px-4 py-2.5 text-left font-medium">{t("hr.detail.column_what")}</th>
+            <th className="px-4 py-2.5 text-left font-medium">{t("hr.detail.column_when")}</th>
+            <th className="px-4 py-2.5 text-left font-medium">{t("hr.detail.column_note")}</th>
+            <th className="px-4 py-2.5 text-right font-medium">{t("hr.detail.column_long")}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {groups.map((row) => {
+            // Days open by default, because that is the shape people read a
+            // month in; the other groupings are a list to scan first.
+            const seat = `${scope}_${row.key}`;
+            const isOpen = opened[seat] ?? grouping === "day";
+            return (
+              <GroupRows
+                key={row.key}
+                group={row}
+                label={groupLabel(row)}
+                isOpen={isOpen}
+                onToggle={() => onToggle(seat, !isOpen)}
+                locale={locale}
+                showDay={grouping !== "day"}
+              />
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
+};
+
 /**
  * Hours with no work item behind them — the other half of the day.
  *
@@ -339,8 +384,9 @@ const DetailSummary = ({ detail }: { detail: THrWorklogDetail | null }) => {
  * structurally empty, and presenting them as work-item time would tell the
  * story wrong.
  */
-const OtherHours = ({ rows, locale }: { rows: THrWorklogOtherRow[]; locale?: string }) => {
+const OtherHours = ({ detail, locale }: { detail: THrWorklogDetail | null; locale?: string }) => {
   const { t } = useTranslation();
+  const rows: THrWorklogOtherRow[] = detail?.other ?? [];
   if (rows.length === 0) return null;
 
   return (
@@ -460,5 +506,60 @@ const EntryRow = ({ row, locale, showDay }: { row: THrWorklogRow; locale?: strin
       <td className="px-4 py-2 text-tertiary">{row.note}</td>
       <td className="px-4 py-2 text-right text-primary tabular-nums">{duration(row.seconds)}</td>
     </tr>
+  );
+};
+
+/** The small print, plus the warning the months that do not add up have earned. */
+const DetailFootnote = ({ detail }: { detail: THrWorklogDetail | null }) => {
+  const { t } = useTranslation();
+
+  return (
+    <p className="text-13 text-tertiary">
+      {detail && !detail.totals_reconcile ? `${t("hr.detail.rounding_note")} ` : ""}
+      {t("hr.detail.footnote")}
+    </p>
+  );
+};
+
+/** Somebody the workspace knows, but the employer does not. */
+const NoEmploymentRecord = () => {
+  const { t } = useTranslation();
+
+  return (
+    <div className="w-full">
+      <EmptyStateCompact
+        title={t("hr.my_time.no_record")}
+        description={t("hr.my_time.no_record_detail")}
+        assetKey="unknown"
+        assetClassName="size-20"
+        rootClassName="py-16"
+      />
+    </div>
+  );
+};
+
+/**
+ * Why there is no month on screen. Either it was never this reader's to see, in
+ * which case asking again would only be refused again, or it simply did not
+ * arrive — and that one is worth another try.
+ */
+const DetailUnavailable = ({ notAllowed, onRetry }: { notAllowed: boolean; onRetry: () => void }) => {
+  const { t } = useTranslation();
+
+  return (
+    <div className="w-full">
+      <EmptyStateCompact
+        title={notAllowed ? t("hr.team_time.not_permitted") : t("hr.shared.load_failed")}
+        description={
+          notAllowed
+            ? t("hr.team_time.not_permitted_detail", { page: t("hr.my_time.title") })
+            : t("hr.shared.load_failed_detail")
+        }
+        assetKey={notAllowed ? "members" : "unknown"}
+        assetClassName="size-20"
+        rootClassName="py-16"
+        actions={notAllowed ? [] : [{ label: t("hr.shared.retry"), variant: "secondary", onClick: onRetry }]}
+      />
+    </div>
   );
 };
