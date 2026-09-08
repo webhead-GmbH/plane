@@ -17,8 +17,11 @@ import { cn } from "@plane/utils";
 import {
   EHrTimeCategory,
   HrService,
+  type THrEmploymentProfile,
+  type THrWorklogDetail,
   type THrWorklogGroup,
   type THrWorklogGrouping,
+  type THrWorklogOtherRow,
   type THrWorklogRow,
 } from "@/services/hr.service";
 // local imports
@@ -67,6 +70,10 @@ const useRowDuration = () => {
  * Grouping is the whole point rather than a decoration: the same hours read as
  * a week's shape, as a list of work items, or as which project took the month,
  * and which of those a person needs depends entirely on why they are looking.
+ *
+ * What is on screen is three separate things — the controls that choose what to
+ * show, the figures that summarise it, and the rows themselves — so they are
+ * three components. Only this one holds any state.
  */
 export const HrWorklogDetailRoot = observer(function HrWorklogDetailRoot() {
   const { t, currentLocale } = useTranslation();
@@ -150,76 +157,25 @@ export const HrWorklogDetailRoot = observer(function HrWorklogDetailRoot() {
       </div>
     );
 
+  const groups = data?.groups ?? [];
+
   return (
     <div className="flex w-full flex-col gap-7">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <HrPeriodStepper
-          label={monthLabel}
-          onPrevious={() => setMonth(previousMonth(year, month))}
-          onNext={() => setMonth(nextMonth(year, month))}
-        />
+      <DetailControls
+        monthLabel={monthLabel}
+        onPreviousMonth={() => setMonth(previousMonth(year, month))}
+        onNextMonth={() => setMonth(nextMonth(year, month))}
+        isManager={isManager}
+        people={people ?? []}
+        personId={personId}
+        onPersonChange={setPersonId}
+        grouping={grouping}
+        onGroupingChange={setGrouping}
+      />
 
-        <div className="flex flex-wrap items-center gap-3">
-          {isManager ? (
-            <select
-              value={personId}
-              onChange={(event) => setPersonId(event.target.value)}
-              aria-label={t("hr.detail.whose")}
-              className="rounded-md border border-subtle bg-layer-1 px-3 py-1.5 text-13 text-secondary"
-            >
-              <option value="">{t("hr.detail.mine")}</option>
-              {(people ?? []).map((person) => (
-                <option key={person.id} value={person.id}>
-                  {person.member_display_name || person.member_email}
-                </option>
-              ))}
-            </select>
-          ) : null}
+      <DetailSummary detail={data ?? null} />
 
-          <select
-            value={grouping}
-            onChange={(event) => setGrouping(event.target.value as THrWorklogGrouping)}
-            aria-label={t("hr.detail.group_by")}
-            className="rounded-md border border-subtle bg-layer-1 px-3 py-1.5 text-13 text-secondary"
-          >
-            {GROUPINGS.map((value) => (
-              <option key={value} value={value}>
-                {t(`hr.detail.grouping.${value}`)}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-        <HrFigure label={t("hr.detail.on_work_items")} value={formatMinutes(data?.work_item_minutes ?? 0)} />
-        <HrFigure label={t("hr.detail.other_hours")} value={formatMinutes(data?.other_minutes ?? 0)} />
-        <HrFigure
-          label={t("hr.detail.entries")}
-          value={String((data?.groups ?? []).reduce((total, row) => total + row.entries, 0))}
-        />
-        <HrFigure
-          label={t("hr.detail.month_state")}
-          value={data?.is_settled ? t("hr.detail.frozen") : t("hr.detail.live")}
-          hint={data?.is_settled ? t("hr.detail.frozen_hint") : t("hr.detail.live_hint")}
-        />
-      </div>
-
-      {data && data.running > 0 ? (
-        <p className="inline-flex items-center gap-1.5 text-13 text-tertiary">
-          <Timer className="size-3.5" />
-          {t("hr.detail.running_note", { count: data.running })}
-        </p>
-      ) : null}
-
-      {data && data.missing > 0 ? (
-        <p className="inline-flex items-center gap-1.5 text-13 text-warning-primary">
-          <AlertTriangle className="size-3.5" />
-          {t("hr.detail.missing_note", { count: data.missing })}
-        </p>
-      ) : null}
-
-      {(data?.groups ?? []).length === 0 ? (
+      {groups.length === 0 ? (
         <div className="rounded-md border border-subtle bg-layer-1 px-4 py-6 text-13 text-tertiary">
           {t("hr.detail.nothing_logged")}
         </div>
@@ -235,13 +191,14 @@ export const HrWorklogDetailRoot = observer(function HrWorklogDetailRoot() {
               </tr>
             </thead>
             <tbody>
-              {(data?.groups ?? []).map((row) => {
-                // Days open by default because that is the shape people read a
+              {groups.map((row) => {
+                // Days open by default, because that is the shape people read a
                 // month in; the other groupings are a list to scan first.
-                // Keyed by what is being looked at as well as by the group.
+                //
+                // Remembered under what is being looked at as well as the group.
                 // A day's key is its date, which is the same string for every
-                // person and every month, so collapsing one person's Monday
-                // used to collapse everybody's.
+                // person and every month, so collapsing one person's Monday used
+                // to collapse everybody's.
                 const seat = `${subjectId}_${year}_${month}_${grouping}_${row.key}`;
                 const isOpen = opened[seat] ?? grouping === "day";
                 return (
@@ -252,7 +209,6 @@ export const HrWorklogDetailRoot = observer(function HrWorklogDetailRoot() {
                     isOpen={isOpen}
                     onToggle={() => setOpened((current) => ({ ...current, [seat]: !isOpen }))}
                     locale={currentLocale}
-                    t={t}
                     showDay={grouping !== "day"}
                   />
                 );
@@ -262,36 +218,7 @@ export const HrWorklogDetailRoot = observer(function HrWorklogDetailRoot() {
         </div>
       )}
 
-      {(data?.other ?? []).length > 0 ? (
-        <section className="flex flex-col gap-3">
-          <h3 className="text-16 font-medium text-primary">{t("hr.detail.other_title")}</h3>
-          <p className="text-13 text-tertiary">{t("hr.detail.other_subtitle")}</p>
-          <div className="overflow-x-auto rounded-md border border-subtle">
-            <table className="w-full min-w-[36rem] text-13">
-              <thead className="border-b border-subtle text-13 text-placeholder">
-                <tr>
-                  <th className="px-4 py-2.5 text-left font-medium">{t("hr.detail.column_when")}</th>
-                  <th className="px-4 py-2.5 text-left font-medium">{t("hr.detail.column_what")}</th>
-                  <th className="px-4 py-2.5 text-left font-medium">{t("hr.detail.column_note")}</th>
-                  <th className="px-4 py-2.5 text-right font-medium">{t("hr.detail.column_long")}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {(data?.other ?? []).map((row) => (
-                  <tr key={row.id} className="border-t border-subtle hover:bg-layer-1/60">
-                    <td className="px-4 py-2 text-tertiary">{formatDayLabel(row.day, currentLocale)}</td>
-                    <td className="px-4 py-2 text-primary">
-                      {t(`hr.entries.category.${CATEGORY_KEY[row.category] ?? "admin"}`)}
-                    </td>
-                    <td className="px-4 py-2 text-tertiary">{row.note}</td>
-                    <td className="px-4 py-2 text-right text-primary tabular-nums">{formatMinutes(row.minutes)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </section>
-      ) : null}
+      <OtherHours rows={data?.other ?? []} locale={currentLocale} />
 
       <p className="text-13 text-tertiary">
         {data && !data.totals_reconcile ? `${t("hr.detail.rounding_note")} ` : ""}
@@ -301,62 +228,207 @@ export const HrWorklogDetailRoot = observer(function HrWorklogDetailRoot() {
   );
 });
 
-type TGroupProps = {
+/** Whose hours, which month, and how they are gathered. */
+const DetailControls = ({
+  monthLabel,
+  onPreviousMonth,
+  onNextMonth,
+  isManager,
+  people,
+  personId,
+  onPersonChange,
+  grouping,
+  onGroupingChange,
+}: {
+  monthLabel: string;
+  onPreviousMonth: () => void;
+  onNextMonth: () => void;
+  isManager: boolean;
+  people: THrEmploymentProfile[];
+  personId: string;
+  onPersonChange: (value: string) => void;
+  grouping: THrWorklogGrouping;
+  onGroupingChange: (value: THrWorklogGrouping) => void;
+}) => {
+  const { t } = useTranslation();
+
+  return (
+    <div className="flex flex-wrap items-center justify-between gap-3">
+      <HrPeriodStepper label={monthLabel} onPrevious={onPreviousMonth} onNext={onNextMonth} />
+
+      <div className="flex flex-wrap items-center gap-3">
+        {isManager ? (
+          <select
+            value={personId}
+            onChange={(event) => onPersonChange(event.target.value)}
+            aria-label={t("hr.detail.whose")}
+            className="rounded-md border border-subtle bg-layer-1 px-3 py-1.5 text-13 text-secondary"
+          >
+            <option value="">{t("hr.detail.mine")}</option>
+            {people.map((person) => (
+              <option key={person.id} value={person.id}>
+                {person.member_display_name || person.member_email}
+              </option>
+            ))}
+          </select>
+        ) : null}
+
+        <select
+          value={grouping}
+          onChange={(event) => onGroupingChange(event.target.value as THrWorklogGrouping)}
+          aria-label={t("hr.detail.group_by")}
+          className="rounded-md border border-subtle bg-layer-1 px-3 py-1.5 text-13 text-secondary"
+        >
+          {GROUPINGS.map((value) => (
+            <option key={value} value={value}>
+              {t(`hr.detail.grouping.${value}`)}
+            </option>
+          ))}
+        </select>
+      </div>
+    </div>
+  );
+};
+
+/**
+ * What the month comes to, and the two things those figures cannot say alone:
+ * a timer still running counts nothing yet, and an entry the month counted may
+ * no longer be there to show.
+ */
+const DetailSummary = ({ detail }: { detail: THrWorklogDetail | null }) => {
+  const { t } = useTranslation();
+
+  return (
+    <>
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+        <HrFigure label={t("hr.detail.on_work_items")} value={formatMinutes(detail?.work_item_minutes ?? 0)} />
+        <HrFigure label={t("hr.detail.other_hours")} value={formatMinutes(detail?.other_minutes ?? 0)} />
+        <HrFigure
+          label={t("hr.detail.entries")}
+          value={String((detail?.groups ?? []).reduce((total, row) => total + row.entries, 0))}
+        />
+        <HrFigure
+          label={t("hr.detail.month_state")}
+          value={detail?.is_settled ? t("hr.detail.frozen") : t("hr.detail.live")}
+          hint={detail?.is_settled ? t("hr.detail.frozen_hint") : t("hr.detail.live_hint")}
+        />
+      </div>
+
+      {detail && detail.running > 0 ? (
+        <p className="inline-flex items-center gap-1.5 text-13 text-tertiary">
+          <Timer className="size-3.5" />
+          {t("hr.detail.running_note", { count: detail.running })}
+        </p>
+      ) : null}
+
+      {detail && detail.missing > 0 ? (
+        <p className="inline-flex items-center gap-1.5 text-13 text-warning-primary">
+          <AlertTriangle className="size-3.5" />
+          {t("hr.detail.missing_note", { count: detail.missing })}
+        </p>
+      ) : null}
+    </>
+  );
+};
+
+/**
+ * Hours with no work item behind them — the other half of the day.
+ *
+ * Its own table rather than rows mixed into the one above: these have no work
+ * item at all and their project is optional, so several columns would be
+ * structurally empty, and presenting them as work-item time would tell the
+ * story wrong.
+ */
+const OtherHours = ({ rows, locale }: { rows: THrWorklogOtherRow[]; locale?: string }) => {
+  const { t } = useTranslation();
+  if (rows.length === 0) return null;
+
+  return (
+    <section className="flex flex-col gap-3">
+      <h3 className="text-16 font-medium text-primary">{t("hr.detail.other_title")}</h3>
+      <p className="text-13 text-tertiary">{t("hr.detail.other_subtitle")}</p>
+      <div className="overflow-x-auto rounded-md border border-subtle">
+        <table className="w-full min-w-[36rem] text-13">
+          <thead className="border-b border-subtle text-13 text-placeholder">
+            <tr>
+              <th className="px-4 py-2.5 text-left font-medium">{t("hr.detail.column_when")}</th>
+              <th className="px-4 py-2.5 text-left font-medium">{t("hr.detail.column_what")}</th>
+              <th className="px-4 py-2.5 text-left font-medium">{t("hr.detail.column_note")}</th>
+              <th className="px-4 py-2.5 text-right font-medium">{t("hr.detail.column_long")}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((row) => (
+              <tr key={row.id} className="border-t border-subtle hover:bg-layer-1/60">
+                <td className="px-4 py-2 text-tertiary">{formatDayLabel(row.day, locale)}</td>
+                <td className="px-4 py-2 text-primary">
+                  {t(`hr.entries.category.${CATEGORY_KEY[row.category] ?? "admin"}`)}
+                </td>
+                <td className="px-4 py-2 text-tertiary">{row.note}</td>
+                <td className="px-4 py-2 text-right text-primary tabular-nums">{formatMinutes(row.minutes)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  );
+};
+
+/** One group's header row, and its entries when it is open. */
+const GroupRows = ({
+  group,
+  label,
+  isOpen,
+  onToggle,
+  locale,
+  showDay,
+}: {
   group: THrWorklogGroup;
   label: string;
   isOpen: boolean;
   onToggle: () => void;
   locale?: string;
-  t: (key: string, values?: Record<string, unknown>) => string;
   /** False when the group header already names the day these rows fall on. */
   showDay: boolean;
+}) => {
+  const { t } = useTranslation();
+
+  return (
+    <>
+      <tr className="border-t border-subtle bg-layer-1/40">
+        <td colSpan={3} className="px-4 py-2">
+          <button
+            type="button"
+            onClick={onToggle}
+            aria-expanded={isOpen}
+            className="inline-flex items-center gap-1.5 rounded-md text-13 font-medium text-primary focus-visible:ring-1 focus-visible:ring-accent-strong focus-visible:outline-none"
+          >
+            {isOpen ? (
+              <ChevronDown className="size-3.5 text-tertiary" />
+            ) : (
+              <ChevronRight className="size-3.5 text-tertiary" />
+            )}
+            {label}
+            <span className="font-normal text-13 text-tertiary">
+              {t("hr.detail.entry_count", { count: group.entries })}
+            </span>
+          </button>
+        </td>
+        <td className="px-4 py-2 text-right font-medium text-primary tabular-nums">{formatMinutes(group.minutes)}</td>
+      </tr>
+      {isOpen ? group.rows.map((row) => <EntryRow key={row.id} row={row} locale={locale} showDay={showDay} />) : null}
+    </>
+  );
 };
 
-/** One group's header row, and its entries when it is open. */
-const GroupRows = ({ group, label, isOpen, onToggle, locale, t, showDay }: TGroupProps) => (
-  <>
-    <tr className="border-t border-subtle bg-layer-1/40">
-      <td colSpan={3} className="px-4 py-2">
-        <button
-          type="button"
-          onClick={onToggle}
-          aria-expanded={isOpen}
-          className="inline-flex items-center gap-1.5 rounded-md text-13 font-medium text-primary focus-visible:ring-1 focus-visible:ring-accent-strong focus-visible:outline-none"
-        >
-          {isOpen ? (
-            <ChevronDown className="size-3.5 text-tertiary" />
-          ) : (
-            <ChevronRight className="size-3.5 text-tertiary" />
-          )}
-          {label}
-          <span className="font-normal text-13 text-tertiary">
-            {t("hr.detail.entry_count", { count: group.entries })}
-          </span>
-        </button>
-      </td>
-      <td className="px-4 py-2 text-right font-medium text-primary tabular-nums">{formatMinutes(group.minutes)}</td>
-    </tr>
-    {isOpen
-      ? group.rows.map((row) => <EntryRow key={row.id} row={row} locale={locale} t={t} showDay={showDay} />)
-      : null}
-  </>
-);
-
 /** One logged entry. */
-const EntryRow = ({
-  row,
-  locale,
-  t,
-  showDay,
-}: {
-  row: THrWorklogRow;
-  locale?: string;
-  t: (key: string, values?: Record<string, unknown>) => string;
-  showDay: boolean;
-}) => {
+const EntryRow = ({ row, locale, showDay }: { row: THrWorklogRow; locale?: string; showDay: boolean }) => {
+  const { t } = useTranslation();
   const duration = useRowDuration();
   const key =
     row.project_identifier && row.issue_sequence_id ? `${row.project_identifier}-${row.issue_sequence_id}` : "";
+
   return (
     <tr className={cn("border-t border-subtle hover:bg-layer-1/60", row.gone && "text-tertiary line-through")}>
       <td className="px-4 py-2">

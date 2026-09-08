@@ -29,6 +29,7 @@ from plane.hr.api.serializers.records import (
     HrWorkScheduleSerializer,
 )
 from plane.hr.models import HrContract, HrPeriod, HrPeriodDay, HrWorkSchedule
+from plane.hr.services.refusal import Refused
 from plane.hr.permissions import (
     MANAGER,
     SELF,
@@ -287,8 +288,8 @@ class HrPeriodDaySettleEndpoint(BaseAPIView):
             return Response({"error": "No such day."}, status=status.HTTP_404_NOT_FOUND)
         try:
             settle_day(day, request.user, request.data.get("note", ""))
-        except ValueError as invalid:
-            return Response({"error": str(invalid)}, status=status.HTTP_400_BAD_REQUEST)
+        except Refused as refused:
+            return Response({"error": refused.message}, status=status.HTTP_400_BAD_REQUEST)
         return Response(HrPeriodDaySerializer(day).data, status=status.HTTP_200_OK)
 
 

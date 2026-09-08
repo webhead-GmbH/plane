@@ -18,6 +18,7 @@ from io import BytesIO, StringIO
 
 # Module imports
 from plane.hr.models import HrPeriod, HrPeriodDay
+from plane.hr.services.refusal import Refused
 from plane.hr.services.attendance import (
     locations_by_day,
     telework_days_between,
@@ -232,7 +233,7 @@ def render(rows, columns, file_format):
             XLSXFormatter().encode(ordered),
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         )
-    raise ValueError("Only CSV and XLSX can be produced.")
+    raise Refused("Only CSV and XLSX can be produced.")
 
 
 def as_stream(payload):

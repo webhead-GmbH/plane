@@ -35,6 +35,7 @@ from plane.hr.models import (
     HrPeriod,
     HrTimeEntry,
 )
+from plane.hr.services.refusal import Refused
 from plane.hr.services.settled import settled_month_across
 from plane.utils.porters.formatters import CSVFormatter, XLSXFormatter
 
@@ -59,7 +60,7 @@ def parse(content, file_format):
         return CSVFormatter().decode(text)
     if file_format in ("xlsx", "xls"):
         return XLSXFormatter().decode(content)
-    raise ValueError("Only CSV and XLSX files can be read.")
+    raise Refused("Only CSV and XLSX files can be read.")
 
 
 def _as_date(value):
@@ -516,7 +517,7 @@ def prepare(batch, content):
 def commit(batch):
     """Write the rows that passed. Nothing else."""
     if batch.state != HrImportBatch.State.PREVIEW_READY:
-        raise ValueError("This import has not been checked, or has already been applied.")
+        raise Refused("This import has not been checked, or has already been applied.", conflict=True)
 
     loader = LOADERS[batch.kind](batch.workspace)
     results = [
@@ -549,13 +550,15 @@ def undo(batch, actor, reason):
     were based on is not an undo.
     """
     if batch.state != HrImportBatch.State.COMMITTED:
-        raise ValueError("Only an import that was applied can be undone.")
+        raise Refused("Only an import that was applied can be undone.", conflict=True)
     if not (reason or "").strip():
-        raise ValueError("Say why the import is being undone.")
+        raise Refused("Say why the import is being undone.", conflict=True)
 
     loader = LOADERS[batch.kind](batch.workspace)
     if loader.counted_into_a_closed_month(batch):
-        raise ValueError("Some of this has been counted into a month that is now closed. Reopen the month first.")
+        raise Refused(
+            "Some of this has been counted into a month that is now closed. Reopen the month first.", conflict=True
+        )
 
     removed = loader.undo(batch)
 

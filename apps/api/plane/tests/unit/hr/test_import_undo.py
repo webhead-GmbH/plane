@@ -31,6 +31,7 @@ from plane.hr.models import (
     HrPeriod,
     HrTimeEntry,
 )
+from plane.hr.services.refusal import Refused
 from plane.hr.services.importing import undo
 from plane.tests.factories import UserFactory, WorkspaceFactory
 
@@ -99,7 +100,7 @@ class TestAnUndoStopsAtAClosedMonth:
         batch = a_batch(workspace, HrImportBatch.Kind.ABSENCES)
         an_absence(workspace, profile, batch, locked_period=a_closed_march(profile))
 
-        with pytest.raises(ValueError, match="closed"):
+        with pytest.raises(Refused, match="closed"):
             undo(batch, profile.member, "Wrong file")
 
         assert HrAbsence.objects.filter(import_batch=batch).count() == 1
@@ -122,7 +123,7 @@ class TestAnUndoStopsAtAClosedMonth:
             locked_period=a_closed_march(profile),
         )
 
-        with pytest.raises(ValueError, match="closed"):
+        with pytest.raises(Refused, match="closed"):
             undo(batch, profile.member, "Wrong file")
 
     def test_an_opening_balance_a_closed_month_was_counted_from_refuses_it(self, workspace, profile):
@@ -143,7 +144,7 @@ class TestAnUndoStopsAtAClosedMonth:
         )
         a_closed_march(profile)
 
-        with pytest.raises(ValueError, match="closed"):
+        with pytest.raises(Refused, match="closed"):
             undo(batch, profile.member, "Wrong figures")
 
     def test_an_opening_balance_no_closed_month_has_reached_yet_comes_back_out(self, workspace, profile):
@@ -200,7 +201,7 @@ class TestAnUndoFindsItsOwnRows:
 class TestAnUndoSaysWhy:
     def test_it_refuses_without_a_reason(self, workspace, profile):
         batch = a_batch(workspace, HrImportBatch.Kind.ABSENCES)
-        with pytest.raises(ValueError, match="why"):
+        with pytest.raises(Refused, match="why"):
             undo(batch, profile.member, "   ")
 
     def test_it_refuses_an_import_that_was_never_applied(self, workspace, profile):
@@ -208,5 +209,5 @@ class TestAnUndoSaysWhy:
         HrImportBatch.objects.filter(pk=batch.pk).update(state=HrImportBatch.State.PREVIEW_READY)
         batch.refresh_from_db()
 
-        with pytest.raises(ValueError, match="applied"):
+        with pytest.raises(Refused, match="applied"):
             undo(batch, profile.member, "Wrong file")

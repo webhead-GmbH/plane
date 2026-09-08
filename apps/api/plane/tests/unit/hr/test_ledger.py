@@ -25,6 +25,7 @@ from plane.hr.models import (
     HrTimeEntry,
     HrWorkSchedule,
 )
+from plane.hr.services.refusal import Refused
 from plane.hr.services.ledger import (
     has_running_timer,
     period_totals,
@@ -93,9 +94,7 @@ def issue(project, workspace_and_user):
     state = State.objects.filter(project=project).first() or State.objects.create(
         name="Todo", project=project, workspace=workspace, group="unstarted"
     )
-    return Issue.objects.create(
-        project=project, workspace=workspace, name="A work item", state=state, created_by=user
-    )
+    return Issue.objects.create(project=project, workspace=workspace, name="A work item", state=state, created_by=user)
 
 
 def log_hours(profile, issue, when, seconds):
@@ -195,9 +194,7 @@ class TestRebuild:
 
 
 class TestDisappearingHours:
-    def test_hours_removed_after_being_counted_are_flagged_not_silently_dropped(
-        self, profile, issue
-    ):
+    def test_hours_removed_after_being_counted_are_flagged_not_silently_dropped(self, profile, issue):
         worklog = log_hours(profile, issue, utc(2026, 3, 2, 8, 0), 3600)
         rebuild_period(profile, 2026, 3)
         monday = HrPeriodDay.objects.get(profile_id=profile.id, work_date=date(2026, 3, 2))
@@ -242,9 +239,7 @@ class TestHoursAcrossWorkspaces:
         state = State.objects.filter(project=other_project).first() or State.objects.create(
             name="Todo", project=other_project, workspace=other, group="unstarted"
         )
-        other_issue = Issue.objects.create(
-            project=other_project, workspace=other, name="Elsewhere", state=state
-        )
+        other_issue = Issue.objects.create(project=other_project, workspace=other, name="Elsewhere", state=state)
         IssueWorkLog.objects.create(
             workspace=other,
             project=other_project,
@@ -267,9 +262,7 @@ class TestHoursAcrossWorkspaces:
         other = WorkspaceFactory(owner=profile.member)
         WorkspaceMemberFactory(workspace=other, member=profile.member)
         with pytest.raises(IntegrityError):
-            HrEmploymentProfile.objects.create(
-                workspace=other, member=profile.member, hire_date=date(2024, 1, 1)
-            )
+            HrEmploymentProfile.objects.create(workspace=other, member=profile.member, hire_date=date(2024, 1, 1))
 
     def test_a_timer_running_in_another_workspace_still_counts_as_running(self, profile):
         other = WorkspaceFactory(owner=profile.member)
@@ -278,9 +271,7 @@ class TestHoursAcrossWorkspaces:
         state = State.objects.filter(project=other_project).first() or State.objects.create(
             name="Todo", project=other_project, workspace=other, group="unstarted"
         )
-        other_issue = Issue.objects.create(
-            project=other_project, workspace=other, name="Elsewhere", state=state
-        )
+        other_issue = Issue.objects.create(project=other_project, workspace=other, name="Elsewhere", state=state)
         IssueWorkLog.objects.create(
             workspace=other,
             project=other_project,
@@ -297,9 +288,7 @@ class TestRecordingSwitches:
     def test_a_person_with_no_leave_account_cannot_spend_leave(self, profile):
         # Somebody invoicing their own hours has no leave to draw on, so an
         # absence that would spend some credits nothing for them.
-        HrContract.objects.filter(profile_id=profile.id).update(
-            records_target_hours=False, records_leave_account=False
-        )
+        HrContract.objects.filter(profile_id=profile.id).update(records_target_hours=False, records_leave_account=False)
         leave = HrAbsenceType.objects.create(
             workspace=profile.workspace,
             code="urlaub",
@@ -323,9 +312,7 @@ class TestRecordingSwitches:
     def test_a_leave_account_survives_having_no_daily_target(self, profile):
         # The two switches are independent: no obligation to work a set day does
         # not mean no leave account.
-        HrContract.objects.filter(profile_id=profile.id).update(
-            records_target_hours=False, records_leave_account=True
-        )
+        HrContract.objects.filter(profile_id=profile.id).update(records_target_hours=False, records_leave_account=True)
         leave = HrAbsenceType.objects.create(
             workspace=profile.workspace,
             code="urlaub",
@@ -383,7 +370,7 @@ class TestReviewFlag:
     def test_settling_requires_saying_what_was_decided(self, profile):
         rebuild_period(profile, 2026, 3)
         monday = HrPeriodDay.objects.get(profile_id=profile.id, work_date=date(2026, 3, 2))
-        with pytest.raises(ValueError):
+        with pytest.raises(Refused):
             settle_day(monday, profile.member, "   ")
 
     def test_moving_an_entry_within_the_month_is_not_a_loss(self, profile, issue):
@@ -398,10 +385,7 @@ class TestReviewFlag:
 
         assert not HrPeriodDay.objects.filter(profile_id=profile.id, needs_review=True).exists()
         assert not HrAuditLog.objects.filter(action="counted_hours_disappeared").exists()
-        assert (
-            HrPeriodDay.objects.get(profile_id=profile.id, work_date=date(2026, 3, 4)).project_minutes
-            == 60
-        )
+        assert HrPeriodDay.objects.get(profile_id=profile.id, work_date=date(2026, 3, 4)).project_minutes == 60
 
 
 class TestClosedMonths:

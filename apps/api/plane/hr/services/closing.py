@@ -40,6 +40,7 @@ from plane.hr.models import (
     HrTimeEntry,
     HrWorkSchedule,
 )
+from plane.hr.services.refusal import Refused
 from plane.hr.services.ledger import (
     has_running_timer,
     local_today,
@@ -49,13 +50,15 @@ from plane.hr.services.ledger import (
 from plane.hr.utils.resolve import effective, effective_schedule
 
 
-class TransitionRefused(Exception):
-    """A move that the state of the month does not allow."""
+class TransitionRefused(Refused):
+    """A move that the state of the month does not allow.
+
+    A refusal like any other, kept as its own name because the views answer it
+    with a status of its own choosing rather than a fixed one.
+    """
 
     def __init__(self, message, conflict=True):
-        super().__init__(message)
-        self.message = message
-        self.conflict = conflict
+        super().__init__(message, conflict=conflict)
 
 
 def _audit(period, actor, action, changes=None, reason=""):

@@ -80,6 +80,9 @@ export const HrOpeningBalanceModal = ({ person, isOwn, canRecord, onClose }: TPr
     person ? hrService.openingBalances(person.id) : null
   );
 
+  // By the person's id rather than the object: on the personal view this comes
+  // from the fetched month, so a revalidation handed over a new object and
+  // emptied the fields somebody was typing into.
   useEffect(() => {
     if (!person) return;
     setAmount("");
@@ -88,7 +91,8 @@ export const HrOpeningBalanceModal = ({ person, isOwn, canRecord, onClose }: TPr
     setEffectiveOn(person.hire_date ?? "");
     setBasis("");
     setProblem(null);
-  }, [person]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [person?.id, person?.hire_date]);
 
   const complain = (failure: unknown) =>
     setToast({

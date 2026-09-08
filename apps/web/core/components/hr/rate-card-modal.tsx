@@ -61,6 +61,8 @@ export const HrRateCardModal = ({ person, onClose }: TProps) => {
     person ? hrService.rateCards(person.id) : null
   );
 
+  // By the id, for the same reason as its siblings: the object a caller passes
+  // need not be stable, and re-seeding on a new one throws away typed input.
   useEffect(() => {
     if (!person) return;
     setValidFrom("");
@@ -68,7 +70,8 @@ export const HrRateCardModal = ({ person, onClose }: TProps) => {
     setAmount("");
     setCurrency("EUR");
     setProblem(null);
-  }, [person]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [person?.id]);
 
   const complain = (failure: unknown) =>
     setToast({

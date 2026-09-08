@@ -20,6 +20,7 @@ from decimal import ROUND_HALF_UP, Decimal
 
 # Module imports
 from plane.hr.models import HrPeriod, HrRateCard
+from plane.hr.services.refusal import Refused
 from plane.hr.services.ledger import period_totals
 from plane.hr.utils.resolve import effective
 
@@ -93,7 +94,7 @@ def reconcile(invoice):
     """
     period = invoice.period
     if period.state != HrPeriod.State.LOCKED:
-        raise ValueError("The month has not been closed yet, so there is nothing settled to check against.")
+        raise Refused("The month has not been closed yet, so there is nothing settled to check against.", conflict=True)
 
     invoice.reconciled_minutes = period.actual_minutes or 0
     if invoice.claimed_minutes is not None:

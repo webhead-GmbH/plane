@@ -22,6 +22,7 @@ from rest_framework.response import Response
 from plane.app.views.base import BaseAPIView
 from plane.hr.models import HrImportBatch, HrPeriod
 from plane.hr.utils.company import hr_home_workspace
+from plane.hr.services.refusal import Refused
 from plane.hr.permissions import (
     MANAGER,
     SELF,
@@ -130,11 +131,11 @@ class HrImportEndpoint(BaseAPIView):
         )
         try:
             importing.prepare(batch, content)
-        except ValueError as invalid:
+        except Refused as refused:
             batch.state = HrImportBatch.State.FAILED
-            batch.errors = [{"message": str(invalid)}]
+            batch.errors = [{"message": refused.message}]
             batch.save()
-            return Response({"error": str(invalid)}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": refused.message}, status=status.HTTP_400_BAD_REQUEST)
         except Exception:  # noqa: BLE001 - a malformed file must not be a server error
             batch.state = HrImportBatch.State.FAILED
             batch.errors = [{"message": "The file could not be read."}]
@@ -155,8 +156,8 @@ class HrImportCommitEndpoint(BaseAPIView):
             return Response({"error": "Not found."}, status=status.HTTP_404_NOT_FOUND)
         try:
             written = importing.commit(batch)
-        except ValueError as invalid:
-            return Response({"error": str(invalid)}, status=status.HTTP_409_CONFLICT)
+        except Refused as refused:
+            return Response({"error": refused.message}, status=status.HTTP_409_CONFLICT)
         return Response({**_batch_payload(batch), "written": written}, status=status.HTTP_200_OK)
 
 
@@ -168,8 +169,8 @@ class HrImportUndoEndpoint(BaseAPIView):
             return Response({"error": "Not found."}, status=status.HTTP_404_NOT_FOUND)
         try:
             removed = importing.undo(batch, request.user, request.data.get("reason", ""))
-        except ValueError as invalid:
-            return Response({"error": str(invalid)}, status=status.HTTP_409_CONFLICT)
+        except Refused as refused:
+            return Response({"error": refused.message}, status=status.HTTP_409_CONFLICT)
         return Response({**_batch_payload(batch), "removed": removed}, status=status.HTTP_200_OK)
 
 
@@ -198,8 +199,8 @@ class HrMonthExportEndpoint(BaseAPIView):
             payload, content_type = exporting.render(
                 exporting.month_rows(periods), exporting.MONTH_COLUMNS, file_format
             )
-        except ValueError as invalid:
-            return Response({"error": str(invalid)}, status=status.HTTP_400_BAD_REQUEST)
+        except Refused as refused:
+            return Response({"error": refused.message}, status=status.HTTP_400_BAD_REQUEST)
 
         response = HttpResponse(payload, content_type=content_type)
         response["Content-Disposition"] = f'attachment; filename="hr-{year}-{month:02d}.{file_format}"'
@@ -222,8 +223,8 @@ class HrPeriodExportEndpoint(BaseAPIView):
         file_format = _requested_format(request)
         try:
             payload, content_type = exporting.render(exporting.day_rows(period), exporting.DAY_COLUMNS, file_format)
-        except ValueError as invalid:
-            return Response({"error": str(invalid)}, status=status.HTTP_400_BAD_REQUEST)
+        except Refused as refused:
+            return Response({"error": refused.message}, status=status.HTTP_400_BAD_REQUEST)
 
         stamp = period.period_start.strftime("%Y-%m")
         # Named after the person as well as the month. Every one of these was

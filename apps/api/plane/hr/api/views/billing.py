@@ -16,6 +16,7 @@ from plane.app.views.base import BaseAPIView
 from plane.hr.api.serializers.billing import HrInvoiceDocumentSerializer, HrRateCardSerializer
 from plane.hr.api.views.base import HrWorkspaceConfigEndpoint
 from plane.hr.models import HrInvoiceDocument, HrPeriod, HrRateCard
+from plane.hr.services.refusal import Refused
 from plane.hr.permissions import (
     MANAGER,
     SELF,
@@ -136,8 +137,8 @@ class HrInvoiceReconcileEndpoint(BaseAPIView):
             return Response({"error": "Not found."}, status=status.HTTP_404_NOT_FOUND)
         try:
             billing.reconcile(invoice)
-        except ValueError as invalid:
-            return Response({"error": str(invalid)}, status=status.HTTP_409_CONFLICT)
+        except Refused as refused:
+            return Response({"error": refused.message}, status=status.HTTP_409_CONFLICT)
         invoice.reconciled_by = request.user
         invoice.reconciled_at = timezone.now()
         invoice.save()

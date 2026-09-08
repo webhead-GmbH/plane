@@ -75,6 +75,12 @@ export const HrPersonModal = ({ isOpen, person, contract, schedule, isBusy, onCl
   const [days, setDays] = useState<Record<string, string>>({});
   const [problem, setProblem] = useState<string | null>(null);
 
+  // Seeded from what these things are, not from the objects holding them. The
+  // terms and the schedule are fetched, so the objects are new on every
+  // revalidation while the ids are not — depending on the objects emptied the
+  // form under whoever was filling it in. An id still moves when a different
+  // person is opened, or when the terms arrive for the first time, which is
+  // when seeding is wanted.
   useEffect(() => {
     if (!isOpen) return;
     setProblem(null);
@@ -93,7 +99,8 @@ export const HrPersonModal = ({ isOpen, person, contract, schedule, isBusy, onCl
         })
       )
     );
-  }, [isOpen, person, contract, schedule]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, person?.id, contract?.id, schedule?.id]);
 
   const weekMinutes = WEEKDAYS.reduce((total, { key }) => total + (parseDuration(days[key] ?? "") ?? 0), 0);
 

@@ -46,6 +46,7 @@ from plane.hr.models import (
     HrTimeEntry,
     HrWorkSchedule,
 )
+from plane.hr.services.refusal import Refused
 from plane.hr.services.computation import (
     FULL_DAY,
     HALF_DAY,
@@ -477,7 +478,7 @@ def settle_day(day, actor, note):
     and answered, which is what lets the month be closed.
     """
     if not (note or "").strip():
-        raise ValueError("Say what was decided about this day.")
+        raise Refused("Say what was decided about this day.")
 
     day.needs_review = False
     day.note = note
