@@ -37,6 +37,15 @@ const ARRANGEMENTS = [
   EHrArrangement.REMOTE_PART_TIME_INVOICING,
 ];
 
+/**
+ * Somebody who invoices their own hours is not owed a length of day: nothing is
+ * short when they work less and nothing is over when they work more, and a
+ * public holiday credits them nothing because there was no day to lose.
+ */
+const owesHoursByTheDay = (arrangement: EHrArrangement) =>
+  arrangement !== EHrArrangement.REMOTE_FULL_TIME_INVOICING &&
+  arrangement !== EHrArrangement.REMOTE_PART_TIME_INVOICING;
+
 export type TPersonDraft = {
   profile: Partial<THrEmploymentProfile>;
   contract: Partial<THrContract>;
@@ -132,6 +141,11 @@ export const HrPersonModal = ({ isOpen, person, contract, schedule, isBusy, onCl
         valid_from: validFrom || hireDate,
         arrangement,
         records_target_hours: recordsTarget,
+        // Kept in step with the target, because they answer the same question.
+        // Where a day owes hours, a day of leave has to credit them and come off
+        // the entitlement; off, an approved week away reads as a week short and
+        // the leave nobody spent sits there for ever.
+        records_leave_account: recordsTarget,
         weekly_minutes: weekMinutes || null,
       },
       schedule: {
@@ -193,7 +207,14 @@ export const HrPersonModal = ({ isOpen, person, contract, schedule, isBusy, onCl
             <Field label={t("hr.people.arrangement")}>
               <select
                 value={arrangement}
-                onChange={(e) => setArrangement(e.target.value as EHrArrangement)}
+                onChange={(e) => {
+                  const next = e.target.value as EHrArrangement;
+                  setArrangement(next);
+                  // What the hint under the box says, done rather than said. The
+                  // box stays free afterwards, for the arrangement that is an
+                  // exception to its own rule.
+                  setRecordsTarget(owesHoursByTheDay(next));
+                }}
                 className={inputClass}
               >
                 {ARRANGEMENTS.map((value) => (
@@ -246,7 +267,14 @@ export const HrPersonModal = ({ isOpen, person, contract, schedule, isBusy, onCl
           </div>
         </section>
 
-        {problem ? <p className="text-13 text-danger-primary">{problem}</p> : null}
+        {/* Spoken as well as shown: this sits at the foot of a body that
+            scrolls, so somebody who pressed Save has no reason to think anything
+            happened at all. */}
+        {problem ? (
+          <p role="alert" className="text-13 text-danger-primary">
+            {problem}
+          </p>
+        ) : null}
 
         <div className="flex items-center justify-end gap-2">
           <Button variant="secondary" size="lg" onClick={onClose}>

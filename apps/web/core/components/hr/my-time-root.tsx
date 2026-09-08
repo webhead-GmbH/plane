@@ -14,9 +14,9 @@ import { Button } from "@plane/propel/button";
 import { useTranslation } from "@plane/i18n";
 import { setToast, TOAST_TYPE } from "@plane/propel/toast";
 import { EmptyStateCompact } from "@plane/propel/empty-state";
-import { CustomMenu, Loader, Tooltip } from "@plane/ui";
+import { AlertModalCore, CustomMenu, Loader, Tooltip } from "@plane/ui";
 // local imports
-import { EHrPeriodState, HrService, type THrMe, type THrPeriod } from "@/services/hr.service";
+import { HrService, type THrMe, type THrPeriod } from "@/services/hr.service";
 import { HrDayTable } from "./day-table";
 import { HrDayEntriesModal } from "./day-entries-modal";
 import { HrOpeningBalanceModal } from "./opening-balance-modal";
@@ -69,8 +69,11 @@ export const MyTimeRoot = observer(function MyTimeRoot() {
 
   // A failed request is not the same as having no employment record, and telling
   // somebody their hours are not being tracked when the network merely dropped
-  // sends them to ask for something they already have.
-  if (error)
+  // sends them to ask for something they already have. Only when there is nothing
+  // else to show, though: the month refetches itself whenever the window comes
+  // back into focus, and a laptop waking must not replace a month somebody is
+  // reading — nor take the day form open over it, and whatever is typed in it.
+  if (error && !data)
     return (
       <div className="w-full">
         <EmptyStateCompact
@@ -167,6 +170,7 @@ const MonthActions = ({
 }) => {
   const { t, currentLocale } = useTranslation();
   const period = me.period;
+  const [confirming, setConfirming] = useState(false);
 
   const handleRecompute = async () => {
     if (!period) return;
@@ -205,34 +209,60 @@ const MonthActions = ({
       });
     } finally {
       onBusyChange(false);
+      setConfirming(false);
     }
   };
 
   return (
-    <div className="flex items-center gap-2">
-      {/* One thing to do, and it is the thing somebody opened this page for.
-          Everything else — the exports, the starting balance, the rebuild —
-          is occasional and lives behind the menu, because six buttons of
-          equal weight is a wall rather than a choice. */}
-      <Button variant="secondary" size="lg" onClick={onRecordToday} prependIcon={<Plus />}>
-        {t("hr.my_time.record_time")}
-      </Button>
+    <>
+      <div className="flex items-center gap-2">
+        {/* One thing to do, and it is the thing somebody opened this page for.
+            Everything else — the exports, the starting balance, the rebuild —
+            is occasional and lives behind the menu, because six buttons of
+            equal weight is a wall rather than a choice. */}
+        <Button variant="secondary" size="lg" onClick={onRecordToday} prependIcon={<Plus />}>
+          {t("hr.my_time.record_time")}
+        </Button>
 
-      <HandInButton period={period} hasRunningTimer={me.has_running_timer} isBusy={isBusy} onHandIn={handleSubmit} />
+        <HandInButton
+          period={period}
+          hasRunningTimer={me.has_running_timer}
+          isBusy={isBusy}
+          onHandIn={() => setConfirming(true)}
+        />
 
-      <MonthMenu
-        period={period}
-        isHrManager={me.is_hr_manager}
-        onOpeningBalance={onOpeningBalance}
-        onRecompute={handleRecompute}
+        <MonthMenu
+          period={period}
+          isHrManager={me.is_hr_manager}
+          onOpeningBalance={onOpeningBalance}
+          onRecompute={handleRecompute}
+        />
+      </div>
+
+      {/* The one press on this screen that cannot be taken back by the person
+          making it: the month stops being theirs to change, and only whoever
+          looks after the team can give it back. Worth asking first. */}
+      <AlertModalCore
+        variant="primary"
+        isOpen={confirming}
+        handleClose={() => setConfirming(false)}
+        handleSubmit={() => void handleSubmit()}
+        isSubmitting={isBusy}
+        title={t("hr.my_time.hand_in")}
+        content={t("hr.my_time.confirm_hand_in", { month: monthLabel })}
+        primaryButtonText={{ default: t("hr.my_time.hand_in"), loading: t("hr.my_time.hand_in") }}
+        secondaryButtonText={t("common.cancel")}
       />
-    </div>
+    </>
   );
 };
 
 /**
- * The one press that ends a month. A closed month has nothing left to hand in,
- * so it is not offered the button at all.
+ * The one press that ends a month. Only a month that can still be changed has
+ * anything left to hand in, so once it has gone the button goes with it: a grey
+ * one left standing after the month was handed in says nothing the state badge
+ * beside the figures does not already say, and the only reason it could give for
+ * being disabled would be a timer that stopped long ago.
  */
 const HandInButton = ({
   period,
@@ -247,13 +277,13 @@ const HandInButton = ({
 }) => {
   const { t } = useTranslation();
 
-  if (!period || period.state === EHrPeriodState.LOCKED) return null;
+  if (!period || !isPeriodEditable(period.state)) return null;
 
   // A month still running cannot be handed in — the server refuses it, because a
   // submitted month stops being rebuilt and hours logged afterwards would never
   // be counted. Saying so on the button beats letting it fail on every press.
   const monthIsRunning = !!period.to_date;
-  const canHandIn = isPeriodEditable(period.state) && !hasRunningTimer && !monthIsRunning;
+  const canHandIn = !hasRunningTimer && !monthIsRunning;
 
   return (
     <Tooltip

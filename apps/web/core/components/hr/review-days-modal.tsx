@@ -110,27 +110,39 @@ export const HrReviewDaysModal = ({ periodId, personName, onClose, onSettled }: 
                     {t("hr.review_days.counts_now", { duration: formatMinutes(day.actual_minutes) })}
                   </span>
                 </div>
-                <label className="flex flex-col gap-1">
-                  <span className="text-13 font-medium text-secondary">{t("hr.review_days.what_happened")}</span>
-                  <input
-                    value={notes[day.id] ?? ""}
-                    onChange={(event) => setNotes((current) => ({ ...current, [day.id]: event.target.value }))}
-                    placeholder={t("hr.review_days.placeholder")}
-                    className="w-full rounded-md border border-subtle bg-layer-1 px-3 py-1.5 text-13 text-primary outline-none placeholder:text-tertiary focus:border-accent-strong"
-                  />
-                </label>
-                <div className="flex justify-end">
-                  <Button
-                    variant="primary"
-                    size="lg"
-                    prependIcon={<Check />}
-                    disabled={(notes[day.id] ?? "").trim().length === 0}
-                    loading={busyDayId === day.id}
-                    onClick={() => void handleSettle(day)}
-                  >
-                    {t("hr.review_days.settle")}
-                  </Button>
-                </div>
+                {/* One line to type in asks to be finished with Enter, and
+                    until this was a form Enter did nothing at all: the note sat
+                    there untouched while the person went on believing the day
+                    had been dealt with. */}
+                <form
+                  className="flex flex-col gap-2"
+                  onSubmit={(event) => {
+                    event.preventDefault();
+                    void handleSettle(day);
+                  }}
+                >
+                  <label className="flex flex-col gap-1">
+                    <span className="text-13 font-medium text-secondary">{t("hr.review_days.what_happened")}</span>
+                    <input
+                      value={notes[day.id] ?? ""}
+                      onChange={(event) => setNotes((current) => ({ ...current, [day.id]: event.target.value }))}
+                      placeholder={t("hr.review_days.placeholder")}
+                      className="w-full rounded-md border border-subtle bg-layer-1 px-3 py-1.5 text-13 text-primary outline-none placeholder:text-tertiary focus:border-accent-strong"
+                    />
+                  </label>
+                  <div className="flex justify-end">
+                    <Button
+                      type="submit"
+                      variant="primary"
+                      size="lg"
+                      prependIcon={<Check />}
+                      disabled={(notes[day.id] ?? "").trim().length === 0}
+                      loading={busyDayId === day.id}
+                    >
+                      {t("hr.review_days.settle")}
+                    </Button>
+                  </div>
+                </form>
               </div>
             ))}
           </div>

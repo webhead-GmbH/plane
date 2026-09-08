@@ -2,38 +2,39 @@
   "hr": {
     "my_time": {
       "title": "Thời gian của tôi",
-      "everyone": "Mọi người",
+      "everyone": "Giờ làm của mọi người",
       "bring_up_to_date": "Cập nhật số liệu",
       "hand_in": "Gửi duyệt",
       "no_record": "Không có hồ sơ lao động ở đây",
       "previous_month": "Tháng trước",
       "next_month": "Tháng sau",
-      "export_csv": "CSV",
-      "export_excel": "Excel",
+      "export_csv": "Tải về dạng CSV",
+      "export_excel": "Tải về dạng Excel",
       "cannot_hand_in": {
         "month_running": "Tháng này chưa kết thúc. Bạn có thể gửi duyệt sau khi tháng kết thúc.",
-        "timer_running": "Hãy dừng bộ đếm giờ vẫn đang chạy, sau đó gửi duyệt tháng này."
+        "timer_running": "Một bộ đếm giờ vẫn đang chạy trên một mục công việc của bạn, ở không gian làm việc này hoặc ở nơi khác. Hãy dừng nó, rồi gửi duyệt tháng này."
       },
       "toasts": {
         "recomputed": "Đã cập nhật số liệu",
         "not_recomputed": "Không thể cập nhật số liệu",
         "handed_in": "Đã gửi duyệt",
-        "handed_in_message": "{month} đã được chuyển đi phê duyệt.",
+        "handed_in_message": "{month} đang chờ được đồng ý.",
         "not_handed_in": "Chưa gửi duyệt",
         "try_again": "Hãy thử lại sau giây lát."
       },
       "opening": "Số dư đầu kỳ",
-      "record_time": "Ghi nhận giờ",
-      "no_record_detail": "Giờ làm của bạn không được theo dõi trong không gian này. Nếu cần, hãy liên hệ người phụ trách nhóm."
+      "record_time": "Ghi giờ cho hôm nay",
+      "no_record_detail": "Giờ làm của bạn chưa được theo dõi. Nếu cần theo dõi, hãy nhờ người phụ trách nhóm thiết lập cho bạn.",
+      "confirm_hand_in": "Sau khi gửi duyệt {month}, bạn không tự sửa được giờ làm, ngày nghỉ hay chấm công của tháng đó. Hãy nhờ người phụ trách nhóm nếu có gì cần sửa."
     },
     "team_time": {
       "title": "Thời gian của nhóm",
       "not_permitted": "Bạn không có quyền xem nội dung này",
-      "export_csv": "CSV",
-      "export_excel": "Excel",
-      "still_open": "Còn đang mở",
-      "open_count": "{open} trên {total}",
-      "counted_anywhere": "Số giờ của mỗi người đều được tính ở bất kỳ nơi nào họ đã ghi nhận. Việc đóng một tháng sẽ khóa số liệu của tháng đó; những gì ghi nhận sau đó không làm thay đổi số liệu này.",
+      "export_csv": "Tải về dạng CSV",
+      "export_excel": "Tải về dạng Excel",
+      "still_open": "Chưa đóng",
+      "open_count": "{open} trên {total} người",
+      "counted_anywhere": "Giờ của mỗi người được tính ở bất kỳ nơi nào họ đã ghi nhận, theo giờ và phút: 161:12 nghĩa là 161 giờ 12 phút. Số dư lũy kế chỉ có con số sau khi một tháng được đóng. Đóng một tháng sẽ khóa số liệu của tháng đó; những gì ghi nhận sau đó không làm thay đổi số liệu này.",
       "as_things_stand": "Số liệu tính đến {date}; tháng này chưa kết thúc.",
       "toasts": {
         "refused": "Thao tác không thành công",
@@ -47,20 +48,20 @@
       "not_permitted_detail": "Số giờ của mọi người chỉ người phụ trách nhóm mới xem được. Tháng của riêng bạn nằm ở {page}.",
       "closing": "Đang chốt…",
       "confirm_close_title": "Chốt tháng của {person}?",
-      "confirm_close_body": "Các con số được đóng băng như hiện tại, và giờ làm, ngày nghỉ, chấm công phía sau sẽ không nhận thay đổi nữa. Có thể mở lại sau nhưng sẽ để lại dấu vết."
+      "confirm_close_body": "Số liệu được khóa lại đúng như hiện tại. Sau đó không ai sửa được giờ làm hay vắng mặt của tháng này, và những gì ghi vào sau sẽ không được tính. Tháng vẫn có thể mở lại, và lần mở lại đó được ghi lại."
     },
     "summary": {
       "owed": "Cần làm",
       "worked": "Đã làm",
       "balance": "Số dư",
-      "whole_month": "{duration} cho cả tháng",
+      "whole_month": "trên {duration} cho cả tháng",
       "per_week": "{duration} mỗi tuần",
       "includes_away": "bao gồm {duration} vắng mặt hoặc nghỉ lễ",
       "carried_forward": "{duration} chuyển sang từ kỳ trước",
       "as_of": "Tính đến {date}. Tháng này chưa kết thúc.",
       "not_started": "Tháng này chưa bắt đầu.",
-      "needs_review": "Có một số ngày cần xem lại — số giờ từng được tính trước đây nay không còn nữa.",
-      "timer_running": "Một bộ đếm giờ vẫn đang chạy, nên chưa thể gửi duyệt tháng này.",
+      "needs_review": "Có một số ngày cần xem lại — số giờ từng được tính trước đây nay không còn nữa. Người phụ trách nhóm phải xử lý xong thì mới đóng được tháng.",
+      "timer_running": "Một bộ đếm giờ vẫn đang chạy trên một mục công việc của bạn, ở không gian làm việc này hoặc ở nơi khác. Hãy dừng nó, rồi bạn có thể gửi duyệt tháng này.",
       "telework_days": "Làm việc tại nhà năm nay: {count}",
       "nothing_yet": "Chưa có số liệu nào cho tháng này.",
       "leave_left_days": "Còn {amount} ngày phép",
@@ -73,7 +74,7 @@
       "what_it_was": "Loại ngày",
       "owed": "Cần làm",
       "work_items": "Mục công việc",
-      "other": "Công việc khác",
+      "other": "Không có mục công việc",
       "away": "Nghỉ",
       "worked": "Đã làm",
       "balance": "Số dư",
@@ -90,17 +91,17 @@
       "owed": "Cần làm",
       "worked": "Đã làm",
       "balance": "Số dư",
-      "carried": "Chuyển sang",
+      "carried": "Số dư lũy kế",
       "action": "Thao tác",
       "agree": "Phê duyệt",
       "close": "Đóng",
       "reopen": "Mở lại",
-      "nobody_yet": "Chưa ai có hồ sơ lao động.",
-      "timer_running": "Bộ đếm giờ vẫn đang chạy",
-      "needs_review": "Một số ngày cần xem lại",
+      "nobody_yet": "Chưa ai có hồ sơ lao động. Hãy thêm người ở trang Nhân sự để giờ làm của họ bắt đầu được tính.",
+      "timer_running": "Một bộ đếm giờ vẫn đang chạy, nên chưa thể gửi duyệt tháng này.",
+      "needs_review": "Có một số ngày cần xem lại trước khi đóng được tháng này",
       "blocked_by_review": "Xem những ngày đó",
       "month_running": "Tháng chưa kết thúc",
-      "waiting_for": "Đang chờ {person}"
+      "waiting_for": "Đang chờ {person} gửi duyệt tháng"
     },
     "reopen": {
       "title": "Mở lại {month}?",
@@ -121,7 +122,7 @@
     "state": {
       "open": "Chưa nộp",
       "submitted": "Đã nộp",
-      "approved": "Đã phê duyệt",
+      "approved": "Đã đồng ý",
       "closed": "Đã đóng",
       "reopened": "Đã mở lại"
     },
@@ -141,7 +142,7 @@
       "not_permitted_detail": "Chỉ người phụ trách nhóm mới thay đổi được ai đang làm việc và theo điều khoản nào.",
       "column_person": "Nhân viên",
       "column_since": "Từ ngày",
-      "column_week": "Tuần",
+      "column_week": "Giờ mỗi tuần",
       "column_role": "Vai trò",
       "column_action": "Thao tác",
       "add_title": "Thêm người",
@@ -155,13 +156,13 @@
       "section_terms": "Điều khoản",
       "section_schedule": "Tuần làm việc",
       "hire_date": "Bắt đầu từ ngày",
-      "timezone": "Múi giờ",
+      "timezone": "Múi giờ, dạng Europe/Vienna",
       "is_manager": "Phụ trách nhóm — xem và sửa được giờ làm, vắng mặt và nghỉ phép của mọi người, ở mọi không gian làm việc",
-      "arrangement": "Hình thức làm việc",
+      "arrangement": "Làm việc theo hình thức nào",
       "valid_from": "Áp dụng từ ngày",
-      "records_target": "Ghi nhận số giờ cần làm và số dư lũy kế",
-      "records_target_hint": "Tắt với các hình thức tự xuất hóa đơn, khi công ty chỉ ghi nhận số giờ đã làm và không tính giờ cần làm theo ngày.",
-      "schedule_hint": "Số giờ cần làm mỗi ngày. Hãy nhập 7:42 hoặc 7,7, và để trống những ngày không làm việc.",
+      "records_target": "Yêu cầu số giờ cố định mỗi ngày, giữ số dư lũy kế và tính phép họ đã nghỉ",
+      "records_target_hint": "Hãy bật cho nhân viên. Tắt với người tự xuất hóa đơn cho giờ làm của họ: không yêu cầu số giờ nào mỗi ngày, không giữ số dư và không tính phép.",
+      "schedule_hint": "Mỗi ngày cần làm bao lâu. Nhập 7:42 cho bảy giờ 42 phút, hoặc 7,7 cho cùng độ dài đó viết dạng giờ thập phân. Để trống những ngày không làm việc.",
       "week_total": "{duration} mỗi tuần",
       "cancel": "Hủy",
       "save": "Lưu",
@@ -177,7 +178,7 @@
       "errors": {
         "bad_duration": "Một trong các ngày không phải là một khoảng thời gian. Hãy nhập 7:42 hoặc 7,7, hoặc để trống.",
         "hire_date_required": "Hãy cho biết người này bắt đầu từ ngày nào, để tháng đầu tiên của họ biết tính từ đâu.",
-        "week_required": "Nhập độ dài một ngày làm việc, nếu không tháng không có gì để đối chiếu.",
+        "week_required": "Hãy điền ít nhất một ngày, để tháng của họ có cơ sở đối chiếu. Để trống những ngày họ không làm việc.",
         "bad_crm_staff_id": "Mã nhân viên CRM là một số nguyên. Để trống để đối chiếu theo địa chỉ e-mail."
       },
       "toasts": {
@@ -186,24 +187,24 @@
         "removed": "Đã đánh dấu là đã nghỉ việc",
         "refused": "Thao tác không thành công",
         "try_again": "Vui lòng thử lại.",
-        "brought_back": "Đã trở lại danh sách"
+        "brought_back": "Đã tuyển lại"
       },
       "opening": "Số dư đầu kỳ",
       "rates": "Đơn giá",
       "leave": "Nghỉ phép",
       "crm_staff_id": "Mã nhân viên CRM",
       "crm_staff_id_placeholder": "Để trống để đối chiếu theo email",
-      "crm_guessed": "Chỉ khớp CRM theo email",
+      "crm_guessed": "CRM chỉ theo địa chỉ email",
       "crm_missing": "Không có tài khoản CRM",
       "crm_link": {
         "set": "Được đặt ở đây, nên số giờ luôn vào đúng tài khoản này bất kể địa chỉ email ghi thế nào.",
-        "email": "Đang đối chiếu theo địa chỉ email. Cách này còn đúng cho đến khi một trong hai hệ thống có địa chỉ khác.",
+        "email": "Chưa ai cho biết đây là tài khoản CRM nào, nên giờ làm của họ được đối chiếu theo địa chỉ email. Không có gì kiểm tra rằng tài khoản CRM mang địa chỉ đó có tồn tại hay không.",
         "none": "Không có gì nối người này với CRM, nên số giờ của họ không bao giờ trở thành một bộ đếm giờ trong CRM."
       },
       "confirm_remove_title": "Đánh dấu đã nghỉ việc?",
-      "confirm_remove_body": "{person} sẽ không xuất hiện trong các tháng mới. Mọi thứ đã ghi nhận vẫn giữ nguyên.",
+      "confirm_remove_body": "{person} sẽ không xuất hiện trong các tháng mới và không mở được trang thời gian của mình nữa, nên hãy hoàn tất tháng cuối của họ trước. Mọi thứ đã ghi nhận vẫn giữ nguyên.",
       "removing": "Đang đánh dấu…",
-      "no_hours_yet": "Chưa đặt giờ",
+      "no_hours_yet": "Chưa thiết lập",
       "confirm_remove_permanent": "Nếu quay lại, bạn có thể tuyển người này lần nữa sau.",
       "pick_somebody_first": "Hãy chọn một người trong danh sách trước",
       "pick_date_first": "Nhập ngày bắt đầu",
@@ -212,7 +213,7 @@
     },
     "rates": {
       "title": "Giá trị thời gian của {person}",
-      "hint": "Đơn giá được ghi kèm ngày áp dụng chứ không bị sửa lại, nên tháng nào đã lập bảng kê theo đơn giá cũ thì vẫn giữ đúng con số đã nêu. Tăng lương là đơn giá cũ kết thúc và một đơn giá mới bắt đầu.",
+      "hint": "Đơn giá được lưu theo ngày, nên tháng nào đã tính rồi thì vẫn giữ đơn giá đã dùng. Muốn ghi một lần tăng lương, hãy thêm đơn giá bắt đầu từ ngày có hiệu lực. Đơn giá mới thay cho đơn giá trước đó, còn đơn giá trước vẫn tính tiền cho những tháng trước nữa.",
       "none_yet": "Chưa có đơn giá nào được ghi nhận. Bảng kê của người này sẽ chỉ hiện số giờ mà không có số tiền.",
       "add": "Thêm đơn giá",
       "add_button": "Thêm",
@@ -244,12 +245,12 @@
         "try_again": "Vui lòng thử lại."
       },
       "removing": "Đang xóa…",
-      "confirm_remove_title": "Xóa mức giá này?",
-      "confirm_remove_body": "Các tháng đã tính giữ nguyên số liệu. Các tháng sau sẽ mất mức giá này."
+      "confirm_remove_title": "Xóa đơn giá này?",
+      "confirm_remove_body": "Mọi tháng đều được tính tiền theo đơn giá đang lưu vào lúc đọc, kể cả những tháng đã đóng. Xóa đơn giá này sẽ làm thay đổi số tiền của những tháng đó. Chỉ xóa nếu nó bị ghi nhầm."
     },
     "leave": {
       "title": "Nghỉ phép của {person}",
-      "hint": "Được ghi nhận bằng phút chứ không phải bằng ngày: với người có số giờ làm không đều nhau, một ngày không phải là một lượng cố định. Năm phép được tính từ ngày vào làm hằng năm.",
+      "hint": "Phép được tính bằng giờ chứ không bằng ngày, vì một ngày làm việc không dài như nhau với mọi người. Năm phép tính từ ngày vào làm hằng năm.",
       "none_yet": "Chưa có năm phép nào được ghi nhận.",
       "add": "Thêm năm phép",
       "add_button": "Thêm",
@@ -258,53 +259,54 @@
       "year_end": "Năm phép đến ngày",
       "entitlement": "Phép cho cả năm",
       "carryover": "Chuyển từ năm trước",
-      "carryover_placeholder": "Không bắt buộc, có thể là số âm",
+      "carryover_placeholder": "Không bắt buộc. Dùng dấu trừ nếu họ đã nghỉ bớt một phần.",
       "duration_placeholder": "ví dụ 200:00",
       "basis": "Căn cứ của số liệu này",
       "basis_placeholder": "Không bắt buộc",
       "between": "{from} đến {to}",
       "about_days": "{days, plural, other {khoảng # ngày}}",
       "carried": "{duration} chuyển từ năm trước",
-      "agree": "Đồng ý",
-      "agreed": "Đã đồng ý",
+      "agree": "Chốt lại",
+      "agreed": "Đã chốt",
       "errors": {
         "dates_required": "Hãy cho biết năm phép bắt đầu và kết thúc vào ngày nào.",
         "backwards": "Năm phép không thể kết thúc trước khi bắt đầu.",
         "bad_duration": "Hãy viết khoảng thời gian dưới dạng 200:00, 200 hoặc 12000m.",
-        "already_there": "Đã có mục cho năm phép này."
+        "already_there": "Đã có mục cho năm phép này.",
+        "overlapping_year": "Đã có một năm phép bao trùm các ngày này."
       },
       "toasts": {
         "added": "Đã thêm năm phép",
-        "agreed": "Đã đánh dấu là đã đồng ý",
+        "agreed": "Đã chốt",
         "refused": "Không thể lưu",
         "try_again": "Vui lòng thử lại."
       },
       "entitlement_with_unit": "Phép cả năm (giờ:phút)",
       "echo_days": "{duration} · {days, plural, other {khoảng # ngày}}",
       "echo_hours": "{duration}",
-      "agreeing": "Đang ghi…",
+      "agreeing": "Đang chốt…",
       "confirm_agree_title": "Chốt con số này?",
-      "confirm_agree_body": "{duration} sau đó không thể sửa. Thay đổi về sau phải ghi riêng, kèm lý do."
+      "confirm_agree_body": "Sau đó {duration} không thể thay đổi ở bất kỳ màn hình nào. Hãy đối chiếu với những gì đã báo cho người đó trước khi chốt."
     },
     "holidays": {
       "title": "Ngày lễ",
-      "subtitle": "Những ngày không ai đi làm. Ngày lễ làm giảm giờ định mức của ngày hôm đó, chứ không được cộng vào số giờ đã làm.",
+      "subtitle": "Những ngày không ai đi làm. Ngày lễ được tính như giờ đã làm; nó không làm giảm số giờ phải làm. Thay đổi ở đây chỉ ảnh hưởng đến những tháng còn mở.",
       "back_to_month": "Tháng",
       "calendar": "Lịch",
       "previous_year": "Năm trước",
       "next_year": "Năm sau",
-      "none_this_year": "Lịch này không có ngày nào trong năm này.",
-      "not_permitted_detail": "Chỉ quản lý mới thay đổi được lịch này.",
+      "none_this_year": "Chưa có ngày nào cho năm này. Chừng nào chưa thêm, mọi ngày lễ trong năm đều được tính là ngày làm việc bình thường.",
+      "not_permitted_detail": "Bạn chưa được thiết lập trong hồ sơ chấm công, nên danh sách này không hiện với bạn. Hãy hỏi người phụ trách nhóm.",
       "column_date": "Ngày",
       "column_name": "Tên",
       "column_kind": "Loại",
       "column_action": "Thao tác",
-      "statutory": "Theo luật",
+      "statutory": "Theo luật, không sửa được",
       "granted": "Công ty cho",
       "make_half": "Chuyển thành nửa ngày",
       "make_whole": "Chuyển thành cả ngày",
       "remove": "Xóa ngày này",
-      "add": "Thêm một ngày",
+      "add": "Thêm ngày nghỉ cho mọi người",
       "add_button": "Thêm",
       "only_half": "Chỉ nửa ngày",
       "name_placeholder": "Tên gọi của ngày này",
@@ -322,19 +324,19 @@
       "whole_day": "Cả ngày",
       "half_day": "Nửa ngày",
       "confirm_remove_title": "Xóa ngày này?",
-      "confirm_remove_body": "{day} sẽ không còn là ngày lễ, nên định mức của mọi người cho ngày đó tăng trở lại.",
+      "confirm_remove_body": "{day} sẽ không còn là ngày lễ. Những ai làm việc vào ngày đó sẽ phải đi làm trở lại.",
       "removing": "Đang xóa…"
     },
     "arrangement": {
       "onsite_full_time": "Tại văn phòng, toàn thời gian",
       "onsite_part_time": "Tại văn phòng, bán thời gian",
-      "remote_full_time_invoicing": "Từ xa, toàn thời gian, tự xuất hóa đơn",
-      "remote_part_time_invoicing": "Từ xa, bán thời gian, tự xuất hóa đơn"
+      "remote_full_time_invoicing": "Từ xa, toàn thời gian, xuất hóa đơn cho công ty",
+      "remote_part_time_invoicing": "Từ xa, bán thời gian, xuất hóa đơn cho công ty"
     },
     "entries": {
-      "hint": "Thời gian không thuộc hạng mục công việc nào — họp, hành chính, đào tạo, đi lại.",
-      "none_yet": "Chưa có gì được ghi nhận trong ngày này.",
-      "day_total": "Trong ngày này",
+      "hint": "Giờ không thuộc mục công việc nào — họp, hành chính, đào tạo, đi lại. Chúng được tính vào tháng của bạn. Giờ trên mục công việc đến từ bộ đếm giờ ở đó và không sửa ở đây.",
+      "none_yet": "Chưa có gì được thêm ở đây. Giờ ghi trên mục công việc vẫn được tính, nhưng không hiện ở đây.",
+      "day_total": "Giờ không có mục công việc",
       "how_long": "Thời lượng",
       "what_it_was": "Loại",
       "note": "Ghi chú",
@@ -342,7 +344,7 @@
       "add": "Thêm",
       "remove": "Xóa",
       "imported": "Đã nhập dữ liệu",
-      "month_closed": "Tháng này đã chốt nên không thể thay đổi giờ. Hãy liên hệ người phụ trách nhóm nếu cần sửa.",
+      "month_closed": "Tháng này không còn mở, nên không sửa được giờ của tháng. Hãy nhờ người phụ trách nhóm mở lại nếu có gì cần sửa.",
       "category": {
         "meeting": "Họp nội bộ",
         "training": "Đào tạo",
@@ -353,7 +355,8 @@
         "imported": "Nhập dữ liệu"
       },
       "errors": {
-        "bad_duration": "Hãy cho biết việc đó kéo dài bao lâu. Nhập 1:30 hoặc 1,5."
+        "bad_duration": "Hãy cho biết việc đó kéo dài bao lâu. Nhập 1:30 hoặc 1,5.",
+        "duration_needs_unit": "Hãy cho biết việc đó kéo dài bao lâu: 1:30, 7h hoặc 90m. Chỉ một con số thì không rõ bạn muốn nói giờ hay phút."
       },
       "toasts": {
         "added": "Đã thêm",
@@ -361,25 +364,25 @@
         "try_again": "Vui lòng thử lại."
       },
       "close": "Đóng",
-      "not_added_yet": "Chưa được thêm",
+      "not_added_yet": "Chưa được thêm. Hãy bấm Thêm, nếu không nội dung này sẽ mất khi bạn đóng.",
       "confirm_remove_title": "Xóa số giờ này?",
-      "confirm_remove_body": "{duration} sẽ bị trừ khỏi ngày này và tổng của tháng.",
+      "confirm_remove_body": "{duration} thuộc loại {category} sẽ bị trừ khỏi ngày này và khỏi tổng của tháng.",
       "removing": "Đang xóa…"
     },
     "attendance": {
       "title": "Khi bạn có mặt làm việc",
-      "hint": "Giờ bắt đầu, giờ kết thúc và giờ nghỉ của ngày này, được ghi riêng với việc số giờ đó dùng vào đâu.",
-      "still_running": "Vẫn đang diễn ra",
+      "hint": "Giờ bắt đầu, giờ kết thúc và giờ nghỉ của ngày này. Đây là bản ghi riêng và không được tính vào số giờ của bạn.",
+      "still_running": "Chưa có giờ kết thúc",
       "from": "Từ",
       "to": "Đến",
       "break": "Nghỉ (phút)",
-      "where": "Ở đâu",
+      "where": "Bạn làm việc ở đâu",
       "past_midnight": "Được tính là kéo dài qua nửa đêm.",
       "record": "Ghi lại",
       "update": "Cập nhật",
       "remove": "Xóa",
-      "closed_with": "Từ {from} đến {to}, {duration}. Tháng này đã được đóng và không thể thay đổi nữa.",
-      "closed_without": "Ngày này không có gì được ghi lại, và tháng đã được đóng.",
+      "closed_with": "Từ {from} đến {to}, {duration}. Tháng này không còn mở, nên không thể thay đổi.",
+      "closed_without": "Ngày này không có gì được ghi lại, và tháng không còn mở.",
       "location": {
         "office": "Tại văn phòng",
         "home": "Làm việc tại nhà",
@@ -396,14 +399,15 @@
         "try_again": "Vui lòng thử lại."
       },
       "confirm_remove_title": "Xóa bản ghi chấm công này?",
-      "confirm_remove_body": "Giờ bắt đầu, kết thúc và nghỉ của ngày này sẽ bị xóa. Đây là hồ sơ thời giờ làm việc luật yêu cầu lưu giữ.",
+      "confirm_remove_body": "Giờ bắt đầu, kết thúc và nghỉ của ngày này sẽ bị xóa và không lấy lại được. Nếu giờ bị sai, hãy sửa rồi lưu lại.",
       "removing": "Đang xóa…",
-      "past_midnight_length": "Ca này qua nửa đêm và bằng {duration}. Hãy kiểm tra giờ kết thúc nếu không đúng."
+      "past_midnight_length": "Ca này qua nửa đêm và bằng {duration}. Hãy kiểm tra giờ kết thúc nếu không đúng.",
+      "not_saved_yet": "Chưa được lưu. Hãy lưu các giờ này, nếu không chúng sẽ mất khi bạn đóng."
     },
     "imports": {
-      "title": "Nhập số giờ vào",
-      "subtitle": "Những tháng đã được ghi nhận ở nơi khác, đọc từ một bảng tính và kiểm tra trước khi ghi bất cứ điều gì.",
-      "not_permitted_detail": "Chỉ người phụ trách nhóm mới nhập số giờ vào được.",
+      "title": "Nhập dữ liệu cũ vào",
+      "subtitle": "Giờ làm, vắng mặt và số dư đã ghi ở nơi khác, được đọc từ bảng tính và kiểm tra trước khi ghi bất cứ điều gì. Trong một tệp có nhiều trang tính, chỉ trang tính mở lên đầu tiên được đọc, và tiêu đề cột phải nằm ở dòng đầu của trang đó.",
+      "not_permitted_detail": "Chỉ người phụ trách nhóm mới nhập được dữ liệu cũ vào.",
       "what_kind": "Nội dung của tệp",
       "choose_file": "Chọn tệp",
       "kind": {
@@ -412,19 +416,19 @@
         "opening_balances": "Số dư đầu kỳ"
       },
       "columns": {
-        "time_entries": "Các cột: email, date, và một trong hai cột hours hoặc minutes — tiêu đề cột phải đúng như vậy. Nếu có cột note thì cột đó được giữ lại. 7:42, 7,7 và 462 đều được hiểu là cùng một khoảng thời gian.",
+        "time_entries": "Các cột: email, date, và một trong hai cột hours hoặc minutes — tiêu đề cột phải đúng như vậy. Nếu có cột note thì cột đó được giữ lại. Tiêu đề cột quyết định một con số trần có nghĩa gì: 7,7 ở cột hours và 462 ở cột minutes đều là 7 giờ 42 phút. Viết là 7:42 thì cả hai tiêu đề đều hiểu như nhau.",
         "absences": "Các cột: email, start_date, end_date và type — tiêu đề cột phải đúng như vậy. Nếu chỉ vắng một ngày thì bỏ cột end_date đi.",
-        "opening_balances": "Các cột: email, effective_on cho ngày số dư bắt đầu áp dụng, và một trong hai cột hours hoặc minutes cho chính số dư — tiêu đề cột phải đúng như vậy."
+        "opening_balances": "Các cột: email, date cho ngày số dư bắt đầu áp dụng, hours hoặc minutes cho chính số dư, và basis cho biết con số lấy từ đâu — tiêu đề cột phải đúng như vậy. Thêm cột kind ghi time, leave hoặc overtime nếu số dư không phải là giờ."
       },
-      "preview_title": "{filename}, khi được áp dụng sẽ như sau",
-      "preview_hint": "Chưa có gì được ghi. Hãy kiểm tra các dòng bên dưới, sau đó áp dụng.",
+      "preview_title": "{filename}, đọc theo dạng {kind}",
+      "preview_hint": "Chưa có gì được ghi. Các dòng được cộng thêm vào những gì đã ghi nhận cho các ngày đó, nên một ngày nhập vào hai lần sẽ được tính hai lần. Muốn sửa một tệp đã nhập, hãy hoàn tác tệp đó trước chứ đừng nhập thêm bản đã sửa.",
       "will_write": "sẽ được ghi",
       "cannot_read": "không đọc được",
       "skipped": "đã bỏ qua",
       "apply": "{count, plural, other {Áp dụng # dòng}}",
-      "discard": "Loại bỏ",
+      "discard": "Để lại sau",
       "column_row": "Dòng",
-      "column_verdict": "Kết luận",
+      "column_verdict": "Điều gì xảy ra",
       "column_detail": "Chi tiết",
       "verdict": {
         "ok": "Sẽ được ghi",
@@ -433,7 +437,7 @@
       },
       "past": "Các tệp đã nhập trước đây",
       "none_yet": "Chưa có gì được nhập vào.",
-      "row_summary": "{total, plural, other {{valid} trên # dòng}}",
+      "row_summary": "{total, plural, other {Dùng được {valid} trên # dòng}}",
       "state": {
         "10": "Đã tải lên",
         "20": "Đang kiểm tra",
@@ -445,7 +449,7 @@
       },
       "undo": "Hoàn tác",
       "undo_title": "Hoàn tác {filename}?",
-      "undo_body": "Mọi giờ mà tệp này đã ghi đều được gỡ bỏ, và không có gì khác bị đụng đến. Số giờ nằm trong tháng mà từ đó đến nay đã được đóng thì vẫn giữ nguyên.",
+      "undo_body": "Mọi thứ tệp này đã ghi đều được gỡ ra, và không có gì khác bị đụng đến. Nếu phần nào đã được tính vào một tháng nay đã đóng, thì không gỡ được gì cho đến khi tháng đó được mở lại.",
       "undo_label": "Vì sao cần hoàn tác?",
       "undo_placeholder": "Tệp này liệt kê tháng Ba hai lần.",
       "undo_confirm": "Hoàn tác",
@@ -459,19 +463,19 @@
         "try_again": "Vui lòng thử lại."
       },
       "template": "Tải mẫu về",
-      "resume": "Kiểm tra và áp dụng",
+      "resume": "Mở lại",
       "reasons": {
-        "unknown_person": "Không ai ở đây đăng nhập bằng {email}.",
+        "unknown_person": "Không ai ở đây đăng nhập bằng {email}. Hãy thêm người đó ở mục Nhân sự, hoặc sửa lại địa chỉ trong tệp.",
         "bad_date": "Không đọc được ngày.",
-        "bad_duration": "Không đọc được thời lượng.",
-        "more_than_a_day": "Nhiều hơn một ngày trong một ngày.",
-        "month_settled": "Tháng đó đã chốt.",
+        "bad_duration": "Không đọc được thời lượng, hoặc thời lượng bằng không. Mỗi dòng đều cần một khoảng thời gian — nếu không thì hãy bỏ ngày đó ra khỏi tệp.",
+        "more_than_a_day": "Nhiều hơn 24 giờ trong một ngày. Hãy kiểm tra con số là giờ hay phút, và tiêu đề cột có khớp không.",
+        "month_settled": "Tháng đó không còn mở, nên không ghi thêm được gì vào. Hãy đề nghị mở lại tháng nếu dòng này buộc phải ghi vào.",
         "bad_balance": "Không đọc được số dư.",
-        "kind_missing": "Hãy cho biết đây là giờ hay ngày nghỉ.",
-        "basis_missing": "Hãy cho biết con số này dựa trên đâu.",
+        "kind_missing": "Cột kind phải ghi time, leave hoặc overtime.",
+        "basis_missing": "Cột basis đang trống. Hãy ghi con số lấy từ đâu, ví dụ: từ bảng tính nghỉ phép cũ.",
         "bad_start_date": "Không đọc được ngày bắt đầu.",
         "ends_before_it_starts": "Kết thúc trước khi bắt đầu.",
-        "unknown_absence_type": "Không có loại vắng mặt “{code}”."
+        "unknown_absence_type": "Không có lý do vắng mặt nào mang mã “{code}”. Các mã nằm ở màn hình Vắng mặt, mục Lý do."
       }
     },
     "opening": {
@@ -482,11 +486,11 @@
       "from_label": "Áp dụng từ ngày",
       "agreed": "Đã đồng ý",
       "agree": "Số liệu này đúng",
-      "not_agreed": "Chưa đồng ý",
+      "not_agreed": "Đang chờ họ đồng ý",
       "replaced": "{count} số dư đã được thay bằng bản điều chỉnh",
       "record": "Ghi nhận một số dư đầu kỳ",
       "record_confirm": "Ghi nhận",
-      "amount": "Số dư",
+      "amount": "Số dư, dấu trừ nếu đang thiếu",
       "what_for": "Loại số dư",
       "how_sure": "Mức độ chắc chắn",
       "basis": "Căn cứ của số liệu này",
@@ -499,9 +503,9 @@
       },
       "confidence": {
         "exact": "Lấy từ hồ sơ",
-        "reconstructed": "Dựng lại",
+        "reconstructed": "Tính ra từ hồ sơ khác",
         "estimated": "Ước tính",
-        "agreed": "Đã thống nhất với nhân viên"
+        "agreed": "Từ trao đổi với người đó"
       },
       "errors": {
         "bad_duration": "Hãy cho biết bao nhiêu. Nhập -12:30 hoặc -12,5, hoặc bỏ dấu trừ nếu là phần dư.",
@@ -515,7 +519,7 @@
         "try_again": "Vui lòng thử lại."
       },
       "correct": "Sửa con số này",
-      "agreeing": "Đang ghi…",
+      "agreeing": "Đang đồng ý…",
       "confirm_agree_title": "Xác nhận số dư này?",
       "confirm_agree_body": "Bạn xác nhận {amount} là đúng. Không thể hoàn tác. Nếu con số sai, đừng xác nhận — hãy báo cho người phụ trách nhóm.",
       "correcting_heading": "Sửa con số",
@@ -530,16 +534,16 @@
       "everyone": "Tất cả",
       "previous_month": "Tháng trước",
       "next_month": "Tháng sau",
-      "none_this_month": "Không ai nghỉ trong tháng này.",
-      "not_permitted_detail": "Chỉ quản lý mới xem được toàn nhóm. Vắng mặt của bạn nằm ở trang thời gian của bạn.",
-      "month_locked": "tháng đã khóa",
+      "none_this_month": "Không có vắng mặt nào được ghi nhận cho tháng này.",
+      "not_permitted_detail": "Bạn chưa có hồ sơ lao động ở đây, nên không có gì để hiện. Hãy nhờ người phụ trách nhóm tạo một hồ sơ.",
+      "month_locked": "tháng đã đóng — mở lại mới sửa được",
       "approve": "Đồng ý",
       "reject": "Từ chối",
       "delete": "Xóa vắng mặt",
       "column_person": "Người",
       "column_reason": "Lý do",
       "column_when": "Thời gian",
-      "column_away": "Vắng",
+      "column_away": "Giờ nghỉ",
       "column_state": "Trạng thái",
       "column_action": "Thao tác",
       "state": {
@@ -562,7 +566,7 @@
       "modal": {
         "title": "Ghi nhận vắng mặt",
         "edit_title": "Sửa vắng mặt này",
-        "subtitle": "Khi lý do được tính là ngày làm, ngày đó được cộng đủ giờ nên số dư tháng vẫn cân bằng. Còn giờ định mức thì giữ nguyên.",
+        "subtitle": "Phần lớn lý do vẫn được tính vào số giờ của tháng, nên tháng không bị thiếu. Những ngày người này vốn không làm việc thì không được tính.",
         "person": "Người",
         "type": "Lý do",
         "no_types": "Chưa thiết lập lý do nào",
@@ -575,11 +579,11 @@
         "last_day": "Ngày cuối",
         "hours_each_day": "Số giờ nghỉ mỗi ngày",
         "hours_placeholder": "ví dụ 3:30",
-        "hours_hint": "Viết dạng 3:30, 3.5 hoặc 210m.",
+        "hours_hint": "Số giờ nghỉ cho mỗi ngày trong khoảng, viết dạng 3:30, 3,5 hoặc 3h. Muốn ghi phút thì viết 90m.",
         "note": "Ghi chú",
         "note_placeholder": "Không bắt buộc",
         "record": "Ghi nhận",
-        "hours_unreadable": "Đây không phải độ dài thời gian. Thử 1:30, 1,5 hoặc 90."
+        "hours_unreadable": "Đây không phải một khoảng thời gian. Hãy thử 3:30, 3,5, hoặc 90m cho chín mươi phút."
       },
       "toasts": {
         "saved": "Đã lưu vắng mặt",
@@ -607,16 +611,16 @@
         "draws_on_leave": "Ngày đó trừ vào quỹ phép",
         "refused": "Không thực hiện được",
         "try_again": "Vui lòng thử lại.",
-        "confirm_remove_title": "Xóa loại vắng mặt này?",
-        "confirm_remove_body": "“{kind}” sẽ không còn xuất hiện khi ghi nhận vắng mặt. Nếu chỉ muốn ẩn khỏi danh sách, hãy tắt nó thay vì xóa.",
-        "deleting": "Đang xóa"
+        "confirm_remove_title": "Xóa lý do này?",
+        "confirm_remove_body": "“{kind}” sẽ không còn xuất hiện khi ai đó ghi nhận vắng mặt. Hãy bấm Ngừng dùng nếu bạn chỉ muốn nó biến khỏi danh sách.",
+        "deleting": "Đang xóa…"
       },
       "filter_person": "Hiện ngày nghỉ của",
-      "confirm_remove_title": "Xóa kỳ nghỉ này?",
-      "confirm_remove_body": "{person} trở lại định mức đầy đủ cho những ngày đó và {duration} được trả về phép.",
+      "confirm_remove_title": "Xóa vắng mặt này?",
+      "confirm_remove_body": "{duration} sẽ thôi được tính vào tháng của {person}, nên tháng sẽ thiếu giờ trừ khi số giờ đó được làm bù. Phần phép đã dùng cho kỳ nghỉ này được trả lại.",
       "removing": "Đang xóa…",
       "refuse_title": "Từ chối kỳ nghỉ của {person}",
-      "refuse_body": "Người đó sẽ thấy nội dung bạn viết, nên hãy viết đủ rõ.",
+      "refuse_body": "Nội dung này được lưu cùng bản ghi. Không có thông báo tự động, nên bạn hãy tự báo cho người đó.",
       "refuse_label": "Lý do",
       "refuse_placeholder": "Tuần đó đã có hai người nghỉ",
       "refuse_cancel": "Hủy",
@@ -631,7 +635,7 @@
       "expected": "Thành tiền",
       "monthly_rate": "Một khoản cố định mỗi tháng",
       "no_rate": "Chưa có đơn giá nào được ghi nhận cho bạn, nên phần này chỉ hiện số giờ. Hãy hỏi người phụ trách nhóm.",
-      "still_moving": "Tháng này vẫn đang mở, nên các số liệu này vẫn có thể thay đổi.",
+      "still_moving": "Tháng này chưa đóng, nên các số liệu vẫn có thể thay đổi. Hãy chờ tháng đóng lại rồi mới xuất hóa đơn.",
       "settled": "Tháng này đã được đóng, nên các số liệu này đã được chốt.",
       "decimal_hours": "{hours} giờ thập phân"
     },
@@ -642,13 +646,13 @@
     },
     "review_days": {
       "title": "Những ngày cần xem lại của {person}",
-      "body": "Số giờ từng được tính vào những ngày này không còn nữa. Hãy ghi lại điều đã xảy ra với từng ngày, rồi có thể chốt tháng.",
+      "body": "Số giờ từng được tính vào những ngày này nay không còn nữa. Ghi lại điều đã xảy ra thì mới đóng được tháng, nhưng việc đó không đưa số giờ trở lại — nếu số giờ vẫn phải được tính, hãy cho ghi lại chúng trước. Nội dung bạn viết được lưu cùng ngày đó, và người liên quan đọc được.",
       "all_settled": "Không còn gì để xem lại. Tháng này có thể chốt.",
       "counts_now": "Hiện được tính là {duration}",
       "what_happened": "Chuyện gì đã xảy ra?",
       "placeholder": "Nhập nhầm ngày nên đã chuyển",
       "settle": "Xử lý ngày này",
-      "close": "Đóng",
+      "close": "Xong",
       "toasts": {
         "settled": "Đã xử lý ngày",
         "refused": "Không xử lý được",
@@ -656,8 +660,8 @@
       }
     },
     "refusals": {
-      "absence_type_in_use": "{in_use, plural, other {Có # lần vắng mặt được ghi theo loại này nên không thể xóa — các bản ghi đó sẽ mất ý nghĩa.}} Hãy tắt nó thay vì xóa: nó biến mất khỏi danh sách chọn, còn các bản ghi cũ vẫn đọc được.",
-      "month_settled": "{month} đã {month_state} nên các bản ghi của tháng không thể thay đổi. Hãy đề nghị mở lại tháng nếu mục này cần được tính vào.",
+      "absence_type_in_use": "{in_use, plural, other {Có # lần vắng mặt được ghi với lý do này nên không thể xóa — các bản ghi đó sẽ mất ý nghĩa.}} Hãy bấm Ngừng dùng: lý do đó biến khỏi danh sách để chọn, còn các bản ghi cũ vẫn đọc được.",
+      "month_settled": "{month} đã {month_state} nên các bản ghi của tháng không thể thay đổi. Hãy nhờ người phụ trách nhóm mở lại tháng ở trang Thời gian của nhóm.",
       "month_state": {
         "handed_in": "nộp",
         "agreed": "duyệt",
@@ -671,29 +675,29 @@
       "mine": "Giờ của tôi",
       "group_by": "Nhóm theo",
       "on_work_items": "Cho hạng mục công việc",
-      "other_hours": "Tất cả phần còn lại",
-      "entries": "Mục nhập",
-      "month_state": "Các con số này",
+      "other_hours": "Không thuộc mục công việc",
+      "entries": "Mục nhập trên mục công việc",
+      "month_state": "Tháng này",
       "frozen": "Đã chốt",
-      "frozen_hint": "Những gì tháng đã tính",
+      "frozen_hint": "Số giờ này không thể thay đổi nữa",
       "live": "Trực tiếp",
-      "live_hint": "Tháng vẫn đang mở",
+      "live_hint": "Số giờ này vẫn có thể thay đổi",
       "column_what": "Nội dung",
       "column_when": "Khi nào",
       "column_note": "Ghi chú",
       "column_long": "Thời lượng",
       "unnamed": "Không tên",
       "still_running": "Vẫn đang chạy — chưa có thời lượng nên không được tính",
-      "gone": "Tháng này đã tính nó, và giờ nó không còn nữa",
-      "by_hand": "· nhập tay",
-      "nothing_logged": "Tháng này chưa ghi giờ nào cho hạng mục công việc nào.",
+      "gone": "Mục này đã bị xóa sau khi tháng đã tính nó. Số giờ của nó vẫn nằm trong các con số phía trên.",
+      "by_hand": "· thêm bằng tay",
+      "nothing_logged": "Không có giờ nào được ghi trên mục công việc trong tháng này. Hãy kiểm tra tháng hiện ở phía trên.",
       "other_title": "Giờ không thuộc hạng mục nào",
-      "other_subtitle": "Họp, hành chính, đào tạo, đi lại — và mọi thứ mang từ trước sang. Những giờ này cũng được tính vào tháng.",
-      "footnote": "Giờ được tính tại nơi chúng được ghi, ở mọi không gian làm việc.",
-      "rounding_note": "Phút được làm tròn một lần theo ngày và dự án, nên các tổng phụ này có thể không khớp với con số phía trên.",
+      "other_subtitle": "Họp, hành chính, đào tạo, đi lại, điều chỉnh — và giờ nhập vào từ nơi khác. Chúng cũng được tính vào tháng, nhưng không có trong bảng phía trên. Một điều chỉnh mang dấu trừ sẽ trừ bớt giờ của tháng.",
+      "footnote": "Giờ được tính tại nơi chúng được ghi, ở mọi không gian làm việc. Phép có lương và ngày lễ cũng được tính vào tháng, và không hiện ở đây.",
+      "rounding_note": "Số giờ mỗi ngày trên một dự án được làm tròn một lần, nên cộng các dòng này lại có thể lệch một hai phút so với con số phía trên. Con số phía trên mới là con số được tính.",
       "entry_count": "{count, plural, other {· # mục}}",
-      "running_note": "{count, plural, other {# bộ đếm giờ vẫn đang chạy. Chưa có thời lượng nên không được tính ở đây.}}",
-      "missing_note": "{count, plural, other {Không còn tìm thấy # mục mà tháng này đã tính. Chỉ mã định danh được giữ lại, nên không còn gì để hiển thị.}}",
+      "running_note": "{count, plural, other {# bộ đếm giờ vẫn đang chạy nên chưa được tính. Hãy dừng nó ở mục công việc. Không thể gửi duyệt tháng khi bộ đếm còn chạy.}}",
+      "missing_note": "{count, plural, other {# mục mà tháng này đã tính nay đã bị xóa. Số giờ của chúng không nằm trong các con số ở đây, nhưng tháng vẫn tính chúng.}}",
       "week_of": "Tuần từ {date}",
       "grouping": {
         "day": "Ngày",
@@ -703,8 +707,8 @@
         "workspace": "Không gian làm việc"
       },
       "under_a_minute": "dưới một phút",
-      "auto_stopped": "· hệ thống đã dừng",
-      "auto_stopped_hint": "Bộ đếm giờ này bị để chạy và đã dừng ở mức tối đa. Thời lượng là mức trần, không phải số đo — cần được sửa."
+      "auto_stopped": "· hệ thống đã dừng, cần sửa lại",
+      "auto_stopped_hint": "Bộ đếm giờ này bị để chạy, nên hệ thống đã dừng nó ở mức thời gian dài nhất cho phép. Đó là một giới hạn, không phải thời gian đã làm. Hãy sửa lại ở mục công việc trước khi gửi duyệt tháng."
     }
   }
 }

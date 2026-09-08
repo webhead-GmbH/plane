@@ -90,6 +90,12 @@ export const HrTeamMonthRoot = observer(function HrTeamMonthRoot() {
       setToast({ type: TOAST_TYPE.SUCCESS, title: done });
       return true;
     } catch (failure) {
+      // A refusal is nearly always the table being out of date — somebody else
+      // agreed the month, or the person put it back. Fetching again leaves the
+      // row saying what the message says, instead of still offering the button
+      // that has just failed. If that fetch fails too, the refusal is the more
+      // useful of the two things to put on screen.
+      await mutate().catch(() => undefined);
       setToast({
         type: TOAST_TYPE.ERROR,
         title: t("hr.team_time.toasts.refused"),
@@ -98,6 +104,17 @@ export const HrTeamMonthRoot = observer(function HrTeamMonthRoot() {
       return false;
     } finally {
       setBusyPeriodId(null);
+    }
+  };
+
+  const handleCloseMonth = async () => {
+    const row = closing;
+    if (!row) return;
+    // A dialog that disappears reads as done. When the month refuses to close,
+    // it stays where it is, so the name of the person it is about is still on
+    // screen beside the refusal.
+    if (await act(row, () => hrService.lock(row.id), t("hr.team_time.toasts.closed"))) {
+      setClosing(null);
     }
   };
 
@@ -152,11 +169,7 @@ export const HrTeamMonthRoot = observer(function HrTeamMonthRoot() {
             row={closing}
             busyPeriodId={busyPeriodId}
             onClose={() => setClosing(null)}
-            onConfirm={() =>
-              void act(closing!, () => hrService.lock(closing!.id), t("hr.team_time.toasts.closed")).then(() =>
-                setClosing(null)
-              )
-            }
+            onConfirm={() => void handleCloseMonth()}
           />
 
           <ReviewFlaggedDaysDialog row={reviewing} onClose={() => setReviewing(null)} onSettled={() => void mutate()} />
@@ -335,6 +348,7 @@ const CloseMonthDialog = ({ row, busyPeriodId, onClose, onConfirm }: TCloseMonth
         default: t("hr.overview_table.close"),
         loading: t("hr.team_time.closing"),
       }}
+      secondaryButtonText={t("common.cancel")}
     />
   );
 };

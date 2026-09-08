@@ -69,6 +69,11 @@ export const HrImportRoot = observer(function HrImportRoot() {
       await mutate();
     } catch (failure) {
       complain(failure);
+      // A file the server could not read is kept all the same, and a file that
+      // was read completely can still be refused on the way back to the browser,
+      // so what the refusal left behind belongs on the list before the toast is
+      // read — not at some later visit, in rows nobody remembers making.
+      await mutate();
     } finally {
       setIsBusy(false);
       if (fileField.current) fileField.current.value = "";
@@ -207,7 +212,10 @@ const ImportToolbar = ({
         <input
           ref={fileField}
           type="file"
-          accept=".csv,.xlsx,.xls"
+          // The old .xls workbook is left out on purpose: nothing here can open
+          // that format, so offering it only buys a refusal and a row in the
+          // list that says the file could not be read.
+          accept=".csv,.xlsx"
           className="hidden"
           onChange={(e) => {
             const file = e.target.files?.[0];
@@ -258,7 +266,10 @@ const ImportPreview = ({
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h2 className="text-13 font-medium text-primary">
-            {t("hr.imports.preview_title", { filename: batch.filename })}
+            {t("hr.imports.preview_title", {
+              filename: batch.filename,
+              kind: t(`hr.imports.kind.${KIND_KEY[batch.kind]}`),
+            })}
           </h2>
           <p className="text-13 text-tertiary">{t("hr.imports.preview_hint")}</p>
         </div>
@@ -535,9 +546,15 @@ function explain(row: THrImportRow, t: (key: string, values?: Record<string, unk
  * and read back to write from, so it keeps whatever survives that round trip.
  */
 function describe(row: THrImportRow, locale?: string) {
+  const who = row.data?.who;
   const day = row.data?.entry_date ?? row.data?.start_date ?? row.data?.effective_on;
   const minutes = Number(row.data?.minutes);
   const parts: string[] = [];
+  // Whose hours these are comes first. An address that is wrong but real — a
+  // colleague's, or an email column pasted one row out of line — passes every
+  // check there is, and the name beside the date is the only thing that gives it
+  // away before a month lands on the wrong person.
+  if (typeof who === "string" && who) parts.push(who);
   // With the year: an import is nearly always of months that are not the one
   // being looked at, so "2 Mar" leaves the reader guessing which March they are
   // about to write into.

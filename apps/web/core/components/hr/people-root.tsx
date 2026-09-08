@@ -92,8 +92,13 @@ export const HrPeopleRoot = observer(function HrPeopleRoot() {
     if (!editing) return;
     setIsBusy(true);
     try {
-      await hrService.updateEmployee(editing.id, draft.profile);
+      // Terms and week first, the person's own fields after. The terms are what
+      // the server refuses — an overlapping contract, a closed month built on
+      // the old schedule — and a refusal there used to leave the timezone, the
+      // CRM id and the manager flag already written while the toast said
+      // nothing had gone through.
       await recordTerms(editing.id, draft, contracts ?? [], schedules ?? []);
+      await hrService.updateEmployee(editing.id, draft.profile);
       await Promise.all([mutate(), refreshSchedules(), refreshContracts()]);
       setEditing(null);
       setToast({ type: TOAST_TYPE.SUCCESS, title: t("hr.people.toasts.saved") });
@@ -349,6 +354,7 @@ const PeopleDialogs = ({
           default: t("hr.people.remove"),
           loading: t("hr.people.removing"),
         }}
+        secondaryButtonText={t("common.cancel")}
       />
     </>
   );

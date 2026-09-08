@@ -246,6 +246,7 @@ export const HrOpeningBalanceModal = ({ person, isOwn, canRecord, onClose }: TPr
           amount: agreeing ? formatBalance(agreeing.minutes) : "",
         })}
         primaryButtonText={{ default: t("hr.opening.agree"), loading: t("hr.opening.agreeing") }}
+        secondaryButtonText={t("common.cancel")}
       />
     </ModalCore>
   );
@@ -413,7 +414,11 @@ const RecordBalanceForm = ({ person, draft, dispatch, isBusy, onBusyChange, onRe
           className={inputClass}
         />
       </Field>
-      {problem ? <p className="text-13 text-danger-primary">{problem}</p> : null}
+      {problem ? (
+        <p role="alert" className="text-13 text-danger-primary">
+          {problem}
+        </p>
+      ) : null}
       <div className="flex justify-end">
         <Button variant="primary" size="lg" loading={isBusy} onClick={() => void handleRecord()}>
           {correcting ? t("hr.opening.correct_confirm") : t("hr.opening.record_confirm")}

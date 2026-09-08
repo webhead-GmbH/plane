@@ -100,8 +100,12 @@ export const HrLeaveModal = ({ person, schedule, onClose }: TProps) => {
       carried = negative ? -size : size;
     }
 
-    if (years.some((row) => row.leave_year_start === yearStart)) {
-      setProblem(t("hr.leave.errors.already_there"));
+    // Any overlap at all, not merely the same first day. A leave year laid over
+    // an existing one wins wherever it starts later, so the carry-over in the
+    // older row quietly stops applying and everything taken since the
+    // anniversary is charged against a year nobody meant to open.
+    if (years.some((row) => row.leave_year_start <= yearEnd && row.leave_year_end >= yearStart)) {
+      setProblem(t("hr.leave.errors.overlapping_year"));
       return;
     }
 
@@ -178,8 +182,8 @@ export const HrLeaveModal = ({ person, schedule, onClose }: TProps) => {
                   {days ? <span className="text-13 text-tertiary">{t("hr.leave.about_days", { days })}</span> : null}
                   <span className="flex-1 text-13 text-tertiary">
                     {t("hr.leave.between", {
-                      from: formatDayWithYear(row.leave_year_start),
-                      to: formatDayWithYear(row.leave_year_end),
+                      from: formatDayWithYear(row.leave_year_start, currentLocale),
+                      to: formatDayWithYear(row.leave_year_end, currentLocale),
                     })}
                   </span>
                   {row.carryover_minutes !== 0 ? (
@@ -187,13 +191,23 @@ export const HrLeaveModal = ({ person, schedule, onClose }: TProps) => {
                       {t("hr.leave.carried", { duration: formatMinutes(row.carryover_minutes) })}
                     </span>
                   ) : null}
+                  {/* Only the row being acted on spins. One busy flag serves the
+                      whole dialog, and every Agree button going into the loading
+                      state at once left nobody able to see which figure they had
+                      just frozen for good. */}
                   {row.is_final ? (
                     <span className="flex items-center gap-1 text-13 text-success-primary">
                       <Check className="size-3.5" />
                       {t("hr.leave.agreed")}
                     </span>
                   ) : (
-                    <Button variant="secondary" size="lg" loading={isBusy} onClick={() => setAgreeing(row)}>
+                    <Button
+                      variant="secondary"
+                      size="lg"
+                      loading={isBusy && agreeing?.id === row.id}
+                      disabled={isBusy}
+                      onClick={() => setAgreeing(row)}
+                    >
                       {t("hr.leave.agree")}
                     </Button>
                   )}
@@ -277,7 +291,11 @@ export const HrLeaveModal = ({ person, schedule, onClose }: TProps) => {
             />
           </div>
 
-          {problem && <p className="text-13 text-danger-primary">{problem}</p>}
+          {problem && (
+            <p role="alert" className="text-13 text-danger-primary">
+              {problem}
+            </p>
+          )}
 
           <div className="flex justify-end">
             <Button variant="primary" size="lg" loading={isBusy} onClick={() => void handleAdd()}>
@@ -304,6 +322,7 @@ export const HrLeaveModal = ({ person, schedule, onClose }: TProps) => {
           duration: agreeing ? formatMinutes(agreeing.granted_minutes) : "",
         })}
         primaryButtonText={{ default: t("hr.leave.agree"), loading: t("hr.leave.agreeing") }}
+        secondaryButtonText={t("common.cancel")}
       />
     </ModalCore>
   );

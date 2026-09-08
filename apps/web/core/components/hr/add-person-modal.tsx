@@ -35,7 +35,11 @@ export const HrAddPersonModal = ({ isOpen, candidates, isBusy, onClose, onAdd }:
   const { t } = useTranslation();
   const [query, setQuery] = useState("");
   const [chosen, setChosen] = useState<string | null>(null);
-  const [hireDate, setHireDate] = useState(() => new Date().toISOString().slice(0, 10));
+  // Left empty on purpose. Almost nobody being given a record started today —
+  // a company adopting this enters everyone at once — and this date goes on to
+  // seed their terms, their working week and their starting balance. Offering
+  // today means the question is answered before it is asked.
+  const [hireDate, setHireDate] = useState("");
 
   const needle = query.trim().toLowerCase();
   const shown = needle

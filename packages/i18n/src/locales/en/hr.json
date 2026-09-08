@@ -2,7 +2,7 @@
   "hr": {
     "my_time": {
       "title": "My time",
-      "everyone": "Everyone",
+      "everyone": "Everyone’s hours",
       "bring_up_to_date": "Bring up to date",
       "hand_in": "Hand in",
       "no_record": "No employment record here",
@@ -10,30 +10,31 @@
       "next_month": "Next month",
       "cannot_hand_in": {
         "month_running": "The month is not over yet. It can be handed in once it has ended.",
-        "timer_running": "Stop the timer that is still running, then hand the month in."
+        "timer_running": "A timer is still running on one of your work items, in this or another workspace. Stop it, then hand the month in."
       },
       "toasts": {
         "recomputed": "Brought up to date",
         "not_recomputed": "Could not bring it up to date",
         "handed_in": "Handed in",
-        "handed_in_message": "{month} has gone for approval.",
+        "handed_in_message": "{month} is now waiting to be agreed.",
         "not_handed_in": "Not handed in",
         "try_again": "Try again in a moment."
       },
       "opening": "Starting balance",
-      "export_csv": "CSV",
-      "export_excel": "Excel",
-      "record_time": "Record time",
-      "no_record_detail": "Your hours are not being tracked in this workspace. If they should be, ask whoever looks after the team to set you up."
+      "export_csv": "Download as CSV",
+      "export_excel": "Download as Excel",
+      "record_time": "Record time for today",
+      "no_record_detail": "Your hours are not being tracked yet. If they should be, ask whoever looks after the team to set you up.",
+      "confirm_hand_in": "Once {month} is handed in, you cannot change its hours, time off or attendance yourself. Ask whoever looks after the team if something needs correcting."
     },
     "team_time": {
       "title": "Team time",
       "not_permitted": "This is not yours to see",
-      "export_csv": "CSV",
-      "export_excel": "Excel",
-      "still_open": "Still open",
-      "open_count": "{open} of {total}",
-      "counted_anywhere": "Everyone's hours are counted wherever they logged them. Closing a month freezes its figures; nothing recorded afterwards changes them.",
+      "export_csv": "Download as CSV",
+      "export_excel": "Download as Excel",
+      "still_open": "Still to close",
+      "open_count": "{open} of {total} people",
+      "counted_anywhere": "Everyone's hours are counted wherever they logged them, as hours and minutes: 161:12 means 161 hours and 12 minutes. The running balance only gets a figure once a month is closed. Closing a month freezes its figures; nothing recorded afterwards changes them.",
       "as_things_stand": "Figures are as things stand on {date}; the month is not over.",
       "toasts": {
         "refused": "That did not go through",
@@ -47,20 +48,20 @@
       "not_permitted_detail": "Everyone's hours are only readable by whoever looks after the team. Your own month is on {page}.",
       "closing": "Closing…",
       "confirm_close_title": "Close {person}’s month?",
-      "confirm_close_body": "The figures are frozen as they stand, and the hours, absences and attendance behind them stop accepting changes. Reopening it later is possible but leaves a trail."
+      "confirm_close_body": "The figures are frozen as they are now. Nobody can change this month's hours or absences afterwards, and anything recorded into it later will not count. The month can be reopened, and the reopening is recorded."
     },
     "summary": {
       "owed": "To work",
       "worked": "Worked",
       "balance": "Balance",
-      "whole_month": "{duration} for the whole month",
+      "whole_month": "of {duration} for the whole month",
       "per_week": "{duration} a week",
       "includes_away": "includes {duration} away or on holiday",
       "carried_forward": "{duration} carried forward",
       "as_of": "As things stand on {date}. The month is not over.",
       "not_started": "This month has not started yet.",
-      "needs_review": "Some days need looking at — hours that were counted before are no longer there.",
-      "timer_running": "A timer is still running, so this month cannot be handed in yet.",
+      "needs_review": "Some days need looking at — hours that were counted before are no longer there. Whoever looks after the team has to settle them before the month can be closed.",
+      "timer_running": "A timer is still running on one of your work items, in this or another workspace. Stop it, then you can hand the month in.",
       "telework_days": "From home this year: {count}",
       "nothing_yet": "Nothing has been worked out for this month yet.",
       "leave_left_days": "{amount} days of leave left",
@@ -73,7 +74,7 @@
       "what_it_was": "What it was",
       "owed": "To work",
       "work_items": "Work items",
-      "other": "Other work",
+      "other": "No work item",
       "away": "Time off",
       "worked": "Worked",
       "balance": "Balance",
@@ -90,17 +91,17 @@
       "owed": "To work",
       "worked": "Worked",
       "balance": "Balance",
-      "carried": "Carried",
+      "carried": "Running balance",
       "action": "Action",
       "agree": "Agree",
       "close": "Close",
       "reopen": "Reopen",
-      "nobody_yet": "Nobody has an employment record yet.",
-      "timer_running": "A timer is still running",
-      "needs_review": "Some days need looking at",
+      "nobody_yet": "Nobody has an employment record yet. Add people on the People page and their hours start counting.",
+      "timer_running": "A timer is still running, so this month cannot be handed in yet.",
+      "needs_review": "Some days need looking at before this month can be closed",
       "blocked_by_review": "Look at those days",
       "month_running": "The month is not over yet",
-      "waiting_for": "Waiting for {person}"
+      "waiting_for": "Waiting for {person} to hand the month in"
     },
     "reopen": {
       "title": "Reopen {month}?",
@@ -121,7 +122,7 @@
     "state": {
       "open": "Not handed in",
       "submitted": "Handed in",
-      "approved": "Approved",
+      "approved": "Agreed",
       "closed": "Closed",
       "reopened": "Reopened"
     },
@@ -141,7 +142,7 @@
       "not_permitted_detail": "Only whoever looks after the team can change who is employed and on what terms.",
       "column_person": "Person",
       "column_since": "Since",
-      "column_week": "Week",
+      "column_week": "Hours a week",
       "column_role": "Role",
       "column_action": "Action",
       "add_title": "Add someone",
@@ -155,13 +156,13 @@
       "section_terms": "Terms",
       "section_schedule": "The working week",
       "hire_date": "Started on",
-      "timezone": "Timezone",
+      "timezone": "Timezone, as Europe/Vienna",
       "is_manager": "Looks after the team — can see and change everyone's hours, absences and leave, in every workspace",
-      "arrangement": "Arrangement",
+      "arrangement": "How they are employed",
       "valid_from": "In force from",
-      "records_target": "Record hours owed and a running balance",
-      "records_target_hint": "Off for self-invoicing arrangements, where the company records what was worked and nothing is owed by the day.",
-      "schedule_hint": "Hours owed on each day. Type 7:42 or 7.7, and leave a day blank when it is not worked.",
+      "records_target": "Expect set hours each day, keep a running balance, and count the leave they take",
+      "records_target_hint": "Leave this on for employees. Turn it off for anyone who invoices us for their own hours: no hours are expected of them each day, no balance is kept and no leave is counted.",
+      "schedule_hint": "How long each day should be. Type 7:42 for seven hours and 42 minutes, or 7.7 for the same length written as decimal hours. Leave a day blank when it is not worked.",
       "week_total": "{duration} a week",
       "cancel": "Cancel",
       "save": "Save",
@@ -177,7 +178,7 @@
       "errors": {
         "bad_duration": "One of the days is not a length of time. Type 7:42 or 7.7, or leave it blank.",
         "hire_date_required": "Say when this person started, so their first month knows where to begin.",
-        "week_required": "Say how long each working day is, so their month has something to be measured against.",
+        "week_required": "Fill in at least one day, so their month has something to be measured against. Leave the days they do not work blank.",
         "bad_crm_staff_id": "A CRM staff id is a whole number. Leave it empty to match on the email address instead."
       },
       "toasts": {
@@ -186,7 +187,7 @@
         "removed": "Marked as having left",
         "refused": "That did not go through",
         "try_again": "Please try again.",
-        "brought_back": "Back on the books"
+        "brought_back": "Employed again"
       },
       "opening": "Starting balance",
       "rates": "Rates",
@@ -195,15 +196,15 @@
       "crm_staff_id_placeholder": "Leave empty to match by email",
       "crm_link": {
         "set": "Set here, so the hours go to this account whatever the addresses say.",
-        "email": "Matched by email address. It works until one of the two systems has a different one.",
+        "email": "Nobody has said which CRM account this is, so their hours are matched on the email address. Nothing checks that a CRM account with that address exists.",
         "none": "Nothing joins this person to the CRM, so their hours never become a CRM timer."
       },
-      "crm_guessed": "CRM matched by email",
+      "crm_guessed": "CRM by email address only",
       "crm_missing": "No CRM account",
       "confirm_remove_title": "Mark as left?",
-      "confirm_remove_body": "{person} stops appearing in new months. Everything already recorded stays as it is.",
+      "confirm_remove_body": "{person} stops appearing in new months and can no longer open their own time page, so finish their last month before this. Everything already recorded stays as it is.",
       "removing": "Marking…",
-      "no_hours_yet": "Hours not set",
+      "no_hours_yet": "Not set up",
       "confirm_remove_permanent": "You can employ them again later if they come back.",
       "pick_somebody_first": "Pick somebody from the list first",
       "pick_date_first": "Say when they started",
@@ -213,13 +214,13 @@
     "arrangement": {
       "onsite_full_time": "On site, full time",
       "onsite_part_time": "On site, part time",
-      "remote_full_time_invoicing": "Remote, full time, self-invoicing",
-      "remote_part_time_invoicing": "Remote, part time, self-invoicing"
+      "remote_full_time_invoicing": "Remote, full time, invoices us",
+      "remote_part_time_invoicing": "Remote, part time, invoices us"
     },
     "entries": {
-      "hint": "Time that no work item accounts for — meetings, admin, training, travel.",
-      "none_yet": "Nothing recorded on this day yet.",
-      "day_total": "On this day",
+      "hint": "Hours that are not on a work item — meetings, admin, training, travel. They count towards your month. Hours on work items come from the timers there and are not changed here.",
+      "none_yet": "Nothing has been added here yet. Hours recorded on work items are counted, but are not shown here.",
+      "day_total": "Hours with no work item",
       "how_long": "How long",
       "what_it_was": "What it was",
       "note": "Note",
@@ -227,7 +228,7 @@
       "add": "Add",
       "remove": "Remove",
       "imported": "Imported",
-      "month_closed": "This month has been closed, so its hours can no longer be changed. Ask whoever looks after the team if something needs correcting.",
+      "month_closed": "This month is no longer open, so its hours cannot be changed. Ask whoever looks after the team to reopen it if something needs correcting.",
       "category": {
         "meeting": "Internal meeting",
         "training": "Training",
@@ -238,7 +239,8 @@
         "imported": "Imported"
       },
       "errors": {
-        "bad_duration": "Say how long it was. Type 1:30 or 1.5."
+        "bad_duration": "Say how long it was. Type 1:30 or 1.5.",
+        "duration_needs_unit": "Say how long it was: 1:30, 7h, or 90m. A number on its own does not say whether you mean hours or minutes."
       },
       "toasts": {
         "added": "Added",
@@ -246,25 +248,25 @@
         "try_again": "Please try again."
       },
       "close": "Close",
-      "not_added_yet": "Not added yet",
+      "not_added_yet": "Not added yet. Press Add, or it is lost when you close.",
       "confirm_remove_title": "Remove these hours?",
-      "confirm_remove_body": "{duration} comes off this day and off the month's total.",
+      "confirm_remove_body": "{duration} of {category} comes off this day and off the month's total.",
       "removing": "Removing…"
     },
     "attendance": {
       "title": "When you were at work",
-      "hint": "Start, end and breaks for this day, kept separately from what the hours went on.",
-      "still_running": "Still running",
+      "hint": "Start, end and breaks for this day. It is a separate record and does not count towards your hours.",
+      "still_running": "No end time yet",
       "from": "From",
       "to": "To",
       "break": "Break (minutes)",
-      "where": "Where",
+      "where": "Where you worked",
       "past_midnight": "Counted as running past midnight.",
       "record": "Record",
       "update": "Update",
       "remove": "Remove",
-      "closed_with": "{from} to {to}, {duration}. This month has been closed, so it can no longer be changed.",
-      "closed_without": "Nothing was recorded for this day, and the month has been closed.",
+      "closed_with": "{from} to {to}, {duration}. This month is no longer open, so it cannot be changed.",
+      "closed_without": "Nothing was recorded for this day, and the month is no longer open.",
       "location": {
         "office": "At the office",
         "home": "Working from home",
@@ -281,35 +283,36 @@
         "try_again": "Please try again."
       },
       "confirm_remove_title": "Remove this attendance record?",
-      "confirm_remove_body": "The start, end and break for this day are removed. This is the record of working time the law asks to be kept.",
+      "confirm_remove_body": "The start, end and break for this day are removed and cannot be brought back. If the times are wrong, change them and save instead.",
       "removing": "Removing…",
-      "past_midnight_length": "This runs past midnight and comes to {duration}. Check the end time if that is not right."
+      "past_midnight_length": "This runs past midnight and comes to {duration}. Check the end time if that is not right.",
+      "not_saved_yet": "Not saved yet. Save these times, or they are lost when you close."
     },
     "imports": {
-      "title": "Bring hours in",
-      "subtitle": "Months recorded somewhere else, read from a spreadsheet and checked before anything is written.",
-      "not_permitted_detail": "Only whoever looks after the team can bring hours in.",
+      "title": "Bring earlier records in",
+      "subtitle": "Hours, absences and balances recorded somewhere else, read from a spreadsheet and checked before anything is written. In a workbook, only the sheet it opens on is read, and the column headings must be its first row.",
+      "not_permitted_detail": "Only whoever looks after the team can bring earlier records in.",
       "what_kind": "What the file holds",
       "choose_file": "Choose a file",
       "kind": {
         "time_entries": "Hours",
         "absences": "Absences",
-        "opening_balances": "Opening balances"
+        "opening_balances": "Starting balances"
       },
       "columns": {
-        "time_entries": "Columns: email, date, and either hours or minutes — those exact headings. A note column is kept if there is one. 7:42, 7.7 and 462 all read as the same length of time.",
+        "time_entries": "Columns: email, date, and either hours or minutes — those exact headings. A note column is kept if there is one. The heading decides what a plain number means: 7.7 under hours and 462 under minutes are both 7 hours 42 minutes. Written as 7:42 it is the same under either heading.",
         "absences": "Columns: email, start_date, end_date and type — those exact headings. Leave end_date out for a single day.",
-        "opening_balances": "Columns: email, effective_on for the day it applies from, and either hours or minutes for the balance itself — those exact headings."
+        "opening_balances": "Columns: email, date for the day the balance applies from, either hours or minutes for the balance itself, and basis saying where the figure came from — those exact headings. Add a kind column saying time, leave or overtime if the balance is not hours."
       },
-      "preview_title": "{filename}, as it would be applied",
-      "preview_hint": "Nothing has been written yet. Check the rows below, then apply.",
+      "preview_title": "{filename}, read as {kind}",
+      "preview_hint": "Nothing has been written yet. Rows are added to whatever is already recorded for those days, so a day brought in twice counts twice. To correct a file that is already in, undo it first instead of bringing in a corrected copy.",
       "will_write": "will be written",
       "cannot_read": "cannot be read",
       "skipped": "skipped",
       "apply": "{count, plural, one {Apply # row} other {Apply # rows}}",
-      "discard": "Discard",
+      "discard": "Leave it for now",
       "column_row": "Row",
-      "column_verdict": "Verdict",
+      "column_verdict": "What happens",
       "column_detail": "Detail",
       "verdict": {
         "ok": "Will be written",
@@ -318,7 +321,7 @@
       },
       "past": "Files brought in before",
       "none_yet": "Nothing has been brought in yet.",
-      "row_summary": "{total, plural, one {{valid} of # row} other {{valid} of # rows}}",
+      "row_summary": "{total, plural, one {{valid} of # row can be used} other {{valid} of # rows can be used}}",
       "state": {
         "10": "Uploaded",
         "20": "Being checked",
@@ -330,7 +333,7 @@
       },
       "undo": "Undo",
       "undo_title": "Undo {filename}?",
-      "undo_body": "Every hour this file wrote is removed, and nothing else is touched. Hours in a month that has since been closed stay where they are.",
+      "undo_body": "Everything this file wrote is taken back out, and nothing else is touched. If any of it has been counted into a month that is now closed, nothing is taken out until that month is reopened.",
       "undo_label": "Why is it being undone?",
       "undo_placeholder": "The file listed March twice.",
       "undo_confirm": "Undo it",
@@ -344,19 +347,19 @@
         "try_again": "Please try again."
       },
       "template": "Download a template",
-      "resume": "Check and apply",
+      "resume": "Open it again",
       "reasons": {
-        "unknown_person": "Nobody here logs in as {email}.",
+        "unknown_person": "Nobody here logs in as {email}. Add the person under People, or correct the address in the file.",
         "bad_date": "The date could not be read.",
-        "bad_duration": "The amount of time could not be read.",
-        "more_than_a_day": "More than a day in a single day.",
-        "month_settled": "That month has been closed already.",
+        "bad_duration": "The amount of time could not be read, or it is zero. Every row needs a length of time — leave the day out of the file instead.",
+        "more_than_a_day": "That is more than 24 hours in one day. Check whether the number is hours or minutes, and that the column heading matches.",
+        "month_settled": "That month is no longer open, so nothing more can go into it. Ask for it to be reopened if this has to go in.",
         "bad_balance": "The balance could not be read.",
-        "kind_missing": "Say whether this is time or leave.",
-        "basis_missing": "Say what this figure is based on.",
+        "kind_missing": "The kind column must say time, leave or overtime.",
+        "basis_missing": "The basis column is empty. Write where the figure came from, for example: from the old leave spreadsheet.",
         "bad_start_date": "The start date could not be read.",
         "ends_before_it_starts": "It ends before it starts.",
-        "unknown_absence_type": "There is no absence type “{code}”."
+        "unknown_absence_type": "No reason for being away has the code “{code}”. The codes are on the Absences screen, under Reasons."
       }
     },
     "opening": {
@@ -367,11 +370,11 @@
       "from_label": "Applies from",
       "agreed": "Agreed",
       "agree": "This is right",
-      "not_agreed": "Not agreed yet",
+      "not_agreed": "Waiting for them to agree",
       "replaced": "{count, plural, one {# replaced by a correction} other {# replaced by a correction}}",
       "record": "Record a starting balance",
       "record_confirm": "Record it",
-      "amount": "Balance",
+      "amount": "Balance, minus if they are behind",
       "what_for": "What for",
       "how_sure": "How sure",
       "basis": "What it is based on",
@@ -384,9 +387,9 @@
       },
       "confidence": {
         "exact": "Taken from records",
-        "reconstructed": "Reconstructed",
+        "reconstructed": "Worked out from other records",
         "estimated": "Estimated",
-        "agreed": "Agreed with the person"
+        "agreed": "From a conversation with them"
       },
       "errors": {
         "bad_duration": "Say how much. Type -12:30 or -12.5, or leave off the minus for a surplus.",
@@ -400,7 +403,7 @@
         "try_again": "Please try again."
       },
       "correct": "Correct this figure",
-      "agreeing": "Recording…",
+      "agreeing": "Agreeing…",
       "confirm_agree_title": "Agree to this balance?",
       "confirm_agree_body": "You are agreeing that {amount} is right. This cannot be taken back. If the figure is wrong, do not agree to it — say so to whoever looks after the team.",
       "correcting_heading": "Correct the figure",
@@ -415,16 +418,16 @@
       "everyone": "Everyone",
       "previous_month": "Previous month",
       "next_month": "Next month",
-      "none_this_month": "Nobody was away this month.",
-      "not_permitted_detail": "Only a manager sees the whole team. Your own absences are on your time page.",
-      "month_locked": "month locked",
+      "none_this_month": "No absences recorded for this month.",
+      "not_permitted_detail": "There is no employment record for you here, so there is nothing to show. Ask whoever looks after the team to set one up.",
+      "month_locked": "month closed — reopen it to change this",
       "approve": "Agree",
       "reject": "Refuse",
       "delete": "Delete absence",
       "column_person": "Person",
       "column_reason": "Reason",
       "column_when": "When",
-      "column_away": "Away",
+      "column_away": "Hours away",
       "column_state": "State",
       "column_action": "Action",
       "state": {
@@ -447,7 +450,7 @@
       "modal": {
         "title": "Record an absence",
         "edit_title": "Change this absence",
-        "subtitle": "Where the reason counts as worked, the day is credited so the month still comes out level. The target itself does not change.",
+        "subtitle": "Most reasons still count towards the hours for the month, so the month does not come out short. Days this person does not normally work are not counted.",
         "person": "Person",
         "type": "Reason",
         "no_types": "No reasons set up yet",
@@ -460,11 +463,11 @@
         "last_day": "Last day",
         "hours_each_day": "Hours away each day",
         "hours_placeholder": "e.g. 3:30",
-        "hours_hint": "Written as 3:30, 3.5 or 210m.",
+        "hours_hint": "Hours on each day of the range, written as 3:30, 3.5 or 3h. For minutes write 90m.",
         "note": "Note",
         "note_placeholder": "Optional",
         "record": "Record",
-        "hours_unreadable": "That is not a length of time. Try 1:30, 1,5 or 90."
+        "hours_unreadable": "That is not a length of time. Try 3:30, 3.5, or 90m for ninety minutes."
       },
       "toasts": {
         "saved": "Absence saved",
@@ -492,16 +495,16 @@
         "draws_on_leave": "The day comes off the leave account",
         "refused": "That could not be done",
         "try_again": "Please try again.",
-        "confirm_remove_title": "Remove this kind of absence?",
-        "confirm_remove_body": "“{kind}” will no longer be offered when somebody records an absence. Switch it off instead if you only want it out of the list.",
-        "deleting": "Removing"
+        "confirm_remove_title": "Delete this reason?",
+        "confirm_remove_body": "“{kind}” will no longer be offered when somebody records an absence. Press Retire instead if you only want it out of the list.",
+        "deleting": "Deleting…"
       },
       "filter_person": "Show absences for",
-      "confirm_remove_title": "Remove this time off?",
-      "confirm_remove_body": "{person} goes back to a full target for those days, and {duration} returns to their leave.",
-      "removing": "Removing…",
+      "confirm_remove_title": "Delete this absence?",
+      "confirm_remove_body": "{duration} stops counting towards {person}'s month, so the month will be short unless those hours are worked. Any leave this used goes back.",
+      "removing": "Deleting…",
       "refuse_title": "Refuse {person}'s time off",
-      "refuse_body": "They will see what you write here, so say enough for it to make sense on its own.",
+      "refuse_body": "This is kept with the record. Nobody is told automatically, so tell them yourself as well.",
       "refuse_label": "Why",
       "refuse_placeholder": "Two people are already away that week",
       "refuse_cancel": "Cancel",
@@ -510,7 +513,7 @@
     },
     "rates": {
       "title": "What {person}'s time is worth",
-      "hint": "A rate is dated rather than changed, so a month already stated at the old one still means what it said. A raise is the old rate ending and a new one starting.",
+      "hint": "Rates are kept by date, so a month already worked out keeps the rate it used. To record a raise, add a rate starting on the day it takes effect. It takes over from the one before it, which goes on pricing the months before that.",
       "none_yet": "No rate on record. A statement for this person will show hours and no amount.",
       "add": "Add a rate",
       "add_button": "Add",
@@ -541,9 +544,9 @@
         "refused": "That could not be saved",
         "try_again": "Please try again."
       },
-      "removing": "Removing…",
-      "confirm_remove_title": "Remove this rate?",
-      "confirm_remove_body": "Months already worked out keep the figures they were worked out with. Months from here on lose this rate."
+      "removing": "Deleting…",
+      "confirm_remove_title": "Delete this rate?",
+      "confirm_remove_body": "Every month is priced from the rate on record at the moment it is read, months already closed included. Deleting this changes what those months come to. Delete it only if it was recorded by mistake."
     },
     "statement": {
       "title": "Before you invoice",
@@ -553,13 +556,13 @@
       "expected": "Comes to",
       "monthly_rate": "A fixed monthly amount",
       "no_rate": "No rate on record for you yet, so this shows the hours only. Ask whoever looks after the team.",
-      "still_moving": "The month is still open, so these figures can still move.",
+      "still_moving": "This month is not closed yet, so these figures can still move. Wait until it is closed before you invoice.",
       "settled": "The month is closed, so these figures are settled.",
       "decimal_hours": "{hours} in decimal hours"
     },
     "leave": {
       "title": "{person}'s leave",
-      "hint": "Held in minutes, not days: a day is not a fixed quantity for anyone working uneven hours. The leave year runs from the anniversary of joining.",
+      "hint": "Leave is counted in hours, not days, because a working day is not the same length for everyone. The leave year runs from the anniversary of joining.",
       "none_yet": "No leave year on record yet.",
       "add": "Add a leave year",
       "add_button": "Add",
@@ -568,53 +571,54 @@
       "year_end": "Leave year to",
       "entitlement": "Leave for the year",
       "carryover": "Carried over",
-      "carryover_placeholder": "Optional, may be negative",
+      "carryover_placeholder": "Optional. Use a minus if they have already taken some of it.",
       "duration_placeholder": "e.g. 200:00",
       "basis": "What this is based on",
       "basis_placeholder": "Optional",
       "between": "{from} to {to}",
       "about_days": "{days, plural, one {about # day} other {about # days}}",
       "carried": "{duration} carried over",
-      "agree": "Agree",
-      "agreed": "Agreed",
+      "agree": "Hold as final",
+      "agreed": "Held as final",
       "errors": {
         "dates_required": "Say when the leave year starts and ends.",
         "backwards": "The leave year cannot end before it starts.",
         "bad_duration": "Write the time as 200:00, 200 or 12000m.",
-        "already_there": "There is already an entry for this leave year."
+        "already_there": "There is already an entry for this leave year.",
+        "overlapping_year": "There is already a leave year covering these dates."
       },
       "toasts": {
         "added": "Leave year added",
-        "agreed": "Marked as agreed",
+        "agreed": "Held as final",
         "refused": "That could not be saved",
         "try_again": "Please try again."
       },
       "entitlement_with_unit": "Leave for the year (hours:minutes)",
       "echo_days": "{duration} · {days, plural, one {about # day} other {about # days}}",
       "echo_hours": "{duration}",
-      "agreeing": "Recording…",
+      "agreeing": "Holding…",
       "confirm_agree_title": "Hold this figure as final?",
-      "confirm_agree_body": "{duration} can no longer be edited afterwards. A later change has to be recorded separately, with its own reason."
+      "confirm_agree_body": "{duration} can no longer be changed on any screen afterwards. Check it against what the person was told before you hold it."
     },
     "holidays": {
       "title": "Public holidays",
-      "subtitle": "The days nobody works. A holiday reduces the target for that day; it is not added to what was worked.",
+      "subtitle": "The days nobody works. A holiday counts as hours worked; it does not lower what somebody has to work. A change here only reaches months that are still open.",
       "back_to_month": "The month",
       "calendar": "Calendar",
       "previous_year": "Previous year",
       "next_year": "Next year",
-      "none_this_year": "No days on this calendar for this year.",
-      "not_permitted_detail": "Only a manager can change the calendar.",
+      "none_this_year": "No days for this year yet. Until they are added, every public holiday in it counts as an ordinary working day.",
+      "not_permitted_detail": "You are not set up in the time records yet, so this list is not shown to you. Ask whoever looks after the team.",
       "column_date": "Date",
       "column_name": "Name",
       "column_kind": "Kind",
       "column_action": "Action",
-      "statutory": "By law",
+      "statutory": "By law, cannot be changed",
       "granted": "Granted",
       "make_half": "Make it half a day",
       "make_whole": "Make it a whole day",
       "remove": "Remove this day",
-      "add": "Add a day",
+      "add": "Add a day off for everyone",
       "add_button": "Add",
       "only_half": "Only half a day",
       "name_placeholder": "What the day is called",
@@ -632,7 +636,7 @@
       "whole_day": "Whole day",
       "half_day": "Half day",
       "confirm_remove_title": "Remove this day?",
-      "confirm_remove_body": "{day} stops being a holiday, so everyone's target for that day goes back up.",
+      "confirm_remove_body": "{day} stops being a holiday. Everybody who works that day is expected to work it again.",
       "removing": "Removing…"
     },
     "shared": {
@@ -642,13 +646,13 @@
     },
     "review_days": {
       "title": "Days to look at for {person}",
-      "body": "Hours that were counted on these days are no longer there. Say what happened to each one and the month can be closed.",
+      "body": "Hours that were counted on these days are no longer there. Writing down what happened lets the month be closed, but it does not put the hours back — if they should still count, have them recorded again first. What you write is kept with the day, and the person it is about can read it.",
       "all_settled": "Nothing left to look at. This month can be closed.",
       "counts_now": "Counts as {duration} now",
       "what_happened": "What happened?",
       "placeholder": "Entered on the wrong day and moved",
       "settle": "Settle this day",
-      "close": "Close",
+      "close": "Done",
       "toasts": {
         "settled": "Day settled",
         "refused": "That could not be settled",
@@ -656,8 +660,8 @@
       }
     },
     "refusals": {
-      "absence_type_in_use": "{in_use, plural, one {# absence is recorded as this kind, so it cannot be removed — the record of it would stop making sense.} other {# absences are recorded as this kind, so it cannot be removed — the record of them would stop making sense.}} Switch it off instead: it disappears from the list of kinds somebody can choose, and the existing ones stay readable.",
-      "month_settled": "{month} has been {month_state}, so its records can no longer change. Ask for it to be reopened if this needs to go in.",
+      "absence_type_in_use": "{in_use, plural, one {# absence is recorded with this reason, so it cannot be deleted — the record of it would stop making sense.} other {# absences are recorded with this reason, so it cannot be deleted — the record of them would stop making sense.}} Press Retire instead: it disappears from the list of reasons somebody can choose, and the existing ones stay readable.",
+      "month_settled": "{month} has been {month_state}, so its records can no longer change. Ask whoever looks after the team to reopen it on Team time.",
       "month_state": {
         "handed_in": "handed in",
         "agreed": "agreed",
@@ -671,29 +675,29 @@
       "mine": "My hours",
       "group_by": "Group by",
       "on_work_items": "On work items",
-      "other_hours": "Everything else",
-      "entries": "Entries",
-      "month_state": "These figures",
+      "other_hours": "Not on a work item",
+      "entries": "Entries on work items",
+      "month_state": "This month",
       "frozen": "Frozen",
-      "frozen_hint": "What the month counted",
+      "frozen_hint": "These hours can no longer change",
       "live": "Live",
-      "live_hint": "The month is still open",
+      "live_hint": "These hours can still change",
       "column_what": "What",
       "column_when": "When",
       "column_note": "Note",
       "column_long": "How long",
       "unnamed": "Not named",
       "still_running": "Still running — it has no length yet and counts nothing",
-      "gone": "This month counted it, and it is no longer there",
-      "by_hand": "· written down",
-      "nothing_logged": "Nothing was logged against a work item this month.",
+      "gone": "This entry was deleted after the month counted it. Its hours are still in the figures above.",
+      "by_hand": "· added by hand",
+      "nothing_logged": "No hours were recorded on a work item in this month. Check the month shown at the top.",
       "other_title": "Hours with no work item",
-      "other_subtitle": "Meetings, admin, training, travel — and anything brought in from before. These are counted in the month too.",
-      "footnote": "Hours are counted wherever they were logged, in every workspace.",
-      "rounding_note": "Minutes are rounded once per day and project, so these subtotals need not add up to the figure above.",
+      "other_subtitle": "Meetings, administration, training, travel, corrections — and hours brought in from somewhere else. They count in the month too, but they are not in the table above. A correction with a minus sign takes hours off the month.",
+      "footnote": "Hours are counted wherever they were logged, in every workspace. Paid leave and public holidays also count towards the month, and are not shown here.",
+      "rounding_note": "Each day's hours on a project are rounded once, so adding these lines up can come out a minute or two from the figure above. The figure above is the one that counts.",
       "entry_count": "{count, plural, one {· # entry} other {· # entries}}",
-      "running_note": "{count, plural, one {# timer is still running. It has no length yet, so it counts nothing here.} other {# timers are still running. They have no length yet, so they count nothing here.}}",
-      "missing_note": "{count, plural, one {# entry this month counted can no longer be found. Only its identifier was kept, so there is nothing left to show.} other {# entries this month counted can no longer be found. Only their identifiers were kept, so there is nothing left to show.}}",
+      "running_note": "{count, plural, one {# timer is still running, so it counts nothing yet. Stop it on the work item. The month cannot be handed in while it runs.} other {# timers are still running, so they count nothing yet. Stop them on the work items. The month cannot be handed in while they run.}}",
+      "missing_note": "{count, plural, one {# entry this month counted has since been deleted. Its hours are not in the figures here, but the month still counts them.} other {# entries this month counted have since been deleted. Their hours are not in the figures here, but the month still counts them.}}",
       "week_of": "Week of {date}",
       "grouping": {
         "day": "Day",
@@ -703,8 +707,8 @@
         "workspace": "Workspace"
       },
       "under_a_minute": "under a minute",
-      "auto_stopped": "· stopped by the system",
-      "auto_stopped_hint": "This timer was left running and closed at the maximum. The length is a ceiling, not a measurement — it needs correcting."
+      "auto_stopped": "· stopped by the system, needs correcting",
+      "auto_stopped_hint": "This timer was left running, so the system stopped it at the longest time it allows. That is a limit, not time that was worked. Correct it on the work item before the month is handed in."
     }
   }
 }

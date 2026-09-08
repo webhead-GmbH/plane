@@ -248,6 +248,7 @@ export const HrAbsenceTypesModal = ({ isOpen, types, onClose, onChanged }: TProp
           default: t("hr.absences.types.delete"),
           loading: t("hr.absences.types.deleting"),
         }}
+        secondaryButtonText={t("common.cancel")}
       />
     </ModalCore>
   );

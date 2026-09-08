@@ -2,7 +2,7 @@
   "hr": {
     "my_time": {
       "title": "Mój czas",
-      "everyone": "Wszyscy",
+      "everyone": "Godziny wszystkich",
       "bring_up_to_date": "Przelicz ponownie",
       "hand_in": "Przekaż do zatwierdzenia",
       "no_record": "Brak danych o zatrudnieniu",
@@ -10,30 +10,31 @@
       "next_month": "Następny miesiąc",
       "cannot_hand_in": {
         "month_running": "Miesiąc jeszcze się nie zakończył. Można go przekazać po jego zakończeniu.",
-        "timer_running": "Należy zatrzymać wciąż działający licznik, a następnie przekazać miesiąc do zatwierdzenia."
+        "timer_running": "Na jednym z Twoich elementów pracy wciąż działa licznik — w tej lub innej przestrzeni. Zatrzymaj go, a potem przekaż miesiąc."
       },
       "toasts": {
         "recomputed": "Przeliczono ponownie",
         "not_recomputed": "Nie udało się przeliczyć ponownie",
         "handed_in": "Przekazano",
-        "handed_in_message": "{month} został przekazany do zatwierdzenia.",
+        "handed_in_message": "{month} czeka teraz na zatwierdzenie.",
         "not_handed_in": "Nie przekazano",
         "try_again": "Proszę spróbować ponownie za chwilę."
       },
       "opening": "Saldo początkowe",
-      "export_csv": "CSV",
-      "export_excel": "Excel",
-      "record_time": "Zapisz czas",
-      "no_record_detail": "Twoje godziny nie są rejestrowane w tej przestrzeni. Jeśli powinny być, zgłoś się do osoby prowadzącej zespół."
+      "export_csv": "Pobierz jako CSV",
+      "export_excel": "Pobierz jako Excel",
+      "record_time": "Zapisz czas na dziś",
+      "no_record_detail": "Twoje godziny nie są jeszcze rejestrowane. Jeśli powinny być, poproś osobę prowadzącą zespół, aby Cię dodała.",
+      "confirm_hand_in": "Po przekazaniu miesiąca {month} nie zmienisz już samodzielnie jego godzin, nieobecności ani zapisów obecności. Jeśli coś wymaga poprawki, zgłoś się do osoby prowadzącej zespół."
     },
     "team_time": {
       "title": "Czas zespołu",
       "not_permitted": "Brak uprawnień do wglądu",
-      "export_csv": "CSV",
-      "export_excel": "Excel",
-      "still_open": "Nadal otwarte",
-      "open_count": "{open} z {total}",
-      "counted_anywhere": "Godziny każdej osoby są liczone niezależnie od tego, gdzie zostały zarejestrowane. Zamknięcie miesiąca zamraża jego wartości; nic zarejestrowanego później już ich nie zmieni.",
+      "export_csv": "Pobierz jako CSV",
+      "export_excel": "Pobierz jako Excel",
+      "still_open": "Do zamknięcia",
+      "open_count": "{open} z {total} osób",
+      "counted_anywhere": "Godziny każdej osoby są liczone niezależnie od tego, gdzie zostały zarejestrowane, w godzinach i minutach: 161:12 to 161 godzin i 12 minut. Saldo bieżące dostaje wartość dopiero po zamknięciu miesiąca. Zamknięcie miesiąca zamraża jego wartości; nic zarejestrowanego później już ich nie zmieni.",
       "as_things_stand": "Wartości według stanu na {date}; miesiąc jeszcze się nie zakończył.",
       "toasts": {
         "refused": "Nie powiodło się",
@@ -47,20 +48,20 @@
       "not_permitted_detail": "Godziny wszystkich osób może przeglądać wyłącznie osoba odpowiedzialna za zespół. Własny miesiąc znajduje się na stronie {page}.",
       "closing": "Zamykanie…",
       "confirm_close_title": "Zamknąć miesiąc: {person}?",
-      "confirm_close_body": "Wartości zostają zamrożone w obecnej postaci, a stojące za nimi godziny, nieobecności i obecności przestają przyjmować zmiany. Ponowne otwarcie jest możliwe, ale zostawia ślad."
+      "confirm_close_body": "Wartości zostają zamrożone w obecnej postaci. Nikt nie zmieni już godzin ani nieobecności w tym miesiącu, a to, co zostanie w nim zapisane później, nie będzie się liczyć. Miesiąc można otworzyć ponownie, a ponowne otwarcie zostaje odnotowane."
     },
     "summary": {
       "owed": "Do przepracowania",
       "worked": "Przepracowano",
       "balance": "Saldo",
-      "whole_month": "{duration} w całym miesiącu",
+      "whole_month": "z {duration} w całym miesiącu",
       "per_week": "{duration} tygodniowo",
       "includes_away": "w tym {duration} nieobecności lub świąt",
       "carried_forward": "{duration} z przeniesienia",
       "as_of": "Stan na {date}. Miesiąc jeszcze się nie zakończył.",
       "not_started": "Ten miesiąc jeszcze się nie rozpoczął.",
-      "needs_review": "Niektóre dni wymagają sprawdzenia – godzin liczonych wcześniej już nie ma.",
-      "timer_running": "Licznik nadal działa, więc tego miesiąca nie można jeszcze przekazać do zatwierdzenia.",
+      "needs_review": "Niektóre dni wymagają sprawdzenia – godzin liczonych wcześniej już nie ma. Osoba prowadząca zespół musi je wyjaśnić, zanim miesiąc będzie można zamknąć.",
+      "timer_running": "Na jednym z Twoich elementów pracy wciąż działa licznik — w tej lub innej przestrzeni. Zatrzymaj go, a wtedy będzie można przekazać miesiąc.",
       "telework_days": "Praca zdalna w tym roku: {count}",
       "nothing_yet": "Dla tego miesiąca nic jeszcze nie obliczono.",
       "leave_left_days": "Pozostało {amount} dni urlopu",
@@ -73,7 +74,7 @@
       "what_it_was": "Rodzaj dnia",
       "owed": "Do przepracowania",
       "work_items": "Elementy pracy",
-      "other": "Inna praca",
+      "other": "Bez elementu pracy",
       "away": "Nieobecność",
       "worked": "Przepracowano",
       "balance": "Saldo",
@@ -90,17 +91,17 @@
       "owed": "Do przepracowania",
       "worked": "Przepracowano",
       "balance": "Saldo",
-      "carried": "Z przeniesienia",
+      "carried": "Saldo bieżące",
       "action": "Akcja",
       "agree": "Zatwierdź",
       "close": "Zamknij",
       "reopen": "Otwórz ponownie",
-      "nobody_yet": "Nikt nie ma jeszcze danych o zatrudnieniu.",
-      "timer_running": "Stoper wciąż działa",
-      "needs_review": "Niektóre dni wymagają sprawdzenia",
+      "nobody_yet": "Nikt nie ma jeszcze danych o zatrudnieniu. Dodaj osoby na stronie Osoby, a ich godziny zaczną się liczyć.",
+      "timer_running": "Licznik wciąż działa, więc tego miesiąca nie można jeszcze przekazać.",
+      "needs_review": "Niektóre dni wymagają sprawdzenia, zanim miesiąc będzie można zamknąć",
       "blocked_by_review": "Sprawdź te dni",
       "month_running": "Miesiąc jeszcze się nie skończył",
-      "waiting_for": "Oczekiwanie na: {person}"
+      "waiting_for": "Oczekiwanie, aż {person} przekaże miesiąc"
     },
     "reopen": {
       "title": "Otworzyć ponownie {month}?",
@@ -141,7 +142,7 @@
       "not_permitted_detail": "Tylko osoba odpowiedzialna za zespół może zmieniać, kto jest zatrudniony i na jakich warunkach.",
       "column_person": "Osoba",
       "column_since": "Od",
-      "column_week": "Tydzień",
+      "column_week": "Godzin tygodniowo",
       "column_role": "Rola",
       "column_action": "Akcja",
       "add_title": "Dodaj osobę",
@@ -155,13 +156,13 @@
       "section_terms": "Warunki",
       "section_schedule": "Tydzień pracy",
       "hire_date": "Rozpoczęcie pracy",
-      "timezone": "Strefa czasowa",
+      "timezone": "Strefa czasowa, np. Europe/Vienna",
       "is_manager": "Prowadzi zespół — widzi i zmienia godziny, nieobecności i urlopy wszystkich, we wszystkich przestrzeniach",
-      "arrangement": "Forma współpracy",
+      "arrangement": "Forma zatrudnienia",
       "valid_from": "Obowiązuje od",
-      "records_target": "Rejestrowanie normy godzin i bieżącego salda",
-      "records_target_hint": "Wyłączone przy formach współpracy na własną fakturę, gdzie firma rejestruje przepracowany czas, a dzienna norma nie obowiązuje.",
-      "schedule_hint": "Norma godzin na każdy dzień. Należy wpisać 7:42 lub 7,7, a dzień niepracujący pozostawić pusty.",
+      "records_target": "Ustalona liczba godzin każdego dnia, saldo bieżące i liczenie wykorzystanego urlopu",
+      "records_target_hint": "Zostaw włączone dla pracowników. Wyłącz dla osób, które wystawiają nam faktury za swoje godziny: nie mają dziennej normy, nie prowadzi się dla nich salda ani nie liczy urlopu.",
+      "schedule_hint": "Ile ma trwać każdy dzień. Wpisz 7:42, czyli siedem godzin i 42 minuty, albo 7,7 — tyle samo w godzinach dziesiętnych. Dzień niepracujący zostaw pusty.",
       "week_total": "{duration} tygodniowo",
       "cancel": "Anuluj",
       "save": "Zapisz",
@@ -177,7 +178,7 @@
       "errors": {
         "bad_duration": "Jeden z dni nie zawiera poprawnej długości czasu. Należy wpisać 7:42 lub 7,7 albo pozostawić pole puste.",
         "hire_date_required": "Proszę podać datę rozpoczęcia pracy tej osoby, aby wiadomo było, od kiedy liczyć jej pierwszy miesiąc.",
-        "week_required": "Podaj długość dnia pracy, inaczej miesiąc nie ma do czego się odnieść.",
+        "week_required": "Wypełnij co najmniej jeden dzień, żeby miesiąc miał do czego się odnieść. Dni niepracujące zostaw puste.",
         "bad_crm_staff_id": "Identyfikator pracownika w CRM to liczba całkowita. Zostaw pole puste, aby dopasować po adresie e-mail."
       },
       "toasts": {
@@ -186,24 +187,24 @@
         "removed": "Oznaczono odejście",
         "refused": "Nie powiodło się",
         "try_again": "Proszę spróbować ponownie.",
-        "brought_back": "Znów w zespole"
+        "brought_back": "Zatrudniono ponownie"
       },
       "opening": "Saldo początkowe",
       "rates": "Stawki",
       "leave": "Urlop",
       "crm_staff_id": "ID pracownika w CRM",
       "crm_staff_id_placeholder": "Puste pole oznacza dopasowanie po adresie e-mail",
-      "crm_guessed": "Dopasowanie do CRM po e-mailu",
+      "crm_guessed": "CRM tylko po adresie e-mail",
       "crm_missing": "Brak konta w CRM",
       "crm_link": {
         "set": "Ustawione tutaj, więc godziny trafiają na to konto niezależnie od tego, jakie adresy są zapisane.",
-        "email": "Dopasowanie po adresie e-mail. Działa do chwili, gdy w jednym z dwóch systemów pojawi się inny adres.",
+        "email": "Nikt nie wskazał, o które konto w CRM chodzi, więc godziny są dopasowywane po adresie e-mail. Nic nie sprawdza, czy konto w CRM z tym adresem w ogóle istnieje.",
         "none": "Nic nie łączy tej osoby z CRM, więc jej godziny nigdy nie trafiają do CRM jako wpis czasu."
       },
       "confirm_remove_title": "Oznaczyć jako odejście?",
-      "confirm_remove_body": "{person} przestanie pojawiać się w nowych miesiącach. Wszystko już zapisane pozostaje bez zmian.",
+      "confirm_remove_body": "{person} przestanie pojawiać się w nowych miesiącach i nie otworzy już własnej strony czasu pracy, więc najpierw dokończ ostatni miesiąc tej osoby. Wszystko już zapisane pozostaje bez zmian.",
       "removing": "Oznaczanie…",
-      "no_hours_yet": "Brak godzin",
+      "no_hours_yet": "Nie ustawiono",
       "confirm_remove_permanent": "Jeśli wróci, możesz później zatrudnić tę osobę ponownie.",
       "pick_somebody_first": "Najpierw wybierz kogoś z listy",
       "pick_date_first": "Podaj datę rozpoczęcia",
@@ -213,13 +214,13 @@
     "arrangement": {
       "onsite_full_time": "Na miejscu, pełny wymiar godzin",
       "onsite_part_time": "Na miejscu, niepełny wymiar godzin",
-      "remote_full_time_invoicing": "Zdalnie, pełny wymiar godzin, na własną fakturę",
-      "remote_part_time_invoicing": "Zdalnie, niepełny wymiar godzin, na własną fakturę"
+      "remote_full_time_invoicing": "Zdalnie, pełny wymiar godzin, wystawia nam faktury",
+      "remote_part_time_invoicing": "Zdalnie, niepełny wymiar godzin, wystawia nam faktury"
     },
     "entries": {
-      "hint": "Czas nienależący do żadnego zadania — spotkania, administracja, szkolenia, podróże.",
-      "none_yet": "W tym dniu nie zarejestrowano jeszcze niczego.",
-      "day_total": "W tym dniu",
+      "hint": "Godziny bez elementu pracy — spotkania, administracja, szkolenia, podróże. Liczą się do Twojego miesiąca. Godziny na elementach pracy pochodzą z tamtejszych liczników i nie zmienia się ich tutaj.",
+      "none_yet": "Nic tu jeszcze nie dodano. Godziny zapisane na elementach pracy liczą się, ale nie są tu pokazywane.",
+      "day_total": "Godziny bez elementu pracy",
       "how_long": "Ile czasu",
       "what_it_was": "Rodzaj",
       "note": "Notatka",
@@ -227,7 +228,7 @@
       "add": "Dodaj",
       "remove": "Usuń",
       "imported": "Zaimportowane",
-      "month_closed": "Ten miesiąc jest zamknięty, jego godzin nie można już zmienić. Zgłoś się do osoby prowadzącej zespół, jeśli coś wymaga poprawki.",
+      "month_closed": "Ten miesiąc nie jest już otwarty, więc jego godzin nie można zmienić. Jeśli coś wymaga poprawki, poproś osobę prowadzącą zespół o ponowne otwarcie.",
       "category": {
         "meeting": "Spotkanie wewnętrzne",
         "training": "Szkolenie",
@@ -238,7 +239,8 @@
         "imported": "Zaimportowane"
       },
       "errors": {
-        "bad_duration": "Proszę podać, jak długo to trwało. Należy wpisać 1:30 lub 1,5."
+        "bad_duration": "Proszę podać, jak długo to trwało. Należy wpisać 1:30 lub 1,5.",
+        "duration_needs_unit": "Proszę podać, jak długo to trwało: 1:30, 7h albo 90m. Sama liczba nie mówi, czy chodzi o godziny, czy o minuty."
       },
       "toasts": {
         "added": "Dodano",
@@ -246,25 +248,25 @@
         "try_again": "Proszę spróbować ponownie."
       },
       "close": "Zamknij",
-      "not_added_yet": "Jeszcze nie dodano",
+      "not_added_yet": "Jeszcze nie dodano. Naciśnij Dodaj, inaczej przepadnie przy zamknięciu.",
       "confirm_remove_title": "Usunąć te godziny?",
-      "confirm_remove_body": "{duration} zostanie odjęte od tego dnia i od sumy miesiąca.",
+      "confirm_remove_body": "{duration} ({category}) zostanie odjęte od tego dnia i od sumy miesiąca.",
       "removing": "Usuwanie…"
     },
     "attendance": {
       "title": "Kiedy byłeś w pracy",
-      "hint": "Początek, koniec i przerwy tego dnia — zapisywane osobno od tego, na co poszły godziny.",
-      "still_running": "Wciąż trwa",
+      "hint": "Początek, koniec i przerwy tego dnia. To osobny zapis, który nie liczy się do Twoich godzin.",
+      "still_running": "Brak godziny zakończenia",
       "from": "Od",
       "to": "Do",
       "break": "Przerwa (minuty)",
-      "where": "Gdzie",
+      "where": "Miejsce pracy",
       "past_midnight": "Liczone jako trwające po północy.",
       "record": "Zapisz",
       "update": "Zaktualizuj",
       "remove": "Usuń",
-      "closed_with": "Od {from} do {to}, {duration}. Ten miesiąc został zamknięty i nie można go już zmienić.",
-      "closed_without": "Dla tego dnia nic nie zapisano, a miesiąc został zamknięty.",
+      "closed_with": "Od {from} do {to}, {duration}. Ten miesiąc nie jest już otwarty, więc nie można tego zmienić.",
+      "closed_without": "Dla tego dnia nic nie zapisano, a miesiąc nie jest już otwarty.",
       "location": {
         "office": "W biurze",
         "home": "Praca zdalna",
@@ -281,14 +283,15 @@
         "try_again": "Proszę spróbować ponownie."
       },
       "confirm_remove_title": "Usunąć ten zapis obecności?",
-      "confirm_remove_body": "Początek, koniec i przerwa tego dnia zostaną usunięte. To ewidencja czasu pracy wymagana przez prawo.",
+      "confirm_remove_body": "Początek, koniec i przerwa tego dnia zostaną usunięte bezpowrotnie. Jeśli godziny są błędne, popraw je i zapisz.",
       "removing": "Usuwanie…",
-      "past_midnight_length": "To przechodzi przez północ i daje {duration}. Sprawdź godzinę zakończenia, jeśli to nie tak."
+      "past_midnight_length": "To przechodzi przez północ i daje {duration}. Sprawdź godzinę zakończenia, jeśli to nie tak.",
+      "not_saved_yet": "Jeszcze nie zapisano. Zapisz te godziny, inaczej przepadną przy zamknięciu."
     },
     "imports": {
-      "title": "Import godzin",
-      "subtitle": "Miesiące zarejestrowane w innym miejscu, wczytane z arkusza kalkulacyjnego i sprawdzone, zanim cokolwiek zostanie zapisane.",
-      "not_permitted_detail": "Tylko osoba odpowiedzialna za zespół może importować godziny.",
+      "title": "Import wcześniejszych zapisów",
+      "subtitle": "Godziny, nieobecności i salda zapisane w innym miejscu, wczytane z arkusza kalkulacyjnego i sprawdzone, zanim cokolwiek zostanie zapisane. W skoroszycie czytany jest tylko ten arkusz, na którym plik się otwiera, a nagłówki kolumn muszą być w jego pierwszym wierszu.",
+      "not_permitted_detail": "Tylko osoba odpowiedzialna za zespół może importować wcześniejsze zapisy.",
       "what_kind": "Zawartość pliku",
       "choose_file": "Wybierz plik",
       "kind": {
@@ -297,19 +300,19 @@
         "opening_balances": "Salda początkowe"
       },
       "columns": {
-        "time_entries": "Kolumny: email, date oraz hours albo minutes — dokładnie takie nagłówki. Kolumna note zostaje zachowana, jeśli plik ją zawiera. Zapisy 7:42, 7,7 i 462 oznaczają tę samą długość czasu.",
+        "time_entries": "Kolumny: email, date oraz hours albo minutes — dokładnie takie nagłówki. Kolumna note zostaje zachowana, jeśli plik ją zawiera. O znaczeniu zwykłej liczby decyduje nagłówek: 7,7 pod hours i 462 pod minutes to za każdym razem 7 godzin i 42 minuty. Zapis 7:42 znaczy to samo pod jednym i pod drugim nagłówkiem.",
         "absences": "Kolumny: email, start_date, end_date oraz type — dokładnie takie nagłówki. Przy pojedynczym dniu kolumnę end_date należy pominąć.",
-        "opening_balances": "Kolumny: email, effective_on z dniem, od którego saldo obowiązuje, oraz hours albo minutes z samym saldem — dokładnie takie nagłówki."
+        "opening_balances": "Kolumny: email, date z dniem, od którego saldo obowiązuje, hours albo minutes z samym saldem oraz basis z informacją, skąd wzięła się ta liczba — dokładnie takie nagłówki. Jeśli saldo to nie godziny, dodaj kolumnę kind z wartością time, leave albo overtime."
       },
-      "preview_title": "{filename} – tak jak zostałby zastosowany",
-      "preview_hint": "Nic nie zostało jeszcze zapisane. Proszę sprawdzić poniższe wiersze, a następnie je zastosować.",
+      "preview_title": "{filename}, wczytany jako {kind}",
+      "preview_hint": "Nic jeszcze nie zostało zapisane. Wiersze dochodzą do tego, co już zapisano w tych dniach, więc dzień wczytany dwa razy liczy się dwa razy. Aby poprawić plik, który już jest wczytany, najpierw go cofnij, zamiast wczytywać poprawioną kopię.",
       "will_write": "do zapisania",
       "cannot_read": "nie do odczytania",
       "skipped": "do pominięcia",
       "apply": "{count, plural, one {Zastosuj # wiersz} few {Zastosuj # wiersze} many {Zastosuj # wierszy} other {Zastosuj # wiersza}}",
-      "discard": "Odrzuć",
+      "discard": "Zostaw na razie",
       "column_row": "Wiersz",
-      "column_verdict": "Wynik",
+      "column_verdict": "Co się stanie",
       "column_detail": "Szczegóły",
       "verdict": {
         "ok": "Zostanie zapisany",
@@ -318,7 +321,7 @@
       },
       "past": "Wcześniej zaimportowane pliki",
       "none_yet": "Nie zaimportowano jeszcze niczego.",
-      "row_summary": "{total, plural, one {{valid} z # wiersza} few {{valid} z # wierszy} many {{valid} z # wierszy} other {{valid} z # wiersza}}",
+      "row_summary": "{total, plural, one {{valid} z # wiersza można wykorzystać} few {{valid} z # wierszy można wykorzystać} many {{valid} z # wierszy można wykorzystać} other {{valid} z # wiersza można wykorzystać}}",
       "state": {
         "10": "Przesłany",
         "20": "Sprawdzanie",
@@ -330,7 +333,7 @@
       },
       "undo": "Cofnij",
       "undo_title": "Cofnąć {filename}?",
-      "undo_body": "Wszystkie godziny zapisane przez ten plik zostają usunięte i nic poza tym nie zostaje zmienione. Godziny w miesiącu, który został od tego czasu zamknięty, pozostają na swoim miejscu.",
+      "undo_body": "Wszystko, co ten plik zapisał, zostaje wycofane i nic poza tym się nie zmienia. Jeśli cokolwiek z tego zostało policzone w miesiącu, który jest już zamknięty, nic nie zostanie wycofane, dopóki ten miesiąc nie zostanie otwarty ponownie.",
       "undo_label": "Dlaczego import zostaje cofnięty?",
       "undo_placeholder": "Plik zawierał marzec dwukrotnie.",
       "undo_confirm": "Cofnij import",
@@ -344,19 +347,19 @@
         "try_again": "Proszę spróbować ponownie."
       },
       "template": "Pobierz szablon",
-      "resume": "Sprawdź i zastosuj",
+      "resume": "Otwórz ponownie",
       "reasons": {
-        "unknown_person": "Nikt tutaj nie loguje się jako {email}.",
+        "unknown_person": "Nikt tutaj nie loguje się jako {email}. Dodaj tę osobę w sekcji Osoby albo popraw adres w pliku.",
         "bad_date": "Nie udało się odczytać daty.",
-        "bad_duration": "Nie udało się odczytać czasu.",
-        "more_than_a_day": "Więcej niż dzień w jednym dniu.",
-        "month_settled": "Ten miesiąc jest już zamknięty.",
+        "bad_duration": "Nie udało się odczytać czasu albo jest on zerowy. Każdy wiersz potrzebuje długości czasu — zamiast tego pomiń ten dzień w pliku.",
+        "more_than_a_day": "To ponad 24 godziny w jednym dniu. Sprawdź, czy liczba to godziny, czy minuty, i czy zgadza się z nią nagłówek kolumny.",
+        "month_settled": "Ten miesiąc nie jest już otwarty, więc nic więcej do niego nie trafi. Poproś o ponowne otwarcie, jeśli to ma tam wejść.",
         "bad_balance": "Nie udało się odczytać salda.",
-        "kind_missing": "Podaj, czy to czas, czy urlop.",
-        "basis_missing": "Podaj, na czym opiera się ta liczba.",
+        "kind_missing": "W kolumnie kind musi być time, leave albo overtime.",
+        "basis_missing": "Kolumna basis jest pusta. Napisz, skąd wzięła się ta liczba, na przykład: ze starego arkusza urlopowego.",
         "bad_start_date": "Nie udało się odczytać daty początkowej.",
         "ends_before_it_starts": "Kończy się, zanim się zacznie.",
-        "unknown_absence_type": "Nie ma typu nieobecności „{code}”."
+        "unknown_absence_type": "Żaden powód nieobecności nie ma kodu „{code}”. Kody są na ekranie Nieobecności, w sekcji Powody."
       }
     },
     "opening": {
@@ -367,11 +370,11 @@
       "from_label": "Obowiązuje od",
       "agreed": "Uzgodnione",
       "agree": "Zgadza się",
-      "not_agreed": "Jeszcze nieuzgodnione",
+      "not_agreed": "Czeka na potwierdzenie tej osoby",
       "replaced": "Zastąpione korektą: {count}",
       "record": "Zarejestruj saldo początkowe",
       "record_confirm": "Zarejestruj",
-      "amount": "Saldo",
+      "amount": "Saldo, minus przy zaległościach",
       "what_for": "Czego dotyczy",
       "how_sure": "Na ile pewne",
       "basis": "Na czym jest oparte",
@@ -384,9 +387,9 @@
       },
       "confidence": {
         "exact": "Wzięte z ewidencji",
-        "reconstructed": "Odtworzone",
+        "reconstructed": "Wyliczone z innych zapisów",
         "estimated": "Oszacowane",
-        "agreed": "Uzgodnione z tą osobą"
+        "agreed": "Z rozmowy z tą osobą"
       },
       "errors": {
         "bad_duration": "Proszę podać wysokość salda. Należy wpisać -12:30 lub -12,5, a przy nadwyżce pominąć minus.",
@@ -400,7 +403,7 @@
         "try_again": "Proszę spróbować ponownie."
       },
       "correct": "Popraw tę wartość",
-      "agreeing": "Zapisywanie…",
+      "agreeing": "Potwierdzanie…",
       "confirm_agree_title": "Zatwierdzić to saldo?",
       "confirm_agree_body": "Potwierdzasz, że {amount} się zgadza. Nie można tego cofnąć. Jeśli liczba jest błędna, nie potwierdzaj — zgłoś to osobie prowadzącej zespół.",
       "correcting_heading": "Popraw wartość",
@@ -415,16 +418,16 @@
       "everyone": "Wszyscy",
       "previous_month": "Poprzedni miesiąc",
       "next_month": "Następny miesiąc",
-      "none_this_month": "W tym miesiącu nikt nie był nieobecny.",
-      "not_permitted_detail": "Tylko przełożony widzi cały zespół. Twoje nieobecności są na Twojej stronie czasu pracy.",
-      "month_locked": "miesiąc zamknięty",
+      "none_this_month": "Dla tego miesiąca nie zapisano żadnych nieobecności.",
+      "not_permitted_detail": "Nie masz tu danych o zatrudnieniu, więc nie ma czego pokazać. Poproś osobę prowadzącą zespół, aby je założyła.",
+      "month_locked": "miesiąc zamknięty — otwórz go ponownie, aby to zmienić",
       "approve": "Zatwierdź",
       "reject": "Odrzuć",
       "delete": "Usuń nieobecność",
       "column_person": "Osoba",
       "column_reason": "Powód",
       "column_when": "Kiedy",
-      "column_away": "Poza pracą",
+      "column_away": "Godziny nieobecności",
       "column_state": "Stan",
       "column_action": "Akcja",
       "state": {
@@ -447,7 +450,7 @@
       "modal": {
         "title": "Dodaj nieobecność",
         "edit_title": "Zmień nieobecność",
-        "subtitle": "Gdy powód liczy się jako praca, dzień zostaje zaliczony, więc saldo miesiąca się nie zmienia. Sama norma pozostaje bez zmian.",
+        "subtitle": "Większość powodów nadal liczy się do godzin miesiąca, więc nie powstaje w nim niedobór. Dni, w których ta osoba zwykle nie pracuje, nie są liczone.",
         "person": "Osoba",
         "type": "Powód",
         "no_types": "Nie dodano jeszcze powodów",
@@ -460,11 +463,11 @@
         "last_day": "Ostatni dzień",
         "hours_each_day": "Godziny nieobecności dziennie",
         "hours_placeholder": "np. 3:30",
-        "hours_hint": "Wpisz jako 3:30, 3.5 lub 210m.",
+        "hours_hint": "Godziny w każdym dniu zakresu, wpisane jako 3:30, 3,5 albo 3h. Minuty zapisz jako 90m.",
         "note": "Notatka",
         "note_placeholder": "Opcjonalnie",
         "record": "Zapisz",
-        "hours_unreadable": "To nie jest długość czasu. Spróbuj 1:30, 1,5 lub 90."
+        "hours_unreadable": "To nie jest długość czasu. Spróbuj 3:30, 3,5 albo 90m dla dziewięćdziesięciu minut."
       },
       "toasts": {
         "saved": "Nieobecność zapisana",
@@ -492,16 +495,16 @@
         "draws_on_leave": "Dzień pomniejsza pulę urlopu",
         "refused": "Nie udało się tego zrobić",
         "try_again": "Spróbuj ponownie.",
-        "confirm_remove_title": "Usunąć ten typ nieobecności?",
-        "confirm_remove_body": "„{kind}” nie będzie już proponowany przy zapisywaniu nieobecności. Jeśli chcesz tylko usunąć go z listy, zamiast tego go wyłącz.",
-        "deleting": "Usuwanie"
+        "confirm_remove_title": "Usunąć ten powód?",
+        "confirm_remove_body": "„{kind}” nie będzie już proponowany przy zapisywaniu nieobecności. Jeśli chcesz go tylko usunąć z listy, naciśnij Wyłącz.",
+        "deleting": "Usuwanie…"
       },
       "filter_person": "Pokaż nieobecności dla",
       "confirm_remove_title": "Usunąć tę nieobecność?",
-      "confirm_remove_body": "{person} ma znów pełną normę w te dni, a {duration} wraca na konto urlopowe.",
+      "confirm_remove_body": "{duration} przestanie liczyć się do miesiąca osoby {person}, więc w miesiącu powstanie niedobór, jeśli te godziny nie zostaną przepracowane. Wykorzystany urlop wraca na konto.",
       "removing": "Usuwanie…",
       "refuse_title": "Odrzuć nieobecność: {person}",
-      "refuse_body": "Osoba zobaczy to, co tu napiszesz — napisz na tyle jasno, by było zrozumiałe samo w sobie.",
+      "refuse_body": "To zostaje zapisane razem z wpisem. Nikt nie dostaje automatycznie powiadomienia, więc powiedz o tym też tej osobie.",
       "refuse_label": "Powód",
       "refuse_placeholder": "W tym tygodniu są już dwie osoby nieobecne",
       "refuse_cancel": "Anuluj",
@@ -510,7 +513,7 @@
     },
     "rates": {
       "title": "Ile jest wart czas osoby {person}",
-      "hint": "Stawki się nie zmienia — nadaje się jej datę obowiązywania, dzięki czemu miesiąc rozliczony już według poprzedniej stawki nadal znaczy to, co znaczył. Podwyżka to zakończenie poprzedniej stawki i początek nowej.",
+      "hint": "Stawki zapisuje się z datą, więc miesiąc już rozliczony zachowuje stawkę, według której go policzono. Podwyżkę zapisuje się jako nową stawkę od dnia, w którym zaczyna obowiązywać. Zastępuje ona poprzednią, a poprzednia nadal wycenia wcześniejsze miesiące.",
       "none_yet": "Nie zarejestrowano żadnej stawki. Zestawienie dla tej osoby pokaże godziny, ale bez kwoty.",
       "add": "Dodaj stawkę",
       "add_button": "Dodaj",
@@ -543,7 +546,7 @@
       },
       "removing": "Usuwanie…",
       "confirm_remove_title": "Usunąć tę stawkę?",
-      "confirm_remove_body": "Już obliczone miesiące zachowują swoje kwoty. Kolejne miesiące tracą tę stawkę."
+      "confirm_remove_body": "Każdy miesiąc wycenia się według stawki zapisanej w chwili odczytu, również miesiące już zamknięte. Usunięcie tej stawki zmieni kwoty tych miesięcy. Usuwaj ją tylko wtedy, gdy została zapisana przez pomyłkę."
     },
     "statement": {
       "title": "Przed wystawieniem faktury",
@@ -553,13 +556,13 @@
       "expected": "Wynosi",
       "monthly_rate": "Stała kwota miesięczna",
       "no_rate": "Nie zarejestrowano jeszcze żadnej stawki, więc widoczne są tu tylko godziny. Proszę zwrócić się do osoby odpowiedzialnej za zespół.",
-      "still_moving": "Miesiąc jest nadal otwarty, więc te wartości mogą się jeszcze zmienić.",
+      "still_moving": "Ten miesiąc nie jest jeszcze zamknięty, więc te wartości mogą się jeszcze zmienić. Zaczekaj z fakturą do jego zamknięcia.",
       "settled": "Miesiąc jest zamknięty, więc te wartości są ostateczne.",
       "decimal_hours": "{hours} w godzinach dziesiętnych"
     },
     "leave": {
       "title": "Urlop osoby {person}",
-      "hint": "Zapisywany w minutach, a nie w dniach: dla osoby pracującej w nierównym wymiarze godzin dzień nie jest stałą wielkością. Rok urlopowy biegnie od rocznicy rozpoczęcia pracy.",
+      "hint": "Urlop liczy się w godzinach, a nie w dniach, bo dzień pracy nie u każdego trwa tyle samo. Rok urlopowy biegnie od rocznicy rozpoczęcia pracy.",
       "none_yet": "Nie zarejestrowano jeszcze żadnego roku urlopowego.",
       "add": "Dodaj rok urlopowy",
       "add_button": "Dodaj",
@@ -568,53 +571,54 @@
       "year_end": "Rok urlopowy do",
       "entitlement": "Urlop na ten rok",
       "carryover": "Z przeniesienia",
-      "carryover_placeholder": "Opcjonalnie, może być ujemne",
+      "carryover_placeholder": "Opcjonalnie. Wpisz minus, jeśli część już wykorzystano.",
       "duration_placeholder": "np. 200:00",
       "basis": "Na czym jest oparty",
       "basis_placeholder": "Opcjonalnie",
       "between": "Od {from} do {to}",
       "about_days": "{days, plural, one {około # dnia} few {około # dni} many {około # dni} other {około # dnia}}",
       "carried": "{duration} z przeniesienia",
-      "agree": "Uzgodnij",
-      "agreed": "Uzgodnione",
+      "agree": "Uznaj za ostateczne",
+      "agreed": "Uznane za ostateczne",
       "errors": {
         "dates_required": "Proszę podać, kiedy rok urlopowy się zaczyna i kończy.",
         "backwards": "Rok urlopowy nie może kończyć się przed rozpoczęciem.",
         "bad_duration": "Czas należy wpisać jako 200:00, 200 lub 12000m.",
-        "already_there": "Dla tego roku urlopowego istnieje już wpis."
+        "already_there": "Dla tego roku urlopowego istnieje już wpis.",
+        "overlapping_year": "Istnieje już rok urlopowy obejmujący te daty."
       },
       "toasts": {
         "added": "Rok urlopowy dodany",
-        "agreed": "Oznaczono jako uzgodnione",
+        "agreed": "Uznano za ostateczne",
         "refused": "Nie udało się zapisać",
         "try_again": "Proszę spróbować ponownie."
       },
       "entitlement_with_unit": "Urlop na rok (godziny:minuty)",
       "echo_days": "{duration} · {days, plural, one {około # dnia} few {około # dni} many {około # dni} other {około # dnia}}",
       "echo_hours": "{duration}",
-      "agreeing": "Zapisywanie…",
+      "agreeing": "Uznawanie…",
       "confirm_agree_title": "Zapisać tę wartość jako ostateczną?",
-      "confirm_agree_body": "{duration} nie będzie już można zmienić. Późniejsza zmiana zapisywana jest osobno, z własnym uzasadnieniem."
+      "confirm_agree_body": "{duration} nie będzie już można zmienić na żadnym ekranie. Zanim uznasz to za ostateczne, sprawdź, czy zgadza się z tym, co powiedziano tej osobie."
     },
     "holidays": {
       "title": "Dni świąteczne",
-      "subtitle": "Dni, w których nikt nie pracuje. Święto pomniejsza normę na ten dzień; nie jest doliczane do przepracowanych godzin.",
+      "subtitle": "Dni, w których nikt nie pracuje. Święto liczy się jako godziny przepracowane; nie zmniejsza tego, ile trzeba przepracować. Zmiana tutaj obejmuje tylko miesiące, które są jeszcze otwarte.",
       "back_to_month": "Miesiąc",
       "calendar": "Kalendarz",
       "previous_year": "Poprzedni rok",
       "next_year": "Następny rok",
-      "none_this_year": "Brak dni w tym kalendarzu na ten rok.",
-      "not_permitted_detail": "Tylko przełożony może zmieniać kalendarz.",
+      "none_this_year": "Brak dni na ten rok. Dopóki nie zostaną dodane, każde święto w tym roku liczy się jak zwykły dzień pracy.",
+      "not_permitted_detail": "Nie masz jeszcze wpisu w ewidencji czasu pracy, więc ta lista nie jest Ci pokazywana. Zgłoś się do osoby prowadzącej zespół.",
       "column_date": "Data",
       "column_name": "Nazwa",
       "column_kind": "Rodzaj",
       "column_action": "Akcja",
-      "statutory": "Ustawowe",
+      "statutory": "Ustawowe, nie do zmiany",
       "granted": "Przyznane",
       "make_half": "Zmień na pół dnia",
       "make_whole": "Zmień na cały dzień",
       "remove": "Usuń ten dzień",
-      "add": "Dodaj dzień",
+      "add": "Dodaj dzień wolny dla wszystkich",
       "add_button": "Dodaj",
       "only_half": "Tylko pół dnia",
       "name_placeholder": "Nazwa tego dnia",
@@ -632,7 +636,7 @@
       "whole_day": "Cały dzień",
       "half_day": "Pół dnia",
       "confirm_remove_title": "Usunąć ten dzień?",
-      "confirm_remove_body": "{day} przestanie być świętem, więc norma wszystkich na ten dzień ponownie wzrośnie.",
+      "confirm_remove_body": "{day} przestanie być świętem. Kto normalnie pracuje tego dnia, znów ma go przepracować.",
       "removing": "Usuwanie…"
     },
     "shared": {
@@ -642,13 +646,13 @@
     },
     "review_days": {
       "title": "Dni do sprawdzenia u {person}",
-      "body": "Godziny liczone w tych dniach zniknęły. Zapisz, co się stało z każdym z nich, a miesiąc będzie można zamknąć.",
+      "body": "Godzin liczonych w tych dniach już nie ma. Zapisanie, co się stało, pozwala zamknąć miesiąc, ale nie przywraca godzin — jeśli mają się nadal liczyć, najpierw zadbaj o ich ponowne zapisanie. To, co napiszesz, zostaje przy tym dniu i może to przeczytać osoba, której to dotyczy.",
       "all_settled": "Nie ma już nic do sprawdzenia. Ten miesiąc można zamknąć.",
       "counts_now": "Teraz liczy się jako {duration}",
       "what_happened": "Co się stało?",
       "placeholder": "Wpisane w złym dniu i przeniesione",
       "settle": "Zamknij ten dzień",
-      "close": "Zamknij",
+      "close": "Gotowe",
       "toasts": {
         "settled": "Dzień zamknięty",
         "refused": "Nie udało się tego zamknąć",
@@ -656,8 +660,8 @@
       }
     },
     "refusals": {
-      "absence_type_in_use": "{in_use, plural, one {Z tym typem zapisano # nieobecność, więc nie można go usunąć — jej zapis przestałby mieć sens.} few {Z tym typem zapisano # nieobecności, więc nie można go usunąć — ich zapisy przestałyby mieć sens.} many {Z tym typem zapisano # nieobecności, więc nie można go usunąć — ich zapisy przestałyby mieć sens.} other {Z tym typem zapisano # nieobecności, więc nie można go usunąć — ich zapisy przestałyby mieć sens.}} Zamiast tego go wyłącz: zniknie z listy wyboru, a istniejące wpisy pozostaną czytelne.",
-      "month_settled": "{month} jest {month_state}, więc jego wpisy nie mogą się już zmieniać. Poproś o ponowne otwarcie miesiąca, jeśli to ma tam trafić.",
+      "absence_type_in_use": "{in_use, plural, one {Z tym powodem zapisano # nieobecność, więc nie można go usunąć — jej zapis przestałby mieć sens.} few {Z tym powodem zapisano # nieobecności, więc nie można go usunąć — ich zapisy przestałyby mieć sens.} many {Z tym powodem zapisano # nieobecności, więc nie można go usunąć — ich zapisy przestałyby mieć sens.} other {Z tym powodem zapisano # nieobecności, więc nie można go usunąć — ich zapisy przestałyby mieć sens.}} Zamiast tego naciśnij Wyłącz: powód zniknie z listy do wyboru, a istniejące wpisy pozostaną czytelne.",
+      "month_settled": "{month} jest {month_state}, więc jego wpisy nie mogą się już zmieniać. Poproś osobę prowadzącą zespół o ponowne otwarcie na stronie Czas zespołu.",
       "month_state": {
         "handed_in": "oddany",
         "agreed": "zatwierdzony",
@@ -671,29 +675,29 @@
       "mine": "Moje godziny",
       "group_by": "Grupuj według",
       "on_work_items": "Na elementy pracy",
-      "other_hours": "Cała reszta",
-      "entries": "Wpisy",
-      "month_state": "Te liczby",
+      "other_hours": "Bez elementu pracy",
+      "entries": "Wpisy na elementach pracy",
+      "month_state": "Ten miesiąc",
       "frozen": "Zamrożone",
-      "frozen_hint": "To, co policzył miesiąc",
+      "frozen_hint": "Tych godzin nie da się już zmienić",
       "live": "Na żywo",
-      "live_hint": "Miesiąc jest wciąż otwarty",
+      "live_hint": "Te godziny mogą się jeszcze zmienić",
       "column_what": "Co",
       "column_when": "Kiedy",
       "column_note": "Notatka",
       "column_long": "Czas",
       "unnamed": "Bez nazwy",
       "still_running": "Wciąż trwa — nie ma jeszcze długości i nie liczy się",
-      "gone": "Ten miesiąc to policzył, a tego już nie ma",
-      "by_hand": "· wpisane ręcznie",
-      "nothing_logged": "W tym miesiącu nic nie zapisano na element pracy.",
+      "gone": "Ten wpis usunięto po tym, jak miesiąc go policzył. Jego godziny są nadal w wartościach powyżej.",
+      "by_hand": "· dodane ręcznie",
+      "nothing_logged": "W tym miesiącu nie zapisano żadnych godzin na elemencie pracy. Sprawdź miesiąc widoczny u góry.",
       "other_title": "Godziny bez elementu pracy",
-      "other_subtitle": "Spotkania, administracja, szkolenia, podróże — i wszystko przeniesione z wcześniej. To też liczy się w miesiącu.",
-      "footnote": "Godziny liczą się tam, gdzie je zapisano, we wszystkich przestrzeniach.",
-      "rounding_note": "Minuty zaokrągla się raz na dzień i projekt, więc te sumy częściowe nie muszą dać liczby powyżej.",
+      "other_subtitle": "Spotkania, administracja, szkolenia, podróże, korekty — i godziny wczytane z innego miejsca. Też liczą się w miesiącu, ale nie ma ich w tabeli powyżej. Korekta z minusem odejmuje godziny od miesiąca.",
+      "footnote": "Godziny liczą się tam, gdzie je zapisano, we wszystkich przestrzeniach. Płatny urlop i święta też liczą się do miesiąca, a nie są tu pokazywane.",
+      "rounding_note": "Godziny z każdego dnia na danym projekcie zaokrągla się raz, więc suma tych wierszy może różnić się o minutę czy dwie od wartości powyżej. Liczy się wartość powyżej.",
       "entry_count": "{count, plural, one {· # wpis} few {· # wpisy} many {· # wpisów} other {· # wpisu}}",
-      "running_note": "{count, plural, one {# stoper wciąż działa. Nie ma jeszcze długości, więc nie liczy się tutaj.} few {# stopery wciąż działają. Nie mają jeszcze długości, więc nie liczą się tutaj.} many {# stoperów wciąż działa. Nie mają jeszcze długości, więc nie liczą się tutaj.} other {# stopera wciąż działa. Nie ma jeszcze długości, więc nie liczy się tutaj.}}",
-      "missing_note": "{count, plural, one {# wpisu policzonego przez ten miesiąc nie da się już znaleźć. Zachowano tylko jego identyfikator, więc nie ma czego pokazać.} few {# wpisów policzonych przez ten miesiąc nie da się już znaleźć. Zachowano tylko ich identyfikatory, więc nie ma czego pokazać.} many {# wpisów policzonych przez ten miesiąc nie da się już znaleźć. Zachowano tylko ich identyfikatory, więc nie ma czego pokazać.} other {# wpisu policzonego przez ten miesiąc nie da się już znaleźć. Zachowano tylko jego identyfikator, więc nie ma czego pokazać.}}",
+      "running_note": "{count, plural, one {# licznik wciąż działa, więc jeszcze nic nie liczy. Zatrzymaj go na elemencie pracy. Dopóki działa, nie można przekazać miesiąca.} few {# liczniki wciąż działają, więc jeszcze nic nie liczą. Zatrzymaj je na elementach pracy. Dopóki działają, nie można przekazać miesiąca.} many {# liczników wciąż działa, więc jeszcze nic nie liczą. Zatrzymaj je na elementach pracy. Dopóki działają, nie można przekazać miesiąca.} other {# licznika wciąż działa, więc jeszcze nic nie liczy. Zatrzymaj go na elemencie pracy. Dopóki działa, nie można przekazać miesiąca.}}",
+      "missing_note": "{count, plural, one {# wpis policzony przez ten miesiąc został od tego czasu usunięty. Jego godzin nie ma w wartościach tutaj, ale miesiąc nadal je liczy.} few {# wpisy policzone przez ten miesiąc zostały od tego czasu usunięte. Ich godzin nie ma w wartościach tutaj, ale miesiąc nadal je liczy.} many {# wpisów policzonych przez ten miesiąc zostało od tego czasu usuniętych. Ich godzin nie ma w wartościach tutaj, ale miesiąc nadal je liczy.} other {# wpisu policzonego przez ten miesiąc zostało od tego czasu usunięte. Jego godzin nie ma w wartościach tutaj, ale miesiąc nadal je liczy.}}",
       "week_of": "Tydzień od {date}",
       "grouping": {
         "day": "Dzień",
@@ -703,8 +707,8 @@
         "workspace": "Przestrzeń"
       },
       "under_a_minute": "poniżej minuty",
-      "auto_stopped": "· zatrzymane przez system",
-      "auto_stopped_hint": "Ten stoper został włączony i zatrzymany na maksimum. Długość to pułap, nie pomiar — wymaga poprawki."
+      "auto_stopped": "· zatrzymane przez system, wymaga poprawki",
+      "auto_stopped_hint": "Ten licznik został zostawiony włączony, więc system zatrzymał go na najdłuższym dopuszczalnym czasie. To limit, a nie czas przepracowany. Popraw go na elemencie pracy, zanim miesiąc zostanie przekazany."
     }
   }
 }

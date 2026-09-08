@@ -154,6 +154,9 @@ export const HrAbsencesRoot = observer(function HrAbsencesRoot() {
     try {
       await hrService.decideAbsence(absence.id, decision, reason);
       await mutate();
+      // Agreeing charges somebody's leave and cannot be taken back from here, and
+      // a pill quietly changing colour is not an answer to a click on a small icon.
+      if (decision === "approve") setToast({ type: TOAST_TYPE.SUCCESS, title: t("hr.absences.state.approved") });
     } catch (failure) {
       complain(failure);
     } finally {
@@ -167,6 +170,7 @@ export const HrAbsencesRoot = observer(function HrAbsencesRoot() {
       await hrService.decideAbsence(absence.id, "reject", reason);
       await mutate();
       setRefusing(null);
+      setToast({ type: TOAST_TYPE.SUCCESS, title: t("hr.absences.state.rejected") });
     } catch (failure) {
       complain(failure);
     } finally {
@@ -201,7 +205,7 @@ export const HrAbsencesRoot = observer(function HrAbsencesRoot() {
   const roster = people ?? [];
   const absenceTypes = types ?? [];
 
-  const monthLabel = formatMonthLabel(from);
+  const monthLabel = formatMonthLabel(from, currentLocale);
 
   return (
     <div className="flex w-full flex-col gap-7">
@@ -411,6 +415,7 @@ const AbsenceDialogs = ({
           duration: removing ? formatMinutes(removing.total_minutes) : "",
         })}
         primaryButtonText={{ default: t("hr.absences.delete"), loading: t("hr.absences.removing") }}
+        secondaryButtonText={t("common.cancel")}
       />
 
       <HrAbsenceTypesModal isOpen={managingTypes} types={types} onClose={onCloseTypes} onChanged={onTypesChanged} />
@@ -584,7 +589,10 @@ const AbsenceActions = ({
           />
         </>
       )}
-      {!locked && !settled && (
+      {/* An absence that has already been agreed is only whoever looks after the
+          team's to change. Offering anybody else the pencil opens a dialog the
+          server then refuses, in English, with the dialog left standing open. */}
+      {!locked && !settled && (isManager || absence.state !== EHrAbsenceState.APPROVED) && (
         <HrRowAction
           icon={<Pencil className="size-4" />}
           label={t("common.edit")}

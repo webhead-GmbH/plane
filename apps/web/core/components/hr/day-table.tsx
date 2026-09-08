@@ -100,7 +100,10 @@ export const HrDayTable = ({ days, countedThrough, onPickDay }: TProps) => {
                       )}
                     >
                       {formatDayLabel(day.work_date, currentLocale)}
-                      <Pencil className="size-3 opacity-0 transition-opacity group-hover/row:opacity-60" />
+                      {/* Faint, but never invisible: clicking the date is the only
+                          way to record hours on any day but today, and a hint that
+                          waits for a mouse is no hint at all on a tablet. */}
+                      <Pencil className="size-3 opacity-40 transition-opacity group-hover/row:opacity-70" />
                     </button>
                   ) : (
                     <span className={cn(isToday(day.work_date) && "font-medium text-accent-primary")}>

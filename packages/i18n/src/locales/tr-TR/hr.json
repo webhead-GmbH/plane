@@ -2,7 +2,7 @@
   "hr": {
     "my_time": {
       "title": "Zamanım",
-      "everyone": "Herkes",
+      "everyone": "Herkesin saatleri",
       "bring_up_to_date": "Güncelle",
       "hand_in": "Teslim et",
       "no_record": "Burada istihdam kaydı yok",
@@ -10,30 +10,31 @@
       "next_month": "Sonraki ay",
       "cannot_hand_in": {
         "month_running": "Ay henüz bitmedi. Ancak sona erdikten sonra teslim edilebilir.",
-        "timer_running": "Hâlâ çalışan zamanlayıcıyı durdurun, ardından ayı teslim edin."
+        "timer_running": "İş öğelerinizden birinde hâlâ çalışan bir zamanlayıcı var; bu çalışma alanında ya da başka birinde. Onu durdurun, sonra ayı teslim edin."
       },
       "toasts": {
         "recomputed": "Güncellendi",
         "not_recomputed": "Güncellenemedi",
         "handed_in": "Teslim edildi",
-        "handed_in_message": "{month} onaya gönderildi.",
+        "handed_in_message": "{month} artık onay bekliyor.",
         "not_handed_in": "Teslim edilmedi",
         "try_again": "Birazdan tekrar deneyin."
       },
       "opening": "Açılış bakiyesi",
-      "export_csv": "CSV",
-      "export_excel": "Excel",
-      "record_time": "Süre kaydet",
-      "no_record_detail": "Bu çalışma alanında saatleriniz takip edilmiyor. Edilmesi gerekiyorsa ekipten sorumlu kişiye başvurun."
+      "export_csv": "CSV olarak indir",
+      "export_excel": "Excel olarak indir",
+      "record_time": "Bugün için süre kaydet",
+      "no_record_detail": "Saatleriniz henüz takip edilmiyor. Edilmesi gerekiyorsa ekipten sorumlu kişiden sizi tanımlamasını isteyin.",
+      "confirm_hand_in": "{month} teslim edildikten sonra saatlerini, izinlerini ve mesai kayıtlarını kendiniz değiştiremezsiniz. Bir düzeltme gerekiyorsa ekipten sorumlu kişiye başvurun."
     },
     "team_time": {
       "title": "Ekip zamanı",
       "not_permitted": "Bunu görüntüleme yetkiniz yok",
-      "export_csv": "CSV",
-      "export_excel": "Excel",
-      "still_open": "Hâlâ açık",
-      "open_count": "{total} içinden {open}",
-      "counted_anywhere": "Herkesin saatleri, nerede kaydedilmiş olurlarsa olsun sayılır. Bir ay kapatıldığında rakamları dondurulur; sonrasında kaydedilen hiçbir şey bu rakamları değiştirmez.",
+      "export_csv": "CSV olarak indir",
+      "export_excel": "Excel olarak indir",
+      "still_open": "Kapatılacak",
+      "open_count": "{total} kişiden {open} tanesi",
+      "counted_anywhere": "Herkesin saatleri, nerede kaydedilmiş olursa olsun saat ve dakika olarak sayılır: 161:12, 161 saat 12 dakika demektir. Birikmiş bakiye ancak bir ay kapatıldıktan sonra bir değer alır. Bir ay kapatıldığında rakamları dondurulur; sonrasında kaydedilen hiçbir şey bu rakamları değiştirmez.",
       "as_things_stand": "Rakamlar {date} tarihindeki durumu yansıtır; ay henüz bitmedi.",
       "toasts": {
         "refused": "İşlem gerçekleşmedi",
@@ -47,20 +48,20 @@
       "not_permitted_detail": "Herkesin saatlerini yalnızca ekipten sorumlu olan kişi görebilir. Kendi ayınız {page} sayfasında.",
       "closing": "Kapatılıyor…",
       "confirm_close_title": "{person} adlı kişinin ayı kapatılsın mı?",
-      "confirm_close_body": "Rakamlar olduğu gibi dondurulur; arkasındaki saatler, izinler ve mesai kayıtları artık değişiklik kabul etmez. Sonradan yeniden açılabilir ama iz bırakır."
+      "confirm_close_body": "Rakamlar şu anki hâliyle dondurulur. Bundan sonra bu ayın saatlerini ve devamsızlıklarını kimse değiştiremez, sonradan bu aya kaydedilen hiçbir şey de sayılmaz. Ay yeniden açılabilir ve yeniden açılması kayda geçer."
     },
     "summary": {
       "owed": "Çalışılacak",
       "worked": "Çalışılan",
       "balance": "Bakiye",
-      "whole_month": "Tüm ay için {duration}",
+      "whole_month": "tüm ay için {duration} içinden",
       "per_week": "Haftada {duration}",
       "includes_away": "{duration} izin veya tatil dahil",
       "carried_forward": "devreden {duration}",
       "as_of": "{date} tarihindeki durum. Ay henüz bitmedi.",
       "not_started": "Bu ay henüz başlamadı.",
-      "needs_review": "Bazı günlerin gözden geçirilmesi gerekiyor — daha önce sayılan saatler artık yok.",
-      "timer_running": "Bir zamanlayıcı hâlâ çalışıyor, bu nedenle bu ay henüz teslim edilemez.",
+      "needs_review": "Bazı günlerin gözden geçirilmesi gerekiyor — daha önce sayılan saatler artık yok. Ay kapatılmadan önce ekipten sorumlu kişinin bu günleri sonuçlandırması gerekir.",
+      "timer_running": "İş öğelerinizden birinde hâlâ çalışan bir zamanlayıcı var; bu çalışma alanında ya da başka birinde. Onu durdurun, sonra ayı teslim edebilirsiniz.",
       "telework_days": "Bu yıl evden çalışma: {count}",
       "nothing_yet": "Bu ay için henüz bir hesaplama yapılmadı.",
       "leave_left_days": "{amount} gün izin kaldı",
@@ -73,7 +74,7 @@
       "what_it_was": "Gün türü",
       "owed": "Çalışılacak",
       "work_items": "İş öğeleri",
-      "other": "Diğer çalışma",
+      "other": "İş öğesi yok",
       "away": "İzinli",
       "worked": "Çalışılan",
       "balance": "Bakiye",
@@ -90,17 +91,17 @@
       "owed": "Çalışılacak",
       "worked": "Çalışılan",
       "balance": "Bakiye",
-      "carried": "Devir",
+      "carried": "Birikmiş bakiye",
       "action": "Eylem",
       "agree": "Onayla",
       "close": "Kapat",
       "reopen": "Yeniden aç",
-      "nobody_yet": "Henüz kimsenin istihdam kaydı yok.",
-      "timer_running": "Bir sayaç hâlâ çalışıyor",
-      "needs_review": "Bazı günlerin gözden geçirilmesi gerekiyor",
+      "nobody_yet": "Henüz kimsenin istihdam kaydı yok. Kişiler sayfasından kişi ekleyin, saatleri sayılmaya başlasın.",
+      "timer_running": "Bir zamanlayıcı hâlâ çalışıyor, bu nedenle bu ay henüz teslim edilemez.",
+      "needs_review": "Bu ay kapatılmadan önce bazı günlerin gözden geçirilmesi gerekiyor",
       "blocked_by_review": "Bu günlere bak",
       "month_running": "Ay henüz bitmedi",
-      "waiting_for": "{person} bekleniyor"
+      "waiting_for": "{person} adlı kişinin ayı teslim etmesi bekleniyor"
     },
     "reopen": {
       "title": "{month} yeniden açılsın mı?",
@@ -141,7 +142,7 @@
       "not_permitted_detail": "Kimin istihdam edildiğini ve hangi koşullarla çalıştığını yalnızca ekipten sorumlu olan kişi değiştirebilir.",
       "column_person": "Kişi",
       "column_since": "Başlangıç",
-      "column_week": "Hafta",
+      "column_week": "Haftalık saat",
       "column_role": "Rol",
       "column_action": "Eylem",
       "add_title": "Kişi ekle",
@@ -155,13 +156,13 @@
       "section_terms": "Koşullar",
       "section_schedule": "Çalışma haftası",
       "hire_date": "İşe başlama tarihi",
-      "timezone": "Saat dilimi",
+      "timezone": "Saat dilimi, örneğin Europe/Vienna",
       "is_manager": "Ekibi yönetir — tüm çalışma alanlarında herkesin saatlerini, devamsızlıklarını ve izinlerini görebilir ve değiştirebilir",
-      "arrangement": "Çalışma düzeni",
+      "arrangement": "Çalışma biçimi",
       "valid_from": "Geçerlilik başlangıcı",
-      "records_target": "Gereken saatler ve güncel bakiye kaydedilsin",
-      "records_target_hint": "Kendi faturasını kesen düzenlerde kapalıdır; bu düzenlerde şirket yalnızca çalışılanı kaydeder, günlük olarak bir saat gerekmez.",
-      "schedule_hint": "Her gün için gereken saatler. 7:42 veya 7,7 yazın, çalışılmayan günü boş bırakın.",
+      "records_target": "Her gün belirli saatler beklensin, birikmiş bakiye tutulsun ve kullandığı izinler sayılsın",
+      "records_target_hint": "Çalışanlar için açık bırakın. Kendi saatleri için bize fatura kesen kişilerde kapatın: onlardan her gün belirli bir saat beklenmez, bakiye tutulmaz ve izin sayılmaz.",
+      "schedule_hint": "Her günün ne kadar süreceği. Yedi saat 42 dakika için 7:42 yazın; aynı süreyi ondalık saat olarak yazmak isterseniz 7,7 yazın. Çalışılmayan günü boş bırakın.",
       "week_total": "Haftada {duration}",
       "cancel": "İptal",
       "save": "Kaydet",
@@ -177,7 +178,7 @@
       "errors": {
         "bad_duration": "Günlerden biri bir zaman uzunluğu değil. 7:42 veya 7,7 yazın ya da boş bırakın.",
         "hire_date_required": "Bu kişinin ne zaman başladığını belirtin ki ilk ayı nereden başlayacağını bilsin.",
-        "week_required": "Bir iş gününün ne kadar sürdüğünü girin, yoksa ayın ölçüleceği bir değer olmaz.",
+        "week_required": "En az bir günü doldurun ki ayının ölçüleceği bir değer olsun. Çalışmadığı günleri boş bırakın.",
         "bad_crm_staff_id": "CRM personel kimliği bir tam sayıdır. E-posta adresine göre eşleştirmek için boş bırakın."
       },
       "toasts": {
@@ -186,24 +187,24 @@
         "removed": "Ayrıldı olarak işaretlendi",
         "refused": "İşlem gerçekleşmedi",
         "try_again": "Lütfen tekrar deneyin.",
-        "brought_back": "Yeniden kadroda"
+        "brought_back": "Yeniden işe alındı"
       },
       "opening": "Açılış bakiyesi",
       "rates": "Ücretler",
       "leave": "İzin",
       "crm_staff_id": "CRM personel ID'si",
       "crm_staff_id_placeholder": "E-postaya göre eşleştirmek için boş bırakın",
-      "crm_guessed": "CRM e-postaya göre eşleşti",
+      "crm_guessed": "CRM yalnızca e-posta adresine göre",
       "crm_missing": "CRM hesabı yok",
       "crm_link": {
         "set": "Burada belirlendi; böylece adresler ne olursa olsun saatler bu hesaba gider.",
-        "email": "E-posta adresine göre eşleştirildi. İki sistemden birinde farklı bir adres olana kadar işe yarar.",
+        "email": "Bunun hangi CRM hesabı olduğu belirtilmedi, bu yüzden saatleri e-posta adresine göre eşleştiriliyor. O adrese sahip bir CRM hesabının var olup olmadığı denetlenmez.",
         "none": "Bu kişiyi CRM'e bağlayan hiçbir şey yok; bu nedenle saatleri hiçbir zaman CRM zamanlayıcısına dönüşmez."
       },
       "confirm_remove_title": "Ayrıldı olarak işaretlensin mi?",
-      "confirm_remove_body": "{person} yeni aylarda görünmez. Kaydedilmiş olan her şey olduğu gibi kalır.",
+      "confirm_remove_body": "{person} yeni aylarda görünmez ve kendi zaman sayfasını artık açamaz; bu yüzden önce son ayını tamamlayın. Kaydedilmiş olan her şey olduğu gibi kalır.",
       "removing": "İşaretleniyor…",
-      "no_hours_yet": "Saat belirlenmedi",
+      "no_hours_yet": "Tanımlanmadı",
       "confirm_remove_permanent": "Geri dönerse daha sonra yeniden işe alabilirsiniz.",
       "pick_somebody_first": "Önce listeden birini seçin",
       "pick_date_first": "İşe başlama tarihini girin",
@@ -213,13 +214,13 @@
     "arrangement": {
       "onsite_full_time": "İş yerinde, tam zamanlı",
       "onsite_part_time": "İş yerinde, yarı zamanlı",
-      "remote_full_time_invoicing": "Uzaktan, tam zamanlı, kendi faturasını kesen",
-      "remote_part_time_invoicing": "Uzaktan, yarı zamanlı, kendi faturasını kesen"
+      "remote_full_time_invoicing": "Uzaktan, tam zamanlı, bize fatura kesiyor",
+      "remote_part_time_invoicing": "Uzaktan, yarı zamanlı, bize fatura kesiyor"
     },
     "entries": {
-      "hint": "Hiçbir iş öğesine ait olmayan süre — toplantı, idari işler, eğitim, seyahat.",
-      "none_yet": "Bu güne henüz bir şey kaydedilmedi.",
-      "day_total": "Bu günde",
+      "hint": "İş öğesine bağlı olmayan saatler — toplantı, idari işler, eğitim, seyahat. Bunlar ayınıza sayılır. İş öğelerindeki saatler oradaki zamanlayıcılardan gelir ve burada değiştirilmez.",
+      "none_yet": "Buraya henüz bir şey eklenmedi. İş öğelerine kaydedilen saatler sayılır ama burada görünmez.",
+      "day_total": "İş öğesi olmayan saatler",
       "how_long": "Süre",
       "what_it_was": "Tür",
       "note": "Not",
@@ -227,7 +228,7 @@
       "add": "Ekle",
       "remove": "Kaldır",
       "imported": "İçe aktarıldı",
-      "month_closed": "Bu ay kapatıldı, saatleri artık değiştirilemez. Bir düzeltme gerekiyorsa ekipten sorumlu kişiye başvurun.",
+      "month_closed": "Bu ay artık açık değil, bu yüzden saatleri değiştirilemez. Bir düzeltme gerekiyorsa ekipten sorumlu kişiden ayı yeniden açmasını isteyin.",
       "category": {
         "meeting": "Şirket içi toplantı",
         "training": "Eğitim",
@@ -238,7 +239,8 @@
         "imported": "İçe aktarıldı"
       },
       "errors": {
-        "bad_duration": "Ne kadar sürdüğünü belirtin. 1:30 veya 1,5 yazın."
+        "bad_duration": "Ne kadar sürdüğünü belirtin. 1:30 veya 1,5 yazın.",
+        "duration_needs_unit": "Ne kadar sürdüğünü belirtin: 1:30, 7h ya da 90m. Tek başına bir sayı, saat mi dakika mı demek istediğinizi göstermez."
       },
       "toasts": {
         "added": "Eklendi",
@@ -246,25 +248,25 @@
         "try_again": "Lütfen tekrar deneyin."
       },
       "close": "Kapat",
-      "not_added_yet": "Henüz eklenmedi",
+      "not_added_yet": "Henüz eklenmedi. Ekle düğmesine basın, yoksa kapattığınızda kaybolur.",
       "confirm_remove_title": "Bu saatler kaldırılsın mı?",
-      "confirm_remove_body": "{duration} bu günden ve ayın toplamından düşülür.",
+      "confirm_remove_body": "{category} için kaydedilen {duration} bu günden ve ayın toplamından düşülür.",
       "removing": "Kaldırılıyor…"
     },
     "attendance": {
       "title": "İşte olduğunuz saatler",
-      "hint": "Bu günün başlangıcı, bitişi ve molaları; saatlerin neye harcandığından ayrı olarak kaydedilir.",
-      "still_running": "Hâlâ sürüyor",
+      "hint": "Bu günün başlangıcı, bitişi ve molaları. Bu ayrı bir kayıttır ve saatlerinize sayılmaz.",
+      "still_running": "Bitiş saati yok",
       "from": "Başlangıç",
       "to": "Bitiş",
       "break": "Mola (dakika)",
-      "where": "Nerede",
+      "where": "Nerede çalıştınız",
       "past_midnight": "Gece yarısını aşmış olarak sayılır.",
       "record": "Kaydet",
       "update": "Güncelle",
       "remove": "Kaldır",
-      "closed_with": "{from} - {to}, {duration}. Bu ay kapatıldı ve artık değiştirilemez.",
-      "closed_without": "Bu gün için hiçbir şey kaydedilmedi ve ay kapatıldı.",
+      "closed_with": "{from} - {to}, {duration}. Bu ay artık açık değil, bu yüzden değiştirilemez.",
+      "closed_without": "Bu gün için hiçbir şey kaydedilmedi ve ay artık açık değil.",
       "location": {
         "office": "Ofiste",
         "home": "Evden çalışma",
@@ -281,14 +283,15 @@
         "try_again": "Lütfen tekrar deneyin."
       },
       "confirm_remove_title": "Bu mesai kaydı kaldırılsın mı?",
-      "confirm_remove_body": "Bu günün başlangıç, bitiş ve mola bilgisi kaldırılır. Bu, kanunen tutulması gereken çalışma süresi kaydıdır.",
+      "confirm_remove_body": "Bu günün başlangıç, bitiş ve mola bilgisi kaldırılır ve geri getirilemez. Saatler yanlışsa kaldırmak yerine düzeltip kaydedin.",
       "removing": "Kaldırılıyor…",
-      "past_midnight_length": "Gece yarısını aşıyor ve {duration} ediyor. Doğru değilse bitiş saatini kontrol edin."
+      "past_midnight_length": "Gece yarısını aşıyor ve {duration} ediyor. Doğru değilse bitiş saatini kontrol edin.",
+      "not_saved_yet": "Henüz kaydedilmedi. Bu saatleri kaydedin, yoksa kapattığınızda kaybolur."
     },
     "imports": {
-      "title": "Saatleri içe aktarma",
-      "subtitle": "Başka bir yerde kaydedilmiş aylar; bir hesap tablosundan okunur ve hiçbir şey yazılmadan önce denetlenir.",
-      "not_permitted_detail": "Saatleri yalnızca ekipten sorumlu olan kişi içe aktarabilir.",
+      "title": "Eski kayıtları içe aktar",
+      "subtitle": "Başka bir yerde kaydedilmiş saatler, devamsızlıklar ve bakiyeler; bir hesap tablosundan okunur ve hiçbir şey yazılmadan önce denetlenir. Çok sayfalı bir dosyada yalnızca açılışta gelen sayfa okunur ve sütun başlıkları o sayfanın ilk satırı olmalıdır.",
+      "not_permitted_detail": "Eski kayıtları yalnızca ekipten sorumlu olan kişi içe aktarabilir.",
       "what_kind": "Dosyanın içeriği",
       "choose_file": "Dosya seç",
       "kind": {
@@ -297,19 +300,19 @@
         "opening_balances": "Açılış bakiyeleri"
       },
       "columns": {
-        "time_entries": "Sütunlar: email, date, bir de hours ya da minutes — başlıklar tam olarak böyle yazılmalı. Varsa note sütunu da korunur. 7:42, 7,7 ve 462 aynı zaman uzunluğu olarak okunur.",
+        "time_entries": "Sütunlar: email, date, bir de hours ya da minutes — başlıklar tam olarak böyle yazılmalı. Varsa note sütunu da korunur. Düz bir sayının ne anlama geldiğine başlık karar verir: hours altında 7,7 ile minutes altında 462 aynı şeydir, 7 saat 42 dakika. 7:42 biçiminde yazıldığındaysa iki başlık altında da aynı okunur.",
         "absences": "Sütunlar: email, start_date, end_date ve type — başlıklar tam olarak böyle yazılmalı. Tek günlük bir izinde end_date sütununu hiç eklemeyin.",
-        "opening_balances": "Sütunlar: email, bakiyenin geçerli olmaya başladığı günü taşıyan effective_on, bir de bakiyenin kendisini taşıyan hours ya da minutes — başlıklar tam olarak böyle yazılmalı."
+        "opening_balances": "Sütunlar: email, bakiyenin geçerli olmaya başladığı günü taşıyan date, bakiyenin kendisini taşıyan hours ya da minutes, bir de rakamın nereden geldiğini yazan basis — başlıklar tam olarak böyle yazılmalı. Bakiye saat değilse time, leave ya da overtime yazan bir kind sütunu ekleyin."
       },
-      "preview_title": "{filename}, uygulanacağı hâliyle",
-      "preview_hint": "Henüz hiçbir şey yazılmadı. Aşağıdaki satırları denetleyin, sonra uygulayın.",
+      "preview_title": "{filename}, {kind} olarak okundu",
+      "preview_hint": "Henüz hiçbir şey yazılmadı. Satırlar, o günler için hâlihazırda kayıtlı olanın üzerine eklenir; bu yüzden iki kez aktarılan bir gün iki kez sayılır. İçe aktarılmış bir dosyayı düzeltmek için düzeltilmiş bir kopyasını aktarmayın, önce dosyayı geri alın.",
       "will_write": "yazılacak",
       "cannot_read": "okunamıyor",
       "skipped": "atlandı",
       "apply": "{count, plural, one {# satır uygula} other {# satır uygula}}",
-      "discard": "Vazgeç",
+      "discard": "Şimdilik dursun",
       "column_row": "Satır",
-      "column_verdict": "Sonuç",
+      "column_verdict": "Ne olacak",
       "column_detail": "Ayrıntı",
       "verdict": {
         "ok": "Yazılacak",
@@ -318,7 +321,7 @@
       },
       "past": "Daha önce içe aktarılan dosyalar",
       "none_yet": "Henüz hiçbir şey içe aktarılmadı.",
-      "row_summary": "{total, plural, one {# satırdan {valid} tanesi} other {# satırdan {valid} tanesi}}",
+      "row_summary": "{total, plural, one {# satırdan {valid} tanesi kullanılabilir} other {# satırdan {valid} tanesi kullanılabilir}}",
       "state": {
         "10": "Yüklendi",
         "20": "Denetleniyor",
@@ -330,7 +333,7 @@
       },
       "undo": "Geri al",
       "undo_title": "{filename} geri alınsın mı?",
-      "undo_body": "Bu dosyanın yazdığı her saat kaldırılır, başka hiçbir şeye dokunulmaz. Bu arada kapatılmış bir aydaki saatler olduğu yerde kalır.",
+      "undo_body": "Bu dosyanın yazdığı her şey geri alınır, başka hiçbir şeye dokunulmaz. Bunların bir kısmı şu anda kapalı olan bir aya sayıldıysa, o ay yeniden açılana kadar hiçbir şey geri alınmaz.",
       "undo_label": "Neden geri alınıyor?",
       "undo_placeholder": "Dosyada mart iki kez yer alıyordu.",
       "undo_confirm": "Geri al",
@@ -344,19 +347,19 @@
         "try_again": "Lütfen tekrar deneyin."
       },
       "template": "Şablon indir",
-      "resume": "Kontrol et ve uygula",
+      "resume": "Dosyayı yeniden aç",
       "reasons": {
-        "unknown_person": "Burada {email} ile giriş yapan kimse yok.",
+        "unknown_person": "Burada {email} ile giriş yapan kimse yok. Kişiyi Kişiler sayfasından ekleyin ya da dosyadaki adresi düzeltin.",
         "bad_date": "Tarih okunamadı.",
-        "bad_duration": "Süre okunamadı.",
-        "more_than_a_day": "Tek bir günde bir günden fazla.",
-        "month_settled": "O ay zaten kapatıldı.",
+        "bad_duration": "Süre okunamadı ya da sıfır. Her satırda bir süre olmalı — böyle bir gün varsa onu dosyaya hiç koymayın.",
+        "more_than_a_day": "Bu, tek bir günde 24 saatten fazla. Sayının saat mi dakika mı olduğunu ve sütun başlığının buna uyduğunu kontrol edin.",
+        "month_settled": "O ay artık açık değil, bu yüzden içine başka bir şey giremez. Bunun girmesi gerekiyorsa ayın yeniden açılmasını isteyin.",
         "bad_balance": "Bakiye okunamadı.",
-        "kind_missing": "Bunun zaman mı izin mi olduğunu belirtin.",
-        "basis_missing": "Bu rakamın neye dayandığını yazın.",
+        "kind_missing": "Dosyadaki kind sütununda time, leave ya da overtime yazmalı.",
+        "basis_missing": "Dosyadaki basis sütunu boş. Rakamın nereden geldiğini yazın, örneğin: eski izin hesap tablosundan.",
         "bad_start_date": "Başlangıç tarihi okunamadı.",
         "ends_before_it_starts": "Başlamadan önce bitiyor.",
-        "unknown_absence_type": "“{code}” adında bir devamsızlık türü yok."
+        "unknown_absence_type": "“{code}” kodlu bir devamsızlık nedeni yok. Kodlar Devamsızlıklar ekranında, Nedenler altında."
       }
     },
     "opening": {
@@ -367,11 +370,11 @@
       "from_label": "Geçerlilik başlangıcı",
       "agreed": "Kabul edildi",
       "agree": "Bu doğru",
-      "not_agreed": "Henüz kabul edilmedi",
+      "not_agreed": "Kişinin kabulü bekleniyor",
       "replaced": "Düzeltmeyle değiştirilen {count} kayıt",
       "record": "Açılış bakiyesi kaydet",
       "record_confirm": "Kaydet",
-      "amount": "Bakiye",
+      "amount": "Bakiye, geride ise eksi",
       "what_for": "Ne için",
       "how_sure": "Ne kadar kesin",
       "basis": "Neye dayanıyor",
@@ -384,9 +387,9 @@
       },
       "confidence": {
         "exact": "Kayıtlardan alındı",
-        "reconstructed": "Yeniden oluşturuldu",
+        "reconstructed": "Başka kayıtlardan çıkarıldı",
         "estimated": "Tahmin edildi",
-        "agreed": "Kişiyle birlikte onaylandı"
+        "agreed": "Kişiyle yapılan görüşmeden"
       },
       "errors": {
         "bad_duration": "Ne kadar olduğunu belirtin. -12:30 veya -12,5 yazın; fazlalık için eksi işaretini koymayın.",
@@ -400,7 +403,7 @@
         "try_again": "Lütfen tekrar deneyin."
       },
       "correct": "Bu değeri düzelt",
-      "agreeing": "Kaydediliyor…",
+      "agreeing": "Kabul ediliyor…",
       "confirm_agree_title": "Bu bakiye onaylansın mı?",
       "confirm_agree_body": "{amount} tutarının doğru olduğunu onaylıyorsunuz. Geri alınamaz. Rakam yanlışsa onaylamayın; ekipten sorumlu kişiye bildirin.",
       "correcting_heading": "Değeri düzelt",
@@ -415,16 +418,16 @@
       "everyone": "Herkes",
       "previous_month": "Önceki ay",
       "next_month": "Sonraki ay",
-      "none_this_month": "Bu ay kimse işten uzak kalmadı.",
-      "not_permitted_detail": "Tüm ekibi yalnızca yönetici görür. Kendi devamsızlıklarınız zaman sayfanızda yer alır.",
-      "month_locked": "ay kilitli",
+      "none_this_month": "Bu ay için kayıtlı devamsızlık yok.",
+      "not_permitted_detail": "Burada size ait bir istihdam kaydı yok, bu yüzden gösterilecek bir şey de yok. Ekipten sorumlu kişiden bir kayıt açmasını isteyin.",
+      "month_locked": "ay kapatıldı — değiştirmek için yeniden açın",
       "approve": "Onayla",
       "reject": "Reddet",
       "delete": "Devamsızlığı sil",
       "column_person": "Kişi",
       "column_reason": "Neden",
       "column_when": "Tarih",
-      "column_away": "Süre",
+      "column_away": "Kaç saat",
       "column_state": "Durum",
       "column_action": "İşlem",
       "state": {
@@ -447,7 +450,7 @@
       "modal": {
         "title": "Devamsızlık kaydet",
         "edit_title": "Devamsızlığı düzenle",
-        "subtitle": "Neden çalışılmış sayılıyorsa, o gün gerçekleşen saatlere eklenir ve ay yine denk çıkar. Hedefin kendisi değişmez.",
+        "subtitle": "Nedenlerin çoğu ayın saatlerine sayılmaya devam eder, böylece ay eksik çıkmaz. Bu kişinin normalde çalışmadığı günler sayılmaz.",
         "person": "Kişi",
         "type": "Neden",
         "no_types": "Henüz neden tanımlanmadı",
@@ -460,11 +463,11 @@
         "last_day": "Son gün",
         "hours_each_day": "Günde kaç saat",
         "hours_placeholder": "örn. 3:30",
-        "hours_hint": "3:30, 3.5 veya 210m biçiminde yazılır.",
+        "hours_hint": "Aralıktaki her gün için saat; 3:30, 3,5 veya 3h biçiminde yazılır. Dakika için 90m yazın.",
         "note": "Not",
         "note_placeholder": "İsteğe bağlı",
         "record": "Kaydet",
-        "hours_unreadable": "Bu bir süre değil. 1:30, 1,5 veya 90 deneyin."
+        "hours_unreadable": "Bu bir süre değil. 3:30, 3,5 ya da doksan dakika için 90m deneyin."
       },
       "toasts": {
         "saved": "Devamsızlık kaydedildi",
@@ -492,16 +495,16 @@
         "draws_on_leave": "Gün izin hakkından düşer",
         "refused": "Bu yapılamadı",
         "try_again": "Lütfen tekrar deneyin.",
-        "confirm_remove_title": "Bu devamsızlık türü kaldırılsın mı?",
-        "confirm_remove_body": "Devamsızlık kaydedilirken “{kind}” artık sunulmayacak. Yalnızca listeden çıkarmak istiyorsanız bunun yerine devre dışı bırakın.",
-        "deleting": "Kaldırılıyor"
+        "confirm_remove_title": "Bu neden silinsin mi?",
+        "confirm_remove_body": "Devamsızlık kaydedilirken “{kind}” artık sunulmayacak. Yalnızca listeden çıkarmak istiyorsanız bunun yerine Pasife al düğmesine basın.",
+        "deleting": "Siliniyor…"
       },
       "filter_person": "İzinleri göster",
-      "confirm_remove_title": "Bu izin kaldırılsın mı?",
-      "confirm_remove_body": "{person} o günler için tam hedefe döner ve {duration} iznine geri eklenir.",
-      "removing": "Kaldırılıyor…",
+      "confirm_remove_title": "Bu devamsızlık silinsin mi?",
+      "confirm_remove_body": "{duration} artık {person} adlı kişinin ayına sayılmaz; bu saatler çalışılmazsa ay eksik kalır. Kullanılan izin varsa geri eklenir.",
+      "removing": "Siliniyor…",
       "refuse_title": "{person} adlı kişinin iznini reddet",
-      "refuse_body": "Kişi burada yazdığınızı görecek; tek başına anlaşılacak kadar açık yazın.",
+      "refuse_body": "Yazdığınız şey kayıtla birlikte saklanır. Kimseye otomatik bildirim gitmez, bu yüzden kişiye kendiniz de söyleyin.",
       "refuse_label": "Gerekçe",
       "refuse_placeholder": "O hafta zaten iki kişi izinli",
       "refuse_cancel": "İptal",
@@ -510,7 +513,7 @@
     },
     "rates": {
       "title": "{person} adlı kişinin zamanının karşılığı",
-      "hint": "Ücret değiştirilmez, tarihlendirilir; böylece eski ücret üzerinden çıkarılmış bir ay ne söylediyse onu söylemeye devam eder. Zam, eski ücretin sona ermesi ve yeni bir ücretin başlamasıdır.",
+      "hint": "Ücretler tarihe göre tutulur, bu yüzden hesaplanmış bir ay kullandığı ücreti korur. Zam kaydetmek için, yürürlüğe girdiği günde başlayan bir ücret ekleyin. Yeni ücret bir öncekinin yerini alır; önceki ücret de kendinden önceki ayları hesaplamayı sürdürür.",
       "none_yet": "Kayıtlı ücret yok. Bu kişi için çıkarılan dökümde saatler görünür, tutar görünmez.",
       "add": "Ücret ekle",
       "add_button": "Ekle",
@@ -541,13 +544,13 @@
         "refused": "Bu kaydedilemedi",
         "try_again": "Lütfen tekrar deneyin."
       },
-      "removing": "Kaldırılıyor…",
-      "confirm_remove_title": "Bu ücret kaldırılsın mı?",
-      "confirm_remove_body": "Hesaplanmış aylar rakamlarını korur. Bundan sonraki aylar bu ücreti kaybeder."
+      "removing": "Siliniyor…",
+      "confirm_remove_title": "Bu ücret silinsin mi?",
+      "confirm_remove_body": "Her ay, okunduğu anda kayıtlı olan ücret üzerinden hesaplanır; kapatılmış aylar da buna dahil. Bunu silmek o ayların tutarını değiştirir. Yalnızca yanlışlıkla kaydedilmişse silin."
     },
     "leave": {
       "title": "{person} adlı kişinin izin hakkı",
-      "hint": "Gün olarak değil, dakika olarak tutulur: her gün aynı saatleri çalışmayan biri için bir gün sabit bir süre değildir. İzin yılı, işe başlama yıl dönümünde başlar.",
+      "hint": "İzin gün olarak değil, saat olarak sayılır; çünkü bir iş günü herkes için aynı uzunlukta değildir. İzin yılı, işe başlama yıl dönümünde başlar.",
       "none_yet": "Henüz kayıtlı bir izin yılı yok.",
       "add": "İzin yılı ekle",
       "add_button": "Ekle",
@@ -556,33 +559,34 @@
       "year_end": "İzin yılı bitişi",
       "entitlement": "Yıllık izin hakkı",
       "carryover": "Devreden",
-      "carryover_placeholder": "İsteğe bağlı, eksi olabilir",
+      "carryover_placeholder": "İsteğe bağlı. Bir kısmını kullanmışsa eksi işareti koyun.",
       "duration_placeholder": "örn. 200:00",
       "basis": "Neye dayanıyor",
       "basis_placeholder": "İsteğe bağlı",
       "between": "{from} – {to}",
       "about_days": "{days, plural, one {yaklaşık # gün} other {yaklaşık # gün}}",
       "carried": "devreden {duration}",
-      "agree": "Kabul et",
-      "agreed": "Kabul edildi",
+      "agree": "Kesinleştir",
+      "agreed": "Kesinleştirildi",
       "errors": {
         "dates_required": "İzin yılının ne zaman başlayıp ne zaman bittiğini belirtin.",
         "backwards": "İzin yılı, başlamadan önce bitemez.",
         "bad_duration": "Süreyi 200:00, 200 veya 12000m biçiminde yazın.",
-        "already_there": "Bu izin yılı için zaten bir kayıt var."
+        "already_there": "Bu izin yılı için zaten bir kayıt var.",
+        "overlapping_year": "Bu tarihleri kapsayan bir izin yılı zaten var."
       },
       "toasts": {
         "added": "İzin yılı eklendi",
-        "agreed": "Kabul edildi olarak işaretlendi",
+        "agreed": "Kesinleştirildi",
         "refused": "Bu kaydedilemedi",
         "try_again": "Lütfen tekrar deneyin."
       },
       "entitlement_with_unit": "Yıllık izin (saat:dakika)",
       "echo_days": "{duration} · {days, plural, one {yaklaşık # gün} other {yaklaşık # gün}}",
       "echo_hours": "{duration}",
-      "agreeing": "Kaydediliyor…",
+      "agreeing": "Kesinleştiriliyor…",
       "confirm_agree_title": "Bu değer kesinleştirilsin mi?",
-      "confirm_agree_body": "{duration} sonrasında değiştirilemez. Sonraki bir değişiklik kendi gerekçesiyle ayrıca kaydedilir."
+      "confirm_agree_body": "{duration} sonrasında hiçbir ekranda değiştirilemez. Kesinleştirmeden önce kişiye söylenenle karşılaştırın."
     },
     "statement": {
       "title": "Faturanızı kesmeden önce",
@@ -592,29 +596,29 @@
       "expected": "Karşılığı",
       "monthly_rate": "Her ay sabit bir tutar",
       "no_rate": "Sizin için henüz kayıtlı bir ücret yok, bu nedenle burada yalnızca saatler görünür. Ekipten sorumlu olan kişiye sorun.",
-      "still_moving": "Ay hâlâ açık, bu nedenle bu rakamlar değişebilir.",
+      "still_moving": "Bu ay henüz kapatılmadı, bu yüzden bu rakamlar değişebilir. Faturayı kesmeden önce ayın kapanmasını bekleyin.",
       "settled": "Ay kapatıldı, bu nedenle bu rakamlar kesinleşti.",
       "decimal_hours": "{hours} ondalık saat"
     },
     "holidays": {
       "title": "Resmi tatiller",
-      "subtitle": "Kimsenin çalışmadığı günler. Tatil, o günün hedefini düşürür; çalışılana eklenmez.",
+      "subtitle": "Kimsenin çalışmadığı günler. Tatil, çalışılmış saat olarak sayılır; kişinin çalışması gereken süreyi düşürmez. Buradaki bir değişiklik yalnızca hâlâ açık olan aylara ulaşır.",
       "back_to_month": "Ay",
       "calendar": "Takvim",
       "previous_year": "Önceki yıl",
       "next_year": "Sonraki yıl",
-      "none_this_year": "Bu takvimde bu yıla ait gün yok.",
-      "not_permitted_detail": "Takvimi yalnızca yönetici değiştirebilir.",
+      "none_this_year": "Bu yıl için henüz gün yok. Eklenene kadar, yıl içindeki her resmi tatil sıradan bir iş günü sayılır.",
+      "not_permitted_detail": "Zaman kayıtlarında henüz tanımlı değilsiniz, bu yüzden bu liste size gösterilmiyor. Ekipten sorumlu kişiye başvurun.",
       "column_date": "Tarih",
       "column_name": "Ad",
       "column_kind": "Tür",
       "column_action": "İşlem",
-      "statutory": "Yasal",
+      "statutory": "Yasal, değiştirilemez",
       "granted": "İdari",
       "make_half": "Yarım güne çevir",
       "make_whole": "Tam güne çevir",
       "remove": "Bu günü kaldır",
-      "add": "Gün ekle",
+      "add": "Herkese tatil günü ekle",
       "add_button": "Ekle",
       "only_half": "Yalnızca yarım gün",
       "name_placeholder": "Günün adı",
@@ -632,7 +636,7 @@
       "whole_day": "Tam gün",
       "half_day": "Yarım gün",
       "confirm_remove_title": "Bu gün kaldırılsın mı?",
-      "confirm_remove_body": "{day} artık tatil olmayacak, bu yüzden herkesin o günkü hedefi yeniden yükselir.",
+      "confirm_remove_body": "{day} artık tatil olmayacak. O gün çalışan herkesin yeniden çalışması beklenir.",
       "removing": "Kaldırılıyor…"
     },
     "shared": {
@@ -642,13 +646,13 @@
     },
     "review_days": {
       "title": "{person} için bakılacak günler",
-      "body": "Bu günlerde sayılan saatler artık yok. Her biri için ne olduğunu yazın, ardından ay kapatılabilir.",
+      "body": "Bu günlerde sayılan saatler artık yok. Ne olduğunu yazmak ayın kapatılmasını sağlar ama saatleri geri getirmez — hâlâ sayılmaları gerekiyorsa önce yeniden kaydedilmelerini sağlayın. Yazdığınız şey günün yanında saklanır ve konusu olan kişi de okuyabilir.",
       "all_settled": "Bakılacak bir şey kalmadı. Bu ay kapatılabilir.",
       "counts_now": "Şu anda {duration} sayılıyor",
       "what_happened": "Ne oldu?",
       "placeholder": "Yanlış güne girilmiş, taşındı",
       "settle": "Bu günü kapat",
-      "close": "Kapat",
+      "close": "Bitti",
       "toasts": {
         "settled": "Gün kapatıldı",
         "refused": "Bu kapatılamadı",
@@ -656,8 +660,8 @@
       }
     },
     "refusals": {
-      "absence_type_in_use": "{in_use, plural, one {Bu türde # devamsızlık kayıtlı, bu yüzden kaldırılamaz — kaydı anlamsız hale gelirdi.} other {Bu türde # devamsızlık kayıtlı, bu yüzden kaldırılamaz — kayıtları anlamsız hale gelirdi.}} Bunun yerine devre dışı bırakın: seçim listesinden kaybolur, mevcut kayıtlar okunur kalır.",
-      "month_settled": "{month} {month_state}, bu yüzden kayıtları artık değişemez. Bunun girmesi gerekiyorsa ayın yeniden açılmasını isteyin.",
+      "absence_type_in_use": "{in_use, plural, one {Bu nedeni kullanan # devamsızlık kayıtlı, bu yüzden silinemez — kaydı anlamsız hale gelirdi.} other {Bu nedeni kullanan # devamsızlık kayıtlı, bu yüzden silinemez — kayıtları anlamsız hale gelirdi.}} Bunun yerine Pasife al düğmesine basın: seçilebilecek nedenler listesinden kaybolur, mevcut kayıtlar okunur kalır.",
+      "month_settled": "{month} {month_state}, bu yüzden kayıtları artık değişemez. Ekipten sorumlu kişiden ayı Ekip zamanı sayfasından yeniden açmasını isteyin.",
       "month_state": {
         "handed_in": "teslim edildi",
         "agreed": "onaylandı",
@@ -671,29 +675,29 @@
       "mine": "Saatlerim",
       "group_by": "Grupla",
       "on_work_items": "İş öğelerine",
-      "other_hours": "Diğer her şey",
-      "entries": "Kayıtlar",
-      "month_state": "Bu rakamlar",
+      "other_hours": "İş öğesine bağlı değil",
+      "entries": "İş öğelerindeki kayıtlar",
+      "month_state": "Bu ay",
       "frozen": "Donduruldu",
-      "frozen_hint": "Ayın saydığı",
+      "frozen_hint": "Bu saatler artık değişemez",
       "live": "Canlı",
-      "live_hint": "Ay hâlâ açık",
+      "live_hint": "Bu saatler hâlâ değişebilir",
       "column_what": "Ne",
       "column_when": "Ne zaman",
       "column_note": "Not",
       "column_long": "Süre",
       "unnamed": "Adsız",
       "still_running": "Hâlâ çalışıyor — henüz bir süresi yok ve sayılmıyor",
-      "gone": "Bu ay bunu saydı, artık yok",
-      "by_hand": "· elle yazıldı",
-      "nothing_logged": "Bu ay hiçbir iş öğesine kayıt yapılmadı.",
+      "gone": "Bu kayıt, ay onu saydıktan sonra silindi. Saatleri hâlâ yukarıdaki rakamların içinde.",
+      "by_hand": "· elle eklendi",
+      "nothing_logged": "Bu ay hiçbir iş öğesine saat kaydedilmedi. Yukarıda görünen ayı kontrol edin.",
       "other_title": "İş öğesi olmayan saatler",
-      "other_subtitle": "Toplantılar, idari işler, eğitim, seyahat — ve öncesinden aktarılan her şey. Bunlar da aya sayılır.",
-      "footnote": "Saatler nerede kaydedildiyse orada sayılır, her çalışma alanında.",
-      "rounding_note": "Dakikalar gün ve proje başına bir kez yuvarlanır, bu yüzden bu ara toplamlar yukarıdaki rakamı vermeyebilir.",
+      "other_subtitle": "Toplantılar, idari işler, eğitim, seyahat, düzeltmeler — bir de başka bir yerden içe aktarılan saatler. Bunlar da aya sayılır ama yukarıdaki tabloda yer almaz. Eksi işaretli bir düzeltme, aydan saat düşer.",
+      "footnote": "Saatler nerede kaydedildiyse orada sayılır, her çalışma alanında. Ücretli izin ve resmi tatiller de aya sayılır ama burada görünmez.",
+      "rounding_note": "Bir projedeki her günün saatleri bir kez yuvarlanır, bu yüzden bu satırların toplamı yukarıdaki rakamdan bir iki dakika farklı çıkabilir. Geçerli olan yukarıdaki rakamdır.",
       "entry_count": "{count, plural, one {· # kayıt} other {· # kayıt}}",
-      "running_note": "{count, plural, one {# sayaç hâlâ çalışıyor. Henüz süresi yok, bu yüzden burada sayılmıyor.} other {# sayaç hâlâ çalışıyor. Henüz süreleri yok, bu yüzden burada sayılmıyor.}}",
-      "missing_note": "{count, plural, one {Bu ayın saydığı # kayıt artık bulunamıyor. Yalnızca kimliği saklandı, gösterilecek başka bir şey yok.} other {Bu ayın saydığı # kayıt artık bulunamıyor. Yalnızca kimlikleri saklandı, gösterilecek başka bir şey yok.}}",
+      "running_note": "{count, plural, one {# zamanlayıcı hâlâ çalışıyor, bu yüzden henüz hiçbir şey saymıyor. İş öğesinde durdurun. Çalıştığı sürece ay teslim edilemez.} other {# zamanlayıcı hâlâ çalışıyor, bu yüzden henüz hiçbir şey saymıyor. İş öğelerinde durdurun. Çalıştıkları sürece ay teslim edilemez.}}",
+      "missing_note": "{count, plural, one {Bu ayın saydığı # kayıt o zamandan beri silindi. Saatleri buradaki rakamlarda yok ama ay onları saymaya devam ediyor.} other {Bu ayın saydığı # kayıt o zamandan beri silindi. Saatleri buradaki rakamlarda yok ama ay onları saymaya devam ediyor.}}",
       "week_of": "{date} haftası",
       "grouping": {
         "day": "Gün",
@@ -703,8 +707,8 @@
         "workspace": "Çalışma alanı"
       },
       "under_a_minute": "bir dakikadan az",
-      "auto_stopped": "· sistem durdurdu",
-      "auto_stopped_hint": "Bu sayaç açık kaldı ve azami değerde durduruldu. Süre bir tavan, ölçüm değil — düzeltilmesi gerekiyor."
+      "auto_stopped": "· sistem durdurdu, düzeltilmesi gerekiyor",
+      "auto_stopped_hint": "Bu zamanlayıcı açık kaldı, bu yüzden sistem onu izin verdiği en uzun sürede durdurdu. Bu bir sınır, çalışılmış süre değil. Ay teslim edilmeden önce iş öğesinde düzeltin."
     }
   }
 }

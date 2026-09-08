@@ -102,6 +102,7 @@ export const HrHolidaysRoot = observer(function HrHolidaysRoot() {
   const {
     data: holidays,
     isLoading: loadingHolidays,
+    error: holidaysFailed,
     mutate,
   } = useSWR(calendarId ? `HR_HOLIDAYS_${calendarId}_${year}` : null, () =>
     calendarId ? hrService.holidays(calendarId, year) : null
@@ -155,12 +156,19 @@ export const HrHolidaysRoot = observer(function HrHolidaysRoot() {
   };
 
   const handleToggleHalf = async (holiday: THrHoliday) => {
+    const length = otherLength(holiday.day_fraction);
     setIsBusy(true);
     try {
-      await hrService.updateHoliday(holiday.id, {
-        day_fraction: otherLength(holiday.day_fraction),
-      });
+      await hrService.updateHoliday(holiday.id, { day_fraction: length });
       await mutate();
+      // One click on a small icon is worth half a working day to everybody in
+      // every open month, so it should say out loud what the day is now. Without
+      // it somebody unsure whether the click landed presses again and puts it back.
+      setToast({
+        type: TOAST_TYPE.SUCCESS,
+        title: localName(holiday, currentLocale),
+        message: isHalf(length) ? t("hr.holidays.half_day") : t("hr.holidays.whole_day"),
+      });
     } catch (failure) {
       complainAbout(failure, t, currentLocale);
     } finally {
@@ -229,6 +237,11 @@ export const HrHolidaysRoot = observer(function HrHolidaysRoot() {
         <Loader className="flex flex-col gap-2">
           <Loader.Item height="200px" />
         </Loader>
+      ) : holidaysFailed && !holidays ? (
+        // A year that would not load must not read as a year with no days in it.
+        // Told the calendar is empty, somebody starts typing the thirteen statutory
+        // days in by hand, on top of the ones that were there all along.
+        <HolidaysUnavailable notAllowed={false} onRetry={() => void mutate()} />
       ) : rows.length === 0 ? (
         <EmptyStateCompact
           title={t("hr.holidays.none_this_year")}
@@ -254,6 +267,10 @@ export const HrHolidaysRoot = observer(function HrHolidaysRoot() {
         title={t("hr.holidays.confirm_remove_title")}
         content={t("hr.holidays.confirm_remove_body", { day: localName(removing, currentLocale) })}
         primaryButtonText={{ default: t("hr.holidays.remove"), loading: t("hr.holidays.removing") }}
+        // The shared modal falls back to an English "Cancel". On the one dialog
+        // here that destroys something, the safe way out should not be the only
+        // word a German reader cannot read.
+        secondaryButtonText={t("common.cancel")}
       />
     </div>
   );
@@ -294,18 +311,23 @@ const HolidayScope = ({ calendars, calendarId, onCalendar, year, onYear }: TScop
   const { t } = useTranslation();
   return (
     <div className="flex flex-wrap items-center gap-3">
-      <select
-        value={calendarId ?? ""}
-        onChange={(event) => onCalendar(event.target.value)}
-        aria-label={t("hr.holidays.calendar")}
-        className="rounded border border-subtle bg-layer-1 px-2 py-1 text-13 text-primary"
-      >
-        {(calendars ?? []).map((row) => (
-          <option key={row.id} value={row.id}>
-            {row.name} ({row.country_code})
-          </option>
-        ))}
-      </select>
+      {/* Austria is the only calendar anybody here has, and a picker with one
+          entry reads like a choice that has to be got right before a day can be
+          added. It comes back the moment there is something to choose between. */}
+      {(calendars?.length ?? 0) > 1 && (
+        <select
+          value={calendarId ?? ""}
+          onChange={(event) => onCalendar(event.target.value)}
+          aria-label={t("hr.holidays.calendar")}
+          className="rounded border border-subtle bg-layer-1 px-2 py-1 text-13 text-primary"
+        >
+          {(calendars ?? []).map((row) => (
+            <option key={row.id} value={row.id}>
+              {row.name} ({row.country_code})
+            </option>
+          ))}
+        </select>
+      )}
 
       <div className="flex items-center gap-1">
         <Button variant="ghost" size="lg" onClick={() => onYear(year - 1)} aria-label={t("hr.holidays.previous_year")}>
@@ -337,7 +359,15 @@ const AddHolidayForm = ({ date, name, half, problem, isBusy, onDate, onName, onH
   const { t } = useTranslation();
 
   return (
-    <div className="flex flex-col gap-3 rounded-md border border-subtle p-3">
+    // A real form, so that Enter in either field — and the Go key on a phone,
+    // where the keyboard covers the button entirely — finishes the day.
+    <form
+      className="flex flex-col gap-3 rounded-md border border-subtle p-3"
+      onSubmit={(event) => {
+        event.preventDefault();
+        onAdd();
+      }}
+    >
       <p className="text-13 font-medium text-secondary">{t("hr.holidays.add")}</p>
 
       <div className="flex flex-wrap items-end gap-3">
@@ -350,6 +380,8 @@ const AddHolidayForm = ({ date, name, half, problem, isBusy, onDate, onName, onH
             type="date"
             value={date}
             onChange={(event) => onDate(event.target.value)}
+            aria-invalid={Boolean(problem)}
+            aria-describedby={problem ? "hr-holiday-problem" : undefined}
             className="block rounded border border-subtle bg-layer-1 px-2 py-1 text-13 text-primary"
           />
         </div>
@@ -364,6 +396,8 @@ const AddHolidayForm = ({ date, name, half, problem, isBusy, onDate, onName, onH
             value={name}
             placeholder={t("hr.holidays.name_placeholder")}
             onChange={(event) => onName(event.target.value)}
+            aria-invalid={Boolean(problem)}
+            aria-describedby={problem ? "hr-holiday-problem" : undefined}
             className="block w-full rounded border border-subtle bg-layer-1 px-2 py-1 text-13 text-primary"
           />
         </div>
@@ -378,13 +412,17 @@ const AddHolidayForm = ({ date, name, half, problem, isBusy, onDate, onName, onH
           {t("hr.holidays.only_half")}
         </label>
 
-        <Button variant="primary" size="lg" loading={isBusy} prependIcon={<Plus />} onClick={onAdd}>
+        <Button variant="primary" size="lg" type="submit" loading={isBusy} prependIcon={<Plus />}>
           {t("hr.holidays.add_button")}
         </Button>
       </div>
 
-      {problem && <p className="text-13 text-danger-primary">{problem}</p>}
-    </div>
+      {problem && (
+        <p id="hr-holiday-problem" role="alert" className="text-13 text-danger-primary">
+          {problem}
+        </p>
+      )}
+    </form>
   );
 };
 
@@ -452,7 +490,10 @@ const HolidayRow = ({ holiday, isBusy, onToggleHalf, onRemove }: TRowProps) => {
         <span
           className={cn(
             "rounded-sm px-1.5 py-0.5 text-13 font-medium",
-            isHalf(holiday.day_fraction) ? "bg-warning-subtle text-warning-primary" : "text-tertiary"
+            // Quiet rather than amber: half days are what 24 and 31 December are
+            // meant to be, and amber elsewhere in the module means somebody has a
+            // decision to make. A cautious reader would "correct" them.
+            isHalf(holiday.day_fraction) ? "bg-layer-2 text-secondary" : "text-tertiary"
           )}
         >
           {isHalf(holiday.day_fraction) ? t("hr.holidays.half_day") : t("hr.holidays.whole_day")}

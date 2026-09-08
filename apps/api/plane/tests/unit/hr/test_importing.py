@@ -8,7 +8,7 @@
 import pytest
 
 # Module imports
-from plane.hr.services.importing import _as_minutes, _length_column
+from plane.hr.services.importing import _as_minutes, _length_column, parse, separator_of
 
 pytestmark = [pytest.mark.unit]
 
@@ -53,3 +53,33 @@ class TestLengthsFromASpreadsheet:
         assert _as_minutes(*_length_column({})) is None
         assert _as_minutes(*_length_column({"hours": "half a day"})) is None
         assert _as_minutes(*_length_column({"hours": ""})) is None
+
+
+class TestWhicheverWayTheSheetWasSaved:
+    """Which character a spreadsheet put between its columns.
+
+    Excel uses the list separator of the machine it was saved on, and on a
+    German or Austrian Windows that is a semicolon. Read with a comma, such a
+    file has one column, every row fails at once, and the person is told their
+    file is wrong when it is the one their own spreadsheet just made.
+    """
+
+    def test_a_comma_file_reads_as_columns(self):
+        assert separator_of("email,date,hours\na@b.test,2026-01-01,7:42") == ","
+
+    def test_a_semicolon_file_reads_as_columns(self):
+        assert separator_of("email;date;hours\na@b.test;2026-01-01;7:42") == ";"
+
+    def test_a_tab_file_reads_as_columns(self):
+        assert separator_of("email\tdate\thours\na@b.test\t2026-01-01\t7:42") == "\t"
+
+    def test_a_comma_inside_a_note_does_not_decide_it(self):
+        heading = "email;date;hours;note"
+        row = "a@b.test;2026-01-01;7:42;Meeting, then travel, then more travel"
+        assert separator_of(heading + "\n" + row) == ";"
+
+    def test_the_same_rows_come_out_of_either_file(self):
+        comma = parse("email,date,hours\na@b.test,2026-01-01,7:42\n", "csv")
+        semicolon = parse("email;date;hours\na@b.test;2026-01-01;7:42\n", "csv")
+        assert comma == semicolon
+        assert comma[0]["hours"] == "7:42"

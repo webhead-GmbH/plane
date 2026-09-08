@@ -58,7 +58,15 @@ export const HrReasonModal = ({
   }, []);
 
   return (
-    <ModalCore isOpen={isOpen} handleClose={onClose} position={EModalPosition.CENTER} width={EModalWidth.XL}>
+    // Escape and a click outside are held shut while the request is in flight:
+    // the reason is required and was typed by hand, and letting the dialog go
+    // mid-sentence loses it without saying whether the thing was done.
+    <ModalCore
+      isOpen={isOpen}
+      handleClose={isBusy ? () => {} : onClose}
+      position={EModalPosition.CENTER}
+      width={EModalWidth.XL}
+    >
       <div className="flex flex-col gap-4 p-5">
         <div className="flex items-start gap-3">
           <span className="flex size-9 flex-shrink-0 items-center justify-center rounded-full bg-warning-subtle">
@@ -86,7 +94,7 @@ export const HrReasonModal = ({
         </div>
 
         <div className="flex items-center justify-end gap-2">
-          <Button variant="secondary" size="lg" onClick={onClose}>
+          <Button variant="secondary" size="lg" disabled={isBusy} onClick={onClose}>
             {cancelLabel}
           </Button>
           <Button

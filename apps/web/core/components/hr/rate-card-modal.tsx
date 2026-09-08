@@ -149,10 +149,10 @@ export const HrRateCardModal = ({ person, onClose }: TProps) => {
                 <span className="flex-1 text-13 text-tertiary">
                   {row.valid_to
                     ? t("hr.rates.between", {
-                        from: formatDayWithYear(row.valid_from),
-                        to: formatDayWithYear(row.valid_to),
+                        from: formatDayWithYear(row.valid_from, currentLocale),
+                        to: formatDayWithYear(row.valid_to, currentLocale),
                       })
-                    : t("hr.rates.from", { date: formatDayWithYear(row.valid_from) })}
+                    : t("hr.rates.from", { date: formatDayWithYear(row.valid_from, currentLocale) })}
                 </span>
                 <HrRowAction
                   icon={<Trash2 className="size-4" />}
@@ -232,7 +232,11 @@ export const HrRateCardModal = ({ person, onClose }: TProps) => {
             </div>
           </div>
 
-          {problem && <p className="text-13 text-danger-primary">{problem}</p>}
+          {problem && (
+            <p role="alert" className="text-13 text-danger-primary">
+              {problem}
+            </p>
+          )}
 
           <div className="flex justify-end">
             <Button variant="primary" size="lg" loading={isBusy} onClick={() => void handleAdd()}>
@@ -257,6 +261,7 @@ export const HrRateCardModal = ({ person, onClose }: TProps) => {
         title={t("hr.rates.confirm_remove_title")}
         content={t("hr.rates.confirm_remove_body")}
         primaryButtonText={{ default: t("hr.rates.remove"), loading: t("hr.rates.removing") }}
+        secondaryButtonText={t("common.cancel")}
       />
     </ModalCore>
   );

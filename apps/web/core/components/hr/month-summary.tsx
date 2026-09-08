@@ -95,6 +95,12 @@ const OwedFigure = ({
 }) => {
   const { t } = useTranslation();
 
+  // The working week only explains a figure there is one of. Where no daily
+  // target is kept — the arrangements where somebody invoices their own hours —
+  // the card would otherwise owe nothing and a week at once in the same breath,
+  // and nobody could tell whether that was the contract or a broken month.
+  const weekly = shown.target ? contractedWeeklyMinutes : null;
+
   return (
     <HrFigure
       label={t("hr.summary.owed")}
@@ -102,8 +108,8 @@ const OwedFigure = ({
       hint={
         shown.isPartial
           ? t("hr.summary.whole_month", { duration: formatMinutes(shown.monthTarget) })
-          : contractedWeeklyMinutes
-            ? t("hr.summary.per_week", { duration: formatMinutes(contractedWeeklyMinutes) })
+          : weekly
+            ? t("hr.summary.per_week", { duration: formatMinutes(weekly) })
             : undefined
       }
     />

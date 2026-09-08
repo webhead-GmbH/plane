@@ -15,6 +15,7 @@ import { Loader, Tooltip } from "@plane/ui";
 import { cn } from "@plane/utils";
 // services
 import {
+  EHrPeriodState,
   EHrTimeCategory,
   HrService,
   type THrEmploymentProfile,
@@ -27,7 +28,15 @@ import {
 // local imports
 import { HrFigure } from "./figure";
 import { HrPeriodStepper } from "./period-stepper";
-import { formatDayLabel, formatDayWithYear, formatMinutes, formatMonthLabel, nextMonth, previousMonth } from "./utils";
+import {
+  formatDayLabel,
+  formatDayWithYear,
+  formatMinutes,
+  formatMonthLabel,
+  nextMonth,
+  periodStateKey,
+  previousMonth,
+} from "./utils";
 
 const hrService = new HrService();
 
@@ -93,9 +102,13 @@ const useWorklogDetail = (personId: string, year: number, month: number, groupin
   const viewer = useHrViewer(personId);
   const { subjectId } = viewer;
 
+  const question = subjectId ? `HR_WORKLOG_DETAIL_${subjectId}_${year}_${month}_${grouping}` : null;
+
   const { data, isLoading, error, mutate } = useSWR(
-    subjectId ? `HR_WORKLOG_DETAIL_${subjectId}_${year}_${month}_${grouping}` : null,
-    () => (subjectId ? hrService.worklogDetail(subjectId, year, month, grouping) : null),
+    question,
+    // Each month is kept alongside the question it answers, because the answer
+    // itself cannot say whose hours it is.
+    async () => ({ question, detail: await hrService.worklogDetail(subjectId, year, month, grouping) }),
     // The month, the person and the grouping are all in the key, so changing any
     // of them would otherwise empty the table and unmount the very control that
     // was just used — taking the keyboard focus, or the button under the cursor,
@@ -105,17 +118,21 @@ const useWorklogDetail = (personId: string, year: number, month: number, groupin
 
   const refusal = (error ?? viewer.error) as { status?: number } | undefined;
   const notAllowed = refusal?.status === 403;
+  const isAnswer = data?.question === question;
 
   return {
     isManager: viewer.isManager,
     people: viewer.people,
     subjectId,
-    detail: data ?? null,
+    detail: data?.detail ?? null,
     notAllowed,
     isLoading: (isLoading || viewer.isLoading) && !data,
-    // Failed only when there is nothing good to show — a failed revalidation
-    // must not wipe a table somebody is reading.
-    hasFailed: Boolean(error || viewer.error) && (notAllowed || !data),
+    // Failed only when there is nothing good to show — a failed revalidation of
+    // the month on screen must not wipe a table somebody is reading. A month
+    // that was asked for and never arrived is a different matter: leaving the
+    // one before it under the new month's label, or under somebody else's name,
+    // would have it read as an answer it is not.
+    hasFailed: Boolean(error || viewer.error) && (notAllowed || !isAnswer),
     retry: () => void mutate(),
   };
 };
@@ -162,9 +179,8 @@ export const HrWorklogDetailRoot = observer(function HrWorklogDetailRoot() {
     );
 
   // Somebody can be a member of the workspace without being employed through it.
-  // With nobody to ask about, no request is made at all — so without this the
-  // screen would fall through to its own defaults and state four confident
-  // figures about a month it never fetched.
+  // For them there is nothing here at all and nothing to choose from, where a
+  // manager with no hours of their own has everybody else's to look at.
   if (!subjectId && !isManager) return <NoEmploymentRecord />;
 
   if (hasFailed) return <DetailUnavailable notAllowed={notAllowed} onRetry={retry} />;
@@ -183,20 +199,26 @@ export const HrWorklogDetailRoot = observer(function HrWorklogDetailRoot() {
         onGroupingChange={setGrouping}
       />
 
-      <DetailSummary detail={detail} />
+      {subjectId ? (
+        <>
+          <DetailSummary detail={detail} />
 
-      <DetailTable
-        detail={detail}
-        grouping={grouping}
-        scope={`${subjectId}_${year}_${month}_${grouping}`}
-        opened={opened}
-        onToggle={(seat, nextOpen) => setOpened((current) => ({ ...current, [seat]: nextOpen }))}
-        locale={currentLocale}
-      />
+          <DetailTable
+            detail={detail}
+            grouping={grouping}
+            scope={`${subjectId}_${year}_${month}_${grouping}`}
+            opened={opened}
+            onToggle={(seat, nextOpen) => setOpened((current) => ({ ...current, [seat]: nextOpen }))}
+            locale={currentLocale}
+          />
 
-      <OtherHours detail={detail} locale={currentLocale} />
+          <OtherHours detail={detail} locale={currentLocale} />
 
-      <DetailFootnote detail={detail} />
+          <DetailFootnote detail={detail} />
+        </>
+      ) : (
+        <NobodyChosen />
+      )}
     </div>
   );
 });
@@ -280,9 +302,17 @@ const DetailSummary = ({ detail }: { detail: THrWorklogDetail | null }) => {
           label={t("hr.detail.entries")}
           value={String((detail?.groups ?? []).reduce((total, row) => total + row.entries, 0))}
         />
+        {/*
+         * The month's own word, not a word of this screen's invention: a month
+         * that has merely been handed in is not the same thing as one payroll
+         * has closed, and somebody who spots a mistake the next day needs to
+         * know which of the two they are looking at. A month nobody has ever
+         * opened has not been handed in, so that is what it says. The hint
+         * still answers the other question — whether these hours can change.
+         */}
         <HrFigure
           label={t("hr.detail.month_state")}
-          value={detail?.is_settled ? t("hr.detail.frozen") : t("hr.detail.live")}
+          value={t(periodStateKey(detail?.period_state ?? EHrPeriodState.OPEN))}
           hint={detail?.is_settled ? t("hr.detail.frozen_hint") : t("hr.detail.live_hint")}
         />
       </div>
@@ -518,6 +548,25 @@ const DetailFootnote = ({ detail }: { detail: THrWorklogDetail | null }) => {
       {detail && !detail.totals_reconcile ? `${t("hr.detail.rounding_note")} ` : ""}
       {t("hr.detail.footnote")}
     </p>
+  );
+};
+
+/**
+ * Somebody who looks after the team but has no hours of their own — typically
+ * whoever administers the installation.
+ *
+ * There is nobody to ask about until they choose, so nothing was fetched, and a
+ * screen that filled the gap with its own defaults would state four confident
+ * figures — no hours, no entries, a month still open — about a month it never
+ * asked for. The reasonable conclusion from that is that hours have been lost.
+ */
+const NobodyChosen = () => {
+  const { t } = useTranslation();
+
+  return (
+    <div className="rounded-md border border-subtle bg-layer-1 px-4 py-6 text-13 text-tertiary">
+      {t("hr.people.pick_somebody_first")}
+    </div>
   );
 };
 

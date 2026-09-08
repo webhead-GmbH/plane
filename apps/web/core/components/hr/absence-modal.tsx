@@ -19,7 +19,7 @@ import {
   type THrEmploymentProfile,
 } from "@/services/hr.service";
 // local imports
-import { localName, parseDuration } from "./utils";
+import { formatMinutes, localName, parseDuration } from "./utils";
 
 export type TAbsenceDraft = {
   profile_id: string;
@@ -62,7 +62,15 @@ const GRANULARITY_KEY: Record<number, string> = {
 const fieldClass = "border-subtle bg-layer-1 text-primary w-full rounded-md border px-3 py-1.5 text-13";
 const labelClass = "text-tertiary mb-1 block text-13 font-medium";
 
-const today = () => new Date().toISOString().slice(0, 10);
+/**
+ * Today where whoever is filling this in stands, rather than today in Greenwich.
+ * Late on a winter evening in Vienna those are two different days, and the
+ * dialog would open on yesterday already filled in and looking right.
+ */
+const today = () => {
+  const now = new Date();
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+};
 
 /**
  * Nothing chosen. A dialog that opens ahead of the kinds of absence waits like
@@ -91,14 +99,18 @@ const asTyped = (
   activeTypes: THrAbsenceType[],
   fixedProfileId?: string
 ): TTyped => ({
-  profileId: absence?.profile ?? fixedProfileId ?? people[0]?.id ?? "",
-  typeId: absence?.absence_type ?? activeTypes[0]?.id ?? "",
+  // Where the roster holds one person there is nobody else it could be, so
+  // asking for your own time off is not made into an extra step.
+  profileId: absence?.profile ?? fixedProfileId ?? (people.length === 1 ? people[0].id : ""),
+  typeId: absence?.absence_type ?? "",
   startDate: absence?.start_date ?? today(),
   endDate: absence?.end_date ?? today(),
   granularity: absence?.granularity ?? EHrGranularity.FULL_DAY,
   startHalf: absence?.start_half ?? EHrHalf.AFTERNOON,
   endHalf: absence?.end_half ?? EHrHalf.MORNING,
-  hours: absence?.minutes_per_day ? String(absence.minutes_per_day / 60) : "",
+  // As h:mm, the one wording that reads back exactly: an hour and forty minutes
+  // in hours is 1.666… and the box would refuse what the product itself wrote.
+  hours: absence?.minutes_per_day ? formatMinutes(absence.minutes_per_day) : "",
   reason: absence?.reason ?? "",
 });
 
@@ -106,9 +118,20 @@ const asTyped = (
 const minutesEachDay = (granularity: EHrGranularity, hours: string) =>
   granularity === EHrGranularity.HOURS ? parseDuration(hours) : null;
 
-/** Hours were asked for and what was typed is not a length of time. */
+const MINUTES_IN_A_DAY = 24 * 60;
+
+/**
+ * Hours were asked for and what was typed is not a length of time.
+ *
+ * A bare number counts as hours, so somebody who means ninety minutes at the
+ * doctor and types 90 has asked to be away for ninety hours a day. That is
+ * silently cut down to whole days when it is worked out, and a whole day comes
+ * off their leave — so anything longer than a day is refused here, while there
+ * is still somebody at the screen to correct it.
+ */
 const hoursUnreadable = (granularity: EHrGranularity, minutesPerDay: number | null) =>
-  granularity === EHrGranularity.HOURS && (minutesPerDay === null || minutesPerDay <= 0);
+  granularity === EHrGranularity.HOURS &&
+  (minutesPerDay === null || minutesPerDay <= 0 || minutesPerDay > MINUTES_IN_A_DAY);
 
 /**
  * Halves belong to a half-day absence and to nothing else. A one-day absence is
@@ -329,6 +352,7 @@ const PersonField = ({
         disabled={isSettled}
         onChange={(event) => onChange(event.target.value)}
       >
+        <option value="">{t("common.select")}</option>
         {people.map((person) => (
           <option key={person.id} value={person.id}>
             {person.member_display_name}
@@ -363,6 +387,7 @@ const TypeField = ({
         onChange={(event) => onChange(event.target.value)}
       >
         {activeTypes.length === 0 && <option value="">{t("hr.absences.modal.no_types")}</option>}
+        {activeTypes.length > 0 && <option value="">{t("common.select")}</option>}
         {activeTypes.map((type) => (
           <option key={type.id} value={type.id}>
             {localName(type, currentLocale) || type.code}
@@ -460,7 +485,9 @@ const DayLengthFields = ({
         >
           {[EHrGranularity.FULL_DAY, EHrGranularity.HALF_DAY, EHrGranularity.HOURS].map((option) => (
             <option key={option} value={option}>
-              {t(`hr.absences.granularity.${GRANULARITY_KEY[option]}`)}
+              {option === EHrGranularity.HALF_DAY && isOneDay
+                ? t("hr.absences.granularity.half_day_single")
+                : t(`hr.absences.granularity.${GRANULARITY_KEY[option]}`)}
             </option>
           ))}
         </select>

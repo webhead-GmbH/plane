@@ -16,17 +16,20 @@ import { AlertModalCore, EModalPosition, EModalWidth, ModalCore } from "@plane/u
 import { EHrTimeCategory, EHrTimeSource, HrService, type THrTimeEntry } from "@/services/hr.service";
 // local imports
 import { HrAttendancePanel } from "./attendance-panel";
-import { formatDayLabel, formatMinutes, parseDuration, refusalMessage } from "./utils";
+import { formatMinutes, parseDuration, refusalMessage } from "./utils";
 
 const hrService = new HrService();
 
+// Correction is left out on purpose: nothing that can be typed here subtracts,
+// so choosing it would add the hour it was meant to take off. Hours that went in
+// wrong are removed and entered again. Rows that already carry the category —
+// imports, and anything written through the API — still read back as corrections.
 const CATEGORIES = [
   EHrTimeCategory.MEETING,
   EHrTimeCategory.TRAINING,
   EHrTimeCategory.ADMIN,
   EHrTimeCategory.TRAVEL,
   EHrTimeCategory.ON_CALL,
-  EHrTimeCategory.CORRECTION,
 ];
 
 const CATEGORY_KEY: Record<number, string> = {
@@ -37,6 +40,28 @@ const CATEGORY_KEY: Record<number, string> = {
   [EHrTimeCategory.ON_CALL]: "on_call",
   [EHrTimeCategory.CORRECTION]: "correction",
   [EHrTimeCategory.IMPORTED]: "imported",
+};
+
+/**
+ * The day this dialog is about, year and all.
+ *
+ * The day table behind sits inside a month whose year is on screen, so the rows
+ * there do without it. This dialog does not: entering a month from before the
+ * company used Plane puts somebody a year or two back, and "Record time" moves
+ * the month underneath them. A day entered into the wrong year shows up nowhere
+ * except a balance that will not add up.
+ */
+const dayTitle = (isoDate: string, locale?: string) => {
+  const date = new Date(`${isoDate}T00:00:00`);
+  if (Number.isNaN(date.getTime())) return isoDate;
+  return date.toLocaleDateString(locale, { weekday: "short", day: "numeric", month: "short", year: "numeric" });
+};
+
+/** Why there is no list: it is still coming, it went wrong, or the day is genuinely empty. */
+const HrNothingListed = ({ isLoading, failed }: { isLoading: boolean; failed: boolean }) => {
+  const { t } = useTranslation();
+  if (isLoading) return null;
+  return <p className="text-13 text-tertiary">{t(failed ? "hr.shared.load_failed" : "hr.entries.none_yet")}</p>;
 };
 
 type TProps = {
@@ -79,9 +104,13 @@ export const HrDayEntriesModal = ({
   const hasUnsaved = minutes.trim() !== "" || note.trim() !== "";
   const [removing, setRemoving] = useState<THrTimeEntry | null>(null);
 
-  const { data: entries, mutate } = useSWR(
-    workDate && profileId ? `HR_DAY_ENTRIES_${workDate}_${profileId}` : null,
-    () => (workDate && profileId ? hrService.timeEntries(workDate, workDate, profileId) : null)
+  const {
+    data: entries,
+    error,
+    isLoading,
+    mutate,
+  } = useSWR(workDate && profileId ? `HR_DAY_ENTRIES_${workDate}_${profileId}` : null, () =>
+    workDate && profileId ? hrService.timeEntries(workDate, workDate, profileId) : null
   );
 
   const mine = (entries ?? []).filter((row) => row.entry_date === workDate);
@@ -89,6 +118,14 @@ export const HrDayEntriesModal = ({
 
   const handleAdd = async () => {
     if (!workDate || !profileId) return;
+    // A bare number is read as decimal hours further in, while the break field
+    // in the box above counts a bare number as minutes. Somebody out of a
+    // twenty-minute stand-up types 20 and means neither reliably, so ask which
+    // it is rather than quietly record twenty hours.
+    if (/^\d+$/.test(minutes.trim())) {
+      setProblem(t("hr.entries.errors.duration_needs_unit"));
+      return;
+    }
     const parsed = parseDuration(minutes);
     if (parsed === null || parsed === 0) {
       setProblem(t("hr.entries.errors.bad_duration"));
@@ -147,7 +184,7 @@ export const HrDayEntriesModal = ({
       width={EModalWidth.XXL}
     >
       <div className="flex flex-col gap-4 p-5">
-        <h3 className="text-16 font-medium text-primary">{workDate ? formatDayLabel(workDate, currentLocale) : ""}</h3>
+        <h3 className="text-16 font-medium text-primary">{workDate ? dayTitle(workDate, currentLocale) : ""}</h3>
 
         {/* When they were at work comes first, and separately: it is the record the
             law asks for, and the hours below are what those hours went on. */}
@@ -190,7 +227,7 @@ export const HrDayEntriesModal = ({
             </div>
           </div>
         ) : (
-          <p className="text-13 text-tertiary">{t("hr.entries.none_yet")}</p>
+          <HrNothingListed isLoading={isLoading} failed={error !== undefined} />
         )}
 
         {isLocked ? (
@@ -268,8 +305,10 @@ export const HrDayEntriesModal = ({
         title={t("hr.entries.confirm_remove_title")}
         content={t("hr.entries.confirm_remove_body", {
           duration: removing ? formatMinutes(removing.minutes) : "",
+          category: removing ? t(`hr.entries.category.${CATEGORY_KEY[removing.category] ?? "admin"}`) : "",
         })}
         primaryButtonText={{ default: t("hr.entries.remove"), loading: t("hr.entries.removing") }}
+        secondaryButtonText={t("common.cancel")}
       />
     </ModalCore>
   );

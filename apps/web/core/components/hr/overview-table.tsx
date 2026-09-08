@@ -133,13 +133,14 @@ export const HrOverviewTable = ({ rows, busyPeriodId, onApprove, onLock, onReope
                   {formatBalance(row.closing_balance_minutes)}
                 </td>
                 <td className="px-4 py-2 text-right">
+                  {/* The flagged days are offered ahead of an agreed month,
+                      because closing is refused while any day is flagged and a
+                      Close button there can only fail. Handing a month in and
+                      reopening one are not blocked by a flag, so those two keep
+                      their own action. */}
                   {row.state === EHrPeriodState.SUBMITTED ? (
                     <Button variant="primary" size="lg" loading={isBusy} onClick={() => onApprove(row)}>
                       {t("hr.overview_table.agree")}
-                    </Button>
-                  ) : row.state === EHrPeriodState.APPROVED ? (
-                    <Button variant="primary" size="lg" loading={isBusy} onClick={() => onLock(row)}>
-                      {t("hr.overview_table.close")}
                     </Button>
                   ) : row.state === EHrPeriodState.LOCKED ? (
                     <Button variant="link" size="lg" loading={isBusy} onClick={() => onReopen(row)}>
@@ -148,6 +149,10 @@ export const HrOverviewTable = ({ rows, busyPeriodId, onApprove, onLock, onReope
                   ) : row.needs_review ? (
                     <Button variant="secondary" size="lg" prependIcon={<AlertTriangle />} onClick={() => onReview(row)}>
                       {t("hr.overview_table.blocked_by_review")}
+                    </Button>
+                  ) : row.state === EHrPeriodState.APPROVED ? (
+                    <Button variant="primary" size="lg" loading={isBusy} onClick={() => onLock(row)}>
+                      {t("hr.overview_table.close")}
                     </Button>
                   ) : (
                     <span className="text-13 text-tertiary">

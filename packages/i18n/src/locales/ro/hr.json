@@ -2,7 +2,7 @@
   "hr": {
     "my_time": {
       "title": "Timpul meu",
-      "everyone": "Toată lumea",
+      "everyone": "Orele tuturor",
       "bring_up_to_date": "Aduceți la zi",
       "hand_in": "Predați luna",
       "no_record": "Nicio fișă de angajare aici",
@@ -10,30 +10,31 @@
       "next_month": "Luna următoare",
       "cannot_hand_in": {
         "month_running": "Luna nu s-a încheiat încă. Poate fi predată după ce se termină.",
-        "timer_running": "Opriți cronometrul care încă rulează, apoi predați luna."
+        "timer_running": "Un cronometru încă rulează pe unul dintre elementele dumneavoastră de lucru, în acest spațiu de lucru sau în altul. Opriți-l, apoi predați luna."
       },
       "toasts": {
         "recomputed": "Adus la zi",
         "not_recomputed": "Nu s-a putut aduce la zi",
         "handed_in": "Predată",
-        "handed_in_message": "{month} a fost trimisă spre aprobare.",
+        "handed_in_message": "{month} așteaptă acum să fie aprobată.",
         "not_handed_in": "Nepredată",
         "try_again": "Încercați din nou peste un moment."
       },
       "opening": "Sold inițial",
-      "export_csv": "CSV",
-      "export_excel": "Excel",
-      "record_time": "Înregistrează timp",
-      "no_record_detail": "Orele dumneavoastră nu sunt urmărite în acest spațiu. Dacă ar trebui, adresați-vă celui care se ocupă de echipă."
+      "export_csv": "Descărcați ca CSV",
+      "export_excel": "Descărcați ca Excel",
+      "record_time": "Înregistrați timp pentru astăzi",
+      "no_record_detail": "Orele dumneavoastră nu sunt urmărite încă. Dacă ar trebui să fie, cereți-i celui care se ocupă de echipă să vă adauge.",
+      "confirm_hand_in": "După ce predați luna {month}, nu îi mai puteți modifica orele, absențele sau prezența. Adresați-vă celui care se ocupă de echipă dacă e nevoie de o corecție."
     },
     "team_time": {
       "title": "Timpul echipei",
       "not_permitted": "Nu aveți permisiunea de a vedea această pagină",
-      "export_csv": "CSV",
-      "export_excel": "Excel",
-      "still_open": "Încă deschise",
-      "open_count": "{open} din {total}",
-      "counted_anywhere": "Orele fiecărei persoane sunt luate în calcul indiferent unde au fost înregistrate. Închiderea unei luni îi îngheață cifrele; nimic din ce se înregistrează ulterior nu le mai modifică.",
+      "export_csv": "Descărcați ca CSV",
+      "export_excel": "Descărcați ca Excel",
+      "still_open": "De închis",
+      "open_count": "{open} din {total} persoane",
+      "counted_anywhere": "Orele fiecărei persoane sunt luate în calcul indiferent unde au fost înregistrate, în ore și minute: 161:12 înseamnă 161 de ore și 12 minute. Soldul curent primește o cifră abia după ce luna este închisă. Închiderea unei luni îi îngheață cifrele; nimic din ce se înregistrează ulterior nu le mai modifică.",
       "as_things_stand": "Cifrele sunt cele de la {date}; luna nu s-a încheiat.",
       "toasts": {
         "refused": "Acțiunea nu a reușit",
@@ -47,20 +48,20 @@
       "not_permitted_detail": "Orele tuturor pot fi văzute doar de cine se ocupă de echipă. Luna dumneavoastră se află pe {page}.",
       "closing": "Se închide…",
       "confirm_close_title": "Închideți luna lui {person}?",
-      "confirm_close_body": "Cifrele sunt înghețate așa cum sunt, iar orele, absențele și prezențele din spatele lor nu mai acceptă modificări. Redeschiderea ulterioară este posibilă, dar lasă o urmă."
+      "confirm_close_body": "Cifrele sunt înghețate așa cum sunt acum. Nimeni nu mai poate schimba orele sau absențele acestei luni, iar ce se înregistrează ulterior în ea nu mai contează. Luna poate fi redeschisă, iar redeschiderea se consemnează."
     },
     "summary": {
       "owed": "De lucrat",
       "worked": "Lucrate",
       "balance": "Sold",
-      "whole_month": "{duration} pentru toată luna",
+      "whole_month": "din {duration} pentru toată luna",
       "per_week": "{duration} pe săptămână",
       "includes_away": "include {duration} de absență sau concediu",
       "carried_forward": "{duration} reportate",
       "as_of": "Situația la {date}. Luna nu s-a încheiat.",
       "not_started": "Această lună nu a început încă.",
-      "needs_review": "Unele zile trebuie verificate — ore care au fost luate în calcul anterior nu mai există.",
-      "timer_running": "Un cronometru încă rulează, așa că luna nu poate fi predată încă.",
+      "needs_review": "Unele zile trebuie verificate — ore care au fost luate în calcul anterior nu mai există. Cine se ocupă de echipă trebuie să le rezolve înainte ca luna să poată fi închisă.",
+      "timer_running": "Un cronometru încă rulează pe unul dintre elementele dumneavoastră de lucru, în acest spațiu de lucru sau în altul. Opriți-l și apoi puteți preda luna.",
       "telework_days": "Muncă de acasă anul acesta: {count}",
       "nothing_yet": "Pentru această lună nu s-a calculat încă nimic.",
       "leave_left_days": "Au rămas {amount} zile de concediu",
@@ -73,7 +74,7 @@
       "what_it_was": "Ce fel de zi",
       "owed": "De lucrat",
       "work_items": "Activități",
-      "other": "Altă muncă",
+      "other": "Fără element de lucru",
       "away": "Absență",
       "worked": "Lucrate",
       "balance": "Sold",
@@ -90,17 +91,17 @@
       "owed": "De lucrat",
       "worked": "Lucrate",
       "balance": "Sold",
-      "carried": "Report",
+      "carried": "Sold curent",
       "action": "Acțiune",
       "agree": "Aprobați",
       "close": "Închideți",
       "reopen": "Redeschideți",
-      "nobody_yet": "Nimeni nu are încă o fișă de angajare.",
-      "timer_running": "Un cronometru încă rulează",
-      "needs_review": "Unele zile trebuie verificate",
+      "nobody_yet": "Nimeni nu are încă o fișă de angajare. Adăugați persoane în pagina Persoane și orele lor încep să fie numărate.",
+      "timer_running": "Un cronometru încă rulează, așa că luna nu poate fi predată încă.",
+      "needs_review": "Unele zile trebuie verificate înainte ca luna să poată fi închisă",
       "blocked_by_review": "Verificați acele zile",
       "month_running": "Luna nu s-a încheiat încă",
-      "waiting_for": "Se așteaptă {person}"
+      "waiting_for": "Se așteaptă ca {person} să predea luna"
     },
     "reopen": {
       "title": "Redeschideți {month}?",
@@ -141,7 +142,7 @@
       "not_permitted_detail": "Doar cine se ocupă de echipă poate schimba cine este angajat și în ce condiții.",
       "column_person": "Persoană",
       "column_since": "Din",
-      "column_week": "Săptămână",
+      "column_week": "Ore pe săptămână",
       "column_role": "Rol",
       "column_action": "Acțiune",
       "add_title": "Adăugați o persoană",
@@ -155,13 +156,13 @@
       "section_terms": "Condiții",
       "section_schedule": "Săptămâna de lucru",
       "hire_date": "Data începerii",
-      "timezone": "Fus orar",
+      "timezone": "Fus orar, ca Europe/Vienna",
       "is_manager": "Se ocupă de echipă — poate vedea și modifica orele, absențele și concediile tuturor, în toate spațiile",
-      "arrangement": "Regim de lucru",
+      "arrangement": "Cum este angajată persoana",
       "valid_from": "În vigoare din",
-      "records_target": "Se înregistrează orele de lucrat și un sold curent",
-      "records_target_hint": "Dezactivat pentru regimurile cu facturare proprie, unde compania înregistrează ce s-a lucrat și nu se stabilesc ore de lucrat pe zi.",
-      "schedule_hint": "Orele de lucrat în fiecare zi. Scrieți 7:42 sau 7,7 și lăsați ziua goală când nu se lucrează.",
+      "records_target": "Se așteaptă ore stabilite în fiecare zi, se ține un sold curent și se numără concediul luat",
+      "records_target_hint": "Lăsați-l activat pentru angajați. Dezactivați-l pentru cine ne facturează orele lui: nu i se cer ore în fiecare zi, nu i se ține sold și nu i se numără concediul.",
+      "schedule_hint": "Cât trebuie să dureze fiecare zi. Scrieți 7:42 pentru șapte ore și 42 de minute sau 7,7 pentru aceeași durată în ore zecimale. Lăsați ziua goală când nu se lucrează.",
       "week_total": "{duration} pe săptămână",
       "cancel": "Anulați",
       "save": "Salvați",
@@ -177,7 +178,7 @@
       "errors": {
         "bad_duration": "Una dintre zile nu conține o durată. Scrieți 7:42 sau 7,7 ori lăsați câmpul gol.",
         "hire_date_required": "Precizați când a început această persoană, ca prima ei lună să știe de unde să pornească.",
-        "week_required": "Indicați cât durează o zi de lucru, altfel luna nu are la ce se raporta.",
+        "week_required": "Completați cel puțin o zi, ca luna să aibă la ce se raporta. Lăsați goale zilele în care nu se lucrează.",
         "bad_crm_staff_id": "Id-ul de angajat din CRM este un număr întreg. Lăsați câmpul gol pentru a face potrivirea după adresa de e-mail."
       },
       "toasts": {
@@ -186,24 +187,24 @@
         "removed": "Plecare marcată",
         "refused": "Acțiunea nu a reușit",
         "try_again": "Vă rugăm să încercați din nou.",
-        "brought_back": "Din nou în echipă"
+        "brought_back": "Angajat din nou"
       },
       "opening": "Sold inițial",
       "rates": "Tarife",
       "leave": "Concediu",
       "crm_staff_id": "ID-ul CRM al angajatului",
       "crm_staff_id_placeholder": "Lăsați gol pentru potrivire după e-mail",
-      "crm_guessed": "Potrivire în CRM după e-mail",
+      "crm_guessed": "CRM doar după e-mail",
       "crm_missing": "Fără cont în CRM",
       "crm_link": {
         "set": "Stabilit aici, așa că orele ajung în acest cont, indiferent de adresele de e-mail.",
-        "email": "Potrivire după adresa de e-mail. Funcționează până când unul dintre cele două sisteme are o altă adresă.",
+        "email": "Nimeni nu a spus care este contul din CRM, așa că orele sunt potrivite după adresa de e-mail. Nimic nu verifică dacă există un cont în CRM cu acea adresă.",
         "none": "Nimic nu leagă această persoană de CRM, așa că orele ei nu devin niciodată un cronometru în CRM."
       },
       "confirm_remove_title": "Marcați ca plecat?",
-      "confirm_remove_body": "{person} nu va mai apărea în lunile noi. Tot ce este deja înregistrat rămâne neschimbat.",
+      "confirm_remove_body": "{person} nu va mai apărea în lunile noi și nu își va mai putea deschide pagina de timp, așa că încheiați-i ultima lună înainte. Tot ce este deja înregistrat rămâne neschimbat.",
       "removing": "Se marchează…",
-      "no_hours_yet": "Ore nesetate",
+      "no_hours_yet": "Neconfigurat",
       "confirm_remove_permanent": "Dacă revine, o puteți angaja din nou mai târziu.",
       "pick_somebody_first": "Alegeți mai întâi pe cineva din listă",
       "pick_date_first": "Indicați data începerii",
@@ -213,13 +214,13 @@
     "arrangement": {
       "onsite_full_time": "La sediu, normă întreagă",
       "onsite_part_time": "La sediu, normă parțială",
-      "remote_full_time_invoicing": "La distanță, normă întreagă, cu facturare proprie",
-      "remote_part_time_invoicing": "La distanță, normă parțială, cu facturare proprie"
+      "remote_full_time_invoicing": "La distanță, normă întreagă, ne facturează",
+      "remote_part_time_invoicing": "La distanță, normă parțială, ne facturează"
     },
     "entries": {
-      "hint": "Timp care nu ține de niciun element de lucru — ședințe, administrație, instruire, deplasări.",
-      "none_yet": "Nu s-a înregistrat încă nimic în această zi.",
-      "day_total": "În această zi",
+      "hint": "Ore care nu sunt pe un element de lucru — ședințe, administrație, instruire, deplasări. Ele contează în luna dumneavoastră. Orele de pe elementele de lucru vin din cronometrele de acolo și nu se modifică aici.",
+      "none_yet": "Nu s-a adăugat încă nimic aici. Orele înregistrate pe elemente de lucru sunt numărate, dar nu apar aici.",
+      "day_total": "Ore fără element de lucru",
       "how_long": "Cât timp",
       "what_it_was": "Ce a fost",
       "note": "Notă",
@@ -227,7 +228,7 @@
       "add": "Adăugați",
       "remove": "Eliminați",
       "imported": "Importat",
-      "month_closed": "Această lună este închisă, orele ei nu mai pot fi modificate. Adresați-vă celui care se ocupă de echipă dacă e nevoie de o corecție.",
+      "month_closed": "Această lună nu mai este deschisă, așa că orele ei nu pot fi modificate. Cereți-i celui care se ocupă de echipă să o redeschidă dacă e nevoie de o corecție.",
       "category": {
         "meeting": "Ședință internă",
         "training": "Instruire",
@@ -238,7 +239,8 @@
         "imported": "Importat"
       },
       "errors": {
-        "bad_duration": "Precizați cât a durat. Scrieți 1:30 sau 1,5."
+        "bad_duration": "Precizați cât a durat. Scrieți 1:30 sau 1,5.",
+        "duration_needs_unit": "Precizați cât a durat: 1:30, 7h sau 90m. Un număr singur nu spune dacă sunt ore sau minute."
       },
       "toasts": {
         "added": "Adăugată",
@@ -246,25 +248,25 @@
         "try_again": "Vă rugăm să încercați din nou."
       },
       "close": "Închide",
-      "not_added_yet": "Încă neadăugat",
+      "not_added_yet": "Încă neadăugat. Apăsați „Adăugați”, altfel se pierde când închideți.",
       "confirm_remove_title": "Eliminați aceste ore?",
-      "confirm_remove_body": "{duration} se scade din această zi și din totalul lunii.",
+      "confirm_remove_body": "{duration} la categoria {category} se scade din această zi și din totalul lunii.",
       "removing": "Se elimină…"
     },
     "attendance": {
       "title": "Când ați fost la muncă",
-      "hint": "Începutul, sfârșitul și pauzele acestei zile, înregistrate separat de ceea ce au servit orele.",
-      "still_running": "Încă în desfășurare",
+      "hint": "Începutul, sfârșitul și pauzele acestei zile. Este o evidență separată și nu se adaugă la orele dumneavoastră.",
+      "still_running": "Fără oră de final",
       "from": "De la",
       "to": "Până la",
       "break": "Pauză (minute)",
-      "where": "Unde",
+      "where": "Unde ați lucrat",
       "past_midnight": "Se socotește ca trecând de miezul nopții.",
       "record": "Înregistrați",
       "update": "Actualizați",
       "remove": "Eliminați",
-      "closed_with": "De la {from} la {to}, {duration}. Această lună a fost închisă și nu mai poate fi modificată.",
-      "closed_without": "Pentru această zi nu s-a înregistrat nimic, iar luna a fost închisă.",
+      "closed_with": "De la {from} la {to}, {duration}. Această lună nu mai este deschisă, așa că nu mai poate fi modificată.",
+      "closed_without": "Pentru această zi nu s-a înregistrat nimic, iar luna nu mai este deschisă.",
       "location": {
         "office": "La birou",
         "home": "Muncă de acasă",
@@ -281,14 +283,15 @@
         "try_again": "Vă rugăm să încercați din nou."
       },
       "confirm_remove_title": "Eliminați această înregistrare de prezență?",
-      "confirm_remove_body": "Începutul, sfârșitul și pauza acestei zile vor fi eliminate. Este evidența timpului de lucru cerută de lege.",
+      "confirm_remove_body": "Începutul, sfârșitul și pauza acestei zile se șterg și nu mai pot fi recuperate. Dacă orele sunt greșite, modificați-le și salvați în schimb.",
       "removing": "Se elimină…",
-      "past_midnight_length": "Trece de miezul nopții și rezultă {duration}. Verificați ora de final dacă nu e corect."
+      "past_midnight_length": "Trece de miezul nopții și rezultă {duration}. Verificați ora de final dacă nu e corect.",
+      "not_saved_yet": "Încă nesalvat. Salvați aceste ore, altfel se pierd când închideți."
     },
     "imports": {
-      "title": "Import de ore",
-      "subtitle": "Luni înregistrate în altă parte, citite dintr-o foaie de calcul și verificate înainte ca ceva să fie scris.",
-      "not_permitted_detail": "Doar cine se ocupă de echipă poate importa ore.",
+      "title": "Import de evidențe anterioare",
+      "subtitle": "Ore, absențe și solduri înregistrate în altă parte, citite dintr-o foaie de calcul și verificate înainte ca ceva să fie scris. Dintr-un registru de lucru se citește doar foaia pe care se deschide, iar titlurile de coloană trebuie să fie primul ei rând.",
+      "not_permitted_detail": "Doar cine se ocupă de echipă poate importa evidențe anterioare.",
       "what_kind": "Ce conține fișierul",
       "choose_file": "Alegeți un fișier",
       "kind": {
@@ -297,19 +300,19 @@
         "opening_balances": "Solduri inițiale"
       },
       "columns": {
-        "time_entries": "Coloane: email, date și fie hours, fie minutes — exact aceste titluri de coloană. O coloană note este preluată dacă există. 7:42, 7,7 și 462 se citesc toate ca aceeași durată.",
+        "time_entries": "Coloane: email, date și fie hours, fie minutes — exact aceste titluri de coloană. O coloană note este preluată dacă există. Titlul decide ce înseamnă un număr simplu: 7,7 sub hours și 462 sub minutes înseamnă amândouă 7 ore și 42 de minute. Scris ca 7:42, este același lucru sub oricare dintre titluri.",
         "absences": "Coloane: email, start_date, end_date și type — exact aceste titluri de coloană. Pentru o singură zi, omiteți end_date.",
-        "opening_balances": "Coloane: email, effective_on pentru ziua din care se aplică soldul și fie hours, fie minutes pentru soldul propriu-zis — exact aceste titluri de coloană."
+        "opening_balances": "Coloane: email, date pentru ziua din care se aplică soldul, fie hours, fie minutes pentru soldul propriu-zis și basis pentru a spune de unde vine cifra — exact aceste titluri de coloană. Adăugați o coloană kind cu time, leave sau overtime dacă soldul nu este în ore."
       },
-      "preview_title": "{filename}, așa cum ar fi aplicat",
-      "preview_hint": "Nu s-a scris încă nimic. Verificați rândurile de mai jos, apoi aplicați.",
+      "preview_title": "{filename}, citit ca {kind}",
+      "preview_hint": "Nu s-a scris încă nimic. Rândurile se adaugă la ce este deja înregistrat în acele zile, așa că o zi adusă de două ori contează de două ori. Ca să corectați un fișier deja aplicat, anulați-l mai întâi, în loc să aduceți o copie corectată.",
       "will_write": "vor fi scrise",
       "cannot_read": "nu pot fi citite",
       "skipped": "omise",
       "apply": "{count, plural, one {Aplicați # rând} few {Aplicați # rânduri} other {Aplicați # de rânduri}}",
-      "discard": "Renunțați",
+      "discard": "Lăsați pe mai târziu",
       "column_row": "Rând",
-      "column_verdict": "Rezultat",
+      "column_verdict": "Ce se întâmplă",
       "column_detail": "Detalii",
       "verdict": {
         "ok": "Va fi scris",
@@ -318,7 +321,7 @@
       },
       "past": "Fișiere importate anterior",
       "none_yet": "Nu s-a importat încă nimic.",
-      "row_summary": "{total, plural, one {{valid} din # rând} few {{valid} din # rânduri} other {{valid} din # de rânduri}}",
+      "row_summary": "{total, plural, one {{valid} din # rând se poate folosi} few {{valid} din # rânduri se pot folosi} other {{valid} din # de rânduri se pot folosi}}",
       "state": {
         "10": "Încărcat",
         "20": "În curs de verificare",
@@ -330,7 +333,7 @@
       },
       "undo": "Anulați",
       "undo_title": "Anulați importul {filename}?",
-      "undo_body": "Fiecare oră scrisă de acest fișier este eliminată și nimic altceva nu este atins. Orele dintr-o lună închisă între timp rămân acolo unde sunt.",
+      "undo_body": "Tot ce a scris acest fișier este scos înapoi și nimic altceva nu este atins. Dacă ceva din ce a scris a intrat într-o lună acum închisă, nu se scoate nimic până când acea lună nu este redeschisă.",
       "undo_label": "De ce se anulează?",
       "undo_placeholder": "Fișierul conținea luna martie de două ori.",
       "undo_confirm": "Anulați importul",
@@ -344,19 +347,19 @@
         "try_again": "Vă rugăm să încercați din nou."
       },
       "template": "Descarcă un șablon",
-      "resume": "Verifică și aplică",
+      "resume": "Deschideți din nou",
       "reasons": {
-        "unknown_person": "Nimeni de aici nu se conectează ca {email}.",
+        "unknown_person": "Nimeni de aici nu se conectează ca {email}. Adăugați persoana la Persoane sau corectați adresa în fișier.",
         "bad_date": "Data nu a putut fi citită.",
-        "bad_duration": "Durata nu a putut fi citită.",
-        "more_than_a_day": "Mai mult de o zi într-o singură zi.",
-        "month_settled": "Acea lună a fost deja închisă.",
+        "bad_duration": "Durata nu a putut fi citită sau este zero. Fiecare rând are nevoie de o durată — mai bine scoateți ziua din fișier.",
+        "more_than_a_day": "Sunt mai mult de 24 de ore într-o singură zi. Verificați dacă numărul este în ore sau în minute și dacă titlul coloanei se potrivește.",
+        "month_settled": "Acea lună nu mai este deschisă, așa că nimic nu mai poate intra în ea. Cereți redeschiderea ei dacă aceasta trebuie să intre.",
         "bad_balance": "Soldul nu a putut fi citit.",
-        "kind_missing": "Precizați dacă este timp sau concediu.",
-        "basis_missing": "Spuneți pe ce se bazează această cifră.",
+        "kind_missing": "Coloana kind trebuie să conțină time, leave sau overtime.",
+        "basis_missing": "Coloana basis este goală. Scrieți de unde vine cifra, de exemplu: din vechea foaie de calcul cu concediile.",
         "bad_start_date": "Data de început nu a putut fi citită.",
         "ends_before_it_starts": "Se termină înainte să înceapă.",
-        "unknown_absence_type": "Nu există tipul de absență „{code}”."
+        "unknown_absence_type": "Niciun motiv de absență nu are codul „{code}”. Codurile se află în pagina Absențe, la Motive."
       }
     },
     "opening": {
@@ -367,11 +370,11 @@
       "from_label": "Se aplică din",
       "agreed": "Acceptat",
       "agree": "Este corect",
-      "not_agreed": "Încă neacceptat",
+      "not_agreed": "Se așteaptă acceptul persoanei",
       "replaced": "{count, plural, one {# înlocuit printr-o corecție} few {# înlocuite printr-o corecție} other {# înlocuite printr-o corecție}}",
       "record": "Înregistrați un sold inițial",
       "record_confirm": "Înregistrați",
-      "amount": "Sold",
+      "amount": "Sold, cu minus dacă este în urmă",
       "what_for": "La ce se referă",
       "how_sure": "Cât de sigur este",
       "basis": "Pe ce se bazează",
@@ -384,9 +387,9 @@
       },
       "confidence": {
         "exact": "Preluat din evidențe",
-        "reconstructed": "Reconstituit",
+        "reconstructed": "Dedus din alte evidențe",
         "estimated": "Estimat",
-        "agreed": "Convenit cu persoana"
+        "agreed": "Dintr-o discuție cu persoana"
       },
       "errors": {
         "bad_duration": "Precizați cât anume. Scrieți -12:30 sau -12,5 ori omiteți minusul pentru un excedent.",
@@ -400,7 +403,7 @@
         "try_again": "Vă rugăm să încercați din nou."
       },
       "correct": "Corectați această valoare",
-      "agreeing": "Se înregistrează…",
+      "agreeing": "Se acceptă…",
       "confirm_agree_title": "Confirmați acest sold?",
       "confirm_agree_body": "Confirmați că {amount} este corect. Nu se poate anula. Dacă cifra e greșită, nu o confirmați — spuneți-i celui care se ocupă de echipă.",
       "correcting_heading": "Corectați valoarea",
@@ -415,16 +418,16 @@
       "everyone": "Toată lumea",
       "previous_month": "Luna anterioară",
       "next_month": "Luna următoare",
-      "none_this_month": "Nimeni nu a lipsit luna aceasta.",
-      "not_permitted_detail": "Doar un manager vede întreaga echipă. Absențele proprii se află pe pagina dumneavoastră de timp.",
-      "month_locked": "lună blocată",
+      "none_this_month": "Nicio absență înregistrată pentru luna aceasta.",
+      "not_permitted_detail": "Nu aveți o fișă de angajare aici, așa că nu este nimic de arătat. Cereți-i celui care se ocupă de echipă să vă creeze una.",
+      "month_locked": "lună închisă — redeschideți-o ca să modificați",
       "approve": "Aprobați",
       "reject": "Refuzați",
       "delete": "Ștergeți absența",
       "column_person": "Persoană",
       "column_reason": "Motiv",
       "column_when": "Când",
-      "column_away": "Absență",
+      "column_away": "Ore de absență",
       "column_state": "Stare",
       "column_action": "Acțiune",
       "state": {
@@ -447,7 +450,7 @@
       "modal": {
         "title": "Înregistrați o absență",
         "edit_title": "Modificați această absență",
-        "subtitle": "Când motivul contează ca zi lucrată, ziua se creditează la orele lucrate, astfel încât luna să iasă în continuare echilibrată. Orele de lucrat rămân însă neschimbate.",
+        "subtitle": "Majoritatea motivelor contează în continuare la orele lunii, așa că luna nu iese în minus. Zilele în care persoana nu lucrează de obicei nu se numără.",
         "person": "Persoană",
         "type": "Motiv",
         "no_types": "Niciun motiv configurat încă",
@@ -460,11 +463,11 @@
         "last_day": "Ultima zi",
         "hours_each_day": "Ore de absență pe zi",
         "hours_placeholder": "ex. 3:30",
-        "hours_hint": "Se scrie ca 3:30, 3.5 sau 210m.",
+        "hours_hint": "Orele din fiecare zi a intervalului, scrise ca 3:30, 3,5 sau 3h. Pentru minute scrieți 90m.",
         "note": "Notă",
         "note_placeholder": "Opțional",
         "record": "Înregistrați",
-        "hours_unreadable": "Aceasta nu este o durată. Încercați 1:30, 1,5 sau 90."
+        "hours_unreadable": "Aceasta nu este o durată. Încercați 3:30, 3,5 sau 90m pentru nouăzeci de minute."
       },
       "toasts": {
         "saved": "Absență salvată",
@@ -492,16 +495,16 @@
         "draws_on_leave": "Ziua se scade din soldul de concediu",
         "refused": "Nu s-a putut face",
         "try_again": "Vă rugăm să încercați din nou.",
-        "confirm_remove_title": "Ștergeți acest tip de absență?",
-        "confirm_remove_body": "„{kind}” nu va mai fi oferit la înregistrarea unei absențe. Dacă doriți doar să îl scoateți din listă, dezactivați-l în schimb.",
-        "deleting": "Se șterge"
+        "confirm_remove_title": "Ștergeți acest motiv?",
+        "confirm_remove_body": "„{kind}” nu va mai fi oferit la înregistrarea unei absențe. Apăsați „Dezactivați” dacă vreți doar să îl scoateți din listă.",
+        "deleting": "Se șterge…"
       },
       "filter_person": "Arată absențele pentru",
-      "confirm_remove_title": "Eliminați această absență?",
-      "confirm_remove_body": "{person} revine la norma întreagă în acele zile, iar {duration} se întoarce în concediu.",
-      "removing": "Se elimină…",
+      "confirm_remove_title": "Ștergeți această absență?",
+      "confirm_remove_body": "{duration} nu mai contează în luna lui {person}, așa că luna va fi în minus dacă orele acelea nu sunt lucrate. Concediul folosit pentru ea se întoarce.",
+      "removing": "Se șterge…",
       "refuse_title": "Respinge absența lui {person}",
-      "refuse_body": "Persoana va vedea ce scrieți aici, deci explicați suficient.",
+      "refuse_body": "Ce scrieți rămâne la înregistrare. Nimeni nu este anunțat automat, așa că anunțați-o și dumneavoastră.",
       "refuse_label": "Motiv",
       "refuse_placeholder": "În acea săptămână deja lipsesc două persoane",
       "refuse_cancel": "Anulează",
@@ -510,7 +513,7 @@
     },
     "rates": {
       "title": "Cât valorează timpul lucrat de {person}",
-      "hint": "Un tarif nu se modifică, ci primește o dată de la care se aplică, astfel încât o lună deja calculată la tariful vechi să însemne în continuare ceea ce a spus. O majorare înseamnă încheierea tarifului vechi și începerea altuia nou.",
+      "hint": "Tarifele se păstrează pe date, așa că o lună deja calculată își păstrează tariful cu care a fost calculată. Pentru o majorare, adăugați un tarif care începe în ziua în care intră în vigoare. El îl înlocuiește pe cel dinainte, care rămâne valabil pentru lunile anterioare.",
       "none_yet": "Niciun tarif înregistrat. Situația acestei persoane va afișa orele, fără nicio sumă.",
       "add": "Adăugați un tarif",
       "add_button": "Adăugați",
@@ -541,9 +544,9 @@
         "refused": "Nu s-a putut salva",
         "try_again": "Vă rugăm să încercați din nou."
       },
-      "removing": "Se elimină…",
-      "confirm_remove_title": "Eliminați acest tarif?",
-      "confirm_remove_body": "Lunile deja calculate își păstrează sumele. Lunile următoare pierd acest tarif."
+      "removing": "Se șterge…",
+      "confirm_remove_title": "Ștergeți acest tarif?",
+      "confirm_remove_body": "Fiecare lună este calculată cu tariful înregistrat în momentul în care este citită, inclusiv lunile deja închise. Ștergerea lui schimbă la cât se ridică acele luni. Ștergeți-l doar dacă a fost înregistrat din greșeală."
     },
     "statement": {
       "title": "Înainte de a factura",
@@ -553,13 +556,13 @@
       "expected": "Se ridică la",
       "monthly_rate": "O sumă lunară fixă",
       "no_rate": "Nu aveți încă niciun tarif înregistrat, așa că aici apar doar orele. Adresați-vă persoanei care se ocupă de echipă.",
-      "still_moving": "Luna este încă deschisă, așa că aceste cifre se mai pot modifica.",
+      "still_moving": "Această lună nu este încă închisă, așa că cifrele se mai pot modifica. Așteptați să fie închisă înainte de a factura.",
       "settled": "Luna este închisă, așa că aceste cifre sunt definitive.",
       "decimal_hours": "{hours} în ore zecimale"
     },
     "leave": {
       "title": "Concediul pentru {person}",
-      "hint": "Se ține în minute, nu în zile: o zi nu este o mărime fixă pentru cine lucrează ore inegale. Anul de concediu curge de la aniversarea angajării.",
+      "hint": "Concediul se numără în ore, nu în zile, pentru că o zi de lucru nu are aceeași durată pentru toată lumea. Anul de concediu curge de la aniversarea angajării.",
       "none_yet": "Niciun an de concediu înregistrat încă.",
       "add": "Adăugați un an de concediu",
       "add_button": "Adăugați",
@@ -568,53 +571,54 @@
       "year_end": "Anul de concediu, până la",
       "entitlement": "Concediul pe an",
       "carryover": "Report",
-      "carryover_placeholder": "Opțional, poate fi negativ",
+      "carryover_placeholder": "Opțional. Puneți minus dacă a folosit deja o parte.",
       "duration_placeholder": "ex. 200:00",
       "basis": "Pe ce se bazează",
       "basis_placeholder": "Opțional",
       "between": "{from} – {to}",
       "about_days": "{days, plural, one {aproximativ # zi} few {aproximativ # zile} other {aproximativ # de zile}}",
       "carried": "{duration} reportate",
-      "agree": "Acceptați",
-      "agreed": "Acceptat",
+      "agree": "Stabiliți ca definitiv",
+      "agreed": "Stabilit ca definitiv",
       "errors": {
         "dates_required": "Precizați când începe și când se încheie anul de concediu.",
         "backwards": "Anul de concediu nu se poate încheia înainte de a începe.",
         "bad_duration": "Scrieți durata ca 200:00, 200 sau 12000m.",
-        "already_there": "Există deja o înregistrare pentru acest an de concediu."
+        "already_there": "Există deja o înregistrare pentru acest an de concediu.",
+        "overlapping_year": "Există deja un an de concediu care acoperă aceste date."
       },
       "toasts": {
         "added": "An de concediu adăugat",
-        "agreed": "Marcat ca acceptat",
+        "agreed": "Stabilit ca definitiv",
         "refused": "Nu s-a putut salva",
         "try_again": "Vă rugăm să încercați din nou."
       },
       "entitlement_with_unit": "Concediu pe an (ore:minute)",
       "echo_days": "{duration} · {days, plural, one {aproximativ # zi} few {aproximativ # zile} other {aproximativ # de zile}}",
       "echo_hours": "{duration}",
-      "agreeing": "Se înregistrează…",
+      "agreeing": "Se stabilește…",
       "confirm_agree_title": "Stabiliți această valoare ca definitivă?",
-      "confirm_agree_body": "{duration} nu va mai putea fi modificat. O schimbare ulterioară se înregistrează separat, cu motivul ei."
+      "confirm_agree_body": "{duration} nu va mai putea fi modificat pe niciun ecran după aceea. Verificați valoarea față de ce i s-a spus persoanei înainte de a o stabili."
     },
     "holidays": {
       "title": "Zile de sărbătoare",
-      "subtitle": "Zilele în care nu lucrează nimeni. O zi de sărbătoare reduce orele de lucrat din ziua respectivă; nu se adaugă la orele lucrate.",
+      "subtitle": "Zilele în care nu lucrează nimeni. O zi de sărbătoare contează ca ore lucrate; nu scade orele pe care cineva trebuie să le lucreze. O modificare de aici ajunge doar în lunile încă deschise.",
       "back_to_month": "Luna",
       "calendar": "Calendar",
       "previous_year": "Anul anterior",
       "next_year": "Anul următor",
-      "none_this_year": "Nicio zi în acest calendar pentru anul acesta.",
-      "not_permitted_detail": "Doar un manager poate modifica calendarul.",
+      "none_this_year": "Nicio zi pentru anul acesta încă. Până când sunt adăugate, fiecare sărbătoare legală din el contează ca zi lucrătoare obișnuită.",
+      "not_permitted_detail": "Nu sunteți încă înregistrat în evidența timpului, așa că această listă nu vă este afișată. Adresați-vă celui care se ocupă de echipă.",
       "column_date": "Data",
       "column_name": "Nume",
       "column_kind": "Tip",
       "column_action": "Acțiune",
-      "statutory": "Legală",
+      "statutory": "Legală, nu se poate modifica",
       "granted": "Acordată",
       "make_half": "Faceți-o jumătate de zi",
       "make_whole": "Faceți-o zi întreagă",
       "remove": "Eliminați această zi",
-      "add": "Adăugați o zi",
+      "add": "Adăugați o zi liberă pentru toți",
       "add_button": "Adăugați",
       "only_half": "Doar jumătate de zi",
       "name_placeholder": "Cum se numește ziua",
@@ -632,7 +636,7 @@
       "whole_day": "Zi întreagă",
       "half_day": "Jumătate de zi",
       "confirm_remove_title": "Eliminați această zi?",
-      "confirm_remove_body": "{day} nu va mai fi sărbătoare, deci norma tuturor pentru ziua respectivă crește la loc.",
+      "confirm_remove_body": "{day} nu mai este zi de sărbătoare. Toți cei care lucrează în acea zi trebuie să o lucreze din nou.",
       "removing": "Se elimină…"
     },
     "shared": {
@@ -642,13 +646,13 @@
     },
     "review_days": {
       "title": "Zile de verificat pentru {person}",
-      "body": "Orele numărate în aceste zile nu mai sunt acolo. Spuneți ce s-a întâmplat cu fiecare și luna va putea fi închisă.",
+      "body": "Orele luate în calcul în aceste zile nu mai există. Notarea a ce s-a întâmplat permite închiderea lunii, dar nu aduce orele înapoi — dacă ele trebuie să conteze în continuare, cereți mai întâi să fie înregistrate din nou. Ce scrieți rămâne la ziua respectivă, iar persoana la care se referă poate citi.",
       "all_settled": "Nu mai e nimic de verificat. Această lună poate fi închisă.",
       "counts_now": "Acum contează ca {duration}",
       "what_happened": "Ce s-a întâmplat?",
       "placeholder": "Introdus în ziua greșită și mutat",
       "settle": "Rezolvați această zi",
-      "close": "Închideți",
+      "close": "Gata",
       "toasts": {
         "settled": "Zi rezolvată",
         "refused": "Nu s-a putut rezolva",
@@ -656,8 +660,8 @@
       }
     },
     "refusals": {
-      "absence_type_in_use": "{in_use, plural, one {# absență este înregistrată cu acest tip, deci nu poate fi șters — înregistrarea ei nu ar mai avea sens.} few {# absențe sunt înregistrate cu acest tip, deci nu poate fi șters — înregistrările lor nu ar mai avea sens.} other {# de absențe sunt înregistrate cu acest tip, deci nu poate fi șters — înregistrările lor nu ar mai avea sens.}} Dezactivați-l în schimb: dispare din lista de ales, iar înregistrările existente rămân lizibile.",
-      "month_settled": "{month} este {month_state}, deci înregistrările lui nu se mai pot schimba. Cereți redeschiderea lunii dacă aceasta trebuie să intre.",
+      "absence_type_in_use": "{in_use, plural, one {# absență este înregistrată cu acest motiv, deci nu poate fi șters — înregistrarea ei nu ar mai avea sens.} few {# absențe sunt înregistrate cu acest motiv, deci nu poate fi șters — înregistrările lor nu ar mai avea sens.} other {# de absențe sunt înregistrate cu acest motiv, deci nu poate fi șters — înregistrările lor nu ar mai avea sens.}} Apăsați „Dezactivați” în schimb: dispare din lista de motive dintre care se poate alege, iar cele existente rămân lizibile.",
+      "month_settled": "Luna {month} este {month_state}, deci înregistrările ei nu se mai pot schimba. Cereți-i celui care se ocupă de echipă să o redeschidă din Timpul echipei.",
       "month_state": {
         "handed_in": "predată",
         "agreed": "aprobată",
@@ -671,29 +675,29 @@
       "mine": "Orele mele",
       "group_by": "Grupați după",
       "on_work_items": "Pe elemente de lucru",
-      "other_hours": "Restul",
-      "entries": "Înregistrări",
-      "month_state": "Aceste cifre",
+      "other_hours": "Fără element de lucru",
+      "entries": "Înregistrări pe elemente de lucru",
+      "month_state": "Această lună",
       "frozen": "Înghețate",
-      "frozen_hint": "Ce a numărat luna",
+      "frozen_hint": "Aceste ore nu se mai pot modifica",
       "live": "În timp real",
-      "live_hint": "Luna este încă deschisă",
+      "live_hint": "Aceste ore se mai pot modifica",
       "column_what": "Ce",
       "column_when": "Când",
       "column_note": "Notă",
       "column_long": "Durată",
       "unnamed": "Fără nume",
       "still_running": "Încă rulează — nu are încă o durată și nu contează",
-      "gone": "Această lună a numărat-o și nu mai există",
-      "by_hand": "· notat manual",
-      "nothing_logged": "În această lună nu s-a înregistrat nimic pe un element de lucru.",
+      "gone": "Această înregistrare a fost ștearsă după ce luna a numărat-o. Orele ei sunt în continuare în cifrele de mai sus.",
+      "by_hand": "· adăugat manual",
+      "nothing_logged": "În această lună nu s-au înregistrat ore pe niciun element de lucru. Verificați luna afișată sus.",
       "other_title": "Ore fără element de lucru",
-      "other_subtitle": "Ședințe, administrativ, instruire, deplasări — și tot ce a fost preluat de dinainte. Și acestea contează în lună.",
-      "footnote": "Orele sunt numărate acolo unde au fost înregistrate, în toate spațiile.",
-      "rounding_note": "Minutele se rotunjesc o dată pe zi și proiect, așa că aceste subtotaluri pot să nu dea cifra de mai sus.",
+      "other_subtitle": "Ședințe, administrație, instruire, deplasări, corecții — și ore aduse din altă parte. Contează și ele în lună, dar nu apar în tabelul de mai sus. O corecție cu minus scade ore din lună.",
+      "footnote": "Orele sunt numărate acolo unde au fost înregistrate, în toate spațiile de lucru. Concediul plătit și sărbătorile legale contează și ele în lună și nu apar aici.",
+      "rounding_note": "Orele fiecărei zile pe un proiect se rotunjesc o singură dată, așa că adunarea acestor rânduri poate ieși cu un minut sau două față de cifra de mai sus. Cifra de mai sus este cea care contează.",
       "entry_count": "{count, plural, one {· # înregistrare} few {· # înregistrări} other {· # de înregistrări}}",
-      "running_note": "{count, plural, one {# cronometru încă rulează. Nu are încă durată, deci nu contează aici.} few {# cronometre încă rulează. Nu au încă durată, deci nu contează aici.} other {# de cronometre încă rulează. Nu au încă durată, deci nu contează aici.}}",
-      "missing_note": "{count, plural, one {# înregistrare numărată de această lună nu mai poate fi găsită. S-a păstrat doar identificatorul, deci nu mai e nimic de arătat.} few {# înregistrări numărate de această lună nu mai pot fi găsite. S-au păstrat doar identificatorii, deci nu mai e nimic de arătat.} other {# de înregistrări numărate de această lună nu mai pot fi găsite. S-au păstrat doar identificatorii, deci nu mai e nimic de arătat.}}",
+      "running_note": "{count, plural, one {# cronometru încă rulează, deci nu contează nimic încă. Opriți-l pe elementul de lucru. Luna nu poate fi predată cât timp rulează.} few {# cronometre încă rulează, deci nu contează nimic încă. Opriți-le pe elementele de lucru. Luna nu poate fi predată cât timp rulează.} other {# de cronometre încă rulează, deci nu contează nimic încă. Opriți-le pe elementele de lucru. Luna nu poate fi predată cât timp rulează.}}",
+      "missing_note": "{count, plural, one {# înregistrare numărată de această lună a fost ștearsă între timp. Orele ei nu apar în cifrele de aici, dar luna le numără în continuare.} few {# înregistrări numărate de această lună au fost șterse între timp. Orele lor nu apar în cifrele de aici, dar luna le numără în continuare.} other {# de înregistrări numărate de această lună au fost șterse între timp. Orele lor nu apar în cifrele de aici, dar luna le numără în continuare.}}",
       "week_of": "Săptămâna de la {date}",
       "grouping": {
         "day": "Zi",
@@ -703,8 +707,8 @@
         "workspace": "Spațiu de lucru"
       },
       "under_a_minute": "sub un minut",
-      "auto_stopped": "· oprit de sistem",
-      "auto_stopped_hint": "Acest cronometru a rămas pornit și a fost oprit la maximum. Durata este un plafon, nu o măsurătoare — trebuie corectată."
+      "auto_stopped": "· oprit de sistem, trebuie corectat",
+      "auto_stopped_hint": "Acest cronometru a rămas pornit, așa că sistemul l-a oprit la durata maximă permisă. Aceasta este o limită, nu timp lucrat. Corectați-l pe elementul de lucru înainte ca luna să fie predată."
     }
   }
 }

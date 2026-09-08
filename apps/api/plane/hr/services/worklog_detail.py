@@ -146,7 +146,10 @@ def _worklog_rows(profile, first, last, counted=None):
                 "entered_by_hand": entry.started_at is None,
                 "started_at": entry.started_at,
                 "logged_at": entry.logged_at,
-                "note": note,
+                # Whatever the person wrote, without the sweeper's marker: the
+                # marker is a note to the system, and the flag beside it already
+                # tells the reader what it means.
+                "note": note[len(AUTO_STOPPED) :].strip() if note.startswith(AUTO_STOPPED) else note,
                 # Closed by the sweeper at the cap rather than measured. Said
                 # outright, because the alternative is a reader working it out
                 # from a marker buried in the note.

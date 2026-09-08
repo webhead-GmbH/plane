@@ -53,11 +53,26 @@ def checksum(content):
     return hashlib.sha256(content).hexdigest()
 
 
+def separator_of(text):
+    """Which character this file puts between its columns.
+
+    Excel writes CSV with the list separator of the machine it was saved on, and
+    on a German or Austrian Windows that is a semicolon. Read with a comma, such
+    a file has exactly one column, every row fails at once, and the person is
+    told their file is wrong when it is the one their own spreadsheet just made.
+    So it is read off the heading line rather than asked about: whichever of the
+    three candidates appears most often there is the one holding the columns
+    apart, and a file with none of them is a single column either way.
+    """
+    heading = text.split("\n", 1)[0]
+    return max((";", ",", "\t"), key=heading.count)
+
+
 def parse(content, file_format):
     """Rows out of a file, without judging them yet."""
     if file_format == "csv":
         text = content.decode("utf-8-sig") if isinstance(content, bytes) else content
-        return CSVFormatter().decode(text)
+        return CSVFormatter(delimiter=separator_of(text)).decode(text)
     if file_format in ("xlsx", "xls"):
         return XLSXFormatter().decode(content)
     raise Refused("Only CSV and XLSX files can be read.")

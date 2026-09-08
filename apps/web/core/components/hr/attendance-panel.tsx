@@ -85,6 +85,23 @@ const subjectOf = (workDate: string | null, day: THrAttendanceDay | null) => `${
 /** The fields as a stored day would fill them in, with nothing yet to complain about. */
 const asAsked = (day: THrAttendanceDay | null): TDraft => ({ ...asTyped(day), problem: null });
 
+/**
+ * Whether the fields on screen say something the stored day does not.
+ *
+ * The break is compared as the number of minutes it stands for, because an empty
+ * field and a stored zero are the same answer — a day saved without a break
+ * would otherwise go on claiming it had not been saved.
+ */
+const unsavedIn = (draft: TDraft, day: THrAttendanceDay | null) => {
+  const stored = asTyped(day);
+  return (
+    draft.start !== stored.start ||
+    draft.end !== stored.end ||
+    breakTaken(draft.breakMinutes) !== breakTaken(stored.breakMinutes) ||
+    draft.where !== stored.where
+  );
+};
+
 type TProps = {
   workDate: string | null;
   profileId: string | null;
@@ -205,6 +222,11 @@ const HrAttendanceEditor = ({
   }
 
   const { start, end, breakMinutes, where, problem } = draft;
+  // Somebody here only to say when they were at work fills these four fields and
+  // reaches for the strongest-looking button, which belongs to the hours below
+  // and knows nothing about them. Closing then throws away the record the law
+  // asks to be kept, so say it is still only typed while it is still on screen.
+  const unsaved = unsavedIn(draft, day);
   const edit = (answer: Partial<TDraft>) => setDraft((current) => ({ ...current, ...answer }));
 
   const complain = (failure: unknown) =>
@@ -317,6 +339,12 @@ const HrAttendanceEditor = ({
       {problem ? <p className="text-13 text-danger-primary">{problem}</p> : null}
 
       <div className="flex items-center justify-end gap-2">
+        {unsaved ? (
+          <span className="mr-auto inline-flex items-center gap-1.5 text-13 text-warning-primary">
+            <AlertTriangle className="size-3.5 shrink-0" />
+            {t("hr.attendance.not_saved_yet")}
+          </span>
+        ) : null}
         {day ? (
           <HrRowAction
             icon={<Trash2 className="size-4" />}
@@ -326,7 +354,7 @@ const HrAttendanceEditor = ({
             onClick={() => setRemoving(true)}
           />
         ) : null}
-        <Button variant="secondary" size="lg" loading={isBusy} onClick={() => void handleSave()}>
+        <Button variant="primary" size="lg" loading={isBusy} onClick={() => void handleSave()}>
           {day ? t("hr.attendance.update") : t("hr.attendance.record")}
         </Button>
       </div>
@@ -342,6 +370,7 @@ const HrAttendanceEditor = ({
           default: t("hr.attendance.remove"),
           loading: t("hr.attendance.removing"),
         }}
+        secondaryButtonText={t("common.cancel")}
       />
     </>
   );
