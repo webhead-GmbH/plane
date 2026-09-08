@@ -234,6 +234,7 @@ export const HrTeamMonthRoot = observer(function HrTeamMonthRoot() {
           />
 
           <HrReasonModal
+            key={reopening?.id ?? "none"}
             isOpen={reopening !== null}
             title={t("hr.reopen.title", { month: monthLabel })}
             body={t("hr.reopen.body", { person: reopening?.member_display_name ?? "" })}

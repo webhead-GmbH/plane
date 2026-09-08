@@ -4,7 +4,7 @@
  * See the LICENSE file for details.
  */
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Trash2 } from "lucide-react";
 import useSWR from "swr";
 // plane imports
@@ -60,18 +60,6 @@ export const HrRateCardModal = ({ person, onClose }: TProps) => {
   const { data: rows, mutate } = useSWR(person ? `HR_RATES_${person.id}` : null, () =>
     person ? hrService.rateCards(person.id) : null
   );
-
-  // By the id, for the same reason as its siblings: the object a caller passes
-  // need not be stable, and re-seeding on a new one throws away typed input.
-  useEffect(() => {
-    if (!person) return;
-    setValidFrom("");
-    setBasis(EHrRateBasis.HOURLY);
-    setAmount("");
-    setCurrency("EUR");
-    setProblem(null);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [person?.id]);
 
   const complain = (failure: unknown) =>
     setToast({

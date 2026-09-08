@@ -290,6 +290,7 @@ export const HrAbsencesRoot = observer(function HrAbsencesRoot() {
       {/* Refusing has to say why: the endpoint requires it, and the person whose
           leave it was is going to ask. */}
       <HrReasonModal
+        key={refusing?.id ?? "none"}
         isOpen={refusing !== null}
         title={t("hr.absences.refuse_title", { person: refusing ? nameFor(refusing.profile) : "" })}
         body={t("hr.absences.refuse_body")}

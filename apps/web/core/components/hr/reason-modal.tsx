@@ -44,16 +44,18 @@ export const HrReasonModal = ({
   onClose,
   onConfirm,
 }: TProps) => {
+  // Empty because this dialog is built when it opens — every caller keys it on
+  // what is being asked about, so there is nothing left over to clear.
   const [reason, setReason] = useState("");
   const field = useRef<HTMLTextAreaElement>(null);
 
+  // Focus belongs inside the dialog once it opens, or a keyboard user is left
+  // tabbing from wherever they were on the page behind it. On mount only, and
+  // it touches no state — `autoFocus` is the shorter spelling and is refused
+  // here because it moves focus in contexts where that is unwelcome.
   useEffect(() => {
-    if (!isOpen) return;
-    setReason("");
-    // Focus belongs inside the dialog once it opens, or a keyboard user is left
-    // tabbing from wherever they were on the page behind it.
     field.current?.focus();
-  }, [isOpen]);
+  }, []);
 
   return (
     <ModalCore isOpen={isOpen} handleClose={onClose} position={EModalPosition.CENTER} width={EModalWidth.XL}>

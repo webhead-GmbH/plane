@@ -249,6 +249,7 @@ export const HrImportRoot = observer(function HrImportRoot() {
       ) : null}
 
       <HrReasonModal
+        key={undoing?.id ?? "none"}
         isOpen={undoing !== null}
         title={t("hr.imports.undo_title", { filename: undoing?.filename ?? "" })}
         body={t("hr.imports.undo_body")}

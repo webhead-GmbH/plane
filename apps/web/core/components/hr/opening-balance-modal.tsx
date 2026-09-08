@@ -4,7 +4,7 @@
  * See the LICENSE file for details.
  */
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Check, Pencil } from "lucide-react";
 import useSWR from "swr";
 // plane imports
@@ -69,7 +69,10 @@ export const HrOpeningBalanceModal = ({ person, isOwn, canRecord, onClose }: TPr
   const [amount, setAmount] = useState("");
   const [kind, setKind] = useState<EHrBalanceKind>(EHrBalanceKind.TIME_BALANCE);
   const [confidence, setConfidence] = useState<EHrConfidence>(EHrConfidence.AGREED);
-  const [effectiveOn, setEffectiveOn] = useState("");
+  // Seeded once, at the moment this dialog is built. Both callers key it on
+  // the person, so a different person is a different dialog and there is
+  // nothing to reset afterwards.
+  const [effectiveOn, setEffectiveOn] = useState(person?.hire_date ?? "");
   const [basis, setBasis] = useState("");
   const [problem, setProblem] = useState<string | null>(null);
   const [isBusy, setIsBusy] = useState(false);
@@ -79,20 +82,6 @@ export const HrOpeningBalanceModal = ({ person, isOwn, canRecord, onClose }: TPr
   const { data: rows, mutate } = useSWR(person ? `HR_OPENING_${person.id}` : null, () =>
     person ? hrService.openingBalances(person.id) : null
   );
-
-  // By the person's id rather than the object: on the personal view this comes
-  // from the fetched month, so a revalidation handed over a new object and
-  // emptied the fields somebody was typing into.
-  useEffect(() => {
-    if (!person) return;
-    setAmount("");
-    setKind(EHrBalanceKind.TIME_BALANCE);
-    setConfidence(EHrConfidence.AGREED);
-    setEffectiveOn(person.hire_date ?? "");
-    setBasis("");
-    setProblem(null);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [person?.id, person?.hire_date]);
 
   const complain = (failure: unknown) =>
     setToast({

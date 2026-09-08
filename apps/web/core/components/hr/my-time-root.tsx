@@ -290,7 +290,11 @@ export const MyTimeRoot = observer(function MyTimeRoot() {
         onChanged={() => void mutate()}
       />
 
+      {/* Keyed on the opening rather than reset by an effect: the profile comes
+          from the fetched month, so it is a new object on every revalidation and
+          an effect watching it emptied the form under whoever was using it. */}
       <HrOpeningBalanceModal
+        key={showOpening ? (data.profile?.id ?? "own") : "closed"}
         person={showOpening ? data.profile : null}
         isOwn
         canRecord={false}
