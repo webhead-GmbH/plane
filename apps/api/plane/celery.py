@@ -92,6 +92,18 @@ app.conf.beat_schedule = {
         "task": "plane.bgtasks.exporter_expired_task.delete_old_s3_link",
         "schedule": crontab(hour=3, minute=45),  # UTC 03:45
     },
+    "check-every-hour-for-timers-left-running": {
+        "task": "plane.hr.bgtasks.timer_sweeper.close_runaway_timers",
+        "schedule": crontab(minute=5),  # hourly, at :05
+    },
+    "check-every-hour-to-rebuild-open-months": {
+        "task": "plane.hr.bgtasks.ledger_rebuild.rebuild_open_periods",
+        "schedule": crontab(minute=20),  # hourly, at :20
+    },
+    "check-every-day-for-days-awaiting-review": {
+        "task": "plane.hr.bgtasks.ledger_rebuild.report_days_needing_review",
+        "schedule": crontab(hour=4, minute=0),  # UTC 04:00
+    },
 }
 
 

@@ -13,6 +13,7 @@ export const NAMESPACES = [
   "editor",
   "empty-state",
   "home",
+  "hr",
   "inbox",
   "integration",
   "module",

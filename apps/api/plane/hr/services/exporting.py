@@ -1,0 +1,241 @@
+# Copyright (c) 2023-present Plane Software, Inc. and contributors
+# SPDX-License-Identifier: AGPL-3.0-only
+# See the LICENSE file for details.
+
+"""What gets handed to the payroll accountant, and to each person.
+
+Two shapes. One row per person for the month, which is what replaces the
+spreadsheet; and one row per day for a single person, which is what they get if
+they want to know where a figure came from.
+
+Hours go out in both minutes and decimal hours. Payroll works in decimal hours,
+but a decimal figure has already been rounded, and when somebody disputes fifteen
+minutes the exact figure needs to be there too.
+"""
+
+# Python imports
+from io import BytesIO, StringIO
+
+# Module imports
+from plane.hr.models import HrPeriod, HrPeriodDay
+from plane.hr.services.refusal import Refused
+from plane.hr.services.attendance import (
+    locations_by_day,
+    telework_days_between,
+    telework_days_in_year,
+)
+from plane.hr.services.ledger import (
+    counted_through_for,
+    period_totals,
+    period_totals_to_date,
+)
+from plane.utils.porters.formatters import CSVFormatter, XLSXFormatter
+
+MONTH_COLUMNS = [
+    "employee",
+    "email",
+    "period_start",
+    "period_end",
+    "state",
+    "target_minutes",
+    "target_hours",
+    "actual_minutes",
+    "actual_hours",
+    "balance_minutes",
+    "balance_hours",
+    "project_minutes",
+    "non_project_minutes",
+    "absence_minutes",
+    "holiday_minutes",
+    "leave_consumed_minutes",
+    "opening_balance_minutes",
+    "closing_balance_minutes",
+    # A month exported before it has ended owes the whole month but has only been
+    # worked so far, so the balance above reads as a shortfall for days nobody has
+    # reached yet. These say how much of the month the figures cover and where the
+    # person actually stands at that point. For a month that has ended they agree
+    # with the columns above, which is the point.
+    "counted_through",
+    "balance_minutes_to_date",
+    "balance_hours_to_date",
+    # Appended rather than filed next to the other counts, because whatever reads
+    # this takes the columns it knows by position. A new column at the end is
+    # invisible to it; one inserted in the middle silently moves every figure
+    # after it into the wrong heading.
+    "telework_days",
+    "telework_days_this_year",
+]
+
+DAY_COLUMNS = [
+    "date",
+    "day_kind",
+    "target_minutes",
+    "project_minutes",
+    "non_project_minutes",
+    "absence_minutes",
+    "holiday_minutes",
+    "actual_minutes",
+    "balance_minutes",
+    "needs_review",
+    "note",
+    "has_happened",
+    # Appended for the same reason as above. Who this is would read better at the
+    # front, but the front is where the positions are — and a file separated from
+    # its filename still needs the name somewhere, which is what this is for.
+    "employee",
+    "email",
+    "work_location",
+]
+
+
+def _hours(minutes):
+    """Decimal hours, to two places. Rounded for reading, never for arithmetic."""
+    if minutes is None:
+        return ""
+    return round(minutes / 60, 2)
+
+
+def _figure_or_blank(minutes):
+    """A number, or an empty cell where there genuinely is no figure.
+
+    Written out rather than `minutes or ""`, which turns a balance of exactly
+    zero into a blank. In a payroll sheet those two say different things — level,
+    and not worked out yet — and the reader has no way to tell them apart. Level
+    is also the ordinary case for somebody's first month.
+    """
+    return "" if minutes is None else minutes
+
+
+def _figures(period):
+    """The figures for a month, from wherever they currently live."""
+    if period.state == HrPeriod.State.LOCKED:
+        return {
+            "target_minutes": period.target_minutes or 0,
+            "actual_minutes": period.actual_minutes or 0,
+            "balance_minutes": period.balance_minutes or 0,
+            "project_minutes": period.project_minutes or 0,
+            "non_project_minutes": period.non_project_minutes or 0,
+            "absence_minutes": period.absence_minutes or 0,
+            "holiday_minutes": period.holiday_minutes or 0,
+            "leave_consumed_minutes": period.leave_consumed_minutes or 0,
+        }
+    totals = period_totals(period)
+    return {
+        key: (totals.get(key) or 0)
+        for key in (
+            "target_minutes",
+            "actual_minutes",
+            "balance_minutes",
+            "project_minutes",
+            "non_project_minutes",
+            "absence_minutes",
+            "holiday_minutes",
+            "leave_consumed_minutes",
+        )
+    }
+
+
+def _so_far(period):
+    """How much of the month the figures cover, and the balance at that point.
+
+    A closed month is taken from its frozen row rather than recomputed, so the
+    file never reads one month from two places.
+    """
+    if period.state == HrPeriod.State.LOCKED:
+        return period.period_end, period.balance_minutes or 0
+    through = counted_through_for(period)
+    return through, period_totals_to_date(period, through)["balance_minutes"]
+
+
+def month_rows(periods):
+    """One row per person, for a month."""
+    rows = []
+    for period in periods:
+        figures = _figures(period)
+        through, balance_to_date = _so_far(period)
+        member = period.profile.member
+        rows.append(
+            {
+                "employee": member.display_name or "",
+                "email": member.email or "",
+                "period_start": period.period_start.isoformat(),
+                "period_end": period.period_end.isoformat(),
+                "state": period.get_state_display(),
+                "target_minutes": figures["target_minutes"],
+                "target_hours": _hours(figures["target_minutes"]),
+                "actual_minutes": figures["actual_minutes"],
+                "actual_hours": _hours(figures["actual_minutes"]),
+                "balance_minutes": figures["balance_minutes"],
+                "balance_hours": _hours(figures["balance_minutes"]),
+                "project_minutes": figures["project_minutes"],
+                "non_project_minutes": figures["non_project_minutes"],
+                "absence_minutes": figures["absence_minutes"],
+                "holiday_minutes": figures["holiday_minutes"],
+                "leave_consumed_minutes": figures["leave_consumed_minutes"],
+                "telework_days": telework_days_between(period.profile, period.period_start, period.period_end),
+                "telework_days_this_year": telework_days_in_year(
+                    period.profile, period.period_start.year, up_to=period.period_end
+                ),
+                "opening_balance_minutes": _figure_or_blank(period.opening_balance_minutes),
+                "closing_balance_minutes": _figure_or_blank(period.closing_balance_minutes),
+                "counted_through": through.isoformat() if through else "",
+                "balance_minutes_to_date": balance_to_date,
+                "balance_hours_to_date": _hours(balance_to_date),
+            }
+        )
+    return rows
+
+
+def day_rows(period):
+    """One row per day, for a single person's month."""
+    days = HrPeriodDay.objects.filter(period_id=period.id).order_by("work_date")
+    through, _ = _so_far(period)
+    member = period.profile.member
+    where = locations_by_day(period.profile, period.period_start, period.period_end)
+    return [
+        {
+            "employee": member.display_name or "",
+            "email": member.email or "",
+            "date": day.work_date.isoformat(),
+            "day_kind": day.get_day_kind_display(),
+            "target_minutes": day.target_minutes,
+            "project_minutes": day.project_minutes,
+            "non_project_minutes": day.non_project_minutes,
+            "absence_minutes": day.absence_minutes,
+            "holiday_minutes": day.holiday_minutes,
+            "actual_minutes": day.actual_minutes,
+            "balance_minutes": day.balance_minutes,
+            # Blank where no attendance was recorded for the day, which is most
+            # days for most people: the record is kept only where it is switched on.
+            "work_location": where.get(day.work_date, ""),
+            "needs_review": "yes" if day.needs_review else "",
+            "note": day.note or "",
+            # Blank rather than "no" for a day still to come, so a reader scanning
+            # the column sees the month stop rather than a run of denials.
+            "has_happened": "yes" if (through is not None and day.work_date <= through) else "",
+        }
+        for day in days
+    ]
+
+
+def render(rows, columns, file_format):
+    """Rows into a file, with the columns in a fixed order.
+
+    Fixed on purpose: whatever reads this at the other end is looking for columns
+    in the order it was told to expect, and a spreadsheet whose columns move
+    between months is worse than no export at all.
+    """
+    ordered = [{column: row.get(column, "") for column in columns} for row in rows]
+    if file_format == "csv":
+        return CSVFormatter().encode(ordered), "text/csv"
+    if file_format == "xlsx":
+        return (
+            XLSXFormatter().encode(ordered),
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        )
+    raise Refused("Only CSV and XLSX can be produced.")
+
+
+def as_stream(payload):
+    """A file-like object for whichever of the two the formatter produced."""
+    return BytesIO(payload) if isinstance(payload, bytes) else StringIO(payload)
