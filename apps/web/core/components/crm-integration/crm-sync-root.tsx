@@ -8,10 +8,11 @@ import { useEffect, useState } from "react";
 import { observer } from "mobx-react";
 import useSWR from "swr";
 // plane imports
+import { Switch } from "@plane/propel/switch";
 import { useTranslation } from "@plane/i18n";
 import { Button } from "@plane/propel/button";
 import { TOAST_TYPE, setToast } from "@plane/propel/toast";
-import { CustomSelect, Input, Loader, ToggleSwitch } from "@plane/ui";
+import { CustomSelect, Input, Loader } from "@plane/ui";
 // services
 import {
   CrmIntegrationService,
@@ -262,7 +263,7 @@ export const CrmSyncRoot = observer(function CrmSyncRoot({ workspaceSlug }: Prop
           <span className="text-body-sm-medium text-secondary">{t(`${I18N}.form.active`)}</span>
           <p className="text-body-xs-regular text-tertiary">{t(`${I18N}.form.active_help`)}</p>
         </div>
-        <ToggleSwitch value={isActive} onChange={setIsActive} />
+        <Switch value={isActive} onChange={setIsActive} />
       </div>
 
       {/* Actions */}

@@ -10,11 +10,12 @@ import { useNavigate, useParams } from "react-router";
 import { Download, ListTree, MoreHorizontal, Plus, RefreshCw, Scale, Send, Users } from "lucide-react";
 import useSWR from "swr";
 // plane imports
+import { Tooltip } from "@makeplane/propel/components/tooltip";
 import { Button } from "@plane/propel/button";
 import { useTranslation } from "@plane/i18n";
 import { setToast, TOAST_TYPE } from "@plane/propel/toast";
 import { EmptyStateCompact } from "@plane/propel/empty-state";
-import { AlertModalCore, CustomMenu, Loader, Tooltip } from "@plane/ui";
+import { AlertModalCore, CustomMenu, Loader } from "@plane/ui";
 // local imports
 import { HrService, type THrMe, type THrPeriod } from "@/services/hr.service";
 import { HrDayTable } from "./day-table";
@@ -287,11 +288,11 @@ const HandInButton = ({
 
   return (
     <Tooltip
-      tooltipContent={
+      label={
         monthIsRunning ? t("hr.my_time.cannot_hand_in.month_running") : t("hr.my_time.cannot_hand_in.timer_running")
       }
       disabled={canHandIn}
-      position="bottom"
+      side="bottom"
     >
       {/* A wrapper, because a disabled button receives no pointer events
           of its own and would leave somebody staring at a grey control

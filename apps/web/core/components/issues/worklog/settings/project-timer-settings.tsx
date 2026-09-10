@@ -8,9 +8,10 @@
 
 import { useState } from "react";
 import { observer } from "mobx-react";
+import { Switch } from "@plane/propel/switch";
 import { useTranslation } from "@plane/i18n";
 import { setToast, TOAST_TYPE } from "@plane/propel/toast";
-import { ToggleSwitch } from "@plane/ui";
+
 import { useProject } from "@/hooks/store/use-project";
 import { useWorkspace } from "@/hooks/store/use-workspace";
 import { TimerStatesField } from "./timer-states-field";
@@ -52,11 +53,7 @@ export const ProjectTimerSettings = observer(function ProjectTimerSettings(props
           <h4 className="text-lg font-medium text-primary">{t("common.time_tracking")}</h4>
           <p className="text-sm mt-1 text-secondary">{t("common.worklog_override_workspace")}</p>
         </div>
-        <ToggleSwitch
-          value={isOverriding}
-          onChange={(enabled) => save(enabled ? [...value] : null)}
-          disabled={submitting}
-        />
+        <Switch value={isOverriding} onChange={(enabled) => save(enabled ? [...value] : null)} disabled={submitting} />
       </div>
       {isOverriding && (
         <div className="mt-4">

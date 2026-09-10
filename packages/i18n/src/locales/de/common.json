@@ -487,7 +487,7 @@
     "project_timezone": "Projektzeitzone",
     "created_on": "Erstellt am",
     "updated_on": "Aktualisiert am",
-    "completed_on": "Completed on",
+    "completed_on": "Abgeschlossen am",
     "update_project": "Projekt aktualisieren",
     "identifier_already_exists": "Der Bezeichner existiert bereits",
     "add_more": "Mehr hinzufügen",
@@ -746,7 +746,7 @@
     "developer": "Entwickler",
     "work_structure": "Arbeitsstruktur",
     "execution": "Ausführung",
-    "administration": "Administration",
+    "administration": "Verwaltung",
     "custom_fields": "Benutzerdefinierte Felder",
     "integrations": "Integrationen"
   },
