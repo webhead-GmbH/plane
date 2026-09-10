@@ -5,9 +5,10 @@
  */
 
 // plane imports
+import { Switch } from "@plane/propel/switch";
 import { ECustomFieldType } from "@plane/types";
 import type { TCustomField, TCustomFieldRawValue, TCustomFieldUrlValue } from "@plane/types";
-import { CustomSelect, Input, TextArea, ToggleSwitch } from "@plane/ui";
+import { CustomSelect, Input, TextArea } from "@plane/ui";
 import { cn } from "@plane/utils";
 // local imports
 import { resolveDateSetting } from "./relative-date";
@@ -71,7 +72,7 @@ export function CustomFieldInput(props: Props) {
     case ECustomFieldType.BOOLEAN:
       return (
         <div className="flex items-center gap-2">
-          <ToggleSwitch value={Boolean(value)} onChange={(val) => onChange(val)} disabled={disabled} size="sm" />
+          <Switch value={Boolean(value)} onChange={(val) => onChange(val)} disabled={disabled} size="sm" />
           {settings?.label && <span className="text-body-sm-regular text-secondary">{settings.label}</span>}
         </div>
       );

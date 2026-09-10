@@ -9,9 +9,10 @@ import { observer } from "mobx-react";
 import { AlertTriangle, ChevronDown, ChevronRight, Timer } from "lucide-react";
 import useSWR from "swr";
 // plane imports
+import { Tooltip } from "@makeplane/propel/components/tooltip";
 import { useTranslation } from "@plane/i18n";
 import { EmptyStateCompact } from "@plane/propel/empty-state";
-import { Loader, Tooltip } from "@plane/ui";
+import { Loader } from "@plane/ui";
 import { cn } from "@plane/utils";
 // services
 import {
@@ -512,12 +513,12 @@ const EntryRow = ({ row, locale, showDay }: { row: THrWorklogRow; locale?: strin
           {key ? <span className="text-13 tracking-wide text-tertiary tabular-nums">{key}</span> : null}
           <span className="text-primary">{row.issue_name || t("hr.detail.unnamed")}</span>
           {row.is_running ? (
-            <Tooltip tooltipContent={t("hr.detail.still_running")} position="top">
+            <Tooltip label={t("hr.detail.still_running")} side="top">
               <Timer className="size-3.5 text-warning-primary" aria-label={t("hr.detail.still_running")} />
             </Tooltip>
           ) : null}
           {row.gone ? (
-            <Tooltip tooltipContent={t("hr.detail.gone")} position="top">
+            <Tooltip label={t("hr.detail.gone")} side="top">
               <AlertTriangle className="size-3.5 text-warning-primary" aria-label={t("hr.detail.gone")} />
             </Tooltip>
           ) : null}
@@ -528,7 +529,7 @@ const EntryRow = ({ row, locale, showDay }: { row: THrWorklogRow; locale?: strin
         {showDay ? formatDayLabel(row.day, locale) : null}
         {row.entered_by_hand ? <span className={showDay ? "ml-2" : undefined}>{t("hr.detail.by_hand")}</span> : null}
         {row.auto_stopped ? (
-          <Tooltip tooltipContent={t("hr.detail.auto_stopped_hint")} position="top">
+          <Tooltip label={t("hr.detail.auto_stopped_hint")} side="top">
             <span className="ml-2 text-warning-primary">{t("hr.detail.auto_stopped")}</span>
           </Tooltip>
         ) : null}

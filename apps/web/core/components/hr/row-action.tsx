@@ -4,7 +4,7 @@
  * See the LICENSE file for details.
  */
 
-import { Tooltip } from "@plane/ui";
+import { Tooltip } from "@makeplane/propel/components/tooltip";
 import { cn } from "@plane/utils";
 
 type TProps = {
@@ -34,7 +34,7 @@ type TProps = {
 export const HrRowAction = ({ icon, label, subject, danger, disabled, onClick }: TProps) => {
   const name = subject ? `${label} — ${subject}` : label;
   return (
-    <Tooltip tooltipContent={name} position="top">
+    <Tooltip label={name} side="top">
       <button
         type="button"
         aria-label={name}

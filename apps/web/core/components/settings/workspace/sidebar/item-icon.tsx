@@ -5,26 +5,25 @@
  */
 
 import type { LucideIcon } from "lucide-react";
+import { LayoutList, RefreshCw, SlidersHorizontal } from "lucide-react";
 import {
-  ArrowUpToLine,
-  Building,
-  CreditCard,
-  LayoutList,
-  RefreshCw,
-  SlidersHorizontal,
-  Users,
-  Webhook,
-} from "lucide-react";
+  BillingsOutline,
+  BuildingOutline,
+  ExportOutline,
+  MembersOutline,
+  WebhooksOutline,
+} from "@makeplane/propel/icons";
 // plane imports
 import type { ISvgIcons } from "@plane/propel/icons";
 import type { TWorkspaceSettingsTabs } from "@plane/types";
 
 export const WORKSPACE_SETTINGS_ICONS: Record<TWorkspaceSettingsTabs, LucideIcon | React.FC<ISvgIcons>> = {
-  general: Building,
-  members: Users,
-  export: ArrowUpToLine,
-  "billing-and-plans": CreditCard,
-  webhooks: Webhook,
+  general: BuildingOutline,
+  members: MembersOutline,
+  export: ExportOutline,
+  "billing-and-plans": BillingsOutline,
+  webhooks: WebhooksOutline,
+  // Ours, and still on lucide: propel ships no icon for these three yet.
   "custom-fields-projects": SlidersHorizontal,
   "custom-fields-work-items": LayoutList,
   "crm-sync": RefreshCw,

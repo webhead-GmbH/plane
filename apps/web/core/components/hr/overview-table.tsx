@@ -6,9 +6,10 @@
 
 import { AlertTriangle, Timer } from "lucide-react";
 // plane imports
+import { Tooltip } from "@makeplane/propel/components/tooltip";
 import { Button } from "@plane/propel/button";
 import { useTranslation } from "@plane/i18n";
-import { Tooltip } from "@plane/ui";
+
 import { cn } from "@plane/utils";
 // local imports
 import { EHrPeriodState, type THrOverviewRow } from "@/services/hr.service";
@@ -91,12 +92,12 @@ export const HrOverviewTable = ({ rows, busyPeriodId, onApprove, onLock, onReope
                   <div className="flex items-center gap-2">
                     <span className="font-medium text-primary">{row.member_display_name}</span>
                     {row.has_running_timer ? (
-                      <Tooltip tooltipContent={t("hr.overview_table.timer_running")} position="top">
+                      <Tooltip label={t("hr.overview_table.timer_running")} side="top">
                         <Timer className="size-3.5 text-tertiary" aria-label={t("hr.overview_table.timer_running")} />
                       </Tooltip>
                     ) : null}
                     {row.needs_review ? (
-                      <Tooltip tooltipContent={t("hr.overview_table.needs_review")} position="top">
+                      <Tooltip label={t("hr.overview_table.needs_review")} side="top">
                         {/* A button rather than an icon: the flag is the one thing
                             on this row somebody has to act on, and pointing at it
                             without offering the action left the month stuck. */}
