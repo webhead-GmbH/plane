@@ -4,7 +4,7 @@
  * See the LICENSE file for details.
  */
 
-import { Fragment, useState } from "react";
+import { Fragment, useCallback, useState } from "react";
 import { observer } from "mobx-react";
 import { usePopper } from "react-popper";
 import { AddOutline, LoadingOutline, SearchOutline, TickOutline } from "@makeplane/propel/icons";
@@ -89,6 +89,10 @@ export const IssueLabelSelect = observer(function IssueLabelSelect(props: IIssue
     ],
   });
 
+  // the panel mounts when the picker opens, so this focuses the search box then: without it a
+  // mouse user cannot type, since the options panel cancels the mousedown that would focus it
+  const focusOnOpen = useCallback((el: HTMLInputElement | null) => el?.focus(), []);
+
   const issueLabels = values ?? [];
 
   const label = <span className="text-body-xs-medium text-placeholder">{t("label.select")}</span>;
@@ -149,6 +153,7 @@ export const IssueLabelSelect = observer(function IssueLabelSelect(props: IIssue
               <div className="flex w-full items-center justify-start rounded-sm border border-subtle bg-surface-2 px-2">
                 <SearchOutline className="h-3.5 w-3.5 text-tertiary" />
                 <Combobox.Input
+                  ref={focusOnOpen}
                   className="w-full bg-transparent px-2 py-1 text-11 text-secondary placeholder:text-placeholder focus:outline-none"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
@@ -192,26 +197,25 @@ export const IssueLabelSelect = observer(function IssueLabelSelect(props: IIssue
                 <LoadingOutline className="spin h-3.5 w-3.5" />
               ) : canCreateLabel ? (
                 <ul className="space-y-1">
-                  <Combobox.Option
-                    as="li"
-                    value={query}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      if (!query.length) return;
-                      handleAddLabel(query);
-                    }}
-                    className={`text-left text-secondary ${query.length ? "cursor-pointer" : "cursor-default"}`}
-                  >
-                    {query.length ? (
-                      <>
-                        {/* TODO: Translate here */}+ Add <span className="text-primary">&quot;{query}&quot;</span> to
-                        labels
-                      </>
-                    ) : (
-                      t("label.create.type")
-                    )}
-                  </Combobox.Option>
+                  <li>
+                    {/* a button, not a Combobox.Option: an option would also hand the raw search text
+                        to the combobox, which the API rejects, and it cannot be reached by keyboard */}
+                    <button
+                      type="button"
+                      disabled={!query.length}
+                      onClick={() => handleAddLabel(query)}
+                      className={`w-full text-left text-secondary ${query.length ? "cursor-pointer" : "cursor-default"}`}
+                    >
+                      {query.length ? (
+                        <>
+                          {/* TODO: Translate here */}+ Add <span className="text-primary">&quot;{query}&quot;</span> to
+                          labels
+                        </>
+                      ) : (
+                        t("label.create.type")
+                      )}
+                    </button>
+                  </li>
                 </ul>
               ) : (
                 <p className="text-left text-secondary">{t("common.search.no_matching_results")}</p>

@@ -6,7 +6,7 @@
 
 import { Combobox } from "@headlessui/react";
 import { ChevronDownOutline, InfoOutline, SearchOutline, TickOutline } from "@makeplane/propel/icons";
-import React, { useRef, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { usePopper } from "react-popper";
 import { useOutsideClickDetector } from "@plane/hooks";
@@ -56,6 +56,10 @@ export function CustomSearchSelect(props: ICustomSearchSelectProps) {
 
   const filteredOptions =
     query === "" ? options : options?.filter((option) => option.query.toLowerCase().includes(query.toLowerCase()));
+
+  // focus the search box as the panel mounts: the panel cancels the mousedown that would
+  // otherwise focus it, so without this a mouse user cannot type into it
+  const focusOnOpen = useCallback((el: HTMLInputElement | null) => el?.focus(), []);
 
   const comboboxProps: any = {
     value,
@@ -155,6 +159,7 @@ export function CustomSearchSelect(props: ICustomSearchSelectProps) {
                     <div className="mx-2 flex items-center gap-1.5 rounded-sm border border-subtle px-2">
                       <SearchOutline className="h-3.5 w-3.5 text-placeholder" />
                       <Combobox.Input
+                        ref={focusOnOpen}
                         className="w-full bg-transparent py-1 text-11 text-secondary placeholder:text-placeholder focus:outline-none"
                         value={query}
                         onChange={(e) => setQuery(e.target.value)}
