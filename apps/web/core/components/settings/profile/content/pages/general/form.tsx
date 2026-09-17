@@ -52,6 +52,19 @@ type Props = {
   profile: TUserProfile;
 };
 
+const getProfileFormDefaultValues = (user: IUser, profile: TUserProfile): Omit<TUserProfileForm, "cover_image"> => ({
+  avatar_url: user.avatar_url || "",
+  cover_image_asset: null,
+  cover_image_url: user.cover_image_url || "",
+  first_name: user.first_name || "",
+  last_name: user.last_name || "",
+  display_name: user.display_name || "",
+  email: user.email || "",
+  role: profile.role || "Product / Project Manager",
+  language: profile.language || "en",
+  user_timezone: user.user_timezone || "Asia/Kolkata",
+});
+
 export const GeneralProfileSettingsForm = observer(function GeneralProfileSettingsForm(props: Props) {
   const { user, profile } = props;
   // states
@@ -69,18 +82,7 @@ export const GeneralProfileSettingsForm = observer(function GeneralProfileSettin
     setValue,
     formState: { errors },
   } = useForm<TUserProfileForm>({
-    defaultValues: {
-      avatar_url: user.avatar_url || "",
-      cover_image_asset: null,
-      cover_image_url: user.cover_image_url || "",
-      first_name: user.first_name || "",
-      last_name: user.last_name || "",
-      display_name: user.display_name || "",
-      email: user.email || "",
-      role: profile.role || "Product / Project Manager",
-      language: profile.language || "en",
-      user_timezone: user.user_timezone || "Asia/Kolkata",
-    },
+    defaultValues: getProfileFormDefaultValues(user, profile),
   });
   // derived values
   const userAvatar = watch("avatar_url");

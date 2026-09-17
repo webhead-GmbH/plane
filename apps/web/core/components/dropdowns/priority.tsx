@@ -53,6 +53,41 @@ type ButtonProps = {
   renderToolTipByDefault?: boolean;
 };
 
+type PriorityButtonIconProps = {
+  hideText: boolean;
+  highlightUrgent: boolean;
+  priority: TIssuePriorities | undefined;
+};
+
+function PriorityButtonIcon(props: PriorityButtonIconProps) {
+  const { hideText, highlightUrgent, priority } = props;
+
+  if (!priority) return <SignalHigh className="size-3" />;
+
+  return (
+    <div
+      className={cn({
+        // highlight just the icon if text is visible and priority is urgent
+        "rounded-sm border border-priority-urgent p-0.5": priority === "urgent" && !hideText && highlightUrgent,
+      })}
+    >
+      <PriorityIcon
+        priority={priority}
+        size={12}
+        className={cn("flex-shrink-0", {
+          // increase the icon size if text is hidden
+          "h-3.5 w-3.5": hideText,
+          // centre align the icons if text is hidden
+          "translate-x-[0.0625rem]": hideText && priority === "high",
+          "translate-x-0.5": hideText && priority === "medium",
+          "translate-x-1": hideText && priority === "low",
+          // highlight the icon if priority is urgent
+        })}
+      />
+    </div>
+  );
+}
+
 function BorderButton(props: ButtonProps) {
   const {
     className,
@@ -97,31 +132,7 @@ function BorderButton(props: ButtonProps) {
           className
         )}
       >
-        {!hideIcon &&
-          (priority ? (
-            <div
-              className={cn({
-                // highlight just the icon if text is visible and priority is urgent
-                "rounded-sm border border-priority-urgent p-0.5": priority === "urgent" && !hideText && highlightUrgent,
-              })}
-            >
-              <PriorityIcon
-                priority={priority}
-                size={12}
-                className={cn("flex-shrink-0", {
-                  // increase the icon size if text is hidden
-                  "h-3.5 w-3.5": hideText,
-                  // centre align the icons if text is hidden
-                  "translate-x-[0.0625rem]": hideText && priority === "high",
-                  "translate-x-0.5": hideText && priority === "medium",
-                  "translate-x-1": hideText && priority === "low",
-                  // highlight the icon if priority is urgent
-                })}
-              />
-            </div>
-          ) : (
-            <SignalHigh className="size-3" />
-          ))}
+        {!hideIcon && <PriorityButtonIcon priority={priority} hideText={hideText} highlightUrgent={highlightUrgent} />}
         {!hideText && (
           <span
             className={cn("flex-grow truncate text-body-xs-medium", {
@@ -181,31 +192,7 @@ function BackgroundButton(props: ButtonProps) {
           className
         )}
       >
-        {!hideIcon &&
-          (priority ? (
-            <div
-              className={cn({
-                // highlight just the icon if text is visible and priority is urgent
-                "rounded-sm border border-priority-urgent p-0.5": priority === "urgent" && !hideText && highlightUrgent,
-              })}
-            >
-              <PriorityIcon
-                priority={priority}
-                size={12}
-                className={cn("flex-shrink-0", {
-                  // increase the icon size if text is hidden
-                  "h-3.5 w-3.5": hideText,
-                  // centre align the icons if text is hidden
-                  "translate-x-[0.0625rem]": hideText && priority === "high",
-                  "translate-x-0.5": hideText && priority === "medium",
-                  "translate-x-1": hideText && priority === "low",
-                  // highlight the icon if priority is urgent
-                })}
-              />
-            </div>
-          ) : (
-            <SignalHigh className="size-3" />
-          ))}
+        {!hideIcon && <PriorityButtonIcon priority={priority} hideText={hideText} highlightUrgent={highlightUrgent} />}
         {!hideText && (
           <span
             className={cn("flex-grow truncate text-body-xs-medium", {
@@ -261,31 +248,7 @@ function TransparentButton(props: ButtonProps) {
           className
         )}
       >
-        {!hideIcon &&
-          (priority ? (
-            <div
-              className={cn({
-                // highlight just the icon if text is visible and priority is urgent
-                "rounded-sm border border-priority-urgent p-0.5": priority === "urgent" && !hideText && highlightUrgent,
-              })}
-            >
-              <PriorityIcon
-                priority={priority}
-                size={12}
-                className={cn("flex-shrink-0", {
-                  // increase the icon size if text is hidden
-                  "h-3.5 w-3.5": hideText,
-                  // centre align the icons if text is hidden
-                  "translate-x-[0.0625rem]": hideText && priority === "high",
-                  "translate-x-0.5": hideText && priority === "medium",
-                  "translate-x-1": hideText && priority === "low",
-                  // highlight the icon if priority is urgent
-                })}
-              />
-            </div>
-          ) : (
-            <SignalHigh className="size-3" />
-          ))}
+        {!hideIcon && <PriorityButtonIcon priority={priority} hideText={hideText} highlightUrgent={highlightUrgent} />}
         {!hideText && (
           <span
             className={cn("flex-grow truncate text-body-xs-medium", {
@@ -392,6 +355,8 @@ export function PriorityDropdown(props: Props) {
       onClick={handleOnClick}
       disabled={disabled}
       tabIndex={tabIndex}
+      aria-haspopup="listbox"
+      aria-expanded={isOpen}
     >
       {button}
     </button>
@@ -410,6 +375,8 @@ export function PriorityDropdown(props: Props) {
       onClick={handleOnClick}
       disabled={disabled}
       tabIndex={tabIndex}
+      aria-haspopup="listbox"
+      aria-expanded={isOpen}
     >
       <ButtonToRender
         priority={value ?? undefined}

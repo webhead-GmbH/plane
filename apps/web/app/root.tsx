@@ -4,6 +4,7 @@
  * See the LICENSE file for details.
  */
 
+import { useSyncExternalStore } from "react";
 import type { ReactNode } from "react";
 import { Links, Meta, Outlet, Scripts } from "react-router";
 import type { LinksFunction } from "react-router";
@@ -115,11 +116,19 @@ export default function Root() {
   return <Outlet />;
 }
 
+// Hydration has nothing to subscribe to: it is over once, and stays over.
+const subscribeToHydration = () => () => {};
+const getHydratedSnapshot = () => true;
+const getServerSnapshot = () => false;
+
 export function HydrateFallback() {
+  // false on the server and for the render that hydrates its HTML, true from the render after
+  const isHydrated = useSyncExternalStore(subscribeToHydration, getHydratedSnapshot, getServerSnapshot);
   const { resolvedTheme } = useTheme();
 
-  // if we are on the server or the theme is not resolved, return an empty div
-  if (typeof window === "undefined" || resolvedTheme === undefined) return <div />;
+  // the server has no theme, so until hydration is done (or while the theme is unresolved)
+  // render exactly what it rendered: an empty div
+  if (!isHydrated || resolvedTheme === undefined) return <div />;
 
   return (
     <div className="relative flex h-screen w-full items-center justify-center bg-canvas">

@@ -168,6 +168,33 @@ interface IssueRowDetailsProps {
   isEpic?: boolean;
 }
 
+type IssueRowIdentifierProps = {
+  issueDetail: TIssue;
+  displayProperties: IIssueDisplayProperties;
+};
+
+const IssueRowIdentifier = observer(function IssueRowIdentifier(props: IssueRowIdentifierProps) {
+  const { issueDetail, displayProperties } = props;
+
+  if (!displayProperties?.key) return null;
+
+  return (
+    <div className="flex h-full min-w-24 flex-shrink-0 items-center">
+      <div className="relative flex cursor-pointer items-center text-11 hover:text-primary">
+        {issueDetail.project_id && (
+          <IssueIdentifier
+            issueId={issueDetail.id}
+            projectId={issueDetail.project_id}
+            size="xs"
+            variant="tertiary"
+            displayProperties={displayProperties}
+          />
+        )}
+      </div>
+    </div>
+  );
+});
+
 const IssueRowDetails = observer(function IssueRowDetails(props: IssueRowDetailsProps) {
   const {
     displayProperties,
@@ -281,21 +308,7 @@ const IssueRowDetails = observer(function IssueRowDetails(props: IssueRowDetails
             )}
           >
             {/* Identifier section - conditionally rendered */}
-            {displayProperties?.key && (
-              <div className="flex h-full min-w-24 flex-shrink-0 items-center">
-                <div className="relative flex cursor-pointer items-center text-11 hover:text-primary">
-                  {issueDetail.project_id && (
-                    <IssueIdentifier
-                      issueId={issueDetail.id}
-                      projectId={issueDetail.project_id}
-                      size="xs"
-                      variant="tertiary"
-                      displayProperties={displayProperties}
-                    />
-                  )}
-                </div>
-              </div>
-            )}
+            <IssueRowIdentifier issueDetail={issueDetail} displayProperties={displayProperties} />
 
             {/* Workitem section */}
             <div

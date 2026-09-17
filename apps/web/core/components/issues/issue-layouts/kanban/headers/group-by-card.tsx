@@ -36,6 +36,54 @@ interface IHeaderGroupByCard {
   isEpic?: boolean;
 }
 
+type THeaderGroupByCardAddIssueProps = {
+  showExistingIssueOption: boolean;
+  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setOpenExistingIssueListModal: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
+function HeaderGroupByCardAddIssue(props: THeaderGroupByCardAddIssueProps) {
+  const { showExistingIssueOption, setIsOpen, setOpenExistingIssueListModal } = props;
+
+  if (showExistingIssueOption)
+    return (
+      <CustomMenu
+        customButton={
+          <span className="flex h-[20px] w-[20px] flex-shrink-0 cursor-pointer items-center justify-center overflow-hidden rounded-sm bg-layer-transparent transition-all hover:bg-layer-transparent-hover">
+            <AddOutline height={14} width={14} />
+          </span>
+        }
+        placement="bottom-end"
+      >
+        <CustomMenu.MenuItem
+          onClick={() => {
+            setIsOpen(true);
+          }}
+        >
+          <span className="flex items-center justify-start gap-2">Create work item</span>
+        </CustomMenu.MenuItem>
+        <CustomMenu.MenuItem
+          onClick={() => {
+            setOpenExistingIssueListModal(true);
+          }}
+        >
+          <span className="flex items-center justify-start gap-2">Add an existing work item</span>
+        </CustomMenu.MenuItem>
+      </CustomMenu>
+    );
+
+  return (
+    <button
+      className="flex h-[20px] w-[20px] flex-shrink-0 cursor-pointer items-center justify-center overflow-hidden rounded-sm bg-layer-transparent transition-all hover:bg-layer-transparent-hover"
+      onClick={() => {
+        setIsOpen(true);
+      }}
+    >
+      <AddOutline width={14} />
+    </button>
+  );
+}
+
 export const HeaderGroupByCard = observer(function HeaderGroupByCard(props: IHeaderGroupByCard) {
   const {
     sub_group_by,
@@ -144,41 +192,13 @@ export const HeaderGroupByCard = observer(function HeaderGroupByCard(props: IHea
           </button>
         )}
 
-        {!disableIssueCreation &&
-          (renderExistingIssueModal ? (
-            <CustomMenu
-              customButton={
-                <span className="flex h-[20px] w-[20px] flex-shrink-0 cursor-pointer items-center justify-center overflow-hidden rounded-sm bg-layer-transparent transition-all hover:bg-layer-transparent-hover">
-                  <AddOutline height={14} width={14} />
-                </span>
-              }
-              placement="bottom-end"
-            >
-              <CustomMenu.MenuItem
-                onClick={() => {
-                  setIsOpen(true);
-                }}
-              >
-                <span className="flex items-center justify-start gap-2">Create work item</span>
-              </CustomMenu.MenuItem>
-              <CustomMenu.MenuItem
-                onClick={() => {
-                  setOpenExistingIssueListModal(true);
-                }}
-              >
-                <span className="flex items-center justify-start gap-2">Add an existing work item</span>
-              </CustomMenu.MenuItem>
-            </CustomMenu>
-          ) : (
-            <button
-              className="flex h-[20px] w-[20px] flex-shrink-0 cursor-pointer items-center justify-center overflow-hidden rounded-sm bg-layer-transparent transition-all hover:bg-layer-transparent-hover"
-              onClick={() => {
-                setIsOpen(true);
-              }}
-            >
-              <AddOutline width={14} />
-            </button>
-          ))}
+        {!disableIssueCreation && (
+          <HeaderGroupByCardAddIssue
+            showExistingIssueOption={!!renderExistingIssueModal}
+            setIsOpen={setIsOpen}
+            setOpenExistingIssueListModal={setOpenExistingIssueListModal}
+          />
+        )}
       </div>
     </>
   );

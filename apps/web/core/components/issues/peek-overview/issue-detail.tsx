@@ -73,6 +73,8 @@ export const PeekOverviewIssueDetails = observer(function PeekOverviewIssueDetai
 
   if (!issue || !issue.project_id) return <></>;
 
+  const isDisabled = disabled || isArchived;
+
   const issueDescription =
     issue.description_html !== undefined || issue.description_html !== null
       ? issue.description_html != ""
@@ -92,7 +94,7 @@ export const PeekOverviewIssueDetails = observer(function PeekOverviewIssueDetai
         />
       )}
       <div className="flex items-center justify-between gap-2">
-        <IssueTypeSwitcher issueId={issueId} disabled={isArchived || disabled} />
+        <IssueTypeSwitcher issueId={issueId} disabled={isDisabled} />
       </div>
       <IssueTitleInput
         workspaceSlug={workspaceSlug}
@@ -101,14 +103,14 @@ export const PeekOverviewIssueDetails = observer(function PeekOverviewIssueDetai
         isSubmitting={isSubmitting}
         setIsSubmitting={(value) => setIsSubmitting(value)}
         issueOperations={issueOperations}
-        disabled={disabled || isArchived}
+        disabled={isDisabled}
         value={issue.name}
       />
 
       <DescriptionInput
         issueSequenceId={issue.sequence_id}
         containerClassName="-ml-3 border-none"
-        disabled={disabled || isArchived}
+        disabled={isDisabled}
         editorRef={editorRef}
         entityId={issue.id}
         fileAssetType={EFileAssetType.ISSUE_DESCRIPTION}
@@ -143,7 +145,7 @@ export const PeekOverviewIssueDetails = observer(function PeekOverviewIssueDetai
               createdAt: issue.created_at ? new Date(issue.created_at) : new Date(),
               createdByDisplayName: getUserDetails(issue.created_by ?? "")?.display_name ?? "",
               id: issueId,
-              isRestoreDisabled: disabled || isArchived,
+              isRestoreDisabled: isDisabled,
             }}
             fetchHandlers={{
               listDescriptionVersions: (issueId) =>

@@ -26,23 +26,20 @@ const BADGE_CONTENT = {
 };
 
 export function PageSyncingBadge({ syncStatus }: Props) {
-  const [prevSyncStatus, setPrevSyncStatus] = useState<"syncing" | "synced" | "error" | null>(null);
   const [isVisible, setIsVisible] = useState(syncStatus !== "synced");
 
+  // Handle transitions whenever the sync status changes
   useEffect(() => {
-    // Only handle transitions when there's a change
-    if (prevSyncStatus !== syncStatus) {
-      if (syncStatus === "synced") {
-        // Delay hiding to allow exit animation to complete
-        setTimeout(() => {
-          setIsVisible(false);
-        }, 300); // match animation duration
-      } else {
-        setIsVisible(true);
-      }
-      setPrevSyncStatus(syncStatus);
+    if (syncStatus !== "synced") {
+      setIsVisible(true);
+      return;
     }
-  }, [syncStatus, prevSyncStatus]);
+    // Delay hiding to allow exit animation to complete
+    const hideTimeout = setTimeout(() => {
+      setIsVisible(false);
+    }, 300); // match animation duration
+    return () => clearTimeout(hideTimeout);
+  }, [syncStatus]);
 
   if (!isVisible || syncStatus === "synced") return null;
 

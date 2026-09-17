@@ -119,6 +119,8 @@ export const ModuleDropdownBase = observer(function ModuleDropdownBase(props: TM
       onClick={handleOnClick}
       disabled={disabled}
       tabIndex={tabIndex}
+      aria-haspopup="listbox"
+      aria-expanded={isOpen}
     >
       {button}
     </button>
@@ -137,6 +139,8 @@ export const ModuleDropdownBase = observer(function ModuleDropdownBase(props: TM
       onClick={handleOnClick}
       disabled={disabled}
       tabIndex={tabIndex}
+      aria-haspopup="listbox"
+      aria-expanded={isOpen}
     >
       <DropdownButton
         className={buttonClassName}

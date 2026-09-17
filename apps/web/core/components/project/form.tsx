@@ -33,6 +33,7 @@ import { usePlatformOS } from "@/hooks/use-platform-os";
 import { ProjectService } from "@/services/project";
 // local imports
 import { ProjectNetworkIcon } from "./project-network-icon";
+import { ProjectNetworkSelectOptions } from "./network-select-options";
 
 export interface IProjectDetailsForm {
   project: IProject;
@@ -411,17 +412,7 @@ export function ProjectDetailsForm(props: IProjectDetailsForm) {
                     disabled={!isAdmin}
                     // optionsClassName="w-full"
                   >
-                    {NETWORK_CHOICES.map((network) => (
-                      <CustomSelect.Option key={network.key} value={network.key}>
-                        <div className="flex items-start gap-2">
-                          <ProjectNetworkIcon iconKey={network.iconKey} className="h-3.5 w-3.5" />
-                          <div className="-mt-1">
-                            <p>{t(network.i18n_label)}</p>
-                            <p className="text-11 text-placeholder">{t(network.description)}</p>
-                          </div>
-                        </div>
-                      </CustomSelect.Option>
-                    ))}
+                    <ProjectNetworkSelectOptions />
                   </CustomSelect>
                 );
               }}

@@ -67,8 +67,9 @@ export const ProjectSettingsSidebarItemCategories = observer(function ProjectSet
                     href={`/${workspaceSlug}/settings/projects/${projectId}${item.href}/`}
                     isActive={isItemActive}
                     icon={PROJECT_SETTINGS_ICONS[item.key]}
-                    label={t(item.i18n_label)}
-                  />
+                  >
+                    {t(item.i18n_label)}
+                  </SettingsSidebarItem>
                 );
               })}
             </div>

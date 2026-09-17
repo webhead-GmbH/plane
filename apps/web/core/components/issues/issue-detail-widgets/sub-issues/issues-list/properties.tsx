@@ -39,15 +39,21 @@ type Props = {
   issue: TIssue;
 };
 
-export const SubIssuesListItemProperties = observer(function SubIssuesListItemProperties(props: Props) {
+type TSubIssuesListItemDatePropertiesProps = Omit<Props, "displayProperties"> & {
+  displayProperties: IIssueDisplayProperties;
+};
+
+const handleEventPropagation = (e: SyntheticEvent<HTMLDivElement>) => {
+  e.stopPropagation();
+  e.preventDefault();
+};
+
+const SubIssuesListItemDateProperties = observer(function SubIssuesListItemDateProperties(
+  props: TSubIssuesListItemDatePropertiesProps
+) {
   const { workspaceSlug, parentIssueId, issueId, canEdit, updateSubIssue, displayProperties, issue } = props;
   const { t } = useTranslation();
   const { getStateById } = useProjectState();
-
-  const handleEventPropagation = (e: SyntheticEvent<HTMLDivElement>) => {
-    e.stopPropagation();
-    e.preventDefault();
-  };
 
   const handleStartDate = (date: Date | null) => {
     if (issue.project_id) {
@@ -76,57 +82,11 @@ export const SubIssuesListItemProperties = observer(function SubIssuesListItemPr
     issue.start_date && issue.target_date && displayProperties?.start_date && displayProperties?.due_date
   );
 
-  if (!displayProperties) return <></>;
-
   const maxDate = getDate(issue.target_date);
   const minDate = getDate(issue.start_date);
 
   return (
-    <div className="relative flex items-center gap-2">
-      <WithDisplayPropertiesHOC displayProperties={displayProperties} displayPropertyKey="state">
-        <div className="h-5 flex-shrink-0">
-          <StateDropdown
-            value={issue.state_id}
-            projectId={issue.project_id ?? undefined}
-            onChange={(val) =>
-              issue.project_id &&
-              updateSubIssue(
-                workspaceSlug,
-                issue.project_id,
-                parentIssueId,
-                issueId,
-                {
-                  state_id: val,
-                },
-                { ...issue }
-              )
-            }
-            disabled={!canEdit}
-            buttonVariant="transparent-without-text"
-            buttonClassName="hover:bg-transparent px-0"
-            iconSize="size-5"
-            showTooltip
-          />
-        </div>
-      </WithDisplayPropertiesHOC>
-
-      <WithDisplayPropertiesHOC displayProperties={displayProperties} displayPropertyKey="priority">
-        <div className="h-5 flex-shrink-0">
-          <PriorityDropdown
-            value={issue.priority}
-            onChange={(val) =>
-              issue.project_id &&
-              updateSubIssue(workspaceSlug, issue.project_id, parentIssueId, issueId, {
-                priority: val,
-              })
-            }
-            disabled={!canEdit}
-            buttonVariant="border-without-text"
-            showTooltip
-          />
-        </div>
-      </WithDisplayPropertiesHOC>
-
+    <>
       {/* merged dates */}
       <WithDisplayPropertiesHOC
         displayProperties={displayProperties}
@@ -203,6 +163,70 @@ export const SubIssuesListItemProperties = observer(function SubIssuesListItemPr
           />
         </div>
       </WithDisplayPropertiesHOC>
+    </>
+  );
+});
+
+export const SubIssuesListItemProperties = observer(function SubIssuesListItemProperties(props: Props) {
+  const { workspaceSlug, parentIssueId, issueId, canEdit, updateSubIssue, displayProperties, issue } = props;
+
+  if (!displayProperties) return <></>;
+
+  return (
+    <div className="relative flex items-center gap-2">
+      <WithDisplayPropertiesHOC displayProperties={displayProperties} displayPropertyKey="state">
+        <div className="h-5 flex-shrink-0">
+          <StateDropdown
+            value={issue.state_id}
+            projectId={issue.project_id ?? undefined}
+            onChange={(val) =>
+              issue.project_id &&
+              updateSubIssue(
+                workspaceSlug,
+                issue.project_id,
+                parentIssueId,
+                issueId,
+                {
+                  state_id: val,
+                },
+                { ...issue }
+              )
+            }
+            disabled={!canEdit}
+            buttonVariant="transparent-without-text"
+            buttonClassName="hover:bg-transparent px-0"
+            iconSize="size-5"
+            showTooltip
+          />
+        </div>
+      </WithDisplayPropertiesHOC>
+
+      <WithDisplayPropertiesHOC displayProperties={displayProperties} displayPropertyKey="priority">
+        <div className="h-5 flex-shrink-0">
+          <PriorityDropdown
+            value={issue.priority}
+            onChange={(val) =>
+              issue.project_id &&
+              updateSubIssue(workspaceSlug, issue.project_id, parentIssueId, issueId, {
+                priority: val,
+              })
+            }
+            disabled={!canEdit}
+            buttonVariant="border-without-text"
+            showTooltip
+          />
+        </div>
+      </WithDisplayPropertiesHOC>
+
+      <SubIssuesListItemDateProperties
+        workspaceSlug={workspaceSlug}
+        parentIssueId={parentIssueId}
+        issueId={issueId}
+        canEdit={canEdit}
+        updateSubIssue={updateSubIssue}
+        displayProperties={displayProperties}
+        issue={issue}
+      />
 
       <WithDisplayPropertiesHOC displayProperties={displayProperties} displayPropertyKey="assignee">
         <div className="h-5 flex-shrink-0">

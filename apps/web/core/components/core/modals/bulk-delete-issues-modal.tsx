@@ -18,7 +18,7 @@ import { SearchOutline } from "@makeplane/propel/icons";
 import { TOAST_TYPE, setToast } from "@plane/propel/toast";
 import type { ISearchIssueResponse, IUser } from "@plane/types";
 import { EIssuesStoreType } from "@plane/types";
-import { Loader, EModalPosition, EModalWidth, ModalCore } from "@plane/ui";
+import { EModalPosition, EModalWidth, ModalCore } from "@plane/ui";
 // assets
 import darkIssuesAsset from "@/app/assets/empty-state/search/issues-dark.webp?url";
 import lightIssuesAsset from "@/app/assets/empty-state/search/issues-light.webp?url";
@@ -33,6 +33,7 @@ import useDebounce from "@/hooks/use-debounce";
 import { ProjectService } from "@/services/project";
 // local components
 import { BulkDeleteIssuesModalItem } from "./bulk-delete-issues-modal-item";
+import { IssueSearchModalOptions } from "./issue-search-modal-options";
 
 type FormInput = {
   delete_issue_ids: string[];
@@ -183,18 +184,7 @@ export const BulkDeleteIssuesModal = observer(function BulkDeleteIssuesModal(pro
             />
           </div>
 
-          <Combobox.Options as="ul" static className="max-h-80 scroll-py-2 divide-y divide-subtle-1 overflow-y-auto">
-            {isSearching ? (
-              <Loader className="space-y-3 p-3">
-                <Loader.Item height="40px" />
-                <Loader.Item height="40px" />
-                <Loader.Item height="40px" />
-                <Loader.Item height="40px" />
-              </Loader>
-            ) : (
-              <>{issueList}</>
-            )}
-          </Combobox.Options>
+          <IssueSearchModalOptions isSearching={isSearching}>{issueList}</IssueSearchModalOptions>
         </Combobox>
 
         {issues.length > 0 && (

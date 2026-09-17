@@ -35,6 +35,13 @@ type Props = {
   moduleId: string;
 };
 
+const getModuleIssueCountLabel = (moduleTotalIssues: number, moduleCompletedIssues: number) => {
+  if (!moduleTotalIssues || moduleTotalIssues === 0) return `0 work items`;
+  if (moduleTotalIssues === moduleCompletedIssues)
+    return `${moduleTotalIssues} Work item${moduleTotalIssues > 1 ? `s` : ``}`;
+  return `${moduleCompletedIssues}/${moduleTotalIssues} Work items`;
+};
+
 export const ModuleCardItem = observer(function ModuleCardItem(props: Props) {
   const { moduleId } = props;
   // refs
@@ -160,13 +167,7 @@ export const ModuleCardItem = observer(function ModuleCardItem(props: Props) {
 
   const moduleStatus = MODULE_STATUS.find((status) => status.value === moduleDetails.status);
 
-  const issueCount = moduleDetails
-    ? !moduleTotalIssues || moduleTotalIssues === 0
-      ? `0 work items`
-      : moduleTotalIssues === moduleCompletedIssues
-        ? `${moduleTotalIssues} Work item${moduleTotalIssues > 1 ? `s` : ``}`
-        : `${moduleCompletedIssues}/${moduleTotalIssues} Work items`
-    : `0 work items`;
+  const issueCount = getModuleIssueCountLabel(moduleTotalIssues, moduleCompletedIssues);
 
   const moduleLeadDetails = moduleDetails.lead_id ? getUserDetails(moduleDetails.lead_id) : undefined;
   const progressValue = moduleTotalIssues > 0 ? (moduleCompletedIssues / moduleTotalIssues) * 100 : 0;

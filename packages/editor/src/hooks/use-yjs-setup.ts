@@ -326,7 +326,10 @@ export const useYjsSetup = ({ docId, serverUrl, authToken, onStateChange }: UseY
 
   // Notify state changes callback (use ref to avoid dependency on handler)
   const stateChangeCallbackRef = useRef(onStateChange);
-  stateChangeCallbackRef.current = onStateChange;
+  // Declared before the notify effect so it sees the latest handler when both change in one render
+  useEffect(() => {
+    stateChangeCallbackRef.current = onStateChange;
+  }, [onStateChange]);
 
   useEffect(() => {
     if (!stateChangeCallbackRef.current) return;

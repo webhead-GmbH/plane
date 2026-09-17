@@ -32,7 +32,7 @@ export const HelpMenuRoot = observer(function HelpMenuRoot() {
       <CustomMenu
         customButton={
           <AppSidebarItem
-            variant="button"
+            variant="static"
             item={{
               icon: <HelpOutline className="size-5" />,
               isActive: isNeedHelpOpen,
@@ -59,23 +59,15 @@ export const HelpMenuRoot = observer(function HelpMenuRoot() {
           </div>
         </CustomMenu.MenuItem>
         <div className="my-1 border-t border-subtle" />
-        <CustomMenu.MenuItem>
-          <button
-            type="button"
-            onClick={() => toggleShortcutsListModal(true)}
-            className="justify-sbg-layer-211 flex w-full items-center hover:bg-layer-1"
-          >
+        <CustomMenu.MenuItem onClick={() => toggleShortcutsListModal(true)}>
+          <span className="justify-sbg-layer-211 flex w-full items-center hover:bg-layer-1">
             <span className="text-11">{t("keyboard_shortcuts")}</span>
-          </button>
+          </span>
         </CustomMenu.MenuItem>
-        <CustomMenu.MenuItem>
-          <button
-            type="button"
-            onClick={() => setProductUpdatesModalOpen(true)}
-            className="justify-sbg-layer-211 flex w-full items-center hover:bg-layer-1"
-          >
+        <CustomMenu.MenuItem onClick={() => setProductUpdatesModalOpen(true)}>
+          <span className="justify-sbg-layer-211 flex w-full items-center hover:bg-layer-1">
             <span className="text-11">{t("whats_new")}</span>
-          </button>
+          </span>
         </CustomMenu.MenuItem>
         <CustomMenu.MenuItem onClick={() => window.open("https://forum.plane.so", "_blank", "noopener,noreferrer")}>
           <div className="flex items-center gap-x-2 rounded-sm text-11">

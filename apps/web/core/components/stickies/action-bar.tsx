@@ -24,6 +24,28 @@ import { STICKY_COLORS_LIST } from "../editor/sticky-editor/color-palette";
 import { AllStickiesModal } from "./modal";
 import { StickyNote } from "./sticky";
 
+type TStickyActionBarToggleButtonProps = {
+  isExpanded: boolean;
+  setIsExpanded: (value: boolean) => void;
+};
+
+function StickyActionBarToggleButton(props: TStickyActionBarToggleButtonProps) {
+  const { isExpanded, setIsExpanded } = props;
+
+  return (
+    <button
+      className={`btn btn--icon shadow-sm flex h-10 w-10 items-center justify-center rounded-full bg-surface-1 transition-transform duration-300 ${isExpanded ? "rotate-180" : ""}`}
+      onClick={() => setIsExpanded(!isExpanded)}
+    >
+      {isExpanded ? (
+        <CloseOutline className="size-5 text-tertiary" />
+      ) : (
+        <StickyNoteOutline className="size-5 rotate-90 text-tertiary" />
+      )}
+    </button>
+  );
+}
+
 export const StickyActionBar = observer(function StickyActionBar() {
   // states
   const [isExpanded, setIsExpanded] = useState(false);
@@ -116,16 +138,7 @@ export const StickyActionBar = observer(function StickyActionBar() {
         </Tooltip>
       </div>
 
-      <button
-        className={`btn btn--icon shadow-sm flex h-10 w-10 items-center justify-center rounded-full bg-surface-1 transition-transform duration-300 ${isExpanded ? "rotate-180" : ""}`}
-        onClick={() => setIsExpanded(!isExpanded)}
-      >
-        {isExpanded ? (
-          <CloseOutline className="size-5 text-tertiary" />
-        ) : (
-          <StickyNoteOutline className="size-5 rotate-90 text-tertiary" />
-        )}
-      </button>
+      <StickyActionBarToggleButton isExpanded={isExpanded} setIsExpanded={setIsExpanded} />
 
       <div
         className={cn(

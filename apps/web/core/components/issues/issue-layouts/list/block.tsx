@@ -51,6 +51,171 @@ interface IssueBlockProps {
   isEpic?: boolean;
 }
 
+type TIssueBlockSelectCheckboxProps = {
+  issue: TIssue;
+  projectId: string | undefined;
+  groupId: string;
+  canSelectIssues: boolean;
+  isIssueSelected: boolean;
+  selectionHelpers: TSelectionHelper;
+  isEpic: boolean;
+};
+
+const IssueBlockSelectCheckbox = observer(function IssueBlockSelectCheckbox(props: TIssueBlockSelectCheckboxProps) {
+  const { issue, projectId, groupId, canSelectIssues, isIssueSelected, selectionHelpers, isEpic } = props;
+
+  if (!projectId || !canSelectIssues || isEpic) return null;
+
+  return (
+    <Tooltip
+      label="Only work items within the current project can be selected."
+      layout="stacked"
+      disabled={issue.project_id === projectId}
+    >
+      <div className="absolute left-1 grid w-3.5 flex-shrink-0 place-items-center">
+        <MultipleSelectEntityAction
+          className={cn(
+            "pointer-events-none opacity-0 transition-opacity group-hover/list-block:pointer-events-auto group-hover/list-block:opacity-100",
+            {
+              "pointer-events-auto opacity-100": isIssueSelected,
+            }
+          )}
+          groupId={groupId}
+          id={issue.id}
+          selectionHelpers={selectionHelpers}
+          disabled={issue.project_id !== projectId}
+        />
+      </div>
+    </Tooltip>
+  );
+});
+
+type TIssueBlockIdentifierProps = {
+  issue: TIssue;
+  issueId: string;
+  displayProperties: IIssueDisplayProperties | undefined;
+  projectIdentifier: string;
+  currentProjectNextSequenceId: number | undefined;
+};
+
+const IssueBlockIdentifier = observer(function IssueBlockIdentifier(props: TIssueBlockIdentifierProps) {
+  const { issue, issueId, displayProperties, projectIdentifier, currentProjectNextSequenceId } = props;
+
+  if (!displayProperties || !(displayProperties.key || displayProperties.issue_type)) return null;
+
+  // Calculate width for: projectIdentifier + "-" + dynamic sequence number digits
+  // Use next_work_item_sequence from backend (static value from project endpoint)
+  const maxSequenceId = currentProjectNextSequenceId ?? 1;
+  const keyMinWidth = displayProperties.key
+    ? calculateIdentifierWidth(projectIdentifier?.length ?? 0, maxSequenceId)
+    : 0;
+
+  return (
+    <div className="flex-shrink-0" style={{ minWidth: `${keyMinWidth}px` }}>
+      {issue.project_id && (
+        <IssueIdentifier
+          issueId={issueId}
+          projectId={issue.project_id}
+          size="xs"
+          variant="tertiary"
+          displayProperties={displayProperties}
+        />
+      )}
+    </div>
+  );
+});
+
+type TIssueBlockSubIssuesToggleProps = {
+  subIssuesCount: number;
+  isEpic: boolean;
+  isExpanded: boolean;
+  handleToggleExpand: (e: MouseEvent<HTMLButtonElement>) => void;
+};
+
+function IssueBlockSubIssuesToggle(props: TIssueBlockSubIssuesToggleProps) {
+  const { subIssuesCount, isEpic, isExpanded, handleToggleExpand } = props;
+
+  return (
+    <div className="grid size-4 flex-shrink-0 place-items-center">
+      {subIssuesCount > 0 && !isEpic && (
+        <button
+          type="button"
+          className="grid size-4 place-items-center rounded-xs text-placeholder hover:text-tertiary"
+          onClick={handleToggleExpand}
+        >
+          <ChevronRightOutline
+            className={cn("size-4", {
+              "rotate-90": isExpanded,
+            })}
+          />
+        </button>
+      )}
+    </div>
+  );
+}
+
+type TIssueBlockPropertiesProps = {
+  issue: TIssue;
+  issueRef: React.RefObject<HTMLDivElement | null>;
+  updateIssue: IssueBlockProps["updateIssue"];
+  quickActions: TRenderQuickActions;
+  displayProperties: IIssueDisplayProperties | undefined;
+  canEditIssueProperties: boolean;
+  isSidebarCollapsed: boolean | undefined;
+  isEpic: boolean;
+};
+
+const IssueBlockProperties = observer(function IssueBlockProperties(props: TIssueBlockPropertiesProps) {
+  const {
+    issue,
+    issueRef,
+    updateIssue,
+    quickActions,
+    displayProperties,
+    canEditIssueProperties,
+    isSidebarCollapsed,
+    isEpic,
+  } = props;
+
+  return (
+    <div className="flex flex-shrink-0 items-center gap-2">
+      {!issue?.tempId ? (
+        <>
+          <IssueProperties
+            className={`relative flex flex-wrap ${isSidebarCollapsed ? "md:flex-shrink-0 md:flex-grow" : "lg:flex-shrink-0 lg:flex-grow"} items-center gap-2 whitespace-nowrap`}
+            issue={issue}
+            isReadOnly={!canEditIssueProperties}
+            updateIssue={updateIssue}
+            displayProperties={displayProperties}
+            activeLayout="List"
+            isEpic={isEpic}
+          />
+          {/* oxlint-disable-next-line jsx_a11y/click-events-have-key-events oxlint-disable-next-line jsx_a11y/no-static-element-interactions */}
+          <div
+            className={cn("hidden", {
+              "md:flex": isSidebarCollapsed,
+              "lg:flex": !isSidebarCollapsed,
+            })}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+            }}
+          >
+            {quickActions({
+              issue,
+              parentRef: issueRef,
+            })}
+          </div>
+        </>
+      ) : (
+        <div className="h-4 w-4">
+          <Spinner className="h-4 w-4" />
+        </div>
+      )}
+    </div>
+  );
+});
+
 export const IssueBlock = observer(function IssueBlock(props: IssueBlockProps) {
   const {
     issuesMap,
@@ -152,13 +317,6 @@ export const IssueBlock = observer(function IssueBlock(props: IssueBlockProps) {
     }
   };
 
-  // Calculate width for: projectIdentifier + "-" + dynamic sequence number digits
-  // Use next_work_item_sequence from backend (static value from project endpoint)
-  const maxSequenceId = currentProjectNextSequenceId ?? 1;
-  const keyMinWidth = displayProperties?.key
-    ? calculateIdentifierWidth(projectIdentifier?.length ?? 0, maxSequenceId)
-    : 0;
-
   const workItemLink = generateWorkItemLink({
     workspaceSlug,
     projectId: issue?.project_id,
@@ -206,58 +364,30 @@ export const IssueBlock = observer(function IssueBlock(props: IssueBlockProps) {
           <div className="flex flex-grow items-center gap-0.5 truncate">
             <div className="flex items-center gap-1" style={isSubIssue ? { marginLeft } : {}}>
               {/* select checkbox */}
-              {projectId && canSelectIssues && !isEpic && (
-                <Tooltip
-                  label="Only work items within the current project can be selected."
-                  layout="stacked"
-                  disabled={issue.project_id === projectId}
-                >
-                  <div className="absolute left-1 grid w-3.5 flex-shrink-0 place-items-center">
-                    <MultipleSelectEntityAction
-                      className={cn(
-                        "pointer-events-none opacity-0 transition-opacity group-hover/list-block:pointer-events-auto group-hover/list-block:opacity-100",
-                        {
-                          "pointer-events-auto opacity-100": isIssueSelected,
-                        }
-                      )}
-                      groupId={groupId}
-                      id={issue.id}
-                      selectionHelpers={selectionHelpers}
-                      disabled={issue.project_id !== projectId}
-                    />
-                  </div>
-                </Tooltip>
-              )}
-              {displayProperties && (displayProperties.key || displayProperties.issue_type) && (
-                <div className="flex-shrink-0" style={{ minWidth: `${keyMinWidth}px` }}>
-                  {issue.project_id && (
-                    <IssueIdentifier
-                      issueId={issueId}
-                      projectId={issue.project_id}
-                      size="xs"
-                      variant="tertiary"
-                      displayProperties={displayProperties}
-                    />
-                  )}
-                </div>
-              )}
+              <IssueBlockSelectCheckbox
+                issue={issue}
+                projectId={projectId}
+                groupId={groupId}
+                canSelectIssues={canSelectIssues}
+                isIssueSelected={isIssueSelected}
+                selectionHelpers={selectionHelpers}
+                isEpic={isEpic}
+              />
+              <IssueBlockIdentifier
+                issue={issue}
+                issueId={issueId}
+                displayProperties={displayProperties}
+                projectIdentifier={projectIdentifier}
+                currentProjectNextSequenceId={currentProjectNextSequenceId}
+              />
 
               {/* sub-issues chevron */}
-              <div className="grid size-4 flex-shrink-0 place-items-center">
-                {subIssuesCount > 0 && !isEpic && (
-                  <button
-                    type="button"
-                    className="grid size-4 place-items-center rounded-xs text-placeholder hover:text-tertiary"
-                    onClick={handleToggleExpand}
-                  >
-                    <ChevronRightOutline
-                      className={cn("size-4", {
-                        "rotate-90": isExpanded,
-                      })}
-                    />
-                  </button>
-                )}
-              </div>
+              <IssueBlockSubIssuesToggle
+                subIssuesCount={subIssuesCount}
+                isEpic={isEpic}
+                isExpanded={isExpanded}
+                handleToggleExpand={handleToggleExpand}
+              />
 
               {issue?.tempId !== undefined && (
                 <div className="absolute top-0 left-0 z-[99999] h-full w-full animate-pulse bg-surface-1/20" />
@@ -282,41 +412,16 @@ export const IssueBlock = observer(function IssueBlock(props: IssueBlockProps) {
             </div>
           )}
         </div>
-        <div className="flex flex-shrink-0 items-center gap-2">
-          {!issue?.tempId ? (
-            <>
-              <IssueProperties
-                className={`relative flex flex-wrap ${isSidebarCollapsed ? "md:flex-shrink-0 md:flex-grow" : "lg:flex-shrink-0 lg:flex-grow"} items-center gap-2 whitespace-nowrap`}
-                issue={issue}
-                isReadOnly={!canEditIssueProperties}
-                updateIssue={updateIssue}
-                displayProperties={displayProperties}
-                activeLayout="List"
-                isEpic={isEpic}
-              />
-              {/* oxlint-disable-next-line jsx_a11y/click-events-have-key-events oxlint-disable-next-line jsx_a11y/no-static-element-interactions */}
-              <div
-                className={cn("hidden", {
-                  "md:flex": isSidebarCollapsed,
-                  "lg:flex": !isSidebarCollapsed,
-                })}
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                }}
-              >
-                {quickActions({
-                  issue,
-                  parentRef: issueRef,
-                })}
-              </div>
-            </>
-          ) : (
-            <div className="h-4 w-4">
-              <Spinner className="h-4 w-4" />
-            </div>
-          )}
-        </div>
+        <IssueBlockProperties
+          issue={issue}
+          issueRef={issueRef}
+          updateIssue={updateIssue}
+          quickActions={quickActions}
+          displayProperties={displayProperties}
+          canEditIssueProperties={canEditIssueProperties}
+          isSidebarCollapsed={isSidebarCollapsed}
+          isEpic={isEpic}
+        />
       </Row>
     </ControlLink>
   );

@@ -26,6 +26,7 @@ import { useCommandPalette } from "@/hooks/store/use-command-palette";
 import { useProject } from "@/hooks/store/use-project";
 import { useUser } from "@/hooks/store/user";
 import { usePlatformOS } from "@/hooks/use-platform-os";
+import useSize from "@/hooks/use-window-size";
 // components
 import { ProfileSidebarTime } from "./time";
 
@@ -46,6 +47,7 @@ export const ProfileSidebar = observer(function ProfileSidebar(props: TProfileSi
   const { getProjectById } = useProject();
   const { toggleProfileSettingsModal } = useCommandPalette();
   const { isMobile } = usePlatformOS();
+  const [windowWidth] = useSize();
   const { t } = useTranslation();
   // derived values
   const userData = userProjectsData?.user_data;
@@ -90,7 +92,7 @@ export const ProfileSidebar = observer(function ProfileSidebar(props: TProfileSi
         `vertical-scrollbar fixed z-5 scrollbar-md h-full w-full shrink-0 overflow-hidden overflow-y-auto border-l border-subtle bg-surface-1 shadow-raised-200 transition-all md:relative md:w-[300px]`,
         className
       )}
-      style={profileSidebarCollapsed ? { marginLeft: `${window?.innerWidth || 0}px` } : {}}
+      style={profileSidebarCollapsed ? { marginLeft: `${windowWidth || 0}px` } : {}}
     >
       {userProjectsData ? (
         <>

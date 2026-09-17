@@ -4,7 +4,7 @@
  * See the LICENSE file for details.
  */
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { observer } from "mobx-react";
 import { useParams } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
@@ -47,6 +47,12 @@ const VIEW_OPTIONS: {
   { key: "list", label: "List" },
   { key: "kanban", label: "Kanban" },
 ];
+
+// The origin of a page never changes, so there is nothing to subscribe to.
+const subscribeToOrigin = () => () => {};
+const getOrigin = () => window.location.origin;
+// the server has no window, so it (and the render that hydrates its HTML) has no origin
+const getServerOrigin = () => "";
 
 export const PublishProjectModal = observer(function PublishProjectModal(props: Props) {
   const { isOpen, onClose, projectId } = props;
@@ -165,7 +171,8 @@ export const PublishProjectModal = observer(function PublishProjectModal(props: 
     });
   }, [projectPublishSettings, reset]);
 
-  const SPACE_APP_URL = (SPACE_BASE_URL.trim() === "" ? window.location.origin : SPACE_BASE_URL) + SPACE_BASE_PATH;
+  const origin = useSyncExternalStore(subscribeToOrigin, getOrigin, getServerOrigin);
+  const SPACE_APP_URL = (SPACE_BASE_URL.trim() === "" ? origin : SPACE_BASE_URL) + SPACE_BASE_PATH;
   const publishLink = `${SPACE_APP_URL}/issues/${projectPublishSettings?.anchor}`;
 
   const handleCopyLink = () =>

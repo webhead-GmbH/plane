@@ -46,20 +46,34 @@ interface IWorkspaceAuthWrapper {
   isLoading?: boolean;
 }
 
-export const WorkspaceAuthWrapper = observer(function WorkspaceAuthWrapper(props: IWorkspaceAuthWrapper) {
-  const { children, isLoading: isParentLoading = false } = props;
-  // router params
-  const { workspaceSlug } = useParams();
+/**
+ * Fetches one piece of workspace data with SWR, keyed by the workspace slug, only while `shouldFetch` holds.
+ */
+const useWorkspaceSWR = (
+  workspaceSlug: string,
+  shouldFetch: boolean,
+  getKey: (workspaceSlug: string) => string,
+  fetchData: (workspaceSlug: string) => Promise<unknown>
+) => {
+  useSWR(
+    shouldFetch ? getKey(workspaceSlug.toString()) : null,
+    shouldFetch ? () => fetchData(workspaceSlug.toString()) : null,
+    { revalidateIfStale: false, revalidateOnFocus: false }
+  );
+};
+
+/**
+ * Resolves the current workspace from the store and fetches the workspace data the wrapped pages rely on.
+ */
+const useWorkspaceAuthData = (workspaceSlug: string) => {
   // store hooks
-  const { signOut, data: currentUser } = useUser();
   const { fetchPartialProjects } = useProject();
   const { fetchFavorite } = useFavorite();
   const {
     workspace: { fetchWorkspaceMembers },
   } = useMember();
   const { workspaces, fetchSidebarNavigationPreferences, fetchProjectNavigationPreferences } = useWorkspace();
-  const { isMobile } = usePlatformOS();
-  const { loader, workspaceInfoBySlug, fetchUserWorkspaceInfo, fetchUserProjectPermissions, allowPermissions } =
+  const { workspaceInfoBySlug, fetchUserWorkspaceInfo, fetchUserProjectPermissions, allowPermissions } =
     useUserPermissions();
   const { fetchWorkspaceStates } = useProjectState();
   // derived values
@@ -71,61 +85,56 @@ export const WorkspaceAuthWrapper = observer(function WorkspaceAuthWrapper(props
   const currentWorkspace =
     (allWorkspaces && allWorkspaces.find((workspace) => workspace?.slug === workspaceSlug)) || undefined;
   const currentWorkspaceInfo = workspaceSlug && workspaceInfoBySlug(workspaceSlug.toString());
+  const hasWorkspaceSlug = Boolean(workspaceSlug);
+  const hasCurrentWorkspace = Boolean(workspaceSlug && currentWorkspace);
 
   // fetching user workspace information
-  useSWR(
-    workspaceSlug && currentWorkspace ? WORKSPACE_MEMBER_ME_INFORMATION(workspaceSlug.toString()) : null,
-    workspaceSlug && currentWorkspace ? () => fetchUserWorkspaceInfo(workspaceSlug.toString()) : null,
-    { revalidateIfStale: false, revalidateOnFocus: false }
-  );
-  useSWR(
-    workspaceSlug && currentWorkspace ? WORKSPACE_PROJECTS_ROLES_INFORMATION(workspaceSlug.toString()) : null,
-    workspaceSlug && currentWorkspace ? () => fetchUserProjectPermissions(workspaceSlug.toString()) : null,
-    { revalidateIfStale: false, revalidateOnFocus: false }
+  useWorkspaceSWR(workspaceSlug, hasCurrentWorkspace, WORKSPACE_MEMBER_ME_INFORMATION, fetchUserWorkspaceInfo);
+  useWorkspaceSWR(
+    workspaceSlug,
+    hasCurrentWorkspace,
+    WORKSPACE_PROJECTS_ROLES_INFORMATION,
+    fetchUserProjectPermissions
   );
 
   // fetching workspace projects
-  useSWR(
-    workspaceSlug && currentWorkspace ? WORKSPACE_PARTIAL_PROJECTS(workspaceSlug.toString()) : null,
-    workspaceSlug && currentWorkspace ? () => fetchPartialProjects(workspaceSlug.toString()) : null,
-    { revalidateIfStale: false, revalidateOnFocus: false }
-  );
+  useWorkspaceSWR(workspaceSlug, hasCurrentWorkspace, WORKSPACE_PARTIAL_PROJECTS, fetchPartialProjects);
   // fetch workspace members
-  useSWR(
-    workspaceSlug && currentWorkspace ? WORKSPACE_MEMBERS(workspaceSlug.toString()) : null,
-    workspaceSlug && currentWorkspace ? () => fetchWorkspaceMembers(workspaceSlug.toString()) : null,
-    { revalidateIfStale: false, revalidateOnFocus: false }
-  );
+  useWorkspaceSWR(workspaceSlug, hasCurrentWorkspace, WORKSPACE_MEMBERS, fetchWorkspaceMembers);
   // fetch workspace favorite
-  useSWR(
-    workspaceSlug && currentWorkspace && canPerformWorkspaceMemberActions
-      ? WORKSPACE_FAVORITE(workspaceSlug.toString())
-      : null,
-    workspaceSlug && currentWorkspace && canPerformWorkspaceMemberActions
-      ? () => fetchFavorite(workspaceSlug.toString())
-      : null,
-    { revalidateIfStale: false, revalidateOnFocus: false }
+  useWorkspaceSWR(
+    workspaceSlug,
+    hasCurrentWorkspace && canPerformWorkspaceMemberActions,
+    WORKSPACE_FAVORITE,
+    fetchFavorite
   );
   // fetch workspace states
-  useSWR(
-    workspaceSlug ? WORKSPACE_STATES(workspaceSlug.toString()) : null,
-    workspaceSlug ? () => fetchWorkspaceStates(workspaceSlug.toString()) : null,
-    { revalidateIfStale: false, revalidateOnFocus: false }
-  );
+  useWorkspaceSWR(workspaceSlug, hasWorkspaceSlug, WORKSPACE_STATES, fetchWorkspaceStates);
 
   // fetch workspace sidebar preferences
-  useSWR(
-    workspaceSlug ? WORKSPACE_SIDEBAR_PREFERENCES(workspaceSlug.toString()) : null,
-    workspaceSlug ? () => fetchSidebarNavigationPreferences(workspaceSlug.toString()) : null,
-    { revalidateIfStale: false, revalidateOnFocus: false }
-  );
+  useWorkspaceSWR(workspaceSlug, hasWorkspaceSlug, WORKSPACE_SIDEBAR_PREFERENCES, fetchSidebarNavigationPreferences);
 
   // fetch workspace project navigation preferences
-  useSWR(
-    workspaceSlug ? WORKSPACE_PROJECT_NAVIGATION_PREFERENCES(workspaceSlug.toString()) : null,
-    workspaceSlug ? () => fetchProjectNavigationPreferences(workspaceSlug.toString()) : null,
-    { revalidateIfStale: false, revalidateOnFocus: false }
+  useWorkspaceSWR(
+    workspaceSlug,
+    hasWorkspaceSlug,
+    WORKSPACE_PROJECT_NAVIGATION_PREFERENCES,
+    fetchProjectNavigationPreferences
   );
+
+  return { allWorkspaces, currentWorkspace, currentWorkspaceInfo };
+};
+
+export const WorkspaceAuthWrapper = observer(function WorkspaceAuthWrapper(props: IWorkspaceAuthWrapper) {
+  const { children, isLoading: isParentLoading = false } = props;
+  // router params
+  const { workspaceSlug } = useParams();
+  // store hooks
+  const { signOut, data: currentUser } = useUser();
+  const { isMobile } = usePlatformOS();
+  const { loader } = useUserPermissions();
+  // workspace data
+  const { allWorkspaces, currentWorkspace, currentWorkspaceInfo } = useWorkspaceAuthData(workspaceSlug);
 
   const handleSignOut = async () => {
     await signOut().catch(() =>

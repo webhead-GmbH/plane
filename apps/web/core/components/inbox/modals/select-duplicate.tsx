@@ -13,13 +13,14 @@ import { useTranslation } from "@plane/i18n";
 import { SearchOutline } from "@makeplane/propel/icons";
 import { TOAST_TYPE, setToast } from "@plane/propel/toast";
 import type { ISearchIssueResponse } from "@plane/types";
-import { Loader, EModalPosition, EModalWidth, ModalCore } from "@plane/ui";
+import { EModalPosition, EModalWidth, ModalCore } from "@plane/ui";
 // assets
 import darkIssuesAsset from "@/app/assets/empty-state/search/issues-dark.webp?url";
 import lightIssuesAsset from "@/app/assets/empty-state/search/issues-light.webp?url";
 import darkSearchAsset from "@/app/assets/empty-state/search/search-dark.webp?url";
 import lightSearchAsset from "@/app/assets/empty-state/search/search-light.webp?url";
 // components
+import { IssueSearchModalOptions } from "@/components/core/modals/issue-search-modal-options";
 import { SimpleEmptyState } from "@/components/empty-state/simple-empty-state-root";
 // hooks
 import { useProject } from "@/hooks/store/use-project";
@@ -151,18 +152,7 @@ export function SelectDuplicateInboxIssueModal(props: Props) {
           />
         </div>
 
-        <Combobox.Options as="ul" static className="max-h-80 scroll-py-2 divide-y divide-subtle-1 overflow-y-auto">
-          {isSearching ? (
-            <Loader className="space-y-3 p-3">
-              <Loader.Item height="40px" />
-              <Loader.Item height="40px" />
-              <Loader.Item height="40px" />
-              <Loader.Item height="40px" />
-            </Loader>
-          ) : (
-            <>{issueList}</>
-          )}
-        </Combobox.Options>
+        <IssueSearchModalOptions isSearching={isSearching}>{issueList}</IssueSearchModalOptions>
       </Combobox>
     </ModalCore>
   );

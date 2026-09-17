@@ -95,25 +95,30 @@ export const AIHandlePlugin = (options: SideMenuPluginProps): SideMenuHandleOpti
     // create handle element
     const className =
       "grid place-items-center font-medium size-5 aspect-square text-11 text-tertiary hover:bg-layer-1 rounded-xs opacity-100 !outline-none z-[5] transition-[background-color,_opacity] duration-200 ease-linear";
-    aiHandleElement = document.createElement("button");
-    aiHandleElement.type = "button";
-    aiHandleElement.id = "ai-handle";
-    aiHandleElement.classList.value = className;
+    const handleElement = document.createElement("button");
+    handleElement.type = "button";
+    handleElement.id = "ai-handle";
+    handleElement.classList.value = className;
     const iconElement = document.createElement("span");
     iconElement.classList.value = "pointer-events-none";
     iconElement.innerHTML = sparklesIcon;
-    aiHandleElement.appendChild(iconElement);
+    handleElement.appendChild(iconElement);
     // bind events
-    aiHandleElement.addEventListener("click", (e) => handleClick(e, view));
+    const handleAIHandleClick = (e: MouseEvent) => handleClick(e, view);
+    handleElement.addEventListener("click", handleAIHandleClick);
+    aiHandleElement = handleElement;
 
     sideMenu?.appendChild(aiHandleElement);
 
+    // destroy the handle element on un-initialize
+    const destroy = () => {
+      handleElement.removeEventListener("click", handleAIHandleClick);
+      aiHandleElement?.remove();
+      aiHandleElement = null;
+    };
+
     return {
-      // destroy the handle element on un-initialize
-      destroy: () => {
-        aiHandleElement?.remove();
-        aiHandleElement = null;
-      },
+      destroy,
     };
   };
 

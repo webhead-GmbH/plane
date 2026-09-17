@@ -33,6 +33,28 @@ import { WorkspaceService } from "@/services/workspace.service";
 // service initialization
 const workspaceService = new WorkspaceService();
 
+function InactiveInvitationEmptySpace({ isSignedIn }: { isSignedIn: boolean }) {
+  return (
+    <EmptySpace
+      title="This invitation link is not active anymore."
+      description="Your workspace is where you'll create projects, collaborate on your work items, and organize different streams of work in your Plane account."
+      link={{ text: "Or start from an empty project", href: "/" }}
+    >
+      {isSignedIn ? (
+        <EmptySpaceItem Icon={BoxesOutline} title="Continue to home" href="/" />
+      ) : (
+        <EmptySpaceItem Icon={UserOutline} title="Sign in to continue" href="/" />
+      )}
+      <EmptySpaceItem Icon={StarOutline} title="Star us on GitHub" href="https://github.com/makeplane" />
+      <EmptySpaceItem
+        Icon={ShareAltOutline}
+        title="Join our community of active creators"
+        href="https://forum.plane.so"
+      />
+    </EmptySpace>
+  );
+}
+
 function WorkspaceInvitationPage() {
   // router
   const router = useAppRouter();
@@ -107,23 +129,7 @@ function WorkspaceInvitationPage() {
               <EmptySpaceItem Icon={BoxesOutline} title="Continue to home" href="/" />
             </EmptySpace>
           ) : (
-            <EmptySpace
-              title="This invitation link is not active anymore."
-              description="Your workspace is where you'll create projects, collaborate on your work items, and organize different streams of work in your Plane account."
-              link={{ text: "Or start from an empty project", href: "/" }}
-            >
-              {!currentUser ? (
-                <EmptySpaceItem Icon={UserOutline} title="Sign in to continue" href="/" />
-              ) : (
-                <EmptySpaceItem Icon={BoxesOutline} title="Continue to home" href="/" />
-              )}
-              <EmptySpaceItem Icon={StarOutline} title="Star us on GitHub" href="https://github.com/makeplane" />
-              <EmptySpaceItem
-                Icon={ShareAltOutline}
-                title="Join our community of active creators"
-                href="https://forum.plane.so"
-              />
-            </EmptySpace>
+            <InactiveInvitationEmptySpace isSignedIn={!!currentUser} />
           )
         ) : (
           <div className="flex h-full w-full items-center justify-center">

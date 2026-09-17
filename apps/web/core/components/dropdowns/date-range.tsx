@@ -27,6 +27,8 @@ import { DropdownButton } from "./buttons";
 import { MergedDateDisplay } from "./merged-date";
 // types
 import type { TButtonVariants } from "./types";
+// local hooks
+import { useDocumentBody } from "./use-document-body";
 
 type Props = {
   applyButtonText?: string;
@@ -69,6 +71,110 @@ type Props = {
   renderInPortal?: boolean;
 };
 
+type TDateRangeLabelProps = {
+  buttonFromDateClassName?: string;
+  buttonToDateClassName?: string;
+  clearIconClassName: string;
+  dateRange: DateRange;
+  hideIcon: {
+    from?: boolean;
+    to?: boolean;
+  };
+  isClearIconVisible: boolean;
+  onClear: () => void;
+  placeholder: {
+    from?: string;
+    to?: string;
+  };
+  renderPlaceholder: boolean;
+};
+
+const getDateRangeTooltipContent = (dateRange: DateRange) =>
+  `${dateRange.from ? renderFormattedDate(dateRange.from) : ""}${
+    dateRange.from && dateRange.to ? " - " : ""
+  }${dateRange.to ? renderFormattedDate(dateRange.to) : ""}`;
+
+function DateRangeClearIcon(props: { className: string; onClear: () => void }) {
+  const { className, onClear } = props;
+
+  return (
+    <CloseOutline
+      className={className}
+      onClick={(e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        onClear();
+      }}
+    />
+  );
+}
+
+function MergedDateRangeLabel(props: TDateRangeLabelProps) {
+  const { clearIconClassName, dateRange, hideIcon, isClearIconVisible, onClear, placeholder, renderPlaceholder } =
+    props;
+
+  return (
+    <div className="flex w-full items-center gap-1.5">
+      {!hideIcon.from && <CalendarOutline className="h-3 w-3 flex-shrink-0" />}
+      {dateRange.from || dateRange.to ? (
+        <MergedDateDisplay startDate={dateRange.from} endDate={dateRange.to} className="flex-grow truncate text-11" />
+      ) : (
+        renderPlaceholder && (
+          <>
+            <span className="text-placeholder">{placeholder.from}</span>
+            {placeholder.from && placeholder.to && (
+              <ArrowNarrowRightOutline className="h-3 w-3 flex-shrink-0 text-placeholder" />
+            )}
+            <span className="text-placeholder">{placeholder.to}</span>
+          </>
+        )
+      )}
+      {isClearIconVisible && (
+        <DateRangeClearIcon
+          className={cn("h-2.5 w-2.5 flex-shrink-0 cursor-pointer", clearIconClassName)}
+          onClear={onClear}
+        />
+      )}
+    </div>
+  );
+}
+
+function SeparateDateRangeLabel(props: TDateRangeLabelProps) {
+  const {
+    buttonFromDateClassName,
+    buttonToDateClassName,
+    clearIconClassName,
+    dateRange,
+    hideIcon,
+    isClearIconVisible,
+    onClear,
+    placeholder,
+    renderPlaceholder,
+  } = props;
+
+  return (
+    <>
+      <span
+        className={cn("flex h-full flex-grow items-center justify-center gap-1 rounded-xs", buttonFromDateClassName)}
+      >
+        {!hideIcon.from && <CalendarOutline className="h-3 w-3 flex-shrink-0" />}
+        {dateRange.from ? renderFormattedDate(dateRange.from) : renderPlaceholder ? placeholder.from : ""}
+      </span>
+      <ArrowNarrowRightOutline className="h-3 w-3 flex-shrink-0" />
+      <span className={cn("flex h-full flex-grow items-center justify-center gap-1 rounded-xs", buttonToDateClassName)}>
+        {!hideIcon.to && <DueDateOutline className="h-3 w-3 flex-shrink-0" />}
+        {dateRange.to ? renderFormattedDate(dateRange.to) : renderPlaceholder ? placeholder.to : ""}
+      </span>
+      {isClearIconVisible && (
+        <DateRangeClearIcon
+          className={cn("ml-1 h-2.5 w-2.5 flex-shrink-0 cursor-pointer", clearIconClassName)}
+          onClear={onClear}
+        />
+      )}
+    </>
+  );
+}
+
 export const DateRangeDropdown = observer(function DateRangeDropdown(props: Props) {
   const { t } = useTranslation();
   const {
@@ -110,6 +216,7 @@ export const DateRangeDropdown = observer(function DateRangeDropdown(props: Prop
   // hooks
   const { data } = useUserProfile();
   const startOfWeek = data?.start_of_the_week;
+  const portalContainer = useDocumentBody();
   // refs
   const dropdownRef = useRef<HTMLDivElement | null>(null);
   // popper-js refs
@@ -150,6 +257,16 @@ export const DateRangeDropdown = observer(function DateRangeDropdown(props: Prop
   };
 
   const hasDisplayedDates = dateRange.from || dateRange.to;
+  const labelProps: Omit<TDateRangeLabelProps, "onClear"> = {
+    buttonFromDateClassName,
+    buttonToDateClassName,
+    clearIconClassName,
+    dateRange,
+    hideIcon,
+    isClearIconVisible: isClearable && !disabled && !!hasDisplayedDates,
+    placeholder,
+    renderPlaceholder,
+  };
 
   useEffect(() => {
     setDateRange(value);
@@ -169,86 +286,23 @@ export const DateRangeDropdown = observer(function DateRangeDropdown(props: Prop
       )}
       onClick={handleOnClick}
       disabled={disabled}
+      tabIndex={tabIndex}
+      aria-haspopup="listbox"
+      aria-expanded={isOpen}
     >
       <DropdownButton
         className={buttonClassName}
         isActive={isOpen}
         tooltipHeading={customTooltipHeading ?? t("project_cycles.date_range")}
-        tooltipContent={
-          customTooltipContent ??
-          `${dateRange.from ? renderFormattedDate(dateRange.from) : ""}${
-            dateRange.from && dateRange.to ? " - " : ""
-          }${dateRange.to ? renderFormattedDate(dateRange.to) : ""}`
-        }
+        tooltipContent={customTooltipContent ?? getDateRangeTooltipContent(dateRange)}
         showTooltip={showTooltip}
         variant={buttonVariant}
         renderToolTipByDefault={renderByDefault}
       >
         {mergeDates ? (
-          // Merged date display
-          <div className="flex w-full items-center gap-1.5">
-            {!hideIcon.from && <CalendarOutline className="h-3 w-3 flex-shrink-0" />}
-            {dateRange.from || dateRange.to ? (
-              <MergedDateDisplay
-                startDate={dateRange.from}
-                endDate={dateRange.to}
-                className="flex-grow truncate text-11"
-              />
-            ) : (
-              renderPlaceholder && (
-                <>
-                  <span className="text-placeholder">{placeholder.from}</span>
-                  {placeholder.from && placeholder.to && (
-                    <ArrowNarrowRightOutline className="h-3 w-3 flex-shrink-0 text-placeholder" />
-                  )}
-                  <span className="text-placeholder">{placeholder.to}</span>
-                </>
-              )
-            )}
-            {isClearable && !disabled && hasDisplayedDates && (
-              <CloseOutline
-                className={cn("h-2.5 w-2.5 flex-shrink-0 cursor-pointer", clearIconClassName)}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  e.preventDefault();
-                  clearDates();
-                }}
-              />
-            )}
-          </div>
+          <MergedDateRangeLabel {...labelProps} onClear={clearDates} />
         ) : (
-          // Original separate date display
-          <>
-            <span
-              className={cn(
-                "flex h-full flex-grow items-center justify-center gap-1 rounded-xs",
-                buttonFromDateClassName
-              )}
-            >
-              {!hideIcon.from && <CalendarOutline className="h-3 w-3 flex-shrink-0" />}
-              {dateRange.from ? renderFormattedDate(dateRange.from) : renderPlaceholder ? placeholder.from : ""}
-            </span>
-            <ArrowNarrowRightOutline className="h-3 w-3 flex-shrink-0" />
-            <span
-              className={cn(
-                "flex h-full flex-grow items-center justify-center gap-1 rounded-xs",
-                buttonToDateClassName
-              )}
-            >
-              {!hideIcon.to && <DueDateOutline className="h-3 w-3 flex-shrink-0" />}
-              {dateRange.to ? renderFormattedDate(dateRange.to) : renderPlaceholder ? placeholder.to : ""}
-            </span>
-            {isClearable && !disabled && hasDisplayedDates && (
-              <CloseOutline
-                className={cn("ml-1 h-2.5 w-2.5 flex-shrink-0 cursor-pointer", clearIconClassName)}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  e.preventDefault();
-                  clearDates();
-                }}
-              />
-            )}
-          </>
+          <SeparateDateRangeLabel {...labelProps} onClear={clearDates} />
         )}
       </DropdownButton>
     </button>
@@ -280,13 +334,12 @@ export const DateRangeDropdown = observer(function DateRangeDropdown(props: Prop
     </Combobox.Options>
   );
 
-  const Options = renderInPortal ? createPortal(comboOptions, document.body) : comboOptions;
+  const Options = renderInPortal ? portalContainer && createPortal(comboOptions, portalContainer) : comboOptions;
 
   return (
     <ComboDropDown
       as="div"
       ref={dropdownRef}
-      tabIndex={tabIndex}
       className={cn("h-full", className)}
       onKeyDown={(e) => {
         if (e.key === "Enter") {

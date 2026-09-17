@@ -13,18 +13,18 @@ export const useOutsideClickDetector = (
   useCapture = false,
   enabled = true
 ) => {
-  // Keep the latest callback/useCapture in refs so the document listener binds once per
-  // consumer instead of re-attaching on every render.
+  // Keep the latest callback in a ref so the document listener binds once per consumer
+  // instead of re-attaching on every render. useCapture is an effect dependency, so the
+  // listener is re-bound with the new phase whenever it changes.
   const callbackRef = useRef(callback);
-  const useCaptureRef = useRef(useCapture);
 
   useLayoutEffect(() => {
     callbackRef.current = callback;
-    useCaptureRef.current = useCapture;
   });
 
   useEffect(() => {
-    if (!enabled) return;
+    // nothing is subscribed while disabled, so there is nothing to clean up
+    if (!enabled) return undefined;
 
     const handleClick = (event: MouseEvent) => {
       if (ref.current && !ref.current.contains(event.target as any)) {
@@ -41,10 +41,9 @@ export const useOutsideClickDetector = (
       }
     };
 
-    const capture = useCaptureRef.current;
-    document.addEventListener("mousedown", handleClick, capture);
+    document.addEventListener("mousedown", handleClick, useCapture);
     return () => {
-      document.removeEventListener("mousedown", handleClick, capture);
+      document.removeEventListener("mousedown", handleClick, useCapture);
     };
   }, [ref, enabled, useCapture]);
 };

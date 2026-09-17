@@ -59,7 +59,7 @@ export const UserMenuRoot = observer(function UserMenuRoot() {
       className="flex items-center"
       customButton={
         <AppSidebarItem
-          variant="button"
+          variant="static"
           item={{
             icon: (
               <Avatar

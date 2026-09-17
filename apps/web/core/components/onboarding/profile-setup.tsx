@@ -6,6 +6,7 @@
 
 import { useMemo, useState } from "react";
 import { observer } from "mobx-react";
+import type { Control, FieldErrors, UseFormWatch } from "react-hook-form";
 import { Controller, useForm } from "react-hook-form";
 import { HideOutline, ShowOutline } from "@makeplane/propel/icons";
 import { Field } from "@makeplane/propel/components/field";
@@ -76,6 +77,250 @@ const USER_DOMAIN = [
 
 const authService = new AuthService();
 
+type TProfileSubmitState = {
+  password: string | undefined;
+  confirmPassword: string | undefined;
+  isSubmitting: boolean;
+  isValid: boolean;
+  isPasswordAlreadySetup: boolean;
+};
+
+// Check for all available fields validation and if password field is available, then checks for password validation (strength + confirmation).
+// Also handles the condition for optional password i.e if password field is optional it only checks for above validation if it's not empty.
+const useIsProfileSubmitDisabled = (state: TProfileSubmitState) => {
+  const { isSubmitting, isValid, isPasswordAlreadySetup } = state;
+  const currentPassword = state.password || undefined;
+  const currentConfirmPassword = state.confirmPassword || undefined;
+
+  const isValidPassword = useMemo(() => {
+    if (currentPassword) {
+      if (
+        currentPassword === currentConfirmPassword &&
+        getPasswordStrength(currentPassword) === E_PASSWORD_STRENGTH.STRENGTH_VALID
+      ) {
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      return true;
+    }
+  }, [currentPassword, currentConfirmPassword]);
+
+  return !isSubmitting && isValid ? (isPasswordAlreadySetup ? false : isValidPassword ? false : true) : true;
+};
+
+type TProfileSetupFieldsProps = {
+  control: Control<TProfileSetupFormValues>;
+  errors: FieldErrors<TProfileSetupFormValues>;
+};
+
+function ProfileSetupNameFields(props: TProfileSetupFieldsProps) {
+  const { control, errors } = props;
+
+  return (
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div className="space-y-1">
+        <label
+          className="text-13 font-medium text-tertiary after:ml-0.5 after:text-danger-primary after:content-['*']"
+          htmlFor="first_name"
+        >
+          First name
+        </label>
+        <Controller
+          control={control}
+          name="first_name"
+          rules={{
+            required: "First name is required",
+            validate: validatePersonName,
+            maxLength: {
+              value: 50,
+              message: "First name must be within 50 characters.",
+            },
+          }}
+          render={({ field: { value, onChange, ref } }) => (
+            <Field name="first_name" invalid={Boolean(errors.first_name)}>
+              <InputGroup size="2xl">
+                <Input
+                  size="2xl"
+                  id="first_name"
+                  name="first_name"
+                  type="text"
+                  value={value}
+                  autoFocus
+                  onChange={onChange}
+                  ref={ref}
+                  placeholder="Wilbur"
+                  autoComplete="on"
+                />
+              </InputGroup>
+            </Field>
+          )}
+        />
+        {errors.first_name && <span className="text-13 text-danger-primary">{errors.first_name.message}</span>}
+      </div>
+      <div className="space-y-1">
+        <label
+          className="text-13 font-medium text-tertiary after:ml-0.5 after:text-danger-primary after:content-['*']"
+          htmlFor="last_name"
+        >
+          Last name
+        </label>
+        <Controller
+          control={control}
+          name="last_name"
+          rules={{
+            required: "Last name is required",
+            validate: validatePersonName,
+            maxLength: {
+              value: 50,
+              message: "Last name must be within 50 characters.",
+            },
+          }}
+          render={({ field: { value, onChange, ref } }) => (
+            <Field name="last_name" invalid={Boolean(errors.last_name)}>
+              <InputGroup size="2xl">
+                <Input
+                  size="2xl"
+                  id="last_name"
+                  name="last_name"
+                  type="text"
+                  value={value}
+                  onChange={onChange}
+                  ref={ref}
+                  placeholder="Wright"
+                  autoComplete="on"
+                />
+              </InputGroup>
+            </Field>
+          )}
+        />
+        {errors.last_name && <span className="text-13 text-danger-primary">{errors.last_name.message}</span>}
+      </div>
+    </div>
+  );
+}
+
+type TShowPasswordState = {
+  password: boolean;
+  retypePassword: boolean;
+};
+
+type TProfileSetupPasswordFieldsProps = TProfileSetupFieldsProps & {
+  watch: UseFormWatch<TProfileSetupFormValues>;
+  showPassword: TShowPasswordState;
+  handleShowPassword: (key: keyof TShowPasswordState) => void;
+  isPasswordInputFocused: boolean;
+  setIsPasswordInputFocused: (isFocused: boolean) => void;
+};
+
+function ProfileSetupPasswordFields(props: TProfileSetupPasswordFieldsProps) {
+  const {
+    control,
+    errors,
+    watch,
+    showPassword,
+    handleShowPassword,
+    isPasswordInputFocused,
+    setIsPasswordInputFocused,
+  } = props;
+  // plane hooks
+  const { t } = useTranslation();
+
+  return (
+    <>
+      <div className="space-y-1">
+        <label className="text-13 font-medium text-tertiary" htmlFor="password">
+          Set a password ({t("common.optional")})
+        </label>
+        <Controller
+          control={control}
+          name="password"
+          rules={{
+            required: false,
+          }}
+          render={({ field: { value, onChange, ref } }) => (
+            <Field name="password" invalid={Boolean(errors.password)}>
+              <InputGroup size="2xl">
+                <Input
+                  size="2xl"
+                  type={showPassword.password ? "text" : "password"}
+                  name="password"
+                  value={value}
+                  onChange={onChange}
+                  ref={ref}
+                  placeholder="New password..."
+                  onFocus={() => setIsPasswordInputFocused(true)}
+                  onBlur={() => setIsPasswordInputFocused(false)}
+                  autoComplete="new-password"
+                  aria-label="New password..."
+                />
+                <button
+                  type="button"
+                  className="grid size-5 place-items-center"
+                  onClick={() => handleShowPassword("password")}
+                >
+                  {showPassword.password ? (
+                    <HideOutline className="size-4 text-placeholder" />
+                  ) : (
+                    <ShowOutline className="size-4 text-placeholder" />
+                  )}
+                </button>
+              </InputGroup>
+            </Field>
+          )}
+        />
+        <PasswordStrengthIndicator password={watch("password") ?? ""} isFocused={isPasswordInputFocused} />
+      </div>
+      <div className="space-y-1">
+        <label className="text-13 font-medium text-tertiary" htmlFor="confirm_password">
+          {t("auth.common.password.confirm_password.label")} ({t("common.optional")})
+        </label>
+        <Controller
+          control={control}
+          name="confirm_password"
+          rules={{
+            required: watch("password") ? true : false,
+            validate: (value) =>
+              watch("password") ? (value === watch("password") ? true : "Passwords don't match") : true,
+          }}
+          render={({ field: { value, onChange, ref } }) => (
+            <Field name="confirm_password" invalid={Boolean(errors.confirm_password)}>
+              <InputGroup size="2xl">
+                <Input
+                  size="2xl"
+                  type={showPassword.retypePassword ? "text" : "password"}
+                  name="confirm_password"
+                  value={value}
+                  onChange={onChange}
+                  ref={ref}
+                  placeholder={t("auth.common.password.confirm_password.placeholder")}
+                  autoComplete="new-password"
+                  aria-label={t("auth.common.password.confirm_password.placeholder")}
+                />
+                <button
+                  type="button"
+                  className="grid size-5 place-items-center"
+                  onClick={() => handleShowPassword("retypePassword")}
+                >
+                  {showPassword.retypePassword ? (
+                    <HideOutline className="size-4 text-placeholder" />
+                  ) : (
+                    <ShowOutline className="size-4 text-placeholder" />
+                  )}
+                </button>
+              </InputGroup>
+            </Field>
+          )}
+        />
+        {errors.confirm_password && (
+          <span className="text-13 text-danger-primary">{errors.confirm_password.message}</span>
+        )}
+      </div>
+    </>
+  );
+}
+
 export const ProfileSetup = observer(function ProfileSetup(props: Props) {
   const { user, totalSteps, stepChange, finishOnboarding } = props;
   // states
@@ -88,8 +333,6 @@ export const ProfileSetup = observer(function ProfileSetup(props: Props) {
     password: false,
     retypePassword: false,
   });
-  // plane hooks
-  const { t } = useTranslation();
   // store hooks
   const { updateCurrentUser } = useUser();
   const { updateUserProfile } = useUserProfile();
@@ -222,28 +465,13 @@ export const ProfileSetup = observer(function ProfileSetup(props: Props) {
 
   // derived values
   const isPasswordAlreadySetup = !user?.is_password_autoset;
-  const currentPassword = watch("password") || undefined;
-  const currentConfirmPassword = watch("confirm_password") || undefined;
-
-  const isValidPassword = useMemo(() => {
-    if (currentPassword) {
-      if (
-        currentPassword === currentConfirmPassword &&
-        getPasswordStrength(currentPassword) === E_PASSWORD_STRENGTH.STRENGTH_VALID
-      ) {
-        return true;
-      } else {
-        return false;
-      }
-    } else {
-      return true;
-    }
-  }, [currentPassword, currentConfirmPassword]);
-
-  // Check for all available fields validation and if password field is available, then checks for password validation (strength + confirmation).
-  // Also handles the condition for optional password i.e if password field is optional it only checks for above validation if it's not empty.
-  const isButtonDisabled =
-    !isSubmitting && isValid ? (isPasswordAlreadySetup ? false : isValidPassword ? false : true) : true;
+  const isButtonDisabled = useIsProfileSubmitDisabled({
+    password: watch("password"),
+    confirmPassword: watch("confirm_password"),
+    isSubmitting,
+    isValid,
+    isPasswordAlreadySetup,
+  });
 
   return (
     <div className="flex h-full w-full">
@@ -292,180 +520,19 @@ export const ProfileSetup = observer(function ProfileSetup(props: Props) {
                   )}
                 </button>
               </div>
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <div className="space-y-1">
-                  <label
-                    className="text-13 font-medium text-tertiary after:ml-0.5 after:text-danger-primary after:content-['*']"
-                    htmlFor="first_name"
-                  >
-                    First name
-                  </label>
-                  <Controller
-                    control={control}
-                    name="first_name"
-                    rules={{
-                      required: "First name is required",
-                      validate: validatePersonName,
-                      maxLength: {
-                        value: 50,
-                        message: "First name must be within 50 characters.",
-                      },
-                    }}
-                    render={({ field: { value, onChange, ref } }) => (
-                      <Field name="first_name" invalid={Boolean(errors.first_name)}>
-                        <InputGroup size="2xl">
-                          <Input
-                            size="2xl"
-                            id="first_name"
-                            name="first_name"
-                            type="text"
-                            value={value}
-                            autoFocus
-                            onChange={onChange}
-                            ref={ref}
-                            placeholder="Wilbur"
-                            autoComplete="on"
-                          />
-                        </InputGroup>
-                      </Field>
-                    )}
-                  />
-                  {errors.first_name && (
-                    <span className="text-13 text-danger-primary">{errors.first_name.message}</span>
-                  )}
-                </div>
-                <div className="space-y-1">
-                  <label
-                    className="text-13 font-medium text-tertiary after:ml-0.5 after:text-danger-primary after:content-['*']"
-                    htmlFor="last_name"
-                  >
-                    Last name
-                  </label>
-                  <Controller
-                    control={control}
-                    name="last_name"
-                    rules={{
-                      required: "Last name is required",
-                      validate: validatePersonName,
-                      maxLength: {
-                        value: 50,
-                        message: "Last name must be within 50 characters.",
-                      },
-                    }}
-                    render={({ field: { value, onChange, ref } }) => (
-                      <Field name="last_name" invalid={Boolean(errors.last_name)}>
-                        <InputGroup size="2xl">
-                          <Input
-                            size="2xl"
-                            id="last_name"
-                            name="last_name"
-                            type="text"
-                            value={value}
-                            onChange={onChange}
-                            ref={ref}
-                            placeholder="Wright"
-                            autoComplete="on"
-                          />
-                        </InputGroup>
-                      </Field>
-                    )}
-                  />
-                  {errors.last_name && <span className="text-13 text-danger-primary">{errors.last_name.message}</span>}
-                </div>
-              </div>
+              <ProfileSetupNameFields control={control} errors={errors} />
 
               {/* setting up password for the first time */}
               {!isPasswordAlreadySetup && (
-                <>
-                  <div className="space-y-1">
-                    <label className="text-13 font-medium text-tertiary" htmlFor="password">
-                      Set a password ({t("common.optional")})
-                    </label>
-                    <Controller
-                      control={control}
-                      name="password"
-                      rules={{
-                        required: false,
-                      }}
-                      render={({ field: { value, onChange, ref } }) => (
-                        <Field name="password" invalid={Boolean(errors.password)}>
-                          <InputGroup size="2xl">
-                            <Input
-                              size="2xl"
-                              type={showPassword.password ? "text" : "password"}
-                              name="password"
-                              value={value}
-                              onChange={onChange}
-                              ref={ref}
-                              placeholder="New password..."
-                              onFocus={() => setIsPasswordInputFocused(true)}
-                              onBlur={() => setIsPasswordInputFocused(false)}
-                              autoComplete="new-password"
-                              aria-label="New password..."
-                            />
-                            <button
-                              type="button"
-                              className="grid size-5 place-items-center"
-                              onClick={() => handleShowPassword("password")}
-                            >
-                              {showPassword.password ? (
-                                <HideOutline className="size-4 text-placeholder" />
-                              ) : (
-                                <ShowOutline className="size-4 text-placeholder" />
-                              )}
-                            </button>
-                          </InputGroup>
-                        </Field>
-                      )}
-                    />
-                    <PasswordStrengthIndicator password={watch("password") ?? ""} isFocused={isPasswordInputFocused} />
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-13 font-medium text-tertiary" htmlFor="confirm_password">
-                      {t("auth.common.password.confirm_password.label")} ({t("common.optional")})
-                    </label>
-                    <Controller
-                      control={control}
-                      name="confirm_password"
-                      rules={{
-                        required: watch("password") ? true : false,
-                        validate: (value) =>
-                          watch("password") ? (value === watch("password") ? true : "Passwords don't match") : true,
-                      }}
-                      render={({ field: { value, onChange, ref } }) => (
-                        <Field name="confirm_password" invalid={Boolean(errors.confirm_password)}>
-                          <InputGroup size="2xl">
-                            <Input
-                              size="2xl"
-                              type={showPassword.retypePassword ? "text" : "password"}
-                              name="confirm_password"
-                              value={value}
-                              onChange={onChange}
-                              ref={ref}
-                              placeholder={t("auth.common.password.confirm_password.placeholder")}
-                              autoComplete="new-password"
-                              aria-label={t("auth.common.password.confirm_password.placeholder")}
-                            />
-                            <button
-                              type="button"
-                              className="grid size-5 place-items-center"
-                              onClick={() => handleShowPassword("retypePassword")}
-                            >
-                              {showPassword.retypePassword ? (
-                                <HideOutline className="size-4 text-placeholder" />
-                              ) : (
-                                <ShowOutline className="size-4 text-placeholder" />
-                              )}
-                            </button>
-                          </InputGroup>
-                        </Field>
-                      )}
-                    />
-                    {errors.confirm_password && (
-                      <span className="text-13 text-danger-primary">{errors.confirm_password.message}</span>
-                    )}
-                  </div>
-                </>
+                <ProfileSetupPasswordFields
+                  control={control}
+                  errors={errors}
+                  watch={watch}
+                  showPassword={showPassword}
+                  handleShowPassword={handleShowPassword}
+                  isPasswordInputFocused={isPasswordInputFocused}
+                  setIsPasswordInputFocused={setIsPasswordInputFocused}
+                />
               )}
             </>
           )}

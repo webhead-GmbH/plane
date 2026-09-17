@@ -53,6 +53,12 @@ const CATEGORY_KEY: Record<number, string> = {
   [EHrTimeCategory.IMPORTED]: "imported",
 };
 
+/** The text columns of the work-item table, in reading order. */
+const DETAIL_COLUMNS = ["hr.detail.column_what", "hr.detail.column_when", "hr.detail.column_note"];
+
+/** The text columns of the other-hours table: the day leads, since there is no work item to name. */
+const OTHER_COLUMNS = ["hr.detail.column_when", "hr.detail.column_what", "hr.detail.column_note"];
+
 /**
  * Raw seconds for one row, so a single entry never claims a rounded figure.
  *
@@ -335,6 +341,27 @@ const DetailSummary = ({ detail }: { detail: THrWorklogDetail | null }) => {
   );
 };
 
+/**
+ * The heading row the two detail tables share: their text columns in the order
+ * given, then how long, which always closes the row on the right.
+ */
+const DetailTableHead = ({ columns }: { columns: string[] }) => {
+  const { t } = useTranslation();
+
+  return (
+    <thead className="border-b border-subtle text-13 text-placeholder">
+      <tr>
+        {columns.map((column) => (
+          <th key={column} className="px-4 py-2.5 text-left font-medium">
+            {t(column)}
+          </th>
+        ))}
+        <th className="px-4 py-2.5 text-right font-medium">{t("hr.detail.column_long")}</th>
+      </tr>
+    </thead>
+  );
+};
+
 /** The month's work-item hours, gathered the way the reader asked for them. */
 const DetailTable = ({
   detail,
@@ -375,14 +402,7 @@ const DetailTable = ({
   return (
     <div className="overflow-x-auto rounded-md border border-subtle">
       <table className="w-full min-w-[52rem] text-13">
-        <thead className="border-b border-subtle text-13 text-placeholder">
-          <tr>
-            <th className="px-4 py-2.5 text-left font-medium">{t("hr.detail.column_what")}</th>
-            <th className="px-4 py-2.5 text-left font-medium">{t("hr.detail.column_when")}</th>
-            <th className="px-4 py-2.5 text-left font-medium">{t("hr.detail.column_note")}</th>
-            <th className="px-4 py-2.5 text-right font-medium">{t("hr.detail.column_long")}</th>
-          </tr>
-        </thead>
+        <DetailTableHead columns={DETAIL_COLUMNS} />
         <tbody>
           {groups.map((row) => {
             // Days open by default, because that is the shape people read a
@@ -426,14 +446,7 @@ const OtherHours = ({ detail, locale }: { detail: THrWorklogDetail | null; local
       <p className="text-13 text-tertiary">{t("hr.detail.other_subtitle")}</p>
       <div className="overflow-x-auto rounded-md border border-subtle">
         <table className="w-full min-w-[36rem] text-13">
-          <thead className="border-b border-subtle text-13 text-placeholder">
-            <tr>
-              <th className="px-4 py-2.5 text-left font-medium">{t("hr.detail.column_when")}</th>
-              <th className="px-4 py-2.5 text-left font-medium">{t("hr.detail.column_what")}</th>
-              <th className="px-4 py-2.5 text-left font-medium">{t("hr.detail.column_note")}</th>
-              <th className="px-4 py-2.5 text-right font-medium">{t("hr.detail.column_long")}</th>
-            </tr>
-          </thead>
+          <DetailTableHead columns={OTHER_COLUMNS} />
           <tbody>
             {rows.map((row) => (
               <tr key={row.id} className="border-t border-subtle hover:bg-layer-1/60">

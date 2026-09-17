@@ -39,6 +39,71 @@ type Props = {
   isIntakeAccepted: boolean;
 };
 
+type TInboxIssuePropertyProps = Pick<Props, "workspaceSlug" | "projectId" | "issue" | "issueOperations" | "isEditable">;
+
+const InboxIssueAssigneesProperty = observer(function InboxIssueAssigneesProperty(props: TInboxIssuePropertyProps) {
+  const { workspaceSlug, projectId, issue, issueOperations, isEditable } = props;
+
+  return (
+    <div className="flex h-8 items-center gap-2">
+      <div className="flex w-2/5 flex-shrink-0 items-center gap-1 text-13 text-tertiary">
+        <MembersOutline className="h-4 w-4 flex-shrink-0" />
+        <span>Assignees</span>
+      </div>
+      <MemberDropdown
+        value={issue?.assignee_ids ?? []}
+        onChange={(val) =>
+          issue?.id && issueOperations.update(workspaceSlug, projectId, issue?.id, { assignee_ids: val })
+        }
+        disabled={!isEditable}
+        projectId={projectId?.toString() ?? ""}
+        placeholder="Add assignees"
+        multiple
+        buttonVariant={(issue?.assignee_ids || [])?.length > 0 ? "transparent-without-text" : "transparent-with-text"}
+        className="group w-3/5 flex-grow"
+        buttonContainerClassName="w-full text-left"
+        buttonClassName={`text-13 justify-between ${(issue?.assignee_ids || [])?.length > 0 ? "" : "text-placeholder"}`}
+        hideIcon={issue.assignee_ids?.length === 0}
+        dropdownArrow
+        dropdownArrowClassName="h-3.5 w-3.5 hidden group-hover:inline"
+      />
+    </div>
+  );
+});
+
+const InboxIssueDueDateProperty = observer(function InboxIssueDueDateProperty(
+  props: TInboxIssuePropertyProps & { minDate: Date | null | undefined }
+) {
+  const { workspaceSlug, projectId, issue, issueOperations, isEditable, minDate } = props;
+
+  return (
+    <div className="flex h-8 items-center gap-2">
+      <div className="flex w-2/5 flex-shrink-0 items-center gap-1 text-13 text-tertiary">
+        <DueDateOutline className="h-4 w-4 flex-shrink-0" />
+        <span>Due date</span>
+      </div>
+      <DateDropdown
+        placeholder="Add due date"
+        value={issue.target_date || null}
+        onChange={(val) =>
+          issue?.id &&
+          issueOperations.update(workspaceSlug, projectId, issue?.id, {
+            target_date: val ? renderFormattedPayloadDate(val) : null,
+          })
+        }
+        minDate={minDate ?? undefined}
+        disabled={!isEditable}
+        buttonVariant="transparent-with-text"
+        className="group w-3/5 flex-grow"
+        buttonContainerClassName="w-full text-left"
+        buttonClassName={`text-13 ${issue?.target_date ? "" : "text-placeholder"}`}
+        hideIcon
+        clearIconClassName="h-3 w-3 hidden group-hover:inline"
+      />
+    </div>
+  );
+});
+
 export const InboxIssueContentProperties = observer(function InboxIssueContentProperties(props: Props) {
   const { workspaceSlug, projectId, issue, issueOperations, isEditable, duplicateIssueDetails, isIntakeAccepted } =
     props;
@@ -88,33 +153,13 @@ export const InboxIssueContentProperties = observer(function InboxIssueContentPr
               )}
             </div>
             {/* Assignee */}
-            <div className="flex h-8 items-center gap-2">
-              <div className="flex w-2/5 flex-shrink-0 items-center gap-1 text-13 text-tertiary">
-                <MembersOutline className="h-4 w-4 flex-shrink-0" />
-                <span>Assignees</span>
-              </div>
-              <MemberDropdown
-                value={issue?.assignee_ids ?? []}
-                onChange={(val) =>
-                  issue?.id && issueOperations.update(workspaceSlug, projectId, issue?.id, { assignee_ids: val })
-                }
-                disabled={!isEditable}
-                projectId={projectId?.toString() ?? ""}
-                placeholder="Add assignees"
-                multiple
-                buttonVariant={
-                  (issue?.assignee_ids || [])?.length > 0 ? "transparent-without-text" : "transparent-with-text"
-                }
-                className="group w-3/5 flex-grow"
-                buttonContainerClassName="w-full text-left"
-                buttonClassName={`text-13 justify-between ${
-                  (issue?.assignee_ids || [])?.length > 0 ? "" : "text-placeholder"
-                }`}
-                hideIcon={issue.assignee_ids?.length === 0}
-                dropdownArrow
-                dropdownArrowClassName="h-3.5 w-3.5 hidden group-hover:inline"
-              />
-            </div>
+            <InboxIssueAssigneesProperty
+              workspaceSlug={workspaceSlug}
+              projectId={projectId}
+              issue={issue}
+              issueOperations={issueOperations}
+              isEditable={isEditable}
+            />
             {/* Priority */}
             <div className="flex h-8 items-center gap-2">
               <div className="flex w-2/5 flex-shrink-0 items-center gap-1 text-13 text-tertiary">
@@ -138,30 +183,14 @@ export const InboxIssueContentProperties = observer(function InboxIssueContentPr
         <div className={`mt-3 divide-y-2 divide-subtle-1 ${!isEditable ? "opacity-60" : ""}`}>
           <div className="flex flex-col gap-3">
             {/* Due Date */}
-            <div className="flex h-8 items-center gap-2">
-              <div className="flex w-2/5 flex-shrink-0 items-center gap-1 text-13 text-tertiary">
-                <DueDateOutline className="h-4 w-4 flex-shrink-0" />
-                <span>Due date</span>
-              </div>
-              <DateDropdown
-                placeholder="Add due date"
-                value={issue.target_date || null}
-                onChange={(val) =>
-                  issue?.id &&
-                  issueOperations.update(workspaceSlug, projectId, issue?.id, {
-                    target_date: val ? renderFormattedPayloadDate(val) : null,
-                  })
-                }
-                minDate={minDate ?? undefined}
-                disabled={!isEditable}
-                buttonVariant="transparent-with-text"
-                className="group w-3/5 flex-grow"
-                buttonContainerClassName="w-full text-left"
-                buttonClassName={`text-13 ${issue?.target_date ? "" : "text-placeholder"}`}
-                hideIcon
-                clearIconClassName="h-3 w-3 hidden group-hover:inline"
-              />
-            </div>
+            <InboxIssueDueDateProperty
+              workspaceSlug={workspaceSlug}
+              projectId={projectId}
+              issue={issue}
+              issueOperations={issueOperations}
+              isEditable={isEditable}
+              minDate={minDate}
+            />
             {/* Labels */}
             <div className="flex min-h-8 items-center gap-2">
               <div className="flex w-2/5 flex-shrink-0 items-center gap-1 text-13 text-tertiary">

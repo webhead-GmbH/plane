@@ -91,6 +91,8 @@ export const CycleDropdown = observer(function CycleDropdown(props: Props) {
       onClick={handleOnClick}
       disabled={disabled}
       tabIndex={tabIndex}
+      aria-haspopup="listbox"
+      aria-expanded={isOpen}
     >
       {button}
     </button>
@@ -109,6 +111,8 @@ export const CycleDropdown = observer(function CycleDropdown(props: Props) {
       onClick={handleOnClick}
       disabled={disabled}
       tabIndex={tabIndex}
+      aria-haspopup="listbox"
+      aria-expanded={isOpen}
     >
       <DropdownButton
         className={buttonClassName}

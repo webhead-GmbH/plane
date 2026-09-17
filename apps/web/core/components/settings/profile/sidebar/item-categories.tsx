@@ -64,8 +64,9 @@ export const ProfileSettingsSidebarItemCategories = observer(function ProfileSet
                   onClick={() => updateActiveTab(item.key)}
                   isActive={activeTab === item.key}
                   icon={ICONS[item.key]}
-                  label={t(item.i18n_label)}
-                />
+                >
+                  {t(item.i18n_label)}
+                </SettingsSidebarItem>
               ))}
             </div>
           </div>

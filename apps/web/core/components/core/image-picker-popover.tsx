@@ -8,6 +8,7 @@ import React, { useState, useRef, useCallback, useMemo } from "react";
 import { observer } from "mobx-react";
 import { useParams } from "next/navigation";
 import { useDropzone } from "react-dropzone";
+import type { DropzoneState } from "react-dropzone";
 import type { Control, FieldPath, FieldValues } from "react-hook-form";
 import { Controller } from "react-hook-form";
 import useSWR from "swr";
@@ -28,6 +29,7 @@ import { useInstance } from "@/hooks/store/use-instance";
 import { useDropdownKeyDown } from "@/hooks/use-dropdown-key-down";
 // services
 import { FileService } from "@/services/file.service";
+import type { UnSplashImage } from "@/services/file.service";
 
 type TTabOption = {
   key: string;
@@ -49,23 +51,282 @@ type Props<TFieldValues extends FieldValues = FieldValues> = {
   projectId?: string | null;
 };
 
+type TCoverImageUploadOptions = {
+  isProfileCover: boolean;
+  projectId?: string | null;
+  onChange: (data: string) => void;
+  onUploaded: () => void;
+};
+
+type TCoverImageUploadError = { error?: string } | undefined;
+
+type TUnsplashImagesPanelProps<TFieldValues extends FieldValues> = {
+  control: Control<TFieldValues>;
+  unsplashImages: UnSplashImage[] | undefined;
+  unsplashError: unknown;
+  onChange: (data: string) => void;
+  onSearch: () => void;
+  onSearchQueryChange: (query: string) => void;
+  setIsOpen: (isOpen: boolean) => void;
+};
+
+type TStaticCoverImagesPanelProps = {
+  onSelect: (imageUrl: string) => void;
+};
+
+type TCoverImageUploadPanelProps = {
+  dropzone: DropzoneState;
+  image: File | null;
+  isImageUploading: boolean;
+  value: string | null;
+  onCancel: () => void;
+  onSubmit: () => void;
+};
+
 // services
 const fileService = new FileService();
+
+// Picked-file state, the dropzone and the upload request for the "Upload" tab. It lives in the
+// popover itself, so a picked file and a rejection message survive switching tabs.
+function useCoverImageUpload(options: TCoverImageUploadOptions) {
+  const { isProfileCover, projectId, onChange, onUploaded } = options;
+  // states
+  const [image, setImage] = useState<File | null>(null);
+  const [isImageUploading, setIsImageUploading] = useState(false);
+  // router params
+  const { workspaceSlug } = useParams();
+
+  const onDrop = useCallback((acceptedFiles: File[]) => {
+    // A rejected drop passes no accepted file, so keep the image that was picked before it.
+    const [acceptedFile] = acceptedFiles;
+    if (acceptedFile) setImage(acceptedFile);
+  }, []);
+
+  const dropzone = useDropzone({
+    onDrop,
+    accept: ACCEPTED_COVER_IMAGE_MIME_TYPES_FOR_REACT_DROPZONE,
+    maxSize: MAX_FILE_SIZE,
+  });
+
+  const handleSubmit = async () => {
+    if (!image) return;
+    setIsImageUploading(true);
+
+    const uploadCallback = (url: string) => {
+      onChange(url);
+      setIsImageUploading(false);
+      setImage(null);
+      onUploaded();
+    };
+
+    const handleUploadError = (logMessage: string) => (error: TCoverImageUploadError) => {
+      console.error(logMessage, error);
+      setIsImageUploading(false);
+      setToast({
+        message: error?.error ?? "The image could not be uploaded",
+        type: TOAST_TYPE.ERROR,
+        title: "Image not uploaded",
+      });
+    };
+
+    if (isProfileCover) {
+      await fileService
+        .uploadUserAsset(
+          {
+            entity_identifier: "",
+            entity_type: EFileAssetType.USER_COVER,
+          },
+          image
+        )
+        .then((res) => uploadCallback(res.asset_url))
+        .catch(handleUploadError("Error uploading user cover image:"));
+    } else {
+      if (!workspaceSlug) return;
+      await fileService
+        .uploadWorkspaceAsset(
+          workspaceSlug.toString(),
+          {
+            entity_identifier: projectId?.toString() ?? "",
+            entity_type: EFileAssetType.PROJECT_COVER,
+          },
+          image
+        )
+        .then((res) => uploadCallback(res.asset_url))
+        .catch(handleUploadError("Error uploading project cover image:"));
+    }
+  };
+
+  return { image, setImage, isImageUploading, dropzone, handleSubmit };
+}
+
+function UnsplashImagesPanel<TFieldValues extends FieldValues>(props: TUnsplashImagesPanelProps<TFieldValues>) {
+  const { control, unsplashImages, unsplashError, onChange, onSearch, onSearchQueryChange, setIsOpen } = props;
+
+  return (
+    <div className="space-y-4">
+      {(unsplashImages || !unsplashError) && (
+        <>
+          <div className="flex items-center gap-x-2">
+            <Controller
+              control={control}
+              name={"search" as FieldPath<TFieldValues>}
+              render={({ field: { value, ref } }) => (
+                <InputGroup size="2xl">
+                  <Input
+                    size="2xl"
+                    id="search"
+                    name="search"
+                    type="text"
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        onSearch();
+                      }
+                    }}
+                    value={value}
+                    onChange={(e) => onSearchQueryChange(e.target.value)}
+                    ref={ref}
+                    placeholder="Search for images"
+                  />
+                </InputGroup>
+              )}
+            />
+            <Button variant="primary" size="xl" onClick={() => onSearch()}>
+              Search
+            </Button>
+          </div>
+          {unsplashImages ? (
+            unsplashImages.length > 0 ? (
+              <div className="grid grid-cols-4 gap-4">
+                {unsplashImages.map((image) => (
+                  <div
+                    key={image.id}
+                    className="relative col-span-2 aspect-video md:col-span-1"
+                    onClick={() => {
+                      setIsOpen(false);
+                      onChange(image.urls.regular);
+                    }}
+                  >
+                    <img
+                      src={image.urls.small}
+                      alt={image.alt_description}
+                      className="absolute top-0 left-0 h-full w-full cursor-pointer rounded-sm object-cover"
+                    />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="pt-7 text-center text-11 text-secondary">No images found.</p>
+            )
+          ) : (
+            <Loader className="grid grid-cols-4 gap-4">
+              <Loader.Item height="80px" width="100%" />
+              <Loader.Item height="80px" width="100%" />
+              <Loader.Item height="80px" width="100%" />
+              <Loader.Item height="80px" width="100%" />
+              <Loader.Item height="80px" width="100%" />
+              <Loader.Item height="80px" width="100%" />
+              <Loader.Item height="80px" width="100%" />
+              <Loader.Item height="80px" width="100%" />
+            </Loader>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
+
+function StaticCoverImagesPanel(props: TStaticCoverImagesPanelProps) {
+  const { onSelect } = props;
+
+  return (
+    <div className="grid grid-cols-4 gap-4">
+      {Object.values(STATIC_COVER_IMAGES).map((imageUrl, index) => (
+        <div
+          key={imageUrl}
+          className="relative col-span-2 aspect-video md:col-span-1"
+          onClick={() => onSelect(imageUrl)}
+        >
+          <img
+            src={imageUrl}
+            alt={`Cover image ${index + 1}`}
+            className="absolute top-0 left-0 h-full w-full cursor-pointer rounded-sm object-cover transition-opacity hover:opacity-80"
+          />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function CoverImageUploadPanel(props: TCoverImageUploadPanelProps) {
+  const { dropzone, image, isImageUploading, value, onCancel, onSubmit } = props;
+  const { getRootProps, getInputProps, isDragActive, fileRejections } = dropzone;
+
+  return (
+    <div className="flex h-full w-full flex-col gap-y-2">
+      <div className="flex w-full flex-1 items-center gap-3">
+        <div
+          {...getRootProps()}
+          className={`relative grid h-full w-full cursor-pointer place-items-center rounded-lg p-12 text-center focus:ring-2 focus:ring-accent-strong focus:ring-offset-2 focus:outline-none ${
+            (image === null && isDragActive) || !value ? "border-2 border-dashed border-subtle hover:bg-surface-2" : ""
+          }`}
+        >
+          <button
+            type="button"
+            className="absolute top-0 right-0 z-40 -translate-y-1/2 rounded-sm bg-surface-2 px-2 py-0.5 text-11 font-medium text-secondary"
+          >
+            Edit
+          </button>
+          {image !== null || (value && value !== "") ? (
+            <>
+              <img
+                src={image ? URL.createObjectURL(image) : getCoverImageDisplayURL(value, "")}
+                alt="image"
+                className="h-full w-full rounded-lg object-cover"
+              />
+            </>
+          ) : (
+            <div>
+              <span className="mt-2 block text-13 font-medium text-secondary">
+                {isDragActive ? "Drop image here to upload" : "Drag & drop image here"}
+              </span>
+            </div>
+          )}
+
+          <input {...getInputProps()} />
+        </div>
+      </div>
+      {fileRejections.length > 0 && (
+        <p className="text-13 text-danger-primary">
+          {fileRejections[0].errors[0].code === "file-too-large"
+            ? "The image size cannot exceed 5 MB."
+            : "Please upload a file in a valid format."}
+        </p>
+      )}
+
+      <p className="text-13 text-secondary">File formats supported- .jpeg, .jpg, .png, .webp</p>
+
+      <div className="flex h-12 items-start justify-end gap-2">
+        <Button variant="secondary" onClick={onCancel}>
+          Cancel
+        </Button>
+        <Button variant="primary" className="w-full" onClick={onSubmit} disabled={!image} loading={isImageUploading}>
+          {isImageUploading ? "Uploading" : "Upload & Save"}
+        </Button>
+      </div>
+    </div>
+  );
+}
 
 function ImagePickerPopoverComponent<TFieldValues extends FieldValues = FieldValues>(props: Props<TFieldValues>) {
   const { label, value, control, onChange, disabled = false, tabIndex, isProfileCover = false, projectId } = props;
   // states
-  const [image, setImage] = useState<File | null>(null);
-  const [isImageUploading, setIsImageUploading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [searchParams, setSearchParams] = useState("");
-  const [formData, setFormData] = useState({
-    search: "",
-  });
   // refs
   const ref = useRef<HTMLDivElement>(null);
-  // router params
-  const { workspaceSlug } = useParams();
+  // Read only when a search runs, so typing does not re-render the popover.
+  const searchQueryRef = useRef("");
   // store hooks
   const { config } = useInstance();
   // derived values
@@ -104,73 +365,29 @@ function ImagePickerPopoverComponent<TFieldValues extends FieldValues = FieldVal
 
   const imagePickerRef = useRef<HTMLDivElement>(null);
 
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    setImage(acceptedFiles[0]);
-  }, []);
-
-  const { getRootProps, getInputProps, isDragActive, fileRejections } = useDropzone({
-    onDrop,
-    accept: ACCEPTED_COVER_IMAGE_MIME_TYPES_FOR_REACT_DROPZONE,
-    maxSize: MAX_FILE_SIZE,
+  const { image, setImage, isImageUploading, dropzone, handleSubmit } = useCoverImageUpload({
+    isProfileCover,
+    projectId,
+    onChange,
+    onUploaded: () => setIsOpen(false),
   });
+
+  const handleSearchQueryChange = (query: string) => {
+    searchQueryRef.current = query;
+  };
+
+  const handleUnsplashSearch = () => {
+    setSearchParams(searchQueryRef.current);
+  };
 
   const handleStaticImageSelect = (imageUrl: string) => {
     onChange(imageUrl);
     setIsOpen(false);
   };
 
-  const handleSubmit = async () => {
-    if (!image) return;
-    setIsImageUploading(true);
-
-    const uploadCallback = (url: string) => {
-      onChange(url);
-      setIsImageUploading(false);
-      setImage(null);
-      setIsOpen(false);
-    };
-
-    if (isProfileCover) {
-      await fileService
-        .uploadUserAsset(
-          {
-            entity_identifier: "",
-            entity_type: EFileAssetType.USER_COVER,
-          },
-          image
-        )
-        .then((res) => uploadCallback(res.asset_url))
-        .catch((error) => {
-          console.error("Error uploading user cover image:", error);
-          setIsImageUploading(false);
-          setToast({
-            message: error?.error ?? "The image could not be uploaded",
-            type: TOAST_TYPE.ERROR,
-            title: "Image not uploaded",
-          });
-        });
-    } else {
-      if (!workspaceSlug) return;
-      await fileService
-        .uploadWorkspaceAsset(
-          workspaceSlug.toString(),
-          {
-            entity_identifier: projectId?.toString() ?? "",
-            entity_type: EFileAssetType.PROJECT_COVER,
-          },
-          image
-        )
-        .then((res) => uploadCallback(res.asset_url))
-        .catch((error) => {
-          console.error("Error uploading project cover image:", error);
-          setIsImageUploading(false);
-          setToast({
-            message: error?.error ?? "The image could not be uploaded",
-            type: TOAST_TYPE.ERROR,
-            title: "Image not uploaded",
-          });
-        });
-    }
+  const handleUploadCancel = () => {
+    setIsOpen(false);
+    setImage(null);
   };
 
   const handleClose = () => {
@@ -221,161 +438,28 @@ function ImagePickerPopoverComponent<TFieldValues extends FieldValues = FieldVal
                   {/* Grid wrapper: published TabsPanel omits className, so fill height comes from a one-row grid. */}
                   <div className="vertical-scrollbar mt-3 scrollbar-sm grid min-h-0 w-full flex-1 grid-rows-1 overflow-x-hidden overflow-y-auto p-3">
                     <TabsPanel value="unsplash">
-                      <div className="space-y-4">
-                        {(unsplashImages || !unsplashError) && (
-                          <>
-                            <div className="flex items-center gap-x-2">
-                              <Controller
-                                control={control}
-                                name={"search" as FieldPath<TFieldValues>}
-                                render={({ field: { value, ref } }) => (
-                                  <InputGroup size="2xl">
-                                    <Input
-                                      size="2xl"
-                                      id="search"
-                                      name="search"
-                                      type="text"
-                                      onKeyDown={(e) => {
-                                        if (e.key === "Enter") {
-                                          e.preventDefault();
-                                          setSearchParams(formData.search);
-                                        }
-                                      }}
-                                      value={value}
-                                      onChange={(e) => setFormData({ ...formData, search: e.target.value })}
-                                      ref={ref}
-                                      placeholder="Search for images"
-                                    />
-                                  </InputGroup>
-                                )}
-                              />
-                              <Button variant="primary" size="xl" onClick={() => setSearchParams(formData.search)}>
-                                Search
-                              </Button>
-                            </div>
-                            {unsplashImages ? (
-                              unsplashImages.length > 0 ? (
-                                <div className="grid grid-cols-4 gap-4">
-                                  {unsplashImages.map((image) => (
-                                    <div
-                                      key={image.id}
-                                      className="relative col-span-2 aspect-video md:col-span-1"
-                                      onClick={() => {
-                                        setIsOpen(false);
-                                        onChange(image.urls.regular);
-                                      }}
-                                    >
-                                      <img
-                                        src={image.urls.small}
-                                        alt={image.alt_description}
-                                        className="absolute top-0 left-0 h-full w-full cursor-pointer rounded-sm object-cover"
-                                      />
-                                    </div>
-                                  ))}
-                                </div>
-                              ) : (
-                                <p className="pt-7 text-center text-11 text-secondary">No images found.</p>
-                              )
-                            ) : (
-                              <Loader className="grid grid-cols-4 gap-4">
-                                <Loader.Item height="80px" width="100%" />
-                                <Loader.Item height="80px" width="100%" />
-                                <Loader.Item height="80px" width="100%" />
-                                <Loader.Item height="80px" width="100%" />
-                                <Loader.Item height="80px" width="100%" />
-                                <Loader.Item height="80px" width="100%" />
-                                <Loader.Item height="80px" width="100%" />
-                                <Loader.Item height="80px" width="100%" />
-                              </Loader>
-                            )}
-                          </>
-                        )}
-                      </div>
+                      <UnsplashImagesPanel
+                        control={control}
+                        unsplashImages={unsplashImages}
+                        unsplashError={unsplashError}
+                        onChange={onChange}
+                        onSearch={handleUnsplashSearch}
+                        onSearchQueryChange={handleSearchQueryChange}
+                        setIsOpen={setIsOpen}
+                      />
                     </TabsPanel>
                     <TabsPanel value="images">
-                      <div className="grid grid-cols-4 gap-4">
-                        {Object.values(STATIC_COVER_IMAGES).map((imageUrl, index) => (
-                          <div
-                            key={imageUrl}
-                            className="relative col-span-2 aspect-video md:col-span-1"
-                            onClick={() => handleStaticImageSelect(imageUrl)}
-                          >
-                            <img
-                              src={imageUrl}
-                              alt={`Cover image ${index + 1}`}
-                              className="absolute top-0 left-0 h-full w-full cursor-pointer rounded-sm object-cover transition-opacity hover:opacity-80"
-                            />
-                          </div>
-                        ))}
-                      </div>
+                      <StaticCoverImagesPanel onSelect={handleStaticImageSelect} />
                     </TabsPanel>
                     <TabsPanel value="upload">
-                      <div className="flex h-full w-full flex-col gap-y-2">
-                        <div className="flex w-full flex-1 items-center gap-3">
-                          <div
-                            {...getRootProps()}
-                            className={`relative grid h-full w-full cursor-pointer place-items-center rounded-lg p-12 text-center focus:ring-2 focus:ring-accent-strong focus:ring-offset-2 focus:outline-none ${
-                              (image === null && isDragActive) || !value
-                                ? "border-2 border-dashed border-subtle hover:bg-surface-2"
-                                : ""
-                            }`}
-                          >
-                            <button
-                              type="button"
-                              className="absolute top-0 right-0 z-40 -translate-y-1/2 rounded-sm bg-surface-2 px-2 py-0.5 text-11 font-medium text-secondary"
-                            >
-                              Edit
-                            </button>
-                            {image !== null || (value && value !== "") ? (
-                              <>
-                                <img
-                                  src={image ? URL.createObjectURL(image) : getCoverImageDisplayURL(value, "")}
-                                  alt="image"
-                                  className="h-full w-full rounded-lg object-cover"
-                                />
-                              </>
-                            ) : (
-                              <div>
-                                <span className="mt-2 block text-13 font-medium text-secondary">
-                                  {isDragActive ? "Drop image here to upload" : "Drag & drop image here"}
-                                </span>
-                              </div>
-                            )}
-
-                            <input {...getInputProps()} />
-                          </div>
-                        </div>
-                        {fileRejections.length > 0 && (
-                          <p className="text-13 text-danger-primary">
-                            {fileRejections[0].errors[0].code === "file-too-large"
-                              ? "The image size cannot exceed 5 MB."
-                              : "Please upload a file in a valid format."}
-                          </p>
-                        )}
-
-                        <p className="text-13 text-secondary">File formats supported- .jpeg, .jpg, .png, .webp</p>
-
-                        <div className="flex h-12 items-start justify-end gap-2">
-                          <Button
-                            variant="secondary"
-                            onClick={() => {
-                              setIsOpen(false);
-                              setImage(null);
-                            }}
-                          >
-                            Cancel
-                          </Button>
-                          <Button
-                            variant="primary"
-                            className="w-full"
-                            onClick={handleSubmit}
-                            disabled={!image}
-                            loading={isImageUploading}
-                          >
-                            {isImageUploading ? "Uploading" : "Upload & Save"}
-                          </Button>
-                        </div>
-                      </div>
+                      <CoverImageUploadPanel
+                        dropzone={dropzone}
+                        image={image}
+                        isImageUploading={isImageUploading}
+                        value={value}
+                        onCancel={handleUploadCancel}
+                        onSubmit={handleSubmit}
+                      />
                     </TabsPanel>
                   </div>
                 </div>

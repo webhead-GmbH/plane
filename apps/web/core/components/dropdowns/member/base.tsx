@@ -116,6 +116,8 @@ export const MemberDropdownBase = observer(function MemberDropdownBase(props: TM
       onClick={handleOnClick}
       disabled={disabled}
       tabIndex={tabIndex}
+      aria-haspopup="listbox"
+      aria-expanded={isOpen}
     >
       {button}
     </button>
@@ -134,6 +136,8 @@ export const MemberDropdownBase = observer(function MemberDropdownBase(props: TM
       onClick={handleOnClick}
       disabled={disabled}
       tabIndex={tabIndex}
+      aria-haspopup="listbox"
+      aria-expanded={isOpen}
     >
       <DropdownButton
         className={cn("text-11", buttonClassName)}

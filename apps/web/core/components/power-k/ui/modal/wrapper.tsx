@@ -105,14 +105,14 @@ export const ProjectsAppPowerKModalWrapper = observer(function ProjectsAppPowerK
 
   // Reset state when modal closes
   useEffect(() => {
-    if (!isOpen) {
-      setTimeout(() => {
-        setSearchTerm("");
-        setActivePage(null);
-        context.setActiveCommand(null);
-        context.setShouldShowContextBasedActions(true);
-      }, 200);
-    }
+    if (isOpen) return;
+    const resetTimeout = setTimeout(() => {
+      setSearchTerm("");
+      setActivePage(null);
+      context.setActiveCommand(null);
+      context.setShouldShowContextBasedActions(true);
+    }, 200);
+    return () => clearTimeout(resetTimeout);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
 

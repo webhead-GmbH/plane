@@ -29,10 +29,56 @@ type TSubIssueFiltersProps = {
   availableFilters: (keyof IIssueFilterOptions)[];
 };
 
-export const SubIssueFilters = observer(function SubIssueFilters(props: TSubIssueFiltersProps) {
-  const { handleFiltersUpdate, filters, memberIds, states, availableFilters } = props;
+type TSubIssueFiltersMenuButtonProps = {
+  isFilterApplied: boolean;
+};
+
+function SubIssueFiltersMenuButton(props: TSubIssueFiltersMenuButtonProps) {
+  const { isFilterApplied } = props;
+
+  return (
+    <div
+      className={cn("relative rounded-sm p-1 transition-all duration-200", isFilterApplied && "bg-accent-primary/20")}
+    >
+      {isFilterApplied && <span className="absolute -top-1 -right-1 rounded-full bg-accent-primary p-1" />}
+      <FilterOutline className="h-3.5 w-3.5 text-primary" />
+    </div>
+  );
+}
+
+type TSubIssueFiltersSearchProps = {
+  searchQuery: string;
+  onSearchQueryChange: (value: string) => void;
+};
+
+function SubIssueFiltersSearch(props: TSubIssueFiltersSearchProps) {
+  const { searchQuery, onSearchQueryChange } = props;
   // plane hooks
   const { t } = useTranslation();
+
+  return (
+    <div className="bg-surface-1 p-2.5 pb-0">
+      <div className="flex items-center gap-1.5 rounded-sm border-[0.5px] border-subtle bg-surface-2 px-1.5 py-1 text-11">
+        <SearchOutline className="text-placeholder" width={12} height={12} />
+        <input
+          type="text"
+          className="w-full bg-surface-2 outline-none placeholder:text-placeholder"
+          placeholder={t("common.search.label")}
+          value={searchQuery}
+          onChange={(e) => onSearchQueryChange(e.target.value)}
+        />
+        {searchQuery !== "" && (
+          <button type="button" className="grid place-items-center" onClick={() => onSearchQueryChange("")}>
+            <CloseOutline className="text-tertiary" height={12} width={12} />
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+export const SubIssueFilters = observer(function SubIssueFilters(props: TSubIssueFiltersProps) {
+  const { handleFiltersUpdate, filters, memberIds, states, availableFilters } = props;
   // states
   const [filtersSearchQuery, setFiltersSearchQuery] = useState("");
 
@@ -44,36 +90,10 @@ export const SubIssueFilters = observer(function SubIssueFilters(props: TSubIssu
     <>
       <FiltersDropdown
         placement="bottom-end"
-        menuButton={
-          <div
-            className={cn(
-              "relative rounded-sm p-1 transition-all duration-200",
-              isFilterApplied && "bg-accent-primary/20"
-            )}
-          >
-            {isFilterApplied && <span className="absolute -top-1 -right-1 rounded-full bg-accent-primary p-1" />}
-            <FilterOutline className="h-3.5 w-3.5 text-primary" />
-          </div>
-        }
+        menuButton={<SubIssueFiltersMenuButton isFilterApplied={isFilterApplied} />}
       >
         <div className="flex max-h-[350px] flex-col overflow-hidden">
-          <div className="bg-surface-1 p-2.5 pb-0">
-            <div className="flex items-center gap-1.5 rounded-sm border-[0.5px] border-subtle bg-surface-2 px-1.5 py-1 text-11">
-              <SearchOutline className="text-placeholder" width={12} height={12} />
-              <input
-                type="text"
-                className="w-full bg-surface-2 outline-none placeholder:text-placeholder"
-                placeholder={t("common.search.label")}
-                value={filtersSearchQuery}
-                onChange={(e) => setFiltersSearchQuery(e.target.value)}
-              />
-              {filtersSearchQuery !== "" && (
-                <button type="button" className="grid place-items-center" onClick={() => setFiltersSearchQuery("")}>
-                  <CloseOutline className="text-tertiary" height={12} width={12} />
-                </button>
-              )}
-            </div>
-          </div>
+          <SubIssueFiltersSearch searchQuery={filtersSearchQuery} onSearchQueryChange={setFiltersSearchQuery} />
           <div className="vertical-scrollbar scrollbar-sm h-full w-full divide-y divide-subtle-1 overflow-y-auto px-2.5 text-left">
             {/* Priority */}
             {isFilterEnabled("priority") && (

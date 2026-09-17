@@ -29,6 +29,56 @@ type CustomImageUploaderProps = CustomImageNodeViewProps & {
   setIsUploaded: (isUploaded: boolean) => void;
 };
 
+type UploaderBorderColorArgs = {
+  isEditable: boolean;
+  isErrorState: boolean;
+  selected: boolean;
+};
+
+// accent border shown while the uploader is selected in an editable editor without an error
+const getUploaderBorderColor = ({ isEditable, isErrorState, selected }: UploaderBorderColorArgs) =>
+  selected && isEditable && !isErrorState
+    ? "color-mix(in srgb, var(--border-color-accent-strong) 20%, transparent)"
+    : undefined;
+
+type CustomImageRetryButtonProps = Pick<
+  CustomImageUploaderProps,
+  "editor" | "hasDuplicationFailed" | "selected" | "updateAttributes"
+>;
+
+function CustomImageRetryButton(props: CustomImageRetryButtonProps) {
+  const { editor, hasDuplicationFailed, selected, updateAttributes } = props;
+
+  const handleRetryClick = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      if (hasDuplicationFailed && editor.isEditable) {
+        updateAttributes({ status: ECustomImageStatus.DUPLICATING });
+      }
+    },
+    [hasDuplicationFailed, editor.isEditable, updateAttributes]
+  );
+
+  if (!hasDuplicationFailed || !editor.isEditable) return null;
+
+  return (
+    <button
+      type="button"
+      onClick={handleRetryClick}
+      className={cn(
+        "flex items-center gap-1 rounded-md px-2 py-1 font-medium text-danger-primary transition-all duration-200 ease-in-out hover:bg-danger-subtle-hover",
+        {
+          "hover:bg-danger-subtle-hover": selected,
+        }
+      )}
+      title="Retry duplication"
+    >
+      <RefreshOutline className="size-3" />
+      <span className="text-11">Retry</span>
+    </button>
+  );
+}
+
 export function CustomImageUploader(props: CustomImageUploaderProps) {
   const {
     editor,
@@ -176,10 +226,7 @@ export function CustomImageUploader(props: CustomImageUploaderProps) {
 
   const isErrorState = failedToLoadImage || hasDuplicationFailed;
 
-  const borderColor =
-    selected && editor.isEditable && !isErrorState
-      ? "color-mix(in srgb, var(--border-color-accent-strong) 20%, transparent)"
-      : undefined;
+  const borderColor = getUploaderBorderColor({ isEditable: editor.isEditable, isErrorState, selected });
 
   const getDisplayMessage = useCallback(() => {
     const isUploading = isImageBeingUploaded;
@@ -197,16 +244,6 @@ export function CustomImageUploader(props: CustomImageUploaderProps) {
 
     return "Add an image";
   }, [draggedInside, editor.isEditable, isErrorState, isImageBeingUploaded]);
-
-  const handleRetryClick = useCallback(
-    (e: React.MouseEvent) => {
-      e.stopPropagation();
-      if (hasDuplicationFailed && editor.isEditable) {
-        updateAttributes({ status: ECustomImageStatus.DUPLICATING });
-      }
-    },
-    [hasDuplicationFailed, editor.isEditable, updateAttributes]
-  );
 
   return (
     <div
@@ -237,22 +274,12 @@ export function CustomImageUploader(props: CustomImageUploaderProps) {
     >
       <ImageOutline className="size-4" />
       <div className="flex-1 text-14 font-medium">{getDisplayMessage()}</div>
-      {hasDuplicationFailed && editor.isEditable && (
-        <button
-          type="button"
-          onClick={handleRetryClick}
-          className={cn(
-            "flex items-center gap-1 rounded-md px-2 py-1 font-medium text-danger-primary transition-all duration-200 ease-in-out hover:bg-danger-subtle-hover",
-            {
-              "hover:bg-danger-subtle-hover": selected,
-            }
-          )}
-          title="Retry duplication"
-        >
-          <RefreshOutline className="size-3" />
-          <span className="text-11">Retry</span>
-        </button>
-      )}
+      <CustomImageRetryButton
+        editor={editor}
+        hasDuplicationFailed={hasDuplicationFailed}
+        selected={selected}
+        updateAttributes={updateAttributes}
+      />
       <input
         className="size-0 overflow-hidden"
         ref={fileInputRef}

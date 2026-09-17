@@ -4,6 +4,7 @@
  * See the LICENSE file for details.
  */
 
+import type { ReactNode } from "react";
 import { Fragment, useCallback, useState } from "react";
 import { observer } from "mobx-react";
 import { usePopper } from "react-popper";
@@ -29,6 +30,84 @@ export interface IIssueLabelSelect {
   values: string[];
   onSelect: (_labelIds: string[]) => void;
   onAddLabel: (workspaceSlug: string, projectId: string, data: Partial<IIssueLabel>) => Promise<any>;
+}
+
+type TIssueLabelSelectOption = {
+  value: string;
+  query: string;
+  content: ReactNode;
+};
+
+type TIssueLabelSelectOptionsProps = {
+  isLoading: boolean;
+  options: TIssueLabelSelectOption[];
+  submitting: boolean;
+  canCreateLabel: boolean;
+  query: string;
+  onCreateLabel: (labelName: string) => Promise<void>;
+};
+
+function IssueLabelSelectOptions(props: TIssueLabelSelectOptionsProps) {
+  const { isLoading, options, submitting, canCreateLabel, query, onCreateLabel } = props;
+  const { t } = useTranslation();
+
+  if (isLoading) return <p className="text-center text-secondary">{t("common.loading")}</p>;
+
+  if (options.length > 0)
+    return (
+      <ul className="space-y-1">
+        {options.map((option) => (
+          <Combobox.Option
+            as="li"
+            key={option.value}
+            value={option.value}
+            className={({ selected }) =>
+              `flex cursor-pointer items-center justify-between gap-2 truncate rounded-sm px-1 py-1.5 select-none hover:bg-layer-1 ${
+                selected ? "text-primary" : "text-secondary"
+              }`
+            }
+          >
+            {({ selected }) => (
+              <>
+                {option.content}
+                {selected && (
+                  <div className="flex-shrink-0">
+                    <TickOutline className={`h-3.5 w-3.5`} />
+                  </div>
+                )}
+              </>
+            )}
+          </Combobox.Option>
+        ))}
+      </ul>
+    );
+
+  if (submitting) return <LoadingOutline className="spin h-3.5 w-3.5" />;
+
+  if (!canCreateLabel) return <p className="text-left text-secondary">{t("common.search.no_matching_results")}</p>;
+
+  return (
+    <ul className="space-y-1">
+      <li>
+        {/* a button, not a Combobox.Option: an option would also hand the raw search text
+            to the combobox, which the API rejects, and it cannot be reached by keyboard */}
+        <button
+          type="button"
+          disabled={!query.length}
+          onClick={() => onCreateLabel(query)}
+          className={`w-full text-left text-secondary ${query.length ? "cursor-pointer" : "cursor-default"}`}
+        >
+          {query.length ? (
+            <>
+              {/* TODO: Translate here */}+ Add <span className="text-primary">&quot;{query}&quot;</span> to labels
+            </>
+          ) : (
+            t("label.create.type")
+          )}
+        </button>
+      </li>
+    </ul>
+  );
 }
 
 export const IssueLabelSelect = observer(function IssueLabelSelect(props: IIssueLabelSelect) {
@@ -112,10 +191,17 @@ export const IssueLabelSelect = observer(function IssueLabelSelect(props: IIssue
 
   const handleAddLabel = async (labelName: string) => {
     setSubmitting(true);
-    const label = await onAddLabel(workspaceSlug, projectId, { name: labelName, color: getRandomLabelColor() });
-    onSelect([...values, label.id]);
-    setQuery("");
-    setSubmitting(false);
+    try {
+      const label = await onAddLabel(workspaceSlug, projectId, { name: labelName, color: getRandomLabelColor() });
+      onSelect([...values, label.id]);
+      setQuery("");
+    } catch {
+      // onAddLabel has already shown why the label could not be created, so the typed name
+      // stays in the search box to be corrected instead of surfacing as an unhandled rejection
+    } finally {
+      // also when the label could not be created, or the spinner would never stop
+      setSubmitting(false);
+    }
   };
 
   if (!issueId || !values) return <></>;
@@ -165,61 +251,14 @@ export const IssueLabelSelect = observer(function IssueLabelSelect(props: IIssue
               </div>
             </div>
             <div className={`vertical-scrollbar mt-2 scrollbar-sm max-h-48 overflow-y-scroll px-2 pr-0`}>
-              {isLoading ? (
-                <p className="text-center text-secondary">{t("common.loading")}</p>
-              ) : filteredOptions.length > 0 ? (
-                <ul className="space-y-1">
-                  {filteredOptions.map((option) => (
-                    <Combobox.Option
-                      as="li"
-                      key={option.value}
-                      value={option.value}
-                      className={({ selected }) =>
-                        `flex cursor-pointer items-center justify-between gap-2 truncate rounded-sm px-1 py-1.5 select-none hover:bg-layer-1 ${
-                          selected ? "text-primary" : "text-secondary"
-                        }`
-                      }
-                    >
-                      {({ selected }) => (
-                        <>
-                          {option.content}
-                          {selected && (
-                            <div className="flex-shrink-0">
-                              <TickOutline className={`h-3.5 w-3.5`} />
-                            </div>
-                          )}
-                        </>
-                      )}
-                    </Combobox.Option>
-                  ))}
-                </ul>
-              ) : submitting ? (
-                <LoadingOutline className="spin h-3.5 w-3.5" />
-              ) : canCreateLabel ? (
-                <ul className="space-y-1">
-                  <li>
-                    {/* a button, not a Combobox.Option: an option would also hand the raw search text
-                        to the combobox, which the API rejects, and it cannot be reached by keyboard */}
-                    <button
-                      type="button"
-                      disabled={!query.length}
-                      onClick={() => handleAddLabel(query)}
-                      className={`w-full text-left text-secondary ${query.length ? "cursor-pointer" : "cursor-default"}`}
-                    >
-                      {query.length ? (
-                        <>
-                          {/* TODO: Translate here */}+ Add <span className="text-primary">&quot;{query}&quot;</span> to
-                          labels
-                        </>
-                      ) : (
-                        t("label.create.type")
-                      )}
-                    </button>
-                  </li>
-                </ul>
-              ) : (
-                <p className="text-left text-secondary">{t("common.search.no_matching_results")}</p>
-              )}
+              <IssueLabelSelectOptions
+                isLoading={isLoading}
+                options={filteredOptions}
+                submitting={submitting}
+                canCreateLabel={!!canCreateLabel}
+                query={query}
+                onCreateLabel={handleAddLabel}
+              />
             </div>
           </div>
         </Combobox.Options>

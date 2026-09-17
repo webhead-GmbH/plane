@@ -48,6 +48,144 @@ type Props = {
   project: IProject;
 };
 
+type TProjectCardMembersProps = {
+  project: IProject;
+};
+
+const ProjectCardMembers = observer(function ProjectCardMembers(props: TProjectCardMembersProps) {
+  const { project } = props;
+  // store hooks
+  const { getUserDetails } = useMember();
+  // hooks
+  const { isMobile } = usePlatformOS();
+  // derived values
+  const projectMembersIds = project.members;
+
+  return (
+    <Tooltip
+      label={project.members?.length ? `Members: ${project.members.length}` : "No members"}
+      layout="stacked"
+      disabled={isMobile}
+    >
+      {projectMembersIds && projectMembersIds.length > 0 ? (
+        <div className="flex cursor-pointer items-center gap-2 text-secondary">
+          <AvatarGroupOverflow size="xs">
+            {projectMembersIds.map((memberId) => {
+              const member = getUserDetails(memberId);
+              if (!member) return null;
+              return (
+                <Avatar
+                  key={member.id}
+                  alt={member.display_name}
+                  fallback={member.display_name?.[0]?.toUpperCase()}
+                  src={getFileURL(member.avatar_url)}
+                />
+              );
+            })}
+          </AvatarGroupOverflow>
+        </div>
+      ) : (
+        <span className="text-13 text-placeholder italic">No Member Yet</span>
+      )}
+    </Tooltip>
+  );
+});
+
+type TProjectCardFooterActionsProps = {
+  project: IProject;
+  workspaceSlug: string;
+  isArchived: boolean;
+  isMemberOfProject: boolean;
+  hasAdminRole: boolean;
+  hasMemberRole: boolean;
+  setRestoreProject: (value: boolean) => void;
+  setDeleteProjectModal: (value: boolean) => void;
+  setJoinProjectModal: (value: boolean) => void;
+};
+
+const ProjectCardFooterActions = observer(function ProjectCardFooterActions(props: TProjectCardFooterActionsProps) {
+  const {
+    project,
+    workspaceSlug,
+    isArchived,
+    isMemberOfProject,
+    hasAdminRole,
+    hasMemberRole,
+    setRestoreProject,
+    setDeleteProjectModal,
+    setJoinProjectModal,
+  } = props;
+
+  return (
+    <>
+      {isArchived ? (
+        hasAdminRole && (
+          <div className="flex items-center justify-center gap-2">
+            <div
+              className="flex items-center justify-center text-11 font-medium text-placeholder hover:text-secondary"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setRestoreProject(true);
+              }}
+            >
+              <div className="flex items-center gap-1.5">
+                <RestoreOutline className="h-3.5 w-3.5" />
+                Restore
+              </div>
+            </div>
+            <div
+              className="flex items-center justify-center text-11 font-medium text-placeholder hover:text-secondary"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setDeleteProjectModal(true);
+              }}
+            >
+              <DeleteOutline className="h-3.5 w-3.5" />
+            </div>
+          </div>
+        )
+      ) : (
+        <>
+          {isMemberOfProject &&
+            (hasAdminRole || hasMemberRole ? (
+              <Link
+                className="flex items-center justify-center rounded-sm p-1 text-placeholder hover:bg-layer-1 hover:text-secondary"
+                onClick={(e) => {
+                  e.stopPropagation();
+                }}
+                href={`/${workspaceSlug}/settings/projects/${project.id}`}
+              >
+                <SettingsOutline className="h-3.5 w-3.5" />
+              </Link>
+            ) : (
+              <span className="flex items-center gap-1 text-13 text-placeholder">
+                <TickOutline className="h-3.5 w-3.5" />
+                Joined
+              </span>
+            ))}
+          {!isMemberOfProject && (
+            <div className="flex items-center">
+              <Button
+                variant="link"
+                className="!p-0 font-semibold"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setJoinProjectModal(true);
+                }}
+              >
+                Join
+              </Button>
+            </div>
+          )}
+        </>
+      )}
+    </>
+  );
+});
+
 export const ProjectCard = observer(function ProjectCard(props: Props) {
   const { project } = props;
   // states
@@ -60,13 +198,9 @@ export const ProjectCard = observer(function ProjectCard(props: Props) {
   const router = useAppRouter();
   const { workspaceSlug } = useParams();
   // store hooks
-  const { getUserDetails } = useMember();
   const { addProjectToFavorites, removeProjectFromFavorites } = useProject();
   const { allowPermissions } = useUserPermissions();
-  // hooks
-  const { isMobile } = usePlatformOS();
   // derived values
-  const projectMembersIds = project.members;
   const shouldRenderFavorite = allowPermissions(
     [EUserPermissions.ADMIN, EUserPermissions.MEMBER],
     EUserPermissionsLevel.WORKSPACE
@@ -77,6 +211,8 @@ export const ProjectCard = observer(function ProjectCard(props: Props) {
   const hasMemberRole = project.member_role === EUserPermissions.MEMBER;
   // archive
   const isArchived = !!project.archived_at;
+  const canJoinProject = !isMemberOfProject && !isArchived;
+  const canManageArchivedProject = isArchived && hasAdminRole;
   // local storage
   const { setValue: toggleFavoriteMenu, storedValue: isFavoriteMenuOpen } = useLocalStorage<boolean>(
     IS_FAVORITE_MENU_OPEN,
@@ -145,14 +281,14 @@ export const ProjectCard = observer(function ProjectCard(props: Props) {
       action: () => setJoinProjectModal(true),
       title: "Join",
       icon: UserPlusOutline,
-      shouldRender: !isMemberOfProject && !isArchived,
+      shouldRender: canJoinProject,
     },
     {
       key: "open-new-tab",
       action: handleOpenInNewTab,
       title: "Open in new tab",
       icon: NewTabOutline,
-      shouldRender: !isMemberOfProject && !isArchived,
+      shouldRender: canJoinProject,
     },
     {
       key: "copy-link",
@@ -166,14 +302,14 @@ export const ProjectCard = observer(function ProjectCard(props: Props) {
       action: () => setRestoreProject(true),
       title: "Restore",
       icon: RestoreOutline,
-      shouldRender: isArchived && hasAdminRole,
+      shouldRender: canManageArchivedProject,
     },
     {
       key: "delete",
       action: () => setDeleteProjectModal(true),
       title: "Delete",
       icon: DeleteOutline,
-      shouldRender: isArchived && hasAdminRole,
+      shouldRender: canManageArchivedProject,
     },
   ];
 
@@ -288,98 +424,20 @@ export const ProjectCard = observer(function ProjectCard(props: Props) {
           </p>
           <div className="item-center flex justify-between">
             <div className="flex items-center justify-center gap-2">
-              <Tooltip
-                label={project.members?.length ? `Members: ${project.members.length}` : "No members"}
-                layout="stacked"
-                disabled={isMobile}
-              >
-                {projectMembersIds && projectMembersIds.length > 0 ? (
-                  <div className="flex cursor-pointer items-center gap-2 text-secondary">
-                    <AvatarGroupOverflow size="xs">
-                      {projectMembersIds.map((memberId) => {
-                        const member = getUserDetails(memberId);
-                        if (!member) return null;
-                        return (
-                          <Avatar
-                            key={member.id}
-                            alt={member.display_name}
-                            fallback={member.display_name?.[0]?.toUpperCase()}
-                            src={getFileURL(member.avatar_url)}
-                          />
-                        );
-                      })}
-                    </AvatarGroupOverflow>
-                  </div>
-                ) : (
-                  <span className="text-13 text-placeholder italic">No Member Yet</span>
-                )}
-              </Tooltip>
+              <ProjectCardMembers project={project} />
               {isArchived && <div className="text-11 font-medium text-placeholder">Archived</div>}
             </div>
-            {isArchived ? (
-              hasAdminRole && (
-                <div className="flex items-center justify-center gap-2">
-                  <div
-                    className="flex items-center justify-center text-11 font-medium text-placeholder hover:text-secondary"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      setRestoreProject(true);
-                    }}
-                  >
-                    <div className="flex items-center gap-1.5">
-                      <RestoreOutline className="h-3.5 w-3.5" />
-                      Restore
-                    </div>
-                  </div>
-                  <div
-                    className="flex items-center justify-center text-11 font-medium text-placeholder hover:text-secondary"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      setDeleteProjectModal(true);
-                    }}
-                  >
-                    <DeleteOutline className="h-3.5 w-3.5" />
-                  </div>
-                </div>
-              )
-            ) : (
-              <>
-                {isMemberOfProject &&
-                  (hasAdminRole || hasMemberRole ? (
-                    <Link
-                      className="flex items-center justify-center rounded-sm p-1 text-placeholder hover:bg-layer-1 hover:text-secondary"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                      }}
-                      href={`/${workspaceSlug}/settings/projects/${project.id}`}
-                    >
-                      <SettingsOutline className="h-3.5 w-3.5" />
-                    </Link>
-                  ) : (
-                    <span className="flex items-center gap-1 text-13 text-placeholder">
-                      <TickOutline className="h-3.5 w-3.5" />
-                      Joined
-                    </span>
-                  ))}
-                {!isMemberOfProject && (
-                  <div className="flex items-center">
-                    <Button
-                      variant="link"
-                      className="!p-0 font-semibold"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        setJoinProjectModal(true);
-                      }}
-                    >
-                      Join
-                    </Button>
-                  </div>
-                )}
-              </>
-            )}
+            <ProjectCardFooterActions
+              project={project}
+              workspaceSlug={workspaceSlug}
+              isArchived={isArchived}
+              isMemberOfProject={isMemberOfProject}
+              hasAdminRole={hasAdminRole}
+              hasMemberRole={hasMemberRole}
+              setRestoreProject={setRestoreProject}
+              setDeleteProjectModal={setDeleteProjectModal}
+              setJoinProjectModal={setJoinProjectModal}
+            />
           </div>
         </div>
       </Link>

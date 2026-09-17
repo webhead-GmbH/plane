@@ -20,12 +20,37 @@ import { getFileURL } from "@plane/utils";
 import { AvatarGroupOverflow } from "@/components/common/avatar-group-overflow";
 import { useProjectEstimates } from "@/hooks/store/estimates";
 import { useMember } from "@/hooks/store/use-member";
+// store
+import type { IEstimate } from "@/store/estimates/estimate";
 // plane web constants
 
 type Props = {
   projectId: string;
   cycleDetails: ICycle;
 };
+
+const getCycleIssueCount = (cycleDetails: ICycle, isCompleted: boolean, workItemLabel: string) =>
+  isCompleted && !isEmpty(cycleDetails?.progress_snapshot)
+    ? cycleDetails?.progress_snapshot?.total_issues === 0
+      ? `0 ${workItemLabel}`
+      : `${cycleDetails?.progress_snapshot?.completed_issues}/${cycleDetails?.progress_snapshot?.total_issues}`
+    : cycleDetails?.total_issues === 0
+      ? `0 ${workItemLabel}`
+      : `${cycleDetails?.completed_issues}/${cycleDetails?.total_issues}`;
+
+const getCycleEstimatePointCount = (cycleDetails: ICycle, isCompleted: boolean, workItemLabel: string) =>
+  isCompleted && !isEmpty(cycleDetails?.progress_snapshot)
+    ? cycleDetails?.progress_snapshot.total_issues === 0
+      ? `0 ${workItemLabel}`
+      : `${cycleDetails?.progress_snapshot.completed_estimate_points}/${cycleDetails?.progress_snapshot.total_estimate_points}`
+    : cycleDetails?.total_issues === 0
+      ? `0 ${workItemLabel}`
+      : `${cycleDetails?.completed_estimate_points}/${cycleDetails?.total_estimate_points}`;
+
+const getIsEstimatePointValid = (cycleDetails: ICycle, estimateType: IEstimate | false | "" | undefined) =>
+  isEmpty(cycleDetails?.progress_snapshot || {})
+    ? Boolean(estimateType && estimateType?.type == EEstimateSystem.POINTS)
+    : !isEmpty(cycleDetails?.progress_snapshot?.estimate_distribution || {});
 
 export const CycleSidebarDetails = observer(function CycleSidebarDetails(props: Props) {
   const { projectId, cycleDetails } = props;
@@ -37,34 +62,15 @@ export const CycleSidebarDetails = observer(function CycleSidebarDetails(props: 
   const areEstimateEnabled = projectId && areEstimateEnabledByProjectId(projectId.toString());
   const cycleStatus = cycleDetails?.status?.toLocaleLowerCase();
   const isCompleted = cycleStatus === "completed";
+  const workItemLabel = t("common.work_item");
 
-  const issueCount =
-    isCompleted && !isEmpty(cycleDetails?.progress_snapshot)
-      ? cycleDetails?.progress_snapshot?.total_issues === 0
-        ? `0 ${t("common.work_item")}`
-        : `${cycleDetails?.progress_snapshot?.completed_issues}/${cycleDetails?.progress_snapshot?.total_issues}`
-      : cycleDetails?.total_issues === 0
-        ? `0 ${t("common.work_item")}`
-        : `${cycleDetails?.completed_issues}/${cycleDetails?.total_issues}`;
+  const issueCount = getCycleIssueCount(cycleDetails, isCompleted, workItemLabel);
   const estimateType = areEstimateEnabled && currentActiveEstimateId && estimateById(currentActiveEstimateId);
   const cycleOwnerDetails = cycleDetails ? getUserDetails(cycleDetails.owned_by_id) : undefined;
 
-  const isEstimatePointValid = isEmpty(cycleDetails?.progress_snapshot || {})
-    ? estimateType && estimateType?.type == EEstimateSystem.POINTS
-      ? true
-      : false
-    : isEmpty(cycleDetails?.progress_snapshot?.estimate_distribution || {})
-      ? false
-      : true;
+  const isEstimatePointValid = getIsEstimatePointValid(cycleDetails, estimateType);
 
-  const issueEstimatePointCount =
-    isCompleted && !isEmpty(cycleDetails?.progress_snapshot)
-      ? cycleDetails?.progress_snapshot.total_issues === 0
-        ? `0 ${t("common.work_item")}`
-        : `${cycleDetails?.progress_snapshot.completed_estimate_points}/${cycleDetails?.progress_snapshot.total_estimate_points}`
-      : cycleDetails?.total_issues === 0
-        ? `0 ${t("common.work_item")}`
-        : `${cycleDetails?.completed_estimate_points}/${cycleDetails?.total_estimate_points}`;
+  const issueEstimatePointCount = getCycleEstimatePointCount(cycleDetails, isCompleted, workItemLabel);
   return (
     <div className="flex w-full flex-col gap-5">
       {cycleDetails?.description && (

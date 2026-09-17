@@ -5,7 +5,7 @@
  */
 
 import type { Ref } from "react";
-import React, { useEffect, useState, useRef, Fragment } from "react";
+import React, { useEffect, useLayoutEffect, useState, useRef, Fragment } from "react";
 import type { Placement } from "@popperjs/core";
 import { Controller, useForm } from "react-hook-form"; // services
 import { usePopper } from "react-popper";
@@ -152,17 +152,25 @@ export function GptAssistantPopover(props: Props) {
     responseRef.current?.setEditorValue(`<p>${response}</p>`);
   }, [response, responseRef]);
 
+  // The window key listeners call this render's handlers through a ref, so they stay bound while the
+  // popover is open instead of being removed and re-added on every render.
+  const keyPressHandlersRef = useRef({ handleAIResponse, onClose });
+
+  useLayoutEffect(() => {
+    keyPressHandlersRef.current = { handleAIResponse, onClose };
+  });
+
   useEffect(() => {
     const handleEnterKeyPress = (event: KeyboardEvent) => {
       if (event.key === "Enter" && !event.shiftKey) {
         event.preventDefault();
-        handleSubmit(handleAIResponse)();
+        handleSubmit(keyPressHandlersRef.current.handleAIResponse)();
       }
     };
 
     const handleEscapeKeyPress = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        onClose();
+        keyPressHandlersRef.current.onClose();
       }
     };
 
@@ -175,8 +183,7 @@ export function GptAssistantPopover(props: Props) {
       window.removeEventListener("keydown", handleEnterKeyPress);
       window.removeEventListener("keydown", handleEscapeKeyPress);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOpen, handleSubmit, onClose]);
+  }, [isOpen, handleSubmit]);
 
   const responseActionButton = response !== "" && (
     <Button

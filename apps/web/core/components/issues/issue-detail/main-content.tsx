@@ -76,6 +76,7 @@ export const IssueMainContent = observer(function IssueMainContent(props: Props)
   if (!issue || !issue.project_id) return <></>;
 
   const isPeekModeActive = Boolean(peekIssue);
+  const isDisabled = isArchived || !isEditable;
 
   return (
     <>
@@ -93,7 +94,7 @@ export const IssueMainContent = observer(function IssueMainContent(props: Props)
         <ActiveTimerBanner workspaceSlug={workspaceSlug} projectId={issue.project_id} issueId={issue.id} />
 
         <div className="mb-2.5 flex items-center justify-between gap-4">
-          <IssueTypeSwitcher issueId={issueId} disabled={isArchived || !isEditable} />
+          <IssueTypeSwitcher issueId={issueId} disabled={isDisabled} />
           <div className="flex items-center gap-3">
             <NameDescriptionUpdateStatus isSubmitting={isSubmitting} />
           </div>
@@ -106,14 +107,14 @@ export const IssueMainContent = observer(function IssueMainContent(props: Props)
           isSubmitting={isSubmitting}
           setIsSubmitting={(value) => setIsSubmitting(value)}
           issueOperations={issueOperations}
-          disabled={isArchived || !isEditable}
+          disabled={isDisabled}
           value={issue.name}
         />
 
         <DescriptionInput
           issueSequenceId={issue.sequence_id}
           containerClassName="-ml-6 border-none p-0! pl-6!"
-          disabled={isArchived || !isEditable}
+          disabled={isDisabled}
           editorRef={editorRef}
           entityId={issue.id}
           fileAssetType={EFileAssetType.ISSUE_DESCRIPTION}
@@ -149,7 +150,7 @@ export const IssueMainContent = observer(function IssueMainContent(props: Props)
                 createdAt: issue.created_at ? new Date(issue.created_at) : new Date(),
                 createdByDisplayName: getUserDetails(issue.created_by ?? "")?.display_name ?? "",
                 id: issueId,
-                isRestoreDisabled: !isEditable || isArchived,
+                isRestoreDisabled: isDisabled,
               }}
               fetchHandlers={{
                 listDescriptionVersions: (issueId) =>
@@ -169,7 +170,7 @@ export const IssueMainContent = observer(function IssueMainContent(props: Props)
         workspaceSlug={workspaceSlug}
         projectId={projectId}
         issueId={issueId}
-        disabled={!isEditable || isArchived}
+        disabled={isDisabled}
         renderWidgetModals={!isPeekModeActive}
         issueServiceType={EIssueServiceType.ISSUES}
       />
@@ -180,7 +181,7 @@ export const IssueMainContent = observer(function IssueMainContent(props: Props)
           projectId={projectId}
           issueId={issueId}
           issueOperations={issueOperations}
-          disabled={!isEditable || isArchived}
+          disabled={isDisabled}
         />
       )}
 

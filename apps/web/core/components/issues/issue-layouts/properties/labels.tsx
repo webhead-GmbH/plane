@@ -80,8 +80,9 @@ type LabelSummaryProps = {
 function LabelSummary({ isMobile, fullWidth, noLabelBorder, disabled, projectLabels, value }: LabelSummaryProps) {
   const { t } = useTranslation();
   // single pass: collect the selected label names instead of filter -> map -> join
+  const selectedLabelIds = new Set(value);
   const selectedLabelNames = projectLabels.reduce<string[]>((names, label) => {
-    if (value.includes(label?.id)) names.push(label?.name);
+    if (selectedLabelIds.has(label?.id)) names.push(label?.name);
     return names;
   }, []);
   return (

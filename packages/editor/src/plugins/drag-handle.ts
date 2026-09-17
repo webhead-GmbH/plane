@@ -222,11 +222,15 @@ export const DragHandlePlugin = (options: SideMenuPluginProps): SideMenuHandleOp
   };
 
   const view = (view: EditorView, sideMenu: HTMLDivElement | null) => {
-    dragHandleElement = createDragHandleElement();
-    dragHandleElement.addEventListener("dragstart", (e) => handleDragStart(e, view));
-    dragHandleElement.addEventListener("dragend", (e) => handleDragEnd(e, view));
-    dragHandleElement.addEventListener("click", (e) => handleClick(e, view));
-    dragHandleElement.addEventListener("contextmenu", (e) => handleClick(e, view));
+    const handleElement = createDragHandleElement();
+    const dragStartHandler = (e: DragEvent) => handleDragStart(e, view);
+    const dragEndHandler = (e: DragEvent) => handleDragEnd(e, view);
+    const clickHandler = (e: MouseEvent) => handleClick(e, view);
+    handleElement.addEventListener("dragstart", dragStartHandler);
+    handleElement.addEventListener("dragend", dragEndHandler);
+    handleElement.addEventListener("click", clickHandler);
+    handleElement.addEventListener("contextmenu", clickHandler);
+    dragHandleElement = handleElement;
 
     const dragOverHandler = (e: DragEvent) => {
       e.preventDefault();
@@ -269,20 +273,26 @@ export const DragHandlePlugin = (options: SideMenuPluginProps): SideMenuHandleOp
 
     sideMenu?.appendChild(dragHandleElement);
 
+    const destroy = () => {
+      handleElement.removeEventListener("dragstart", dragStartHandler);
+      handleElement.removeEventListener("dragend", dragEndHandler);
+      handleElement.removeEventListener("click", clickHandler);
+      handleElement.removeEventListener("contextmenu", clickHandler);
+      dragHandleElement?.remove?.();
+      dragHandleElement = null;
+      isDragging = false;
+      if (scrollAnimationFrame) {
+        cancelAnimationFrame(scrollAnimationFrame);
+        scrollAnimationFrame = null;
+      }
+      window.removeEventListener("dragleave", dragLeaveHandler);
+      window.removeEventListener("dragenter", dragEnterHandler);
+      document.removeEventListener("dragover", dragOverHandler);
+      document.removeEventListener("mousemove", mouseMoveHandler);
+    };
+
     return {
-      destroy: () => {
-        dragHandleElement?.remove?.();
-        dragHandleElement = null;
-        isDragging = false;
-        if (scrollAnimationFrame) {
-          cancelAnimationFrame(scrollAnimationFrame);
-          scrollAnimationFrame = null;
-        }
-        window.removeEventListener("dragleave", dragLeaveHandler);
-        window.removeEventListener("dragenter", dragEnterHandler);
-        document.removeEventListener("dragover", dragOverHandler);
-        document.removeEventListener("mousemove", mouseMoveHandler);
-      },
+      destroy,
     };
   };
   const domEvents = {

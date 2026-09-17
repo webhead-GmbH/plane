@@ -4,7 +4,7 @@
  * See the LICENSE file for details.
  */
 
-import { Fragment, useState, useEffect } from "react";
+import { Fragment, useEffect } from "react";
 import { observer } from "mobx-react";
 import Link from "next/link";
 // icons
@@ -32,10 +32,28 @@ type WorkspaceMenuRootProps = {
   variant: "sidebar" | "top-navigation";
 };
 
+type TWorkspaceMenuOpenStateProps = {
+  open: boolean;
+};
+
+// Tells the sidebar whether the workspace menu is open. It is an effect of the menu rendering, not a
+// state update made while the menu renders its children, which React reports as an error.
+const WorkspaceMenuOpenState = observer(function WorkspaceMenuOpenState(props: TWorkspaceMenuOpenStateProps) {
+  const { open } = props;
+  // store hooks
+  const { toggleAnySidebarDropdown } = useAppTheme();
+
+  useEffect(() => {
+    toggleAnySidebarDropdown(open);
+  }, [open, toggleAnySidebarDropdown]);
+
+  return null;
+});
+
 export const WorkspaceMenuRoot = observer(function WorkspaceMenuRoot(props: WorkspaceMenuRootProps) {
   const { variant } = props;
   // store hooks
-  const { toggleSidebar, toggleAnySidebarDropdown } = useAppTheme();
+  const { toggleSidebar } = useAppTheme();
   const { config } = useInstance();
   const { data: currentUser } = useUser();
   const { signOut } = useUser();
@@ -45,8 +63,6 @@ export const WorkspaceMenuRoot = observer(function WorkspaceMenuRoot(props: Work
   const isWorkspaceCreationDisabled = config?.is_workspace_creation_disabled ?? false;
   // translation
   const { t } = useTranslation();
-  // local state
-  const [isWorkspaceMenuOpen, setIsWorkspaceMenuOpen] = useState(false);
 
   const handleWorkspaceNavigation = (workspace: IWorkspace) => updateUserProfile({ last_workspace_id: workspace?.id });
 
@@ -68,11 +84,6 @@ export const WorkspaceMenuRoot = observer(function WorkspaceMenuRoot(props: Work
   const workspacesList = orderWorkspacesList(Object.values(workspaces ?? {}));
   // TODO: fix workspaces list scroll
 
-  // Toggle sidebar dropdown state when either menu is open
-  useEffect(() => {
-    toggleAnySidebarDropdown(isWorkspaceMenuOpen);
-  }, [isWorkspaceMenuOpen, toggleAnySidebarDropdown]);
-
   return (
     <Menu
       as="div"
@@ -82,13 +93,10 @@ export const WorkspaceMenuRoot = observer(function WorkspaceMenuRoot(props: Work
       })}
     >
       {({ open, close }: { open: boolean; close: () => void }) => {
-        // Update local state directly
-        if (isWorkspaceMenuOpen !== open) {
-          setIsWorkspaceMenuOpen(open);
-        }
-
         return (
           <>
+            {/* Toggle sidebar dropdown state when the menu is open */}
+            <WorkspaceMenuOpenState open={open} />
             {variant === "sidebar" && (
               <Menu.Button
                 className={cn("flex size-8 w-full items-center justify-center rounded-md", {
@@ -96,7 +104,7 @@ export const WorkspaceMenuRoot = observer(function WorkspaceMenuRoot(props: Work
                 })}
               >
                 <AppSidebarItem
-                  variant="button"
+                  variant="static"
                   item={{
                     icon: (
                       <WorkspaceLogo

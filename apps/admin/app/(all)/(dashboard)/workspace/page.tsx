@@ -12,10 +12,10 @@ import { LoadingOutline as LoaderIcon } from "@makeplane/propel/icons";
 // types
 import { AnchorButton } from "@makeplane/propel/components/anchor-button";
 import { Button } from "@makeplane/propel/components/button";
-import { Switch } from "@makeplane/propel/components/switch";
 import type { TInstanceConfigurationKeys } from "@plane/types";
 import { cn } from "@plane/utils";
 // components
+import { InstanceConfigToggle } from "@/app/(all)/(dashboard)/instance-config-toggle";
 import { PageWrapper } from "@/components/common/page-wrapper";
 import { Skeleton } from "@/components/common/skeleton";
 import { WorkspaceListItem } from "@/components/workspace/list-item";
@@ -85,32 +85,19 @@ const WorkspaceManagementPage = observer(function WorkspaceManagementPage(_props
     >
       <div className="space-y-3">
         {formattedConfig ? (
-          <div className={cn("flex w-full items-center gap-14 rounded-sm")}>
-            <div className="flex grow items-center gap-4">
-              <div className="grow">
-                <div className="pb-1 text-16 font-medium">Prevent anyone else from creating a workspace.</div>
-                <div className={cn("text-11 leading-5 font-regular text-tertiary")}>
-                  Toggling this on will let only you create workspaces. You will have to invite users to new workspaces.
-                </div>
-              </div>
-            </div>
-            <div className={`shrink-0 pr-4 ${isSubmitting && "opacity-70"}`}>
-              <div className="flex items-center gap-4">
-                <Switch
-                  checked={Boolean(parseInt(disableWorkspaceCreation))}
-                  onCheckedChange={() => {
-                    if (Boolean(parseInt(disableWorkspaceCreation)) === true) {
-                      updateConfig("DISABLE_WORKSPACE_CREATION", "0");
-                    } else {
-                      updateConfig("DISABLE_WORKSPACE_CREATION", "1");
-                    }
-                  }}
-                  size="sm"
-                  disabled={isSubmitting}
-                />
-              </div>
-            </div>
-          </div>
+          <InstanceConfigToggle
+            title="Prevent anyone else from creating a workspace."
+            description="Toggling this on will let only you create workspaces. You will have to invite users to new workspaces."
+            checked={Boolean(parseInt(disableWorkspaceCreation))}
+            onCheckedChange={() => {
+              if (Boolean(parseInt(disableWorkspaceCreation)) === true) {
+                updateConfig("DISABLE_WORKSPACE_CREATION", "0");
+              } else {
+                updateConfig("DISABLE_WORKSPACE_CREATION", "1");
+              }
+            }}
+            isSubmitting={isSubmitting}
+          />
         ) : (
           <Skeleton>
             <Skeleton.Item height="50px" width="100%" />

@@ -75,9 +75,17 @@ export const usePowerKWorkItemContextBasedCommands = (): TPowerKCommandConfig[] 
   // translation
   const { t } = useTranslation();
   // handlers
-  const updateEntity = isEpic ? updateEpic : updateIssue;
-  const createEntitySubscription = isEpic ? createEpicSubscription : createSubscription;
-  const removeEntitySubscription = isEpic ? removeEpicSubscription : removeSubscription;
+  const { updateEntity, createEntitySubscription, removeEntitySubscription } = isEpic
+    ? {
+        updateEntity: updateEpic,
+        createEntitySubscription: createEpicSubscription,
+        removeEntitySubscription: removeEpicSubscription,
+      }
+    : {
+        updateEntity: updateIssue,
+        createEntitySubscription: createSubscription,
+        removeEntitySubscription: removeSubscription,
+      };
   // permission
   const isEditingAllowed =
     allowPermissions(

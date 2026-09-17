@@ -56,13 +56,74 @@ function MenuItem(props: TMenuItemProps) {
         className
       )}
       onClick={(e) => {
-        close();
         onClick?.(e);
         submenuContext?.closeSubmenu();
       }}
     >
       {children}
     </BaseMenu.Item>
+  );
+}
+
+type TMenuDefaultTriggerProps = {
+  ariaLabel?: string;
+  buttonClassName: string;
+  disabled: boolean;
+  ellipsis: boolean;
+  isOpen: boolean;
+  label?: TMenuProps["label"];
+  noBorder: boolean;
+  noChevron: boolean;
+  onClick: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+  tabIndex: number;
+  verticalEllipsis: boolean;
+};
+
+// Trigger used when no custom button is passed: an ellipsis icon or a labelled button
+function MenuDefaultTrigger(props: TMenuDefaultTriggerProps) {
+  const {
+    ariaLabel,
+    buttonClassName,
+    disabled,
+    ellipsis,
+    isOpen,
+    label,
+    noBorder,
+    noChevron,
+    onClick,
+    tabIndex,
+    verticalEllipsis,
+  } = props;
+
+  return ellipsis || verticalEllipsis ? (
+    <BaseMenu.Trigger
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      className={`relative grid place-items-center rounded-sm p-1 text-secondary outline-none hover:text-primary ${
+        disabled ? "cursor-not-allowed" : "cursor-pointer hover:bg-layer-1"
+      } ${buttonClassName}`}
+      tabIndex={tabIndex}
+      aria-label={ariaLabel}
+    >
+      <MoreHorizontalOutline className={`h-3.5 w-3.5 ${verticalEllipsis ? "rotate-90" : ""}`} />
+    </BaseMenu.Trigger>
+  ) : (
+    <BaseMenu.Trigger
+      type="button"
+      className={`flex items-center justify-between gap-1 rounded-md px-2.5 py-1 text-11 whitespace-nowrap duration-300 outline-none ${
+        isOpen ? "bg-surface-2 text-primary" : "text-secondary"
+      } ${noBorder ? "" : "shadow-sm border border-strong focus:outline-none"} ${
+        disabled ? "cursor-not-allowed text-secondary" : "cursor-pointer hover:bg-layer-1"
+      } ${buttonClassName}`}
+      onClick={onClick}
+      tabIndex={tabIndex}
+      disabled={disabled}
+      aria-label={ariaLabel}
+    >
+      {label}
+      {!noChevron && <ChevronDownOutline className="h-3.5 w-3.5" />}
+    </BaseMenu.Trigger>
   );
 }
 
@@ -104,6 +165,10 @@ function Menu(props: TMenuProps) {
       submenuClosersRef.current.delete(closeSubmenu);
     };
   }, []);
+  const menuContextValue = React.useMemo(
+    () => ({ closeAllSubmenus, registerSubmenu }),
+    [closeAllSubmenus, registerSubmenu]
+  );
   const openDropdown = () => {
     setIsOpen(true);
   };
@@ -141,38 +206,19 @@ function Menu(props: TMenuProps) {
           {customButton}
         </BaseMenu.Trigger>
       ) : (
-        <>
-          {ellipsis || verticalEllipsis ? (
-            <BaseMenu.Trigger
-              type="button"
-              onClick={handleMenuButtonClick}
-              disabled={disabled}
-              className={`relative grid place-items-center rounded-sm p-1 text-secondary outline-none hover:text-primary ${
-                disabled ? "cursor-not-allowed" : "cursor-pointer hover:bg-layer-1"
-              } ${buttonClassName}`}
-              tabIndex={customButtonTabIndex}
-              aria-label={ariaLabel}
-            >
-              <MoreHorizontalOutline className={`h-3.5 w-3.5 ${verticalEllipsis ? "rotate-90" : ""}`} />
-            </BaseMenu.Trigger>
-          ) : (
-            <BaseMenu.Trigger
-              type="button"
-              className={`flex items-center justify-between gap-1 rounded-md px-2.5 py-1 text-11 whitespace-nowrap duration-300 outline-none ${
-                isOpen ? "bg-surface-2 text-primary" : "text-secondary"
-              } ${noBorder ? "" : "shadow-sm border border-strong focus:outline-none"} ${
-                disabled ? "cursor-not-allowed text-secondary" : "cursor-pointer hover:bg-layer-1"
-              } ${buttonClassName}`}
-              onClick={handleMenuButtonClick}
-              tabIndex={customButtonTabIndex}
-              disabled={disabled}
-              aria-label={ariaLabel}
-            >
-              {label}
-              {!noChevron && <ChevronDownOutline className="h-3.5 w-3.5" />}
-            </BaseMenu.Trigger>
-          )}
-        </>
+        <MenuDefaultTrigger
+          ariaLabel={ariaLabel}
+          buttonClassName={buttonClassName}
+          disabled={disabled}
+          ellipsis={ellipsis}
+          isOpen={isOpen}
+          label={label}
+          noBorder={noBorder}
+          noChevron={noChevron}
+          onClick={handleMenuButtonClick}
+          tabIndex={customButtonTabIndex}
+          verticalEllipsis={verticalEllipsis}
+        />
       )}
       <BaseMenu.Portal>
         <BaseMenu.Positioner
@@ -196,7 +242,7 @@ function Menu(props: TMenuProps) {
             )}
             data-main-menu="true"
           >
-            <MenuContext.Provider value={{ closeAllSubmenus, registerSubmenu }}>{children}</MenuContext.Provider>
+            <MenuContext.Provider value={menuContextValue}>{children}</MenuContext.Provider>
           </BaseMenu.Popup>
         </BaseMenu.Positioner>
       </BaseMenu.Portal>

@@ -41,6 +41,31 @@ export type TCommentCardDisplayProps = {
   renderQuickActions?: () => ReactNode;
 };
 
+const useCommentActorDetails = (comment: TIssueComment) => {
+  // store hooks
+  const { getUserDetails } = useMember();
+  // derived values
+  const userDetails = getUserDetails(comment?.actor);
+  const displayName = comment?.actor_detail?.is_bot
+    ? comment?.actor_detail?.first_name + `Bot`
+    : (userDetails?.display_name ?? comment?.actor_detail?.display_name);
+  const avatarUrl = userDetails?.avatar_url ?? comment?.actor_detail?.avatar_url;
+
+  return { displayName, avatarUrl };
+};
+
+function CommentAccessSpecifierIndicator({ access }: { access: EIssueCommentAccessSpecifier }) {
+  return (
+    <div className="absolute top-2.5 right-2.5 z-[1] text-tertiary">
+      {access === EIssueCommentAccessSpecifier.INTERNAL ? (
+        <LockOutline className="size-3" />
+      ) : (
+        <GlobeOutline className="size-3" />
+      )}
+    </div>
+  );
+}
+
 export const CommentCardDisplay = observer(function CommentCardDisplay(props: TCommentCardDisplayProps) {
   const {
     activityOperations,
@@ -61,13 +86,7 @@ export const CommentCardDisplay = observer(function CommentCardDisplay(props: TC
   // state
   const [isPickerOpen, setIsPickerOpen] = useState(false);
   // store hooks
-  const { getUserDetails } = useMember();
-  // derived values
-  const userDetails = getUserDetails(comment?.actor);
-  const displayName = comment?.actor_detail?.is_bot
-    ? comment?.actor_detail?.first_name + `Bot`
-    : (userDetails?.display_name ?? comment?.actor_detail?.display_name);
-  const avatarUrl = userDetails?.avatar_url ?? comment?.actor_detail?.avatar_url;
+  const { displayName, avatarUrl } = useCommentActorDetails(comment);
 
   const userReactions = activityOperations.userReactions(comment.id);
 
@@ -108,15 +127,7 @@ export const CommentCardDisplay = observer(function CommentCardDisplay(props: TC
 
   return (
     <div id={commentBlockId} className="relative flex flex-col gap-2">
-      {showAccessSpecifier && (
-        <div className="absolute top-2.5 right-2.5 z-[1] text-tertiary">
-          {comment.access === EIssueCommentAccessSpecifier.INTERNAL ? (
-            <LockOutline className="size-3" />
-          ) : (
-            <GlobeOutline className="size-3" />
-          )}
-        </div>
-      )}
+      {showAccessSpecifier && <CommentAccessSpecifierIndicator access={comment.access} />}
       <div className="relative mb-3 flex w-full items-center gap-2">
         <Avatar alt={displayName} fallback={displayName?.[0]?.toUpperCase()} size="2xs" src={getFileURL(avatarUrl)} />
         <div className="flex flex-1 flex-wrap items-center gap-1">

@@ -5,17 +5,9 @@
  */
 
 import React, { useEffect, useRef, useState } from "react";
-import {
-  AiStar1Outline,
-  ChevronRightOutline,
-  CornerRightDownOutline,
-  RefreshOutline,
-  WarningTriangleOutline,
-} from "@makeplane/propel/icons";
+import { AiStar1Outline, ChevronRightOutline, WarningTriangleOutline } from "@makeplane/propel/icons";
 // plane editor
 import type { EditorRefApi } from "@plane/editor";
-// plane ui
-import { Tooltip } from "@makeplane/propel/components/tooltip";
 // components
 import { cn } from "@plane/utils";
 import { RichTextEditor } from "@/components/editor/rich-text";
@@ -25,6 +17,7 @@ import { AI_EDITOR_TASKS, LOADING_TEXTS } from "@plane/constants";
 import type { TTaskPayload } from "@/services/ai.service";
 import { AIService } from "@/services/ai.service";
 import { AskPiMenu } from "./ask-pi-menu";
+import { EditorAIResponseActions } from "./response-actions";
 const aiService = new AIService();
 
 type Props = {
@@ -230,42 +223,11 @@ export function EditorAIMenu(props: Props) {
                       workspaceId={workspaceId}
                       workspaceSlug={workspaceSlug}
                     />
-                    <div className="mt-3 flex items-center gap-4">
-                      <button
-                        type="button"
-                        className="rounded-sm p-1 text-13 font-medium text-tertiary outline-none hover:bg-layer-1"
-                        onClick={() => handleInsertText(false)}
-                      >
-                        Replace selection
-                      </button>
-                      <Tooltip label="Add to next line">
-                        <button
-                          type="button"
-                          className="grid size-6 flex-shrink-0 place-items-center rounded-sm outline-none hover:bg-layer-1"
-                          onClick={() => handleInsertText(true)}
-                        >
-                          <CornerRightDownOutline className="size-4 text-tertiary" />
-                        </button>
-                      </Tooltip>
-                      <Tooltip label="Re-generate response">
-                        <button
-                          type="button"
-                          className="grid size-6 flex-shrink-0 place-items-center rounded-sm outline-none hover:bg-layer-1"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            handleRegenerate();
-                          }}
-                          disabled={isRegenerating}
-                        >
-                          <RefreshOutline
-                            className={cn("size-4 text-tertiary", {
-                              "animate-spin": isRegenerating,
-                            })}
-                          />
-                        </button>
-                      </Tooltip>
-                    </div>
+                    <EditorAIResponseActions
+                      handleInsertText={handleInsertText}
+                      handleRegenerate={handleRegenerate}
+                      isRegenerating={isRegenerating}
+                    />
                   </div>
                 ) : (
                   <p className="text-13 text-secondary">

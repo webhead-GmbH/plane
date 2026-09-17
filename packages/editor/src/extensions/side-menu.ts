@@ -31,7 +31,7 @@ export type SideMenuPluginProps = {
 };
 
 export type SideMenuHandleOptions = {
-  view: (view: EditorView, sideMenu: HTMLDivElement | null) => void;
+  view: (view: EditorView, sideMenu: HTMLDivElement | null) => { destroy: () => void };
   domEvents?: {
     [key: string]: (...args: any) => void;
   };
@@ -86,16 +86,21 @@ const SideMenu = (options: SideMenuPluginProps) => {
       hideSideMenu();
       view?.dom.parentElement?.appendChild(editorSideMenu);
       // side menu elements' initialization
+      const handleViews: ReturnType<SideMenuHandleOptions["view"]>[] = [];
       if (handlesConfig.ai && !editorSideMenu.querySelector("#ai-handle")) {
-        aiHandleView(view, editorSideMenu);
+        handleViews.push(aiHandleView(view, editorSideMenu));
       }
 
       if (handlesConfig.dragDrop && !editorSideMenu.querySelector("#drag-handle")) {
-        dragHandleView(view, editorSideMenu);
+        handleViews.push(dragHandleView(view, editorSideMenu));
       }
 
       return {
-        destroy: () => hideSideMenu(),
+        destroy: () => {
+          hideSideMenu();
+          // remove the handles and the window/document listeners they registered
+          for (const handleView of handleViews) handleView.destroy();
+        },
       };
     },
     props: {

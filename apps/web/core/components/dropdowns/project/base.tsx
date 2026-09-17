@@ -181,6 +181,9 @@ export const ProjectDropdownBase = observer(function ProjectDropdownBase(props: 
       className={cn("clickable block h-full w-full outline-none", buttonContainerClassName)}
       onClick={handleOnClick}
       disabled={disabled}
+      tabIndex={tabIndex}
+      aria-haspopup="listbox"
+      aria-expanded={isOpen}
     >
       {button}
     </button>
@@ -198,6 +201,9 @@ export const ProjectDropdownBase = observer(function ProjectDropdownBase(props: 
       )}
       onClick={handleOnClick}
       disabled={disabled}
+      tabIndex={tabIndex}
+      aria-haspopup="listbox"
+      aria-expanded={isOpen}
     >
       <DropdownButton
         className={buttonClassName}
@@ -223,7 +229,6 @@ export const ProjectDropdownBase = observer(function ProjectDropdownBase(props: 
     <ComboDropDown
       as="div"
       ref={dropdownRef}
-      tabIndex={tabIndex}
       className={cn("h-full", className)}
       value={value}
       onChange={dropdownOnChange}

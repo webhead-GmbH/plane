@@ -14,6 +14,24 @@ const MIN_ZOOM = 0.5;
 const MAX_ZOOM = 2;
 const ZOOM_SPEED = 0.05;
 const ZOOM_STEPS = [0.5, 1, 1.5, 2];
+// an arrow key moves the image as far as dragging it this many pixels does
+const PAN_STEP = 50;
+const PAN_KEY_DIRECTIONS: Partial<Record<string, { x: number; y: number }>> = {
+  ArrowUp: { x: 0, y: -1 },
+  ArrowDown: { x: 0, y: 1 },
+  ArrowLeft: { x: -1, y: 0 },
+  ArrowRight: { x: 1, y: 0 },
+};
+
+// the image can only be moved around while its zoomed size overflows the viewport
+const canPanImage = (imageFrame: HTMLElement, magnification: number) => {
+  const imgWidth = imageFrame.offsetWidth * magnification;
+  const imgHeight = imageFrame.offsetHeight * magnification;
+  const viewportWidth = window.innerWidth;
+  const viewportHeight = window.innerHeight;
+
+  return imgWidth > viewportWidth || imgHeight > viewportHeight;
+};
 
 type Props = {
   aspectRatio: number;
@@ -35,18 +53,26 @@ function ImageFullScreenModalWithoutPortal(props: Props) {
   const [initialMagnification, setInitialMagnification] = useState(1);
   const [isDragging, setIsDragging] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
-  const imgRef = useRef<HTMLImageElement | null>(null);
+  // the button that holds the image: it is what gets zoomed and moved around
+  const imageFrameRef = useRef<HTMLButtonElement | null>(null);
+  // latest requested zoom, so zoom actions fired before the next render build on each other
+  const magnificationRef = useRef(1);
 
   const widthInNumber = useMemo(() => {
     if (!width) return 0;
     return Number(width.replace("px", ""));
   }, [width]);
 
-  const setImageRef = useCallback(
-    (node: HTMLImageElement | null) => {
+  const updateMagnification = useCallback((value: number) => {
+    magnificationRef.current = value;
+    setMagnification(value);
+  }, []);
+
+  const setImageFrameRef = useCallback(
+    (node: HTMLButtonElement | null) => {
       if (!node || !isFullScreenEnabled) return;
 
-      imgRef.current = node;
+      imageFrameRef.current = node;
 
       const viewportWidth = window.innerWidth * 0.9;
       const viewportHeight = window.innerHeight * 0.75;
@@ -57,24 +83,25 @@ function ImageFullScreenModalWithoutPortal(props: Props) {
       const heightRatio = viewportHeight / imageHeight;
 
       setInitialMagnification(Math.min(widthRatio, heightRatio));
-      setMagnification(1);
+      updateMagnification(1);
 
       // Reset image position
       node.style.left = "0px";
       node.style.top = "0px";
     },
-    [isFullScreenEnabled, widthInNumber, aspectRatio]
+    [isFullScreenEnabled, widthInNumber, aspectRatio, updateMagnification]
   );
 
   const handleClose = useCallback(() => {
     if (isDragging) return;
     toggleFullScreenMode(false);
-    setMagnification(1);
+    updateMagnification(1);
     setInitialMagnification(1);
-  }, [isDragging, toggleFullScreenMode]);
+  }, [isDragging, toggleFullScreenMode, updateMagnification]);
 
-  const handleMagnification = useCallback((direction: "increase" | "decrease") => {
-    setMagnification((prev) => {
+  const handleMagnification = useCallback(
+    (direction: "increase" | "decrease") => {
+      const prev = magnificationRef.current;
       // Find the appropriate target zoom level based on current magnification
       let targetZoom: number;
       if (direction === "increase") {
@@ -85,14 +112,15 @@ function ImageFullScreenModalWithoutPortal(props: Props) {
       }
 
       // Reset position when zoom matches initial magnification
-      if (targetZoom === 1 && imgRef.current) {
-        imgRef.current.style.left = "0px";
-        imgRef.current.style.top = "0px";
+      if (targetZoom === 1 && imageFrameRef.current) {
+        imageFrameRef.current.style.left = "0px";
+        imageFrameRef.current.style.top = "0px";
       }
 
-      return targetZoom;
-    });
-  }, []);
+      updateMagnification(targetZoom);
+    },
+    [updateMagnification]
+  );
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
@@ -109,28 +137,36 @@ function ImageFullScreenModalWithoutPortal(props: Props) {
   );
 
   const handleMouseDown = (e: React.MouseEvent) => {
-    if (!imgRef.current) return;
+    if (!imageFrameRef.current) return;
 
-    const imgWidth = imgRef.current.offsetWidth * magnification;
-    const imgHeight = imgRef.current.offsetHeight * magnification;
-    const viewportWidth = window.innerWidth;
-    const viewportHeight = window.innerHeight;
-
-    if (imgWidth > viewportWidth || imgHeight > viewportHeight) {
+    if (canPanImage(imageFrameRef.current, magnification)) {
       e.preventDefault();
       e.stopPropagation();
       setIsDragging(true);
       dragStart.current = { x: e.clientX, y: e.clientY };
       dragOffset.current = {
-        x: parseInt(imgRef.current.style.left || "0"),
-        y: parseInt(imgRef.current.style.top || "0"),
+        x: parseInt(imageFrameRef.current.style.left || "0"),
+        y: parseInt(imageFrameRef.current.style.top || "0"),
       };
     }
   };
 
+  // arrow keys move the image the way dragging it does
+  const handlePanKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>) => {
+    const direction = PAN_KEY_DIRECTIONS[e.key];
+    const imageFrame = e.currentTarget;
+    if (!direction || e.altKey || e.ctrlKey || e.metaKey || !canPanImage(imageFrame, magnification)) return;
+
+    e.preventDefault();
+    e.stopPropagation();
+    // Apply the scale factor to the movement, as dragging does
+    imageFrame.style.left = `${parseFloat(imageFrame.style.left || "0") + (direction.x * PAN_STEP) / magnification}px`;
+    imageFrame.style.top = `${parseFloat(imageFrame.style.top || "0") + (direction.y * PAN_STEP) / magnification}px`;
+  };
+
   const handleMouseMove = useCallback(
     (e: MouseEvent) => {
-      if (!isDragging || !imgRef.current) return;
+      if (!isDragging || !imageFrameRef.current) return;
 
       const dx = e.clientX - dragStart.current.x;
       const dy = e.clientY - dragStart.current.y;
@@ -139,42 +175,40 @@ function ImageFullScreenModalWithoutPortal(props: Props) {
       const scaledDx = dx / magnification;
       const scaledDy = dy / magnification;
 
-      imgRef.current.style.left = `${dragOffset.current.x + scaledDx}px`;
-      imgRef.current.style.top = `${dragOffset.current.y + scaledDy}px`;
+      imageFrameRef.current.style.left = `${dragOffset.current.x + scaledDx}px`;
+      imageFrameRef.current.style.top = `${dragOffset.current.y + scaledDy}px`;
     },
     [isDragging, magnification]
   );
 
   const handleMouseUp = useCallback(() => {
-    if (!isDragging || !imgRef.current) return;
+    if (!isDragging || !imageFrameRef.current) return;
     setIsDragging(false);
   }, [isDragging]);
 
   const handleWheel = useCallback(
     (e: WheelEvent) => {
-      if (!imgRef.current || !isFullScreenEnabled) return;
+      if (!imageFrameRef.current || !isFullScreenEnabled) return;
 
       e.preventDefault();
 
       // Handle pinch-to-zoom
       if (e.ctrlKey || e.metaKey) {
         const delta = e.deltaY;
-        setMagnification((prev) => {
-          const newZoom = prev * (1 - delta * ZOOM_SPEED);
-          const clampedZoom = Math.min(Math.max(newZoom, MIN_ZOOM), MAX_ZOOM);
+        const newZoom = magnificationRef.current * (1 - delta * ZOOM_SPEED);
+        const clampedZoom = Math.min(Math.max(newZoom, MIN_ZOOM), MAX_ZOOM);
 
-          // Reset position when zoom matches initial magnification
-          if (clampedZoom === 1 && imgRef.current) {
-            imgRef.current.style.left = "0px";
-            imgRef.current.style.top = "0px";
-          }
+        // Reset position when zoom matches initial magnification
+        if (clampedZoom === 1 && imageFrameRef.current) {
+          imageFrameRef.current.style.left = "0px";
+          imageFrameRef.current.style.top = "0px";
+        }
 
-          return clampedZoom;
-        });
+        updateMagnification(clampedZoom);
         return;
       }
     },
-    [isFullScreenEnabled]
+    [isFullScreenEnabled, updateMagnification]
   );
 
   // Event listeners
@@ -220,22 +254,34 @@ function ImageFullScreenModalWithoutPortal(props: Props) {
         >
           <CloseOutline className="size-8 text-white/60 transition-colors hover:text-white" />
         </button>
-        <img
-          ref={setImageRef}
-          src={src}
-          className="read-only-image rounded-lg"
+        <button
+          ref={setImageFrameRef}
+          type="button"
+          onMouseDown={handleMouseDown}
+          onKeyDown={handlePanKeyDown}
+          className="cursor-[inherit] rounded-lg"
           style={{
-            width: `${widthInNumber * initialMagnification}px`,
-            maxWidth: "none",
-            maxHeight: "none",
-            aspectRatio,
             position: "relative",
             transform: `scale(${magnification})`,
             transformOrigin: "center",
-            transition: "width 0.2s ease, transform 0.2s ease",
+            transition: "transform 0.2s ease",
           }}
-          onMouseDown={handleMouseDown}
-        />
+          aria-label="Pan image"
+          aria-keyshortcuts="ArrowUp ArrowDown ArrowLeft ArrowRight"
+        >
+          <img
+            src={src}
+            alt=""
+            className="read-only-image block rounded-lg"
+            style={{
+              width: `${widthInNumber * initialMagnification}px`,
+              maxWidth: "none",
+              maxHeight: "none",
+              aspectRatio,
+              transition: "width 0.2s ease",
+            }}
+          />
+        </button>
         <div className="fixed bottom-10 left-1/2 flex -translate-x-1/2 items-center justify-center gap-1 divide-x divide-subtle-1 rounded-md border border-subtle-1 bg-black py-2">
           <div className="flex items-center">
             <button

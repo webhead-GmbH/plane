@@ -45,6 +45,87 @@ export interface ILabelDropdownProps {
   label: React.ReactNode;
 }
 
+type TLabelDropdownOption = {
+  value: string;
+  query: string;
+  content: React.ReactNode;
+};
+
+type TLabelDropdownOptionsContentProps = {
+  isLoading: boolean;
+  filteredOptions: TLabelDropdownOption[] | undefined;
+  submitting: boolean;
+  canCreateLabel: boolean;
+  query: string;
+  handleAddLabel: (labelName: string) => Promise<void>;
+};
+
+function LabelDropdownOptionsContent(props: TLabelDropdownOptionsContentProps) {
+  const { isLoading, filteredOptions, submitting, canCreateLabel, query, handleAddLabel } = props;
+  const { t } = useTranslation();
+
+  if (isLoading) return <p className="text-center text-secondary">{t("common.loading")}</p>;
+
+  if (filteredOptions && filteredOptions.length > 0)
+    return (
+      <ul className="space-y-1">
+        {filteredOptions.map((option) => (
+          <Combobox.Option
+            as="li"
+            key={option.value}
+            value={option.value}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                e.stopPropagation();
+              }
+            }}
+            className={({ active, selected }) =>
+              `flex cursor-pointer items-center justify-between gap-2 truncate rounded-sm px-1 py-1.5 select-none hover:bg-layer-1 ${
+                active ? "bg-layer-1" : ""
+              } ${selected ? "text-primary" : "text-secondary"}`
+            }
+          >
+            {({ selected }) => (
+              <>
+                {option.content}
+                {selected && (
+                  <div className="flex-shrink-0">
+                    <TickOutline className={`h-3.5 w-3.5`} />
+                  </div>
+                )}
+              </>
+            )}
+          </Combobox.Option>
+        ))}
+      </ul>
+    );
+
+  if (submitting) return <LoadingOutline className="h-3.5 w-3.5 animate-spin" />;
+
+  if (canCreateLabel)
+    return (
+      <p
+        onClick={() => {
+          if (!query.length) return;
+          handleAddLabel(query);
+        }}
+        className={`text-left text-secondary ${query.length ? "cursor-pointer" : "cursor-default"}`}
+      >
+        {/* TODO: translate here */}
+        {query.length ? (
+          <>
+            + Add <span className="text-primary">&quot;{query}&quot;</span> to labels
+          </>
+        ) : (
+          t("label.create.type")
+        )}
+      </p>
+    );
+
+  return <p className="text-left text-secondary">{t("common.search.no_matching_results")}</p>;
+}
+
 export function LabelDropdown(props: ILabelDropdownProps) {
   const {
     projectId,
@@ -213,6 +294,8 @@ export function LabelDropdown(props: ILabelDropdownProps) {
         } ${buttonClassName}`}
         onClick={handleOnClick}
         disabled={disabled}
+        aria-haspopup="listbox"
+        aria-expanded={isOpen}
       >
         {label}
         {!hideDropdownArrow && !disabled && <ChevronDownOutline className="h-3 w-3" aria-hidden="true" />}
@@ -224,6 +307,7 @@ export function LabelDropdown(props: ILabelDropdownProps) {
       fullWidth,
       handleOnClick,
       hideDropdownArrow,
+      isOpen,
       label,
       maxRender,
       value.length,
@@ -271,62 +355,14 @@ export function LabelDropdown(props: ILabelDropdownProps) {
                 />
               </div>
               <div className={`mt-2 max-h-48 overflow-y-scroll`}>
-                {isLoading ? (
-                  <p className="text-center text-secondary">{t("common.loading")}</p>
-                ) : filteredOptions && filteredOptions.length > 0 ? (
-                  <ul className="space-y-1">
-                    {filteredOptions.map((option) => (
-                      <Combobox.Option
-                        as="li"
-                        key={option.value}
-                        value={option.value}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter") {
-                            e.preventDefault();
-                            e.stopPropagation();
-                          }
-                        }}
-                        className={({ active, selected }) =>
-                          `flex cursor-pointer items-center justify-between gap-2 truncate rounded-sm px-1 py-1.5 select-none hover:bg-layer-1 ${
-                            active ? "bg-layer-1" : ""
-                          } ${selected ? "text-primary" : "text-secondary"}`
-                        }
-                      >
-                        {({ selected }) => (
-                          <>
-                            {option.content}
-                            {selected && (
-                              <div className="flex-shrink-0">
-                                <TickOutline className={`h-3.5 w-3.5`} />
-                              </div>
-                            )}
-                          </>
-                        )}
-                      </Combobox.Option>
-                    ))}
-                  </ul>
-                ) : submitting ? (
-                  <LoadingOutline className="h-3.5 w-3.5 animate-spin" />
-                ) : canCreateLabel ? (
-                  <p
-                    onClick={() => {
-                      if (!query.length) return;
-                      handleAddLabel(query);
-                    }}
-                    className={`text-left text-secondary ${query.length ? "cursor-pointer" : "cursor-default"}`}
-                  >
-                    {/* TODO: translate here */}
-                    {query.length ? (
-                      <>
-                        + Add <span className="text-primary">&quot;{query}&quot;</span> to labels
-                      </>
-                    ) : (
-                      t("label.create.type")
-                    )}
-                  </p>
-                ) : (
-                  <p className="text-left text-secondary">{t("common.search.no_matching_results")}</p>
-                )}
+                <LabelDropdownOptionsContent
+                  isLoading={isLoading}
+                  filteredOptions={filteredOptions}
+                  submitting={submitting}
+                  canCreateLabel={!!canCreateLabel}
+                  query={query}
+                  handleAddLabel={handleAddLabel}
+                />
               </div>
             </div>
           </Combobox.Options>

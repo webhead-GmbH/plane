@@ -10,19 +10,19 @@ import { observer } from "mobx-react";
 import { Controller, useForm } from "react-hook-form";
 import { Field } from "@makeplane/propel/components/field";
 import { Input, InputGroup } from "@makeplane/propel/components/input";
-import { ORGANIZATION_SIZE, RESTRICTED_URLS } from "@plane/constants";
+import { RESTRICTED_URLS } from "@plane/constants";
 import { useTranslation } from "@plane/i18n";
 import { Button } from "@plane/propel/button";
 import { TOAST_TYPE, setToast } from "@plane/propel/toast";
 import type { IWorkspace } from "@plane/types";
-// ui
-import { CustomSelect } from "@plane/ui";
 import { validateWorkspaceName, validateSlug } from "@plane/utils";
 // hooks
 import { useWorkspace } from "@/hooks/store/use-workspace";
 import { useAppRouter } from "@/hooks/use-app-router";
 // services
 import { WorkspaceService } from "@/services/workspace.service";
+// local imports
+import { WorkspaceOrganizationSizeSelect } from "./organization-size-select";
 
 type Props = {
   onSubmit?: (res: IWorkspace) => Promise<void>;
@@ -212,37 +212,7 @@ export const CreateWorkspaceForm = observer(function CreateWorkspaceForm(props: 
             {t("workspace_creation.form.organization_size.label")}
             <span className="ml-0.5 text-danger-primary">*</span>
           </span>
-          <div className="w-full">
-            <Controller
-              name="organization_size"
-              control={control}
-              rules={{ required: t("common.errors.required") }}
-              render={({ field: { value, onChange } }) => (
-                <CustomSelect
-                  value={value}
-                  onChange={onChange}
-                  label={
-                    ORGANIZATION_SIZE.find((c) => c === value) ?? (
-                      <span className="text-placeholder">
-                        {t("workspace_creation.form.organization_size.placeholder")}
-                      </span>
-                    )
-                  }
-                  buttonClassName="border border-subtle bg-layer-2 !shadow-none !rounded-md"
-                  input
-                >
-                  {ORGANIZATION_SIZE.map((item) => (
-                    <CustomSelect.Option key={item} value={item}>
-                      {item}
-                    </CustomSelect.Option>
-                  ))}
-                </CustomSelect>
-              )}
-            />
-            {errors.organization_size && (
-              <span className="text-13 text-danger-primary">{errors.organization_size.message}</span>
-            )}
-          </div>
+          <WorkspaceOrganizationSizeSelect control={control} error={errors.organization_size} />
         </div>
       </div>
       <div className="flex items-center gap-4">

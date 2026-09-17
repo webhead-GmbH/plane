@@ -6,7 +6,7 @@
 
 import React from "react";
 // helpers
-import { Button } from "@plane/propel/button";
+import { getButtonStyling } from "@plane/propel/button";
 import { Tooltip } from "@makeplane/propel/components/tooltip";
 import { cn } from "@plane/utils";
 // types
@@ -24,6 +24,14 @@ export type DropdownButtonProps = {
   variant: TButtonVariants;
   renderToolTipByDefault?: boolean;
 };
+
+// DropdownButton is the content of a dropdown's trigger <button>, so it renders a span styled as the small ghost
+// button rather than a nested <button>, which is invalid HTML and a second Tab stop. The span keeps the centred text
+// a <button> gets from the browser, and shows the ghost focus background while its trigger button has focus.
+const DROPDOWN_BUTTON_BASE_CLASS_NAME = cn(
+  getButtonStyling("ghost", "sm"),
+  "text-center [:focus>&]:bg-layer-transparent-active"
+);
 
 type ButtonProps = {
   children: React.ReactNode;
@@ -76,10 +84,9 @@ function BorderButton(props: ButtonProps) {
       layout="stacked"
       disabled={!showTooltip || isMobile}
     >
-      <Button
-        variant="ghost"
-        size="sm"
+      <span
         className={cn(
+          DROPDOWN_BUTTON_BASE_CLASS_NAME,
           "flex h-full w-full items-center justify-start gap-1.5 border-[0.5px] border-strong",
           {
             "bg-layer-transparent-active": isActive,
@@ -88,7 +95,7 @@ function BorderButton(props: ButtonProps) {
         )}
       >
         {children}
-      </Button>
+      </span>
     </Tooltip>
   );
 }
@@ -102,16 +109,15 @@ function BackgroundButton(props: ButtonProps) {
       layout="stacked"
       disabled={!showTooltip || isMobile}
     >
-      <Button
-        variant="ghost"
-        size="sm"
+      <span
         className={cn(
+          DROPDOWN_BUTTON_BASE_CLASS_NAME,
           "flex h-full w-full items-center justify-between gap-1.5 bg-layer-3 hover:bg-layer-1-hover",
           className
         )}
       >
         {children}
-      </Button>
+      </span>
     </Tooltip>
   );
 }
@@ -125,10 +131,9 @@ function TransparentButton(props: ButtonProps) {
       layout="stacked"
       disabled={!showTooltip || isMobile}
     >
-      <Button
-        variant="ghost"
-        size="sm"
+      <span
         className={cn(
+          DROPDOWN_BUTTON_BASE_CLASS_NAME,
           "flex h-full w-full items-center justify-between gap-1.5",
           {
             "bg-layer-transparent-active": isActive,
@@ -137,7 +142,7 @@ function TransparentButton(props: ButtonProps) {
         )}
       >
         {children}
-      </Button>
+      </span>
     </Tooltip>
   );
 }

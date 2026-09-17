@@ -22,6 +22,7 @@ import { useIssueDetail } from "@/hooks/store/use-issue-detail";
 import { useIssues } from "@/hooks/store/use-issues";
 import { useUserPermissions } from "@/hooks/store/user";
 import { useAppRouter } from "@/hooks/use-app-router";
+import useSize from "@/hooks/use-window-size";
 // local components
 import { IssuePeekOverview } from "../peek-overview";
 import { IssueMainContent } from "./main-content";
@@ -81,6 +82,7 @@ export const IssueDetailRoot = observer(function IssueDetailRoot(props: TIssueDe
   } = useIssues(EIssuesStoreType.ARCHIVED);
   const { allowPermissions } = useUserPermissions();
   const { issueDetailSidebarCollapsed } = useAppTheme();
+  const [windowWidth] = useSize();
 
   const issueOperations: TIssueOperations = useMemo(
     () => ({
@@ -251,7 +253,7 @@ export const IssueDetailRoot = observer(function IssueDetailRoot(props: TIssueDe
           </div>
           <div
             className="fixed right-0 z-[5] h-full w-full min-w-[300px] border-l border-subtle bg-surface-1 sm:w-1/2 md:relative md:w-1/4 lg:min-w-80 xl:min-w-96"
-            style={issueDetailSidebarCollapsed ? { right: `-${window?.innerWidth || 0}px` } : {}}
+            style={issueDetailSidebarCollapsed ? { right: `-${windowWidth || 0}px` } : {}}
           >
             <IssueDetailsSidebar
               workspaceSlug={workspaceSlug}

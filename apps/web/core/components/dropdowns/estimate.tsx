@@ -14,6 +14,7 @@ import { Combobox } from "@headlessui/react";
 import { useTranslation } from "@plane/i18n";
 import { ChevronDownOutline, EstimateOutline, SearchOutline, TickOutline } from "@makeplane/propel/icons";
 import { EEstimateSystem } from "@plane/types";
+import type { IEstimatePoint, TEstimateSystemKeys } from "@plane/types";
 import { ComboDropDown } from "@plane/ui";
 import { convertMinutesToHoursMinutesString, cn } from "@plane/utils";
 // hooks
@@ -24,7 +25,7 @@ import { useDropdown } from "@/hooks/use-dropdown";
 import { DropdownButton } from "./buttons";
 import { BUTTON_VARIANTS_WITH_TEXT } from "./constants";
 // types
-import type { TDropdownProps } from "./types";
+import type { TButtonVariants, TDropdownProps } from "./types";
 
 type Props = TDropdownProps & {
   button?: ReactNode;
@@ -44,6 +45,103 @@ type DropdownOptions =
       content: React.ReactNode;
     }[]
   | undefined;
+
+type TEstimateButtonContentProps = {
+  buttonVariant: TButtonVariants;
+  dropdownArrow: boolean;
+  dropdownArrowClassName: string;
+  estimateType: TEstimateSystemKeys | undefined;
+  hideIcon: boolean;
+  placeholder: string;
+  selectedEstimate: IEstimatePoint | undefined;
+};
+
+const EstimateButtonContent = observer(function EstimateButtonContent(props: TEstimateButtonContentProps) {
+  const {
+    buttonVariant,
+    dropdownArrow,
+    dropdownArrowClassName,
+    estimateType,
+    hideIcon,
+    placeholder,
+    selectedEstimate,
+  } = props;
+
+  return (
+    <>
+      {!hideIcon && <EstimateOutline className="h-3 w-3 flex-shrink-0" />}
+      {(selectedEstimate || placeholder) && BUTTON_VARIANTS_WITH_TEXT.includes(buttonVariant) && (
+        <span className="truncate">
+          {selectedEstimate ? (
+            estimateType === EEstimateSystem.TIME ? (
+              convertMinutesToHoursMinutesString(Number(selectedEstimate.value))
+            ) : (
+              selectedEstimate.value
+            )
+          ) : (
+            <span className="text-placeholder">{placeholder}</span>
+          )}
+        </span>
+      )}
+      {dropdownArrow && (
+        <ChevronDownOutline className={cn("h-2.5 w-2.5 flex-shrink-0", dropdownArrowClassName)} aria-hidden="true" />
+      )}
+    </>
+  );
+});
+
+type TEstimateOptionsListProps = {
+  currentActiveEstimateId: string | undefined;
+  filteredOptions: DropdownOptions;
+};
+
+function EstimateOptionsList(props: TEstimateOptionsListProps) {
+  const { currentActiveEstimateId, filteredOptions } = props;
+  // i18n
+  const { t } = useTranslation();
+
+  if (currentActiveEstimateId === undefined)
+    return (
+      <div
+        className={`flex w-full cursor-pointer items-center justify-between gap-2 truncate rounded-sm px-1 py-1.5 text-secondary select-none`}
+      >
+        {/* NOTE: This condition renders when estimates are not enabled for the project */}
+        <div className="flex flex-grow items-center gap-2">
+          <EstimateOutline className="h-3 w-3 flex-shrink-0" />
+          <span className="flex-grow truncate">{t("project_settings.estimates.no_estimate")}</span>
+        </div>
+      </div>
+    );
+
+  if (!filteredOptions) return <p className="px-1.5 py-1 text-placeholder italic">{t("common.loading")}</p>;
+
+  if (filteredOptions.length === 0)
+    return <p className="px-1.5 py-1 text-placeholder italic">{t("common.search.no_matching_results")}</p>;
+
+  return (
+    <>
+      {filteredOptions.map((option) => (
+        <Combobox.Option as="li" key={option.value} value={option.value}>
+          {({ active, selected }) => (
+            <div
+              className={cn(
+                "flex w-full cursor-pointer items-center justify-between gap-2 truncate rounded-sm px-1 py-1.5 select-none",
+                {
+                  "bg-layer-transparent-hover": active,
+                  "text-primary": selected,
+                  "text-secondary": !selected,
+                }
+              )}
+            >
+              <span className="flex-grow truncate">{option.content}</span>
+              {selected && <TickOutline className="h-3.5 w-3.5 flex-shrink-0" />}
+            </div>
+          )}
+        </Combobox.Option>
+      ))}
+    </>
+  );
+}
 
 export const EstimateDropdown = observer(function EstimateDropdown(props: Props) {
   const {
@@ -166,6 +264,9 @@ export const EstimateDropdown = observer(function EstimateDropdown(props: Props)
       className={cn("clickable block h-full w-full outline-none", buttonContainerClassName)}
       onClick={handleOnClick}
       disabled={disabled}
+      tabIndex={tabIndex}
+      aria-haspopup="listbox"
+      aria-expanded={isOpen}
     >
       {button}
     </button>
@@ -183,6 +284,9 @@ export const EstimateDropdown = observer(function EstimateDropdown(props: Props)
       )}
       onClick={handleOnClick}
       disabled={disabled}
+      tabIndex={tabIndex}
+      aria-haspopup="listbox"
+      aria-expanded={isOpen}
     >
       <DropdownButton
         className={buttonClassName}
@@ -193,23 +297,15 @@ export const EstimateDropdown = observer(function EstimateDropdown(props: Props)
         variant={buttonVariant}
         renderToolTipByDefault={renderByDefault}
       >
-        {!hideIcon && <EstimateOutline className="h-3 w-3 flex-shrink-0" />}
-        {(selectedEstimate || placeholder) && BUTTON_VARIANTS_WITH_TEXT.includes(buttonVariant) && (
-          <span className="truncate">
-            {selectedEstimate ? (
-              currentActiveEstimate?.type === EEstimateSystem.TIME ? (
-                convertMinutesToHoursMinutesString(Number(selectedEstimate.value))
-              ) : (
-                selectedEstimate.value
-              )
-            ) : (
-              <span className="text-placeholder">{placeholder}</span>
-            )}
-          </span>
-        )}
-        {dropdownArrow && (
-          <ChevronDownOutline className={cn("h-2.5 w-2.5 flex-shrink-0", dropdownArrowClassName)} aria-hidden="true" />
-        )}
+        <EstimateButtonContent
+          buttonVariant={buttonVariant}
+          dropdownArrow={dropdownArrow}
+          dropdownArrowClassName={dropdownArrowClassName}
+          estimateType={currentActiveEstimate?.type}
+          hideIcon={hideIcon}
+          placeholder={placeholder}
+          selectedEstimate={selectedEstimate}
+        />
       </DropdownButton>
     </button>
   );
@@ -218,7 +314,6 @@ export const EstimateDropdown = observer(function EstimateDropdown(props: Props)
     <ComboDropDown
       as="div"
       ref={dropdownRef}
-      tabIndex={tabIndex}
       className={cn("h-full w-full", className)}
       value={value}
       onChange={dropdownOnChange}
@@ -249,47 +344,10 @@ export const EstimateDropdown = observer(function EstimateDropdown(props: Props)
               />
             </div>
             <div className="mt-2 max-h-48 space-y-1 overflow-y-scroll">
-              {currentActiveEstimateId === undefined ? (
-                <div
-                  className={`flex w-full cursor-pointer items-center justify-between gap-2 truncate rounded-sm px-1 py-1.5 text-secondary select-none`}
-                >
-                  {/* NOTE: This condition renders when estimates are not enabled for the project */}
-                  <div className="flex flex-grow items-center gap-2">
-                    <EstimateOutline className="h-3 w-3 flex-shrink-0" />
-                    <span className="flex-grow truncate">{t("project_settings.estimates.no_estimate")}</span>
-                  </div>
-                </div>
-              ) : (
-                <>
-                  {filteredOptions ? (
-                    filteredOptions.length > 0 ? (
-                      filteredOptions.map((option) => (
-                        <Combobox.Option as="li" key={option.value} value={option.value}>
-                          {({ active, selected }) => (
-                            <div
-                              className={cn(
-                                "flex w-full cursor-pointer items-center justify-between gap-2 truncate rounded-sm px-1 py-1.5 select-none",
-                                {
-                                  "bg-layer-transparent-hover": active,
-                                  "text-primary": selected,
-                                  "text-secondary": !selected,
-                                }
-                              )}
-                            >
-                              <span className="flex-grow truncate">{option.content}</span>
-                              {selected && <TickOutline className="h-3.5 w-3.5 flex-shrink-0" />}
-                            </div>
-                          )}
-                        </Combobox.Option>
-                      ))
-                    ) : (
-                      <p className="px-1.5 py-1 text-placeholder italic">{t("common.search.no_matching_results")}</p>
-                    )
-                  ) : (
-                    <p className="px-1.5 py-1 text-placeholder italic">{t("common.loading")}</p>
-                  )}
-                </>
-              )}
+              <EstimateOptionsList
+                currentActiveEstimateId={currentActiveEstimateId}
+                filteredOptions={filteredOptions}
+              />
             </div>
           </div>
         </Combobox.Options>

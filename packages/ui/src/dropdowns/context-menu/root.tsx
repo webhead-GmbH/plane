@@ -90,11 +90,11 @@ function ContextMenuWithoutPortal(props: ContextMenuProps) {
     };
   }, []);
 
-  const handleClose = () => {
+  const handleClose = React.useCallback(() => {
     closeAllSubmenus();
     setIsOpen(false);
     setActiveItemIndex(0);
-  };
+  }, [closeAllSubmenus]);
 
   // calculate position of context menu
   useEffect(() => {
@@ -137,7 +137,7 @@ function ContextMenuWithoutPortal(props: ContextMenuProps) {
       parentElement.removeEventListener("contextmenu", handleContextMenu);
       window.removeEventListener("keydown", hideContextMenu);
     };
-  }, [contextMenuRef, isMobile, isOpen, parentRef, setIsOpen, setPosition]);
+  }, [contextMenuRef, handleClose, isMobile, isOpen, parentRef, setIsOpen, setPosition]);
 
   // handle keyboard navigation
   useEffect(() => {
@@ -167,7 +167,7 @@ function ContextMenuWithoutPortal(props: ContextMenuProps) {
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [activeItemIndex, isOpen, renderedItems, setIsOpen]);
+  }, [activeItemIndex, handleClose, isOpen, renderedItems, setIsOpen]);
 
   // Custom handler for nested menu portal clicks
   React.useEffect(() => {

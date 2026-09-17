@@ -25,6 +25,8 @@ import { DropdownButton } from "./buttons";
 import { BUTTON_VARIANTS_WITH_TEXT } from "./constants";
 // types
 import type { TDropdownProps } from "./types";
+// local hooks
+import { useDocumentBody } from "./use-document-body";
 
 type Props = TDropdownProps & {
   clearIconClassName?: string;
@@ -77,6 +79,7 @@ export const DateDropdown = observer(function DateDropdown(props: Props) {
   // hooks
   const { data } = useUserProfile();
   const startOfWeek = data?.start_of_the_week;
+  const portalContainer = useDocumentBody();
   // popper-js refs
   const [referenceElement, setReferenceElement] = useState<HTMLButtonElement | null>(null);
   const [popperElement, setPopperElement] = useState<HTMLDivElement | null>(null);
@@ -133,6 +136,9 @@ export const DateDropdown = observer(function DateDropdown(props: Props) {
       ref={setReferenceElement}
       onClick={handleOnClick}
       disabled={disabled}
+      tabIndex={tabIndex}
+      aria-haspopup="listbox"
+      aria-expanded={isOpen}
     >
       <DropdownButton
         className={buttonClassName}
@@ -167,7 +173,6 @@ export const DateDropdown = observer(function DateDropdown(props: Props) {
     <ComboDropDown
       as="div"
       ref={dropdownRef}
-      tabIndex={tabIndex}
       className={cn("h-full", className)}
       onKeyDown={(e) => {
         if (e.key === "Enter") {
@@ -179,6 +184,7 @@ export const DateDropdown = observer(function DateDropdown(props: Props) {
       renderByDefault={renderByDefault}
     >
       {isOpen &&
+        portalContainer &&
         createPortal(
           <Combobox.Options as="ul" data-prevent-outside-click static>
             <div
@@ -207,7 +213,7 @@ export const DateDropdown = observer(function DateDropdown(props: Props) {
               />
             </div>
           </Combobox.Options>,
-          document.body
+          portalContainer
         )}
     </ComboDropDown>
   );

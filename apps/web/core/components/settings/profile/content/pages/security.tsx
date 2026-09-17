@@ -46,6 +46,28 @@ const defaultShowPassword = {
   confirmPassword: false,
 };
 
+type TPasswordFieldValues = {
+  oldPassword: string;
+  password: string;
+  confirmPassword: string;
+  oldPasswordRequired: boolean;
+};
+
+const getIsNewPasswordSameAsOldPassword = (oldPassword: string, password: string) =>
+  oldPassword !== "" && password !== "" && password === oldPassword;
+
+const getIsChangePasswordDisabled = (values: TPasswordFieldValues) => {
+  const { oldPassword, password, confirmPassword, oldPasswordRequired } = values;
+  return (
+    getPasswordStrength(password) != E_PASSWORD_STRENGTH.STRENGTH_VALID ||
+    (oldPasswordRequired && oldPassword.trim() === "") ||
+    password.trim() === "" ||
+    confirmPassword.trim() === "" ||
+    password !== confirmPassword ||
+    password === oldPassword
+  );
+};
+
 export const SecurityProfileSettings = observer(function SecurityProfileSettings() {
   // store
   const { data: currentUser, changePassword } = useUser();
@@ -71,7 +93,7 @@ export const SecurityProfileSettings = observer(function SecurityProfileSettings
   // i18n
   const { t } = useTranslation();
 
-  const isNewPasswordSameAsOldPassword = oldPassword !== "" && password !== "" && password === oldPassword;
+  const isNewPasswordSameAsOldPassword = getIsNewPasswordSameAsOldPassword(oldPassword, password);
 
   const handleShowPassword = (key: keyof typeof showPassword) =>
     setShowPassword((prev) => ({ ...prev, [key]: !prev[key] }));
@@ -117,13 +139,7 @@ export const SecurityProfileSettings = observer(function SecurityProfileSettings
     }
   };
 
-  const isButtonDisabled =
-    getPasswordStrength(password) != E_PASSWORD_STRENGTH.STRENGTH_VALID ||
-    (oldPasswordRequired && oldPassword.trim() === "") ||
-    password.trim() === "" ||
-    confirmPassword.trim() === "" ||
-    password !== confirmPassword ||
-    password === oldPassword;
+  const isButtonDisabled = getIsChangePasswordDisabled({ oldPassword, password, confirmPassword, oldPasswordRequired });
 
   const passwordSupport = password.length > 0 &&
     getPasswordStrength(password) != E_PASSWORD_STRENGTH.STRENGTH_VALID && (

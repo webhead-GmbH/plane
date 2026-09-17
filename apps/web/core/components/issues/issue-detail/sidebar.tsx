@@ -21,6 +21,7 @@ import {
   StateOutline,
   UserOutline,
 } from "@makeplane/propel/icons";
+import type { TIssue } from "@plane/types";
 import { cn, getDate, renderFormattedPayloadDate, shouldHighlightIssueDueDate } from "@plane/utils";
 // components
 import { IssueCustomFieldsProperties } from "@/components/custom-fields";
@@ -53,24 +54,18 @@ type Props = {
   isEditable: boolean;
 };
 
-export const IssueDetailsSidebar = observer(function IssueDetailsSidebar(props: Props) {
+type TIssueDetailsSidebarPropertyProps = Props & {
+  issue: TIssue;
+};
+
+const IssueDetailsSidebarDateProperties = observer(function IssueDetailsSidebarDateProperties(
+  props: TIssueDetailsSidebarPropertyProps
+) {
+  const { workspaceSlug, projectId, issueId, issueOperations, isEditable, issue } = props;
   const { t } = useTranslation();
-  const { workspaceSlug, projectId, issueId, issueOperations, isEditable } = props;
   // store hooks
-  const { getProjectById } = useProject();
-  const { areEstimateEnabledByProjectId } = useProjectEstimates();
-  const {
-    issue: { getIssueById },
-  } = useIssueDetail();
-  const { getUserDetails } = useMember();
   const { getStateById } = useProjectState();
-  const issue = getIssueById(issueId);
-  if (!issue) return <></>;
-
-  const createdByDetails = getUserDetails(issue.created_by);
-
   // derived values
-  const projectDetails = getProjectById(issue.project_id);
   const stateDetails = getStateById(issue.state_id);
 
   const minDate = issue.start_date ? getDate(issue.start_date) : null;
@@ -78,6 +73,105 @@ export const IssueDetailsSidebar = observer(function IssueDetailsSidebar(props: 
 
   const maxDate = issue.target_date ? getDate(issue.target_date) : null;
   maxDate?.setDate(maxDate.getDate());
+
+  return (
+    <>
+      <SidebarPropertyListItem icon={StartDateOutline} label={t("common.order_by.start_date")}>
+        <DateDropdown
+          placeholder={t("issue.add.start_date")}
+          value={issue.start_date}
+          onChange={(val) =>
+            issueOperations.update(workspaceSlug, projectId, issueId, {
+              start_date: val ? renderFormattedPayloadDate(val) : null,
+            })
+          }
+          maxDate={maxDate ?? undefined}
+          disabled={!isEditable}
+          buttonVariant="transparent-with-text"
+          className="group w-full grow"
+          buttonContainerClassName="w-full text-left h-7.5"
+          buttonClassName={`text-body-xs-regular ${issue?.start_date ? "" : "text-placeholder"}`}
+          hideIcon
+          clearIconClassName="h-3 w-3 hidden group-hover:inline"
+        />
+      </SidebarPropertyListItem>
+
+      <SidebarPropertyListItem icon={DueDateOutline} label={t("common.order_by.due_date")}>
+        <div className="flex w-full items-center gap-2">
+          <DateDropdown
+            placeholder={t("issue.add.due_date")}
+            value={issue.target_date}
+            onChange={(val) =>
+              issueOperations.update(workspaceSlug, projectId, issueId, {
+                target_date: val ? renderFormattedPayloadDate(val) : null,
+              })
+            }
+            minDate={minDate ?? undefined}
+            disabled={!isEditable}
+            buttonVariant="transparent-with-text"
+            className="group w-full grow"
+            buttonContainerClassName="w-full text-left h-7.5"
+            buttonClassName={cn("text-body-xs-regular", {
+              "text-placeholder": !issue.target_date,
+              "text-danger-primary": shouldHighlightIssueDueDate(issue.target_date, stateDetails?.group),
+            })}
+            hideIcon
+            clearIconClassName="h-3 w-3 hidden group-hover:inline text-primary"
+          />
+        </div>
+      </SidebarPropertyListItem>
+    </>
+  );
+});
+
+const IssueDetailsSidebarEstimateProperty = observer(function IssueDetailsSidebarEstimateProperty(
+  props: TIssueDetailsSidebarPropertyProps
+) {
+  const { workspaceSlug, projectId, issueId, issueOperations, isEditable, issue } = props;
+  const { t } = useTranslation();
+  // store hooks
+  const { areEstimateEnabledByProjectId } = useProjectEstimates();
+
+  if (!projectId || !areEstimateEnabledByProjectId(projectId)) return null;
+
+  return (
+    <SidebarPropertyListItem icon={EstimateOutline} label={t("common.estimate")}>
+      <EstimateDropdown
+        value={issue?.estimate_point ?? undefined}
+        onChange={(val: string | undefined) =>
+          issueOperations.update(workspaceSlug, projectId, issueId, { estimate_point: val })
+        }
+        projectId={projectId}
+        disabled={!isEditable}
+        buttonVariant="transparent-with-text"
+        className="group w-full grow"
+        buttonContainerClassName="w-full text-left h-7.5"
+        buttonClassName={`text-body-xs-regular ${issue?.estimate_point !== null ? "" : "text-placeholder"}`}
+        placeholder={t("common.none")}
+        hideIcon
+        dropdownArrow
+        dropdownArrowClassName="h-3.5 w-3.5 hidden group-hover:inline"
+      />
+    </SidebarPropertyListItem>
+  );
+});
+
+export const IssueDetailsSidebar = observer(function IssueDetailsSidebar(props: Props) {
+  const { t } = useTranslation();
+  const { workspaceSlug, projectId, issueId, issueOperations, isEditable } = props;
+  // store hooks
+  const { getProjectById } = useProject();
+  const {
+    issue: { getIssueById },
+  } = useIssueDetail();
+  const { getUserDetails } = useMember();
+  const issue = getIssueById(issueId);
+  if (!issue) return <></>;
+
+  const createdByDetails = getUserDetails(issue.created_by);
+
+  // derived values
+  const projectDetails = getProjectById(issue.project_id);
 
   return (
     <>
@@ -139,71 +233,23 @@ export const IssueDetailsSidebar = observer(function IssueDetailsSidebar(props: 
               </SidebarPropertyListItem>
             )}
 
-            <SidebarPropertyListItem icon={StartDateOutline} label={t("common.order_by.start_date")}>
-              <DateDropdown
-                placeholder={t("issue.add.start_date")}
-                value={issue.start_date}
-                onChange={(val) =>
-                  issueOperations.update(workspaceSlug, projectId, issueId, {
-                    start_date: val ? renderFormattedPayloadDate(val) : null,
-                  })
-                }
-                maxDate={maxDate ?? undefined}
-                disabled={!isEditable}
-                buttonVariant="transparent-with-text"
-                className="group w-full grow"
-                buttonContainerClassName="w-full text-left h-7.5"
-                buttonClassName={`text-body-xs-regular ${issue?.start_date ? "" : "text-placeholder"}`}
-                hideIcon
-                clearIconClassName="h-3 w-3 hidden group-hover:inline"
-              />
-            </SidebarPropertyListItem>
+            <IssueDetailsSidebarDateProperties
+              workspaceSlug={workspaceSlug}
+              projectId={projectId}
+              issueId={issueId}
+              issueOperations={issueOperations}
+              isEditable={isEditable}
+              issue={issue}
+            />
 
-            <SidebarPropertyListItem icon={DueDateOutline} label={t("common.order_by.due_date")}>
-              <div className="flex w-full items-center gap-2">
-                <DateDropdown
-                  placeholder={t("issue.add.due_date")}
-                  value={issue.target_date}
-                  onChange={(val) =>
-                    issueOperations.update(workspaceSlug, projectId, issueId, {
-                      target_date: val ? renderFormattedPayloadDate(val) : null,
-                    })
-                  }
-                  minDate={minDate ?? undefined}
-                  disabled={!isEditable}
-                  buttonVariant="transparent-with-text"
-                  className="group w-full grow"
-                  buttonContainerClassName="w-full text-left h-7.5"
-                  buttonClassName={cn("text-body-xs-regular", {
-                    "text-placeholder": !issue.target_date,
-                    "text-danger-primary": shouldHighlightIssueDueDate(issue.target_date, stateDetails?.group),
-                  })}
-                  hideIcon
-                  clearIconClassName="h-3 w-3 hidden group-hover:inline text-primary"
-                />
-              </div>
-            </SidebarPropertyListItem>
-
-            {projectId && areEstimateEnabledByProjectId(projectId) && (
-              <SidebarPropertyListItem icon={EstimateOutline} label={t("common.estimate")}>
-                <EstimateDropdown
-                  value={issue?.estimate_point ?? undefined}
-                  onChange={(val: string | undefined) =>
-                    issueOperations.update(workspaceSlug, projectId, issueId, { estimate_point: val })
-                  }
-                  projectId={projectId}
-                  disabled={!isEditable}
-                  buttonVariant="transparent-with-text"
-                  className="group w-full grow"
-                  buttonContainerClassName="w-full text-left h-7.5"
-                  buttonClassName={`text-body-xs-regular ${issue?.estimate_point !== null ? "" : "text-placeholder"}`}
-                  placeholder={t("common.none")}
-                  hideIcon
-                  dropdownArrow
-                  dropdownArrowClassName="h-3.5 w-3.5 hidden group-hover:inline"
-                />
-              </SidebarPropertyListItem>
-            )}
+            <IssueDetailsSidebarEstimateProperty
+              workspaceSlug={workspaceSlug}
+              projectId={projectId}
+              issueId={issueId}
+              issueOperations={issueOperations}
+              isEditable={isEditable}
+              issue={issue}
+            />
 
             {projectDetails?.module_view && (
               <SidebarPropertyListItem icon={ModuleOutline} label={t("common.modules")}>

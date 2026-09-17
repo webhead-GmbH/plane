@@ -7,8 +7,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { observer } from "mobx-react";
 import { useSearchParams } from "next/navigation";
-// icons
-import { HideOutline, ShowOutline } from "@makeplane/propel/icons";
 // ui
 import { Banner } from "@makeplane/propel/components/banner";
 import { Input, InputGroup } from "@makeplane/propel/components/input";
@@ -26,6 +24,7 @@ import { AuthService } from "@/services/auth.service";
 // local imports
 import { FormContainer } from "./common/container";
 import { AuthFormHeader } from "./common/header";
+import { AuthPasswordField } from "./common/password-field";
 
 type TResetPasswordFormValues = {
   email: string;
@@ -134,74 +133,38 @@ export const ResetPasswordForm = observer(function ResetPasswordForm() {
             />
           </InputGroup>
         </div>
-        <div className="space-y-1">
-          <label className="text-13 font-medium text-tertiary" htmlFor="password">
-            {t("auth.common.password.label")}
-          </label>
-          <InputGroup size="2xl">
-            <Input
-              size="2xl"
-              type={showPassword.password ? "text" : "password"}
-              name="password"
-              id="password"
-              value={resetFormData.password}
-              onChange={(e) => handleFormChange("password", e.target.value)}
-              placeholder={t("auth.common.password.placeholder")}
-              minLength={8}
-              onFocus={() => setIsPasswordInputFocused(true)}
-              onBlur={() => setIsPasswordInputFocused(false)}
-              autoComplete="new-password"
-              autoFocus
-            />
-            <button
-              type="button"
-              onClick={() => handleShowPassword("password")}
-              className="grid size-5 place-items-center"
-            >
-              {showPassword.password ? (
-                <HideOutline className="size-5 text-placeholder" />
-              ) : (
-                <ShowOutline className="size-5 text-placeholder" />
-              )}
-            </button>
-          </InputGroup>
+        <AuthPasswordField
+          id="password"
+          label={t("auth.common.password.label")}
+          value={resetFormData.password}
+          placeholder={t("auth.common.password.placeholder")}
+          isPasswordVisible={showPassword.password}
+          onTogglePasswordVisibility={() => handleShowPassword("password")}
+          onChange={(value) => handleFormChange("password", value)}
+          onFocus={() => setIsPasswordInputFocused(true)}
+          onBlur={() => setIsPasswordInputFocused(false)}
+          minLength={8}
+          autoFocus
+        >
           <PasswordStrengthIndicator password={resetFormData.password} isFocused={isPasswordInputFocused} />
-        </div>
-        <div className="space-y-1">
-          <label className="text-13 font-medium text-tertiary" htmlFor="confirm_password">
-            {t("auth.common.password.confirm_password.label")}
-          </label>
-          <InputGroup size="2xl">
-            <Input
-              size="2xl"
-              type={showPassword.retypePassword ? "text" : "password"}
-              name="confirm_password"
-              id="confirm_password"
-              value={resetFormData.confirm_password}
-              onChange={(e) => handleFormChange("confirm_password", e.target.value)}
-              placeholder={t("auth.common.password.confirm_password.placeholder")}
-              onFocus={() => setIsRetryPasswordInputFocused(true)}
-              onBlur={() => setIsRetryPasswordInputFocused(false)}
-              autoComplete="new-password"
-            />
-            <button
-              type="button"
-              onClick={() => handleShowPassword("retypePassword")}
-              className="grid size-5 place-items-center"
-            >
-              {showPassword.retypePassword ? (
-                <HideOutline className="size-5 text-placeholder" />
-              ) : (
-                <ShowOutline className="size-5 text-placeholder" />
-              )}
-            </button>
-          </InputGroup>
+        </AuthPasswordField>
+        <AuthPasswordField
+          id="confirm_password"
+          label={t("auth.common.password.confirm_password.label")}
+          value={resetFormData.confirm_password}
+          placeholder={t("auth.common.password.confirm_password.placeholder")}
+          isPasswordVisible={showPassword.retypePassword}
+          onTogglePasswordVisibility={() => handleShowPassword("retypePassword")}
+          onChange={(value) => handleFormChange("confirm_password", value)}
+          onFocus={() => setIsRetryPasswordInputFocused(true)}
+          onBlur={() => setIsRetryPasswordInputFocused(false)}
+        >
           {!!resetFormData.confirm_password &&
             resetFormData.password !== resetFormData.confirm_password &&
             renderPasswordMatchError && (
               <span className="text-13 text-danger-primary">{t("auth.common.password.errors.match")}</span>
             )}
-        </div>
+        </AuthPasswordField>
         <Button type="submit" variant="primary" className="w-full" size="xl" disabled={isButtonDisabled}>
           {t("auth.common.password.submit")}
         </Button>

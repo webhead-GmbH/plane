@@ -30,25 +30,18 @@ export const ProfileSettingsSidebarWorkspaceOptions = observer(function ProfileS
             as="link"
             href={`/${workspace.slug}/`}
             iconNode={<WorkspaceLogo logo={workspace.logo_url} name={workspace.name} classNames="shrink-0" />}
-            label={workspace.name}
             isActive={false}
-          />
+          >
+            {workspace.name}
+          </SettingsSidebarItem>
         ))}
         <div className="mt-1.5">
-          <SettingsSidebarItem
-            as="link"
-            href="/create-workspace/"
-            icon={PlusCircleOutline}
-            label={t("create_workspace")}
-            isActive={false}
-          />
-          <SettingsSidebarItem
-            as="link"
-            href="/invitations/"
-            icon={MailOutline}
-            label={t("workspace_invites")}
-            isActive={false}
-          />
+          <SettingsSidebarItem as="link" href="/create-workspace/" icon={PlusCircleOutline} isActive={false}>
+            {t("create_workspace")}
+          </SettingsSidebarItem>
+          <SettingsSidebarItem as="link" href="/invitations/" icon={MailOutline} isActive={false}>
+            {t("workspace_invites")}
+          </SettingsSidebarItem>
         </div>
       </div>
     </div>

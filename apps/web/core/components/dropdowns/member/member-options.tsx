@@ -22,6 +22,8 @@ import { cn, getFileURL, sortByCurrentUserThenSelected } from "@plane/utils";
 import { useMember } from "@/hooks/store/use-member";
 import { useUser } from "@/hooks/store/user";
 import { usePlatformOS } from "@/hooks/use-platform-os";
+// local imports
+import { useDocumentBody } from "../use-document-body";
 
 interface Props {
   className?: string;
@@ -61,6 +63,7 @@ export const MemberOptions = observer(function MemberOptions(props: Props) {
     workspace: { isUserSuspended },
   } = useMember();
   const { isMobile } = usePlatformOS();
+  const portalContainer = useDocumentBody();
   // popper-js init
   const { styles, attributes } = usePopper(referenceElement, popperElement, {
     placement: placement ?? "bottom-start",
@@ -129,6 +132,8 @@ export const MemberOptions = observer(function MemberOptions(props: Props) {
     value,
     currentUser?.id
   );
+
+  if (!portalContainer) return null;
 
   return createPortal(
     <Combobox.Options as="ul" data-prevent-outside-click static modal={false}>
@@ -201,6 +206,6 @@ export const MemberOptions = observer(function MemberOptions(props: Props) {
         </div>
       </div>
     </Combobox.Options>,
-    document.body
+    portalContainer
   );
 });

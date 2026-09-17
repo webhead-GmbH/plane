@@ -59,36 +59,146 @@ const defaultFromData: TFormData = {
   is_telemetry_enabled: true,
 };
 
+function useInstanceSetupSearchParams() {
+  const searchParams = useSearchParams();
+
+  return {
+    firstNameParam: searchParams?.get("first_name") || undefined,
+    lastNameParam: searchParams?.get("last_name") || undefined,
+    companyParam: searchParams?.get("company") || undefined,
+    emailParam: searchParams?.get("email") || undefined,
+    isTelemetryEnabledParam: searchParams?.get("is_telemetry_enabled") === "True" || true,
+    errorCode: searchParams?.get("error_code") || undefined,
+    errorMessage: searchParams?.get("error_message") || undefined,
+  };
+}
+
+type TPasswordVisibilityToggleProps = {
+  isVisible: boolean;
+  onToggle: () => void;
+};
+
+function PasswordVisibilityToggle(props: TPasswordVisibilityToggleProps) {
+  const { isVisible, onToggle } = props;
+
+  return isVisible ? (
+    <button
+      type="button"
+      aria-label="Hide password"
+      className="flex items-center justify-center text-placeholder"
+      onClick={onToggle}
+    >
+      <HideOutline className="h-4 w-4" />
+    </button>
+  ) : (
+    <button
+      type="button"
+      aria-label="Show password"
+      className="flex items-center justify-center text-placeholder"
+      onClick={onToggle}
+    >
+      <ShowOutline className="h-4 w-4" />
+    </button>
+  );
+}
+
+type TPasswordFieldProps = {
+  value: string;
+  errorData: TError;
+  onChange: (value: string) => void;
+};
+
+function InstanceSetupPasswordField(props: TPasswordFieldProps) {
+  const { value, errorData, onChange } = props;
+  // states
+  const [showPassword, setShowPassword] = useState(false);
+  const [isPasswordInputFocused, setIsPasswordInputFocused] = useState(false);
+
+  return (
+    <div className="w-full space-y-1">
+      <label className="text-13 font-medium text-tertiary" htmlFor="password">
+        Set a password <span className="text-danger-primary">*</span>
+      </label>
+      <InputGroup size="lg">
+        <Input
+          size="lg"
+          id="password"
+          name="password"
+          type={showPassword ? "text" : "password"}
+          placeholder="New password"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          aria-invalid={errorData.type === EErrorCodes.INVALID_PASSWORD}
+          onFocus={() => setIsPasswordInputFocused(true)}
+          onBlur={() => setIsPasswordInputFocused(false)}
+          autoComplete="new-password"
+        />
+        <PasswordVisibilityToggle isVisible={showPassword} onToggle={() => setShowPassword((prev) => !prev)} />
+      </InputGroup>
+      {errorData.type && errorData.type === EErrorCodes.INVALID_PASSWORD && errorData.message && (
+        <p className="px-1 text-11 text-danger-primary">{errorData.message}</p>
+      )}
+      <PasswordStrengthIndicator password={value} isFocused={isPasswordInputFocused} />
+    </div>
+  );
+}
+
+type TConfirmPasswordFieldProps = {
+  password: string;
+  value: string | undefined;
+  onChange: (value: string) => void;
+};
+
+function InstanceSetupConfirmPasswordField(props: TConfirmPasswordFieldProps) {
+  const { password, value, onChange } = props;
+  // states
+  const [showPassword, setShowPassword] = useState(false);
+  const [isRetryPasswordInputFocused, setIsRetryPasswordInputFocused] = useState(false);
+  // derived values
+  const confirmPassword = value ?? "";
+  const renderPasswordMatchError = !isRetryPasswordInputFocused || confirmPassword.length >= password.length;
+
+  return (
+    <div className="w-full space-y-1">
+      <label className="text-13 font-medium text-tertiary" htmlFor="confirm_password">
+        Confirm password <span className="text-danger-primary">*</span>
+      </label>
+      <InputGroup size="lg">
+        <Input
+          size="lg"
+          type={showPassword ? "text" : "password"}
+          id="confirm_password"
+          name="confirm_password"
+          value={confirmPassword}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder="Confirm password"
+          onFocus={() => setIsRetryPasswordInputFocused(true)}
+          onBlur={() => setIsRetryPasswordInputFocused(false)}
+          autoComplete="new-password"
+        />
+        <PasswordVisibilityToggle isVisible={showPassword} onToggle={() => setShowPassword((prev) => !prev)} />
+      </InputGroup>
+      {!!value && password !== value && renderPasswordMatchError && (
+        <span className="text-13 text-danger-primary">Passwords don{"'"}t match</span>
+      )}
+    </div>
+  );
+}
+
 export function InstanceSetupForm() {
   // search params
-  const searchParams = useSearchParams();
-  const firstNameParam = searchParams?.get("first_name") || undefined;
-  const lastNameParam = searchParams?.get("last_name") || undefined;
-  const companyParam = searchParams?.get("company") || undefined;
-  const emailParam = searchParams?.get("email") || undefined;
-  const isTelemetryEnabledParam = (searchParams?.get("is_telemetry_enabled") === "True" ? true : false) || true;
-  const errorCode = searchParams?.get("error_code") || undefined;
-  const errorMessage = searchParams?.get("error_message") || undefined;
+  const { firstNameParam, lastNameParam, companyParam, emailParam, isTelemetryEnabledParam, errorCode, errorMessage } =
+    useInstanceSetupSearchParams();
   // state
-  const [showPassword, setShowPassword] = useState({
-    password: false,
-    retypePassword: false,
-  });
-  const [csrfToken, setCsrfToken] = useState<string | undefined>(undefined);
+  const [csrfToken, setCsrfToken] = useState("");
   const [formData, setFormData] = useState<TFormData>(defaultFromData);
-  const [isPasswordInputFocused, setIsPasswordInputFocused] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isRetryPasswordInputFocused, setIsRetryPasswordInputFocused] = useState(false);
-
-  const handleShowPassword = (key: keyof typeof showPassword) =>
-    setShowPassword((prev) => ({ ...prev, [key]: !prev[key] }));
 
   const handleFormChange = (key: keyof TFormData, value: string | boolean) =>
     setFormData((prev) => ({ ...prev, [key]: value }));
 
   useEffect(() => {
-    if (csrfToken === undefined)
-      authService.requestCSRFToken().then((data) => data?.csrf_token && setCsrfToken(data.csrf_token));
+    if (!csrfToken) authService.requestCSRFToken().then((data) => data?.csrf_token && setCsrfToken(data.csrf_token));
   }, [csrfToken]);
 
   useEffect(() => {
@@ -133,10 +243,6 @@ export function InstanceSetupForm() {
         : true,
     [formData.confirm_password, formData.email, formData.first_name, formData.password, isSubmitting]
   );
-
-  const password = formData?.password ?? "";
-  const confirmPassword = formData?.confirm_password ?? "";
-  const renderPasswordMatchError = !isRetryPasswordInputFocused || confirmPassword.length >= password.length;
 
   return (
     <>
@@ -225,7 +331,7 @@ export function InstanceSetupForm() {
                   placeholder="name@company.com"
                   value={formData.email}
                   onChange={(e) => handleFormChange("email", e.target.value)}
-                  aria-invalid={errorData.type && errorData.type === EErrorCodes.INVALID_EMAIL ? true : false}
+                  aria-invalid={errorData.type === EErrorCodes.INVALID_EMAIL}
                   autoComplete="off"
                 />
               </InputGroup>
@@ -257,93 +363,17 @@ export function InstanceSetupForm() {
               </InputGroup>
             </div>
 
-            <div className="w-full space-y-1">
-              <label className="text-13 font-medium text-tertiary" htmlFor="password">
-                Set a password <span className="text-danger-primary">*</span>
-              </label>
-              <InputGroup size="lg">
-                <Input
-                  size="lg"
-                  id="password"
-                  name="password"
-                  type={showPassword.password ? "text" : "password"}
-                  placeholder="New password"
-                  value={formData.password}
-                  onChange={(e) => handleFormChange("password", e.target.value)}
-                  aria-invalid={errorData.type && errorData.type === EErrorCodes.INVALID_PASSWORD ? true : false}
-                  onFocus={() => setIsPasswordInputFocused(true)}
-                  onBlur={() => setIsPasswordInputFocused(false)}
-                  autoComplete="new-password"
-                />
-                {showPassword.password ? (
-                  <button
-                    type="button"
-                    aria-label="Hide password"
-                    className="flex items-center justify-center text-placeholder"
-                    onClick={() => handleShowPassword("password")}
-                  >
-                    <HideOutline className="h-4 w-4" />
-                  </button>
-                ) : (
-                  <button
-                    type="button"
-                    aria-label="Show password"
-                    className="flex items-center justify-center text-placeholder"
-                    onClick={() => handleShowPassword("password")}
-                  >
-                    <ShowOutline className="h-4 w-4" />
-                  </button>
-                )}
-              </InputGroup>
-              {errorData.type && errorData.type === EErrorCodes.INVALID_PASSWORD && errorData.message && (
-                <p className="px-1 text-11 text-danger-primary">{errorData.message}</p>
-              )}
-              <PasswordStrengthIndicator password={formData.password} isFocused={isPasswordInputFocused} />
-            </div>
+            <InstanceSetupPasswordField
+              value={formData.password}
+              errorData={errorData}
+              onChange={(value) => handleFormChange("password", value)}
+            />
 
-            <div className="w-full space-y-1">
-              <label className="text-13 font-medium text-tertiary" htmlFor="confirm_password">
-                Confirm password <span className="text-danger-primary">*</span>
-              </label>
-              <InputGroup size="lg">
-                <Input
-                  size="lg"
-                  type={showPassword.retypePassword ? "text" : "password"}
-                  id="confirm_password"
-                  name="confirm_password"
-                  value={formData.confirm_password}
-                  onChange={(e) => handleFormChange("confirm_password", e.target.value)}
-                  placeholder="Confirm password"
-                  onFocus={() => setIsRetryPasswordInputFocused(true)}
-                  onBlur={() => setIsRetryPasswordInputFocused(false)}
-                  autoComplete="new-password"
-                />
-                {showPassword.retypePassword ? (
-                  <button
-                    type="button"
-                    aria-label="Hide password"
-                    className="flex items-center justify-center text-placeholder"
-                    onClick={() => handleShowPassword("retypePassword")}
-                  >
-                    <HideOutline className="h-4 w-4" />
-                  </button>
-                ) : (
-                  <button
-                    type="button"
-                    aria-label="Show password"
-                    className="flex items-center justify-center text-placeholder"
-                    onClick={() => handleShowPassword("retypePassword")}
-                  >
-                    <ShowOutline className="h-4 w-4" />
-                  </button>
-                )}
-              </InputGroup>
-              {!!formData.confirm_password &&
-                formData.password !== formData.confirm_password &&
-                renderPasswordMatchError && (
-                  <span className="text-13 text-danger-primary">Passwords don{"'"}t match</span>
-                )}
-            </div>
+            <InstanceSetupConfirmPasswordField
+              password={formData.password}
+              value={formData.confirm_password}
+              onChange={(value) => handleFormChange("confirm_password", value)}
+            />
 
             <div className="relative flex gap-2">
               <div>

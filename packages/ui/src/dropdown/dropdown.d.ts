@@ -67,6 +67,7 @@ export interface IDropdownButton {
   handleOnClick: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   setReferenceElement: (element: HTMLButtonElement | null) => void;
   disabled?: boolean;
+  tabIndex?: number;
 }
 
 export interface IMultiSelectDropdownButton extends IDropdownButton {

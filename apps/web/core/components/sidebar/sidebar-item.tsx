@@ -22,7 +22,12 @@ interface AppSidebarItemData {
 }
 
 interface AppSidebarItemProps {
-  variant?: "link" | "button";
+  /**
+   * "static" draws the item with no interactive element of its own, for an item that is the
+   * content of a trigger which already is one, such as a menu's button: a button there would
+   * be a button inside a button.
+   */
+  variant?: "link" | "button" | "static";
   item?: AppSidebarItemData;
 }
 
@@ -46,6 +51,11 @@ interface AppSidebarButtonItemProps {
   children: React.ReactNode;
   onClick?: () => void;
   disabled?: boolean;
+  className?: string;
+}
+
+interface AppSidebarStaticItemProps {
+  children: React.ReactNode;
   className?: string;
 }
 
@@ -115,6 +125,10 @@ function AppSidebarButtonItem({ children, onClick, disabled = false, className }
   );
 }
 
+function AppSidebarStaticItem({ children, className }: AppSidebarStaticItemProps) {
+  return <span className={cn(styles.base, className)}>{children}</span>;
+}
+
 // ============================================================================
 // MAIN COMPONENT
 // ============================================================================
@@ -124,6 +138,7 @@ export type AppSidebarItemComponent = React.FC<AppSidebarItemProps> & {
   Icon: React.FC<AppSidebarItemIconProps>;
   Link: React.FC<AppSidebarLinkItemProps>;
   Button: React.FC<AppSidebarButtonItemProps>;
+  Static: React.FC<AppSidebarStaticItemProps>;
 };
 
 function AppSidebarItem({ variant = "link", item }: AppSidebarItemProps) {
@@ -142,6 +157,10 @@ function AppSidebarItem({ variant = "link", item }: AppSidebarItemProps) {
     return <AppSidebarLinkItem href={href}>{commonItems}</AppSidebarLinkItem>;
   }
 
+  if (variant === "static") {
+    return <AppSidebarStaticItem>{commonItems}</AppSidebarStaticItem>;
+  }
+
   return (
     <AppSidebarButtonItem onClick={onClick} disabled={disabled}>
       {commonItems}
@@ -157,6 +176,7 @@ AppSidebarItem.Label = AppSidebarItemLabel;
 AppSidebarItem.Icon = AppSidebarItemIcon;
 AppSidebarItem.Link = AppSidebarLinkItem;
 AppSidebarItem.Button = AppSidebarButtonItem;
+AppSidebarItem.Static = AppSidebarStaticItem;
 
 export { AppSidebarItem };
 export type { AppSidebarItemData, AppSidebarItemProps };

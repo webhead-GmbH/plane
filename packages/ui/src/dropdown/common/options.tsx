@@ -44,6 +44,7 @@ export function DropdownOptions(props: IMultiSelectDropdownOptions | ISingleSele
           inputClassName={inputClassName}
           inputContainerClassName={inputContainerClassName}
           isMobile={isMobile}
+          handleClose={handleClose}
         />
       )}
       <div className={cn("max-h-48 overflow-y-scroll", !disableSearch && "mt-2")}>
@@ -68,7 +69,6 @@ export function DropdownOptions(props: IMultiSelectDropdownOptions | ISingleSele
                         option.className && option.className({ active, selected })
                       )
                     }
-                    onClick={handleClose}
                   >
                     {({ selected }) => (
                       <>
