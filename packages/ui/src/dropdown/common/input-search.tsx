@@ -6,7 +6,7 @@
 
 import { Combobox } from "@headlessui/react";
 import React, { useEffect, useRef } from "react";
-import { SearchIcon } from "@plane/propel/icons";
+import { SearchOutline } from "@makeplane/propel/icons";
 // helpers
 import { cn } from "../../utils";
 
@@ -19,11 +19,21 @@ interface IInputSearch {
   inputClassName?: string;
   inputPlaceholder?: string;
   isMobile: boolean;
+  handleClose?: () => void;
 }
 
 export function InputSearch(props: IInputSearch) {
-  const { isOpen, query, updateQuery, inputIcon, inputContainerClassName, inputClassName, inputPlaceholder, isMobile } =
-    props;
+  const {
+    isOpen,
+    query,
+    updateQuery,
+    inputIcon,
+    inputContainerClassName,
+    inputClassName,
+    inputPlaceholder,
+    isMobile,
+    handleClose,
+  } = props;
 
   const inputRef = useRef<HTMLInputElement | null>(null);
 
@@ -31,6 +41,11 @@ export function InputSearch(props: IInputSearch) {
     if (query !== "" && e.key === "Escape") {
       e.stopPropagation();
       updateQuery("");
+    } else if (handleClose && !e.nativeEvent.isComposing && (e.key === "Enter" || e.key === "Escape")) {
+      // Headless UI's handler on this box runs next and cancels Enter and Escape, so the list never gets them:
+      // close from here, and leave the event to Headless UI so Enter still picks the active option first
+      e.stopPropagation();
+      handleClose();
     }
   };
 
@@ -48,7 +63,7 @@ export function InputSearch(props: IInputSearch) {
         inputContainerClassName
       )}
     >
-      {inputIcon ? <>{inputIcon}</> : <SearchIcon className="h-4 w-4 text-tertiary" aria-hidden="true" />}
+      {inputIcon ? <>{inputIcon}</> : <SearchOutline className="h-4 w-4 text-tertiary" aria-hidden="true" />}
       <Combobox.Input
         as="input"
         ref={inputRef}

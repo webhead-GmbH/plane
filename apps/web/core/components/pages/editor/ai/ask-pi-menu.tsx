@@ -5,15 +5,16 @@
  */
 
 import { useState } from "react";
-import { CircleArrowUp, CornerDownRight, RefreshCcw, Sparkles } from "lucide-react";
-// ui
-import { Tooltip } from "@plane/propel/tooltip";
+import { CircleArrowUp } from "lucide-react";
+import { AiStar1Outline } from "@makeplane/propel/icons";
 // components
 import { cn } from "@plane/utils";
 import { RichTextEditor } from "@/components/editor/rich-text";
 // helpers
 // hooks
 import { useWorkspace } from "@/hooks/store/use-workspace";
+// local imports
+import { EditorAIResponseActions } from "./response-actions";
 
 type Props = {
   handleInsertText: (insertOnNextLine: boolean) => void;
@@ -40,7 +41,7 @@ export function AskPiMenu(props: Props) {
         })}
       >
         <span className="grid size-7 flex-shrink-0 place-items-center rounded-full border border-subtle text-secondary">
-          <Sparkles className="size-3" />
+          <AiStar1Outline className="size-3" />
         </span>
         {response ? (
           <div>
@@ -56,42 +57,11 @@ export function AskPiMenu(props: Props) {
               workspaceId={workspaceId}
               workspaceSlug={workspaceSlug}
             />
-            <div className="mt-3 flex items-center gap-4">
-              <button
-                type="button"
-                className="rounded-sm p-1 text-13 font-medium text-tertiary outline-none hover:bg-layer-1"
-                onClick={() => handleInsertText(false)}
-              >
-                Replace selection
-              </button>
-              <Tooltip tooltipContent="Add to next line">
-                <button
-                  type="button"
-                  className="grid size-6 flex-shrink-0 place-items-center rounded-sm outline-none hover:bg-layer-1"
-                  onClick={() => handleInsertText(true)}
-                >
-                  <CornerDownRight className="size-4 text-tertiary" />
-                </button>
-              </Tooltip>
-              <Tooltip tooltipContent="Re-generate response">
-                <button
-                  type="button"
-                  className="grid size-6 flex-shrink-0 place-items-center rounded-sm outline-none hover:bg-layer-1"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    handleRegenerate();
-                  }}
-                  disabled={isRegenerating}
-                >
-                  <RefreshCcw
-                    className={cn("size-4 text-tertiary", {
-                      "animate-spin": isRegenerating,
-                    })}
-                  />
-                </button>
-              </Tooltip>
-            </div>
+            <EditorAIResponseActions
+              handleInsertText={handleInsertText}
+              handleRegenerate={handleRegenerate}
+              isRegenerating={isRegenerating}
+            />
           </div>
         ) : (
           <p className="text-13 text-secondary">AI is answering...</p>
@@ -100,7 +70,7 @@ export function AskPiMenu(props: Props) {
       <div className="px-4 py-3">
         <div className="flex items-center gap-2 rounded-md border border-subtle p-2">
           <span className="grid size-3 flex-shrink-0 place-items-center">
-            <Sparkles className="size-3 text-secondary" />
+            <AiStar1Outline className="size-3 text-secondary" />
           </span>
           <input
             type="text"

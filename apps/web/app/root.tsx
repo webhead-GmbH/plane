@@ -4,14 +4,13 @@
  * See the LICENSE file for details.
  */
 
+import { useSyncExternalStore } from "react";
 import type { ReactNode } from "react";
-import Script from "next/script";
 import { Links, Meta, Outlet, Scripts } from "react-router";
 import type { LinksFunction } from "react-router";
 import { ThemeProvider, useTheme } from "next-themes";
 // plane imports
 import { SITE_DESCRIPTION, SITE_NAME } from "@plane/constants";
-import { cn } from "@plane/utils";
 // types
 // assets
 import favicon16 from "@/app/assets/favicon/favicon-16x16.png?url";
@@ -28,7 +27,6 @@ import { LogoSpinner } from "@/components/common/logo-spinner";
 import { isStaleAssetError, recoverFromStaleAsset } from "@/lib/stale-asset-error";
 // local
 import { CustomErrorComponent } from "./error";
-import { AppProvider } from "./provider";
 // fonts
 import "@fontsource-variable/inter";
 import interVariableWoff2 from "@fontsource-variable/inter/files/inter-latin-wght-normal.woff2?url";
@@ -57,8 +55,6 @@ export const links: LinksFunction = () => [
 ];
 
 export function Layout({ children }: { children: ReactNode }) {
-  const isSessionRecorderEnabled = parseInt(process.env.VITE_ENABLE_SESSION_RECORDER || "0");
-
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -82,15 +78,6 @@ export function Layout({ children }: { children: ReactNode }) {
           {children}
         </ThemeProvider>
         <Scripts />
-        {!!isSessionRecorderEnabled && process.env.VITE_SESSION_RECORDER_KEY && (
-          <Script id="clarity-tracking">
-            {`(function(c,l,a,r,i,t,y){
-              c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-              t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-              y=l.getElementsByTagName(r)[0];if(y){y.parentNode.insertBefore(t,y);}
-          })(window, document, "clarity", "script", "${process.env.VITE_SESSION_RECORDER_KEY}");`}
-          </Script>
-        )}
       </body>
     </html>
   );
@@ -122,23 +109,26 @@ export const meta: Route.MetaFunction = () => [
   { name: "twitter:image:alt", content: "Plane - Modern project management" },
 ];
 
+// Root stays shell-thin: in SPA mode React Router server-builds only the root route, so
+// everything imported here is evaluated in Node just to prerender the fallback index.html.
+// Providers, the store layer, and app chrome belong in app/layout.tsx — never import them here.
 export default function Root() {
-  return (
-    <AppProvider>
-      <div className={cn("relative flex h-screen w-full flex-col overflow-hidden bg-canvas", "desktop-app-container")}>
-        <main className="relative h-full w-full overflow-hidden">
-          <Outlet />
-        </main>
-      </div>
-    </AppProvider>
-  );
+  return <Outlet />;
 }
 
+// Hydration has nothing to subscribe to: it is over once, and stays over.
+const subscribeToHydration = () => () => {};
+const getHydratedSnapshot = () => true;
+const getServerSnapshot = () => false;
+
 export function HydrateFallback() {
+  // false on the server and for the render that hydrates its HTML, true from the render after
+  const isHydrated = useSyncExternalStore(subscribeToHydration, getHydratedSnapshot, getServerSnapshot);
   const { resolvedTheme } = useTheme();
 
-  // if we are on the server or the theme is not resolved, return an empty div
-  if (typeof window === "undefined" || resolvedTheme === undefined) return <div />;
+  // the server has no theme, so until hydration is done (or while the theme is unresolved)
+  // render exactly what it rendered: an empty div
+  if (!isHydrated || resolvedTheme === undefined) return <div />;
 
   return (
     <div className="relative flex h-screen w-full items-center justify-center bg-canvas">

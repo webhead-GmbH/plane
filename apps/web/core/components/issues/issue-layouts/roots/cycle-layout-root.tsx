@@ -10,8 +10,9 @@ import { observer } from "mobx-react";
 import { useParams } from "next/navigation";
 import useSWR from "swr";
 // plane constants
-import { ISSUE_DISPLAY_FILTERS_BY_PAGE, PROJECT_VIEW_TRACKER_ELEMENTS } from "@plane/constants";
+import { ISSUE_DISPLAY_FILTERS_BY_PAGE } from "@plane/constants";
 import { EIssuesStoreType, EIssueLayoutTypes } from "@plane/types";
+import type { ICycle } from "@plane/types";
 // components
 import { TransferIssues } from "@/components/cycles/transfer-issues";
 import { TransferIssuesModal } from "@/components/cycles/transfer-issues-modal";
@@ -50,6 +51,18 @@ function CycleIssueLayout(props: {
   }
 }
 
+const getCycleTransferDetails = (cycleDetails: ICycle | null | undefined) => {
+  const cycleStatus = cycleDetails?.status?.toLocaleLowerCase() ?? "draft";
+  const isCompletedCycle = cycleStatus === "completed";
+  const isProgressSnapshotEmpty = isEmpty(cycleDetails?.progress_snapshot);
+  const transferableIssuesCount = cycleDetails
+    ? cycleDetails.backlog_issues + cycleDetails.unstarted_issues + cycleDetails.started_issues
+    : 0;
+  const canTransferIssues = isProgressSnapshotEmpty && transferableIssuesCount > 0;
+
+  return { cycleStatus, isCompletedCycle, canTransferIssues };
+};
+
 export const CycleLayoutRoot = observer(function CycleLayoutRoot() {
   const { workspaceSlug: routerWorkspaceSlug, projectId: routerProjectId, cycleId: routerCycleId } = useParams();
   const workspaceSlug = routerWorkspaceSlug ? routerWorkspaceSlug.toString() : undefined;
@@ -75,13 +88,7 @@ export const CycleLayoutRoot = observer(function CycleLayoutRoot() {
   );
 
   const cycleDetails = cycleId ? getCycleById(cycleId) : undefined;
-  const cycleStatus = cycleDetails?.status?.toLocaleLowerCase() ?? "draft";
-  const isCompletedCycle = cycleStatus === "completed";
-  const isProgressSnapshotEmpty = isEmpty(cycleDetails?.progress_snapshot);
-  const transferableIssuesCount = cycleDetails
-    ? cycleDetails.backlog_issues + cycleDetails.unstarted_issues + cycleDetails.started_issues
-    : 0;
-  const canTransferIssues = isProgressSnapshotEmpty && transferableIssuesCount > 0;
+  const { cycleStatus, isCompletedCycle, canTransferIssues } = getCycleTransferDetails(cycleDetails);
 
   if (!workspaceSlug || !projectId || !cycleId || !workItemFilters) return <></>;
   return (
@@ -111,14 +118,7 @@ export const CycleLayoutRoot = observer(function CycleLayoutRoot() {
                   disabled={!isEmpty(cycleDetails?.progress_snapshot)}
                 />
               )}
-              {cycleWorkItemsFilter && (
-                <WorkItemFiltersRow
-                  filter={cycleWorkItemsFilter}
-                  trackerElements={{
-                    saveView: PROJECT_VIEW_TRACKER_ELEMENTS.CYCLE_HEADER_SAVE_AS_VIEW_BUTTON,
-                  }}
-                />
-              )}
+              {cycleWorkItemsFilter && <WorkItemFiltersRow filter={cycleWorkItemsFilter} />}
               <div className="h-full w-full overflow-auto">
                 <CycleIssueLayout activeLayout={activeLayout} cycleId={cycleId} isCompletedCycle={isCompletedCycle} />
               </div>

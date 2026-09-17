@@ -6,7 +6,7 @@
 
 import type React from "react";
 import type { LucideIcon } from "lucide-react";
-import { Bell, CircleUser, KeyRound, LockIcon, Settings2 } from "lucide-react";
+import { KeyOutline, LockOutline, SettingsOutline, SubscribeOutline, UserOutline } from "@makeplane/propel/icons";
 import { observer } from "mobx-react";
 import { useParams } from "react-router";
 // plane imports
@@ -23,11 +23,11 @@ import { SettingsSidebarItem } from "../../sidebar/item";
 import { ProfileSettingsSidebarWorkspaceOptions } from "./workspace-options";
 
 const ICONS: Record<TProfileSettingsTabs, LucideIcon | React.FC<ISvgIcons>> = {
-  general: CircleUser,
-  security: LockIcon,
-  preferences: Settings2,
-  notifications: Bell,
-  "api-tokens": KeyRound,
+  general: UserOutline,
+  security: LockOutline,
+  preferences: SettingsOutline,
+  notifications: SubscribeOutline,
+  "api-tokens": KeyOutline,
 };
 
 type Props = {
@@ -64,8 +64,9 @@ export const ProfileSettingsSidebarItemCategories = observer(function ProfileSet
                   onClick={() => updateActiveTab(item.key)}
                   isActive={activeTab === item.key}
                   icon={ICONS[item.key]}
-                  label={t(item.i18n_label)}
-                />
+                >
+                  {t(item.i18n_label)}
+                </SettingsSidebarItem>
               ))}
             </div>
           </div>

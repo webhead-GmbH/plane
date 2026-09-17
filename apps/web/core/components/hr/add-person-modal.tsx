@@ -7,10 +7,11 @@
 import { useState } from "react";
 import { Check, Search } from "lucide-react";
 // plane imports
+import { Tooltip } from "@makeplane/propel/components/tooltip";
 import { useTranslation } from "@plane/i18n";
 import { Button } from "@plane/propel/button";
 import { EmptyStateCompact } from "@plane/propel/empty-state";
-import { EModalPosition, EModalWidth, ModalCore, Tooltip } from "@plane/ui";
+import { EModalPosition, EModalWidth, ModalCore } from "@plane/ui";
 import { cn } from "@plane/utils";
 // services
 import type { THrCandidate } from "@/services/hr.service";
@@ -118,9 +119,9 @@ export const HrAddPersonModal = ({ isOpen, candidates, isBusy, onClose, onAdd }:
             {t("hr.people.cancel")}
           </Button>
           <Tooltip
-            tooltipContent={chosen ? t("hr.people.pick_date_first") : t("hr.people.pick_somebody_first")}
+            label={chosen ? t("hr.people.pick_date_first") : t("hr.people.pick_somebody_first")}
             disabled={Boolean(chosen && hireDate)}
-            position="top"
+            side="top"
           >
             {/* A wrapper: a disabled button takes no pointer events of its own,
                 so without this the reason never reaches the person stuck on it. */}

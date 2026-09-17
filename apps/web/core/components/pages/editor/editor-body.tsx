@@ -4,7 +4,7 @@
  * See the LICENSE file for details.
  */
 
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef, useSyncExternalStore } from "react";
 import { observer } from "mobx-react";
 // plane imports
 import { LIVE_BASE_PATH, LIVE_BASE_URL } from "@plane/constants";
@@ -58,7 +58,7 @@ export type TEditorBodyHandlers = {
 type Props = {
   config: TEditorBodyConfig;
   editorReady: boolean;
-  editorForwardRef: React.RefObject<EditorRefApi>;
+  editorForwardRef: React.RefObject<EditorRefApi | null>;
   handleEditorReady: (status: boolean) => void;
   handleOpenNavigationPane: () => void;
   handlers: TEditorBodyHandlers;
@@ -73,6 +73,11 @@ type Props = {
   isFetchingFallbackBinary?: boolean;
   onCollaborationStateChange?: (state: CollaborationState) => void;
 };
+
+// Hydration has nothing to subscribe to: it is over once, and stays over.
+const subscribeToHydration = () => () => {};
+const getHydratedSnapshot = () => true;
+const getServerSnapshot = () => false;
 
 export const PageEditorBody = observer(function PageEditorBody(props: Props) {
   const {
@@ -187,11 +192,14 @@ export const PageEditorBody = observer(function PageEditorBody(props: Props) {
     [setSyncingStatus, onCollaborationStateChange]
   );
 
+  // false on the server and for the render that hydrates its HTML, true from the render after
+  const isHydrated = useSyncExternalStore(subscribeToHydration, getHydratedSnapshot, getServerSnapshot);
+
   const realtimeConfig: TRealtimeConfig | undefined = useMemo(() => {
     // The collaboration URL is derived from window.location, so it can only be
     // built on the client. There is no socket to connect to during SSR anyway —
-    // the config is recomputed on hydration.
-    if (typeof window === "undefined") return undefined;
+    // the config is built once hydration is done, so hydration renders what the server did.
+    if (!isHydrated) return undefined;
 
     // Construct the WebSocket Collaboration URL
     try {
@@ -216,7 +224,7 @@ export const PageEditorBody = observer(function PageEditorBody(props: Props) {
       console.error("Error creating realtime config", error);
       return undefined;
     }
-  }, [webhookConnectionParams]);
+  }, [isHydrated, webhookConnectionParams]);
 
   const userConfig = useMemo(
     () => ({
@@ -240,7 +248,7 @@ export const PageEditorBody = observer(function PageEditorBody(props: Props) {
 
   return (
     <Row
-      className="vertical-scrollbar relative flex scrollbar-md size-full flex-col overflow-x-hidden overflow-y-auto duration-200"
+      className="vertical-scrollbar relative scrollbar-md flex size-full flex-col overflow-x-hidden overflow-y-auto duration-200"
       variant={ERowVariant.HUGGING}
     >
       <div id="page-content-container" className="relative w-full flex-shrink-0">

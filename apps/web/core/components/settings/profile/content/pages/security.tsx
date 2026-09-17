@@ -7,13 +7,15 @@
 import { useState } from "react";
 import { observer } from "mobx-react";
 import { Controller, useForm } from "react-hook-form";
-import { Eye, EyeOff } from "lucide-react";
+import { HideOutline, ShowOutline } from "@makeplane/propel/icons";
 // plane imports
+import { Field } from "@makeplane/propel/components/field";
+import { Input, InputGroup } from "@makeplane/propel/components/input";
 import { E_PASSWORD_STRENGTH } from "@plane/constants";
 import { useTranslation } from "@plane/i18n";
 import { Button } from "@plane/propel/button";
 import { TOAST_TYPE, setToast } from "@plane/propel/toast";
-import { Input, PasswordStrengthIndicator } from "@plane/ui";
+import { PasswordStrengthIndicator } from "@plane/ui";
 import { getPasswordStrength } from "@plane/utils";
 // components
 import { ProfileSettingsHeading } from "@/components/settings/profile/heading";
@@ -44,6 +46,28 @@ const defaultShowPassword = {
   confirmPassword: false,
 };
 
+type TPasswordFieldValues = {
+  oldPassword: string;
+  password: string;
+  confirmPassword: string;
+  oldPasswordRequired: boolean;
+};
+
+const getIsNewPasswordSameAsOldPassword = (oldPassword: string, password: string) =>
+  oldPassword !== "" && password !== "" && password === oldPassword;
+
+const getIsChangePasswordDisabled = (values: TPasswordFieldValues) => {
+  const { oldPassword, password, confirmPassword, oldPasswordRequired } = values;
+  return (
+    getPasswordStrength(password) != E_PASSWORD_STRENGTH.STRENGTH_VALID ||
+    (oldPasswordRequired && oldPassword.trim() === "") ||
+    password.trim() === "" ||
+    confirmPassword.trim() === "" ||
+    password !== confirmPassword ||
+    password === oldPassword
+  );
+};
+
 export const SecurityProfileSettings = observer(function SecurityProfileSettings() {
   // store
   const { data: currentUser, changePassword } = useUser();
@@ -69,7 +93,7 @@ export const SecurityProfileSettings = observer(function SecurityProfileSettings
   // i18n
   const { t } = useTranslation();
 
-  const isNewPasswordSameAsOldPassword = oldPassword !== "" && password !== "" && password === oldPassword;
+  const isNewPasswordSameAsOldPassword = getIsNewPasswordSameAsOldPassword(oldPassword, password);
 
   const handleShowPassword = (key: keyof typeof showPassword) =>
     setShowPassword((prev) => ({ ...prev, [key]: !prev[key] }));
@@ -115,13 +139,7 @@ export const SecurityProfileSettings = observer(function SecurityProfileSettings
     }
   };
 
-  const isButtonDisabled =
-    getPasswordStrength(password) != E_PASSWORD_STRENGTH.STRENGTH_VALID ||
-    (oldPasswordRequired && oldPassword.trim() === "") ||
-    password.trim() === "" ||
-    confirmPassword.trim() === "" ||
-    password !== confirmPassword ||
-    password === oldPassword;
+  const isButtonDisabled = getIsChangePasswordDisabled({ oldPassword, password, confirmPassword, oldPasswordRequired });
 
   const passwordSupport = password.length > 0 &&
     getPasswordStrength(password) != E_PASSWORD_STRENGTH.STRENGTH_VALID && (
@@ -138,38 +156,40 @@ export const SecurityProfileSettings = observer(function SecurityProfileSettings
           {oldPasswordRequired && (
             <div className="flex flex-col gap-y-2">
               <h4 className="text-13">{t("auth.common.password.current_password.label")}</h4>
-              <div className="relative flex items-center rounded-md">
-                <Controller
-                  control={control}
-                  name="old_password"
-                  rules={{
-                    required: t("common.errors.required"),
-                  }}
-                  render={({ field: { value, onChange } }) => (
-                    <Input
-                      id="old_password"
-                      type={showPassword?.oldPassword ? "text" : "password"}
-                      value={value}
-                      onChange={onChange}
-                      placeholder={t("old_password")}
-                      className="w-full"
-                      hasError={Boolean(errors.old_password)}
-                      autoComplete="current-password"
-                    />
-                  )}
-                />
-                {showPassword?.oldPassword ? (
-                  <EyeOff
-                    className="absolute right-3 h-5 w-5 stroke-placeholder hover:cursor-pointer"
-                    onClick={() => handleShowPassword("oldPassword")}
-                  />
-                ) : (
-                  <Eye
-                    className="absolute right-3 h-5 w-5 stroke-placeholder hover:cursor-pointer"
-                    onClick={() => handleShowPassword("oldPassword")}
-                  />
+              <Controller
+                control={control}
+                name="old_password"
+                rules={{
+                  required: t("common.errors.required"),
+                }}
+                render={({ field: { value, onChange } }) => (
+                  <Field name="old_password" invalid={Boolean(errors.old_password)}>
+                    <InputGroup size="2xl">
+                      <Input
+                        size="2xl"
+                        id="old_password"
+                        type={showPassword?.oldPassword ? "text" : "password"}
+                        value={value}
+                        onChange={onChange}
+                        placeholder={t("old_password")}
+                        autoComplete="current-password"
+                      />
+                      <button
+                        type="button"
+                        className="grid size-5 place-items-center"
+                        onClick={() => handleShowPassword("oldPassword")}
+                        aria-label={showPassword?.oldPassword ? "Hide password" : "Show password"}
+                      >
+                        {showPassword?.oldPassword ? (
+                          <HideOutline className="size-5 text-placeholder" />
+                        ) : (
+                          <ShowOutline className="size-5 text-placeholder" />
+                        )}
+                      </button>
+                    </InputGroup>
+                  </Field>
                 )}
-              </div>
+              />
               {errors.old_password && (
                 <span className="text-11 text-danger-primary">{errors.old_password.message}</span>
               )}
@@ -178,40 +198,42 @@ export const SecurityProfileSettings = observer(function SecurityProfileSettings
           <div className="grid gap-x-4 gap-y-7 sm:grid-cols-2">
             <div className="flex flex-col gap-y-2">
               <h4 className="text-13">{t("auth.common.password.new_password.label")}</h4>
-              <div className="relative flex items-center rounded-md">
-                <Controller
-                  control={control}
-                  name="new_password"
-                  rules={{
-                    required: t("common.errors.required"),
-                  }}
-                  render={({ field: { value, onChange } }) => (
-                    <Input
-                      id="new_password"
-                      type={showPassword?.password ? "text" : "password"}
-                      value={value}
-                      placeholder={t("auth.common.password.new_password.placeholder")}
-                      onChange={onChange}
-                      className="w-full"
-                      hasError={Boolean(errors.new_password)}
-                      onFocus={() => setIsPasswordInputFocused(true)}
-                      onBlur={() => setIsPasswordInputFocused(false)}
-                      autoComplete="new-password"
-                    />
-                  )}
-                />
-                {showPassword?.password ? (
-                  <EyeOff
-                    className="absolute right-3 h-5 w-5 stroke-placeholder hover:cursor-pointer"
-                    onClick={() => handleShowPassword("password")}
-                  />
-                ) : (
-                  <Eye
-                    className="absolute right-3 h-5 w-5 stroke-placeholder hover:cursor-pointer"
-                    onClick={() => handleShowPassword("password")}
-                  />
+              <Controller
+                control={control}
+                name="new_password"
+                rules={{
+                  required: t("common.errors.required"),
+                }}
+                render={({ field: { value, onChange } }) => (
+                  <Field name="new_password" invalid={Boolean(errors.new_password)}>
+                    <InputGroup size="2xl">
+                      <Input
+                        size="2xl"
+                        id="new_password"
+                        type={showPassword?.password ? "text" : "password"}
+                        value={value}
+                        placeholder={t("auth.common.password.new_password.placeholder")}
+                        onChange={onChange}
+                        onFocus={() => setIsPasswordInputFocused(true)}
+                        onBlur={() => setIsPasswordInputFocused(false)}
+                        autoComplete="new-password"
+                      />
+                      <button
+                        type="button"
+                        className="grid size-5 place-items-center"
+                        onClick={() => handleShowPassword("password")}
+                        aria-label={showPassword?.password ? "Hide password" : "Show password"}
+                      >
+                        {showPassword?.password ? (
+                          <HideOutline className="size-5 text-placeholder" />
+                        ) : (
+                          <ShowOutline className="size-5 text-placeholder" />
+                        )}
+                      </button>
+                    </InputGroup>
+                  </Field>
                 )}
-              </div>
+              />
               {passwordSupport}
               {errors.new_password && (
                 <span className="text-11 text-danger-primary">{errors.new_password.message}</span>
@@ -224,40 +246,42 @@ export const SecurityProfileSettings = observer(function SecurityProfileSettings
             </div>
             <div className="flex flex-col gap-y-2">
               <h4 className="text-13">{t("auth.common.password.confirm_password.label")}</h4>
-              <div className="relative flex items-center rounded-md">
-                <Controller
-                  control={control}
-                  name="confirm_password"
-                  rules={{
-                    required: t("common.errors.required"),
-                  }}
-                  render={({ field: { value, onChange } }) => (
-                    <Input
-                      id="confirm_password"
-                      type={showPassword?.confirmPassword ? "text" : "password"}
-                      placeholder={t("auth.common.password.confirm_password.placeholder")}
-                      value={value}
-                      onChange={onChange}
-                      className="w-full"
-                      hasError={Boolean(errors.confirm_password)}
-                      onFocus={() => setIsRetryPasswordInputFocused(true)}
-                      onBlur={() => setIsRetryPasswordInputFocused(false)}
-                      autoComplete="new-password"
-                    />
-                  )}
-                />
-                {showPassword?.confirmPassword ? (
-                  <EyeOff
-                    className="absolute right-3 h-5 w-5 stroke-placeholder hover:cursor-pointer"
-                    onClick={() => handleShowPassword("confirmPassword")}
-                  />
-                ) : (
-                  <Eye
-                    className="absolute right-3 h-5 w-5 stroke-placeholder hover:cursor-pointer"
-                    onClick={() => handleShowPassword("confirmPassword")}
-                  />
+              <Controller
+                control={control}
+                name="confirm_password"
+                rules={{
+                  required: t("common.errors.required"),
+                }}
+                render={({ field: { value, onChange } }) => (
+                  <Field name="confirm_password" invalid={Boolean(errors.confirm_password)}>
+                    <InputGroup size="2xl">
+                      <Input
+                        size="2xl"
+                        id="confirm_password"
+                        type={showPassword?.confirmPassword ? "text" : "password"}
+                        placeholder={t("auth.common.password.confirm_password.placeholder")}
+                        value={value}
+                        onChange={onChange}
+                        onFocus={() => setIsRetryPasswordInputFocused(true)}
+                        onBlur={() => setIsRetryPasswordInputFocused(false)}
+                        autoComplete="new-password"
+                      />
+                      <button
+                        type="button"
+                        className="grid size-5 place-items-center"
+                        onClick={() => handleShowPassword("confirmPassword")}
+                        aria-label={showPassword?.confirmPassword ? "Hide password" : "Show password"}
+                      >
+                        {showPassword?.confirmPassword ? (
+                          <HideOutline className="size-5 text-placeholder" />
+                        ) : (
+                          <ShowOutline className="size-5 text-placeholder" />
+                        )}
+                      </button>
+                    </InputGroup>
+                  </Field>
                 )}
-              </div>
+              />
               {!!confirmPassword && password !== confirmPassword && renderPasswordMatchError && (
                 <span className="text-13 text-danger-primary">{t("auth.common.password.errors.match")}</span>
               )}

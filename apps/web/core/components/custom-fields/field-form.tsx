@@ -7,12 +7,13 @@
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 // plane imports
+import { Switch } from "@plane/propel/switch";
 import { CUSTOM_FIELD_TYPES, CUSTOM_FIELD_TYPE_CONFIG_MAP, CUSTOM_FIELD_DEFAULT_WIDTH } from "@plane/constants";
 import { useTranslation } from "@plane/i18n";
 import { Button } from "@plane/propel/button";
 import { ECustomFieldType } from "@plane/types";
 import type { TCustomField } from "@plane/types";
-import { Input, TextArea, ToggleSwitch } from "@plane/ui";
+import { Input, TextArea } from "@plane/ui";
 import { cn } from "@plane/utils";
 // local imports
 import { CustomFieldInput } from "./custom-field-input";
@@ -431,9 +432,7 @@ function ToggleRow({ label, description, control, name }: ToggleRowProps) {
       <Controller
         control={control}
         name={name}
-        render={({ field: { value, onChange } }) => (
-          <ToggleSwitch value={Boolean(value)} onChange={onChange} size="sm" />
-        )}
+        render={({ field: { value, onChange } }) => <Switch value={Boolean(value)} onChange={onChange} size="sm" />}
       />
     </div>
   );

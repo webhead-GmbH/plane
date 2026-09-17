@@ -7,9 +7,10 @@
 import { observer } from "mobx-react";
 import { useParams, useSearchParams } from "next/navigation";
 // components
-import { EUserPermissionsLevel, MODULE_TRACKER_ELEMENTS } from "@plane/constants";
+import { EUserPermissionsLevel } from "@plane/constants";
 import { useTranslation } from "@plane/i18n";
 import { EmptyStateDetailed } from "@plane/propel/empty-state";
+import type { TModuleLayoutOptions } from "@plane/types";
 import { EUserProjectRoles } from "@plane/types";
 import { ContentWrapper, Row, ERowVariant } from "@plane/ui";
 // components
@@ -23,6 +24,22 @@ import { useCommandPalette } from "@/hooks/store/use-command-palette";
 import { useModule } from "@/hooks/store/use-module";
 import { useModuleFilter } from "@/hooks/store/use-module-filter";
 import { useUserPermissions } from "@/hooks/store/user";
+
+type ModulesListLayoutLoaderProps = {
+  layout: TModuleLayoutOptions | undefined;
+};
+
+function ModulesListLayoutLoader(props: ModulesListLayoutLoaderProps) {
+  const { layout } = props;
+
+  return (
+    <>
+      {layout === "list" && <CycleModuleListLayoutLoader />}
+      {layout === "board" && <CycleModuleBoardLayoutLoader />}
+      {layout === "gantt" && <GanttLayoutLoader />}
+    </>
+  );
+}
 
 export const ModulesListView = observer(function ModulesListView() {
   // router
@@ -45,13 +62,7 @@ export const ModulesListView = observer(function ModulesListView() {
   );
 
   if (loader || !projectModuleIds || !filteredModuleIds)
-    return (
-      <>
-        {displayFilters?.layout === "list" && <CycleModuleListLayoutLoader />}
-        {displayFilters?.layout === "board" && <CycleModuleBoardLayoutLoader />}
-        {displayFilters?.layout === "gantt" && <GanttLayoutLoader />}
-      </>
-    );
+    return <ModulesListLayoutLoader layout={displayFilters?.layout} />;
 
   if (projectModuleIds.length === 0)
     return (
@@ -65,7 +76,6 @@ export const ModulesListView = observer(function ModulesListView() {
             onClick: () => toggleCreateModuleModal(true),
             disabled: !canPerformEmptyStateActions,
             variant: "primary",
-            "data-ph-element": MODULE_TRACKER_ELEMENTS.EMPTY_STATE_ADD_BUTTON,
           },
         ]}
       />

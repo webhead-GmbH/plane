@@ -5,11 +5,10 @@
  */
 
 import { observer } from "mobx-react";
-import { Link as Loader } from "lucide-react";
 import { useTranslation } from "@plane/i18n";
-import { LinkIcon, EditIcon, TrashIcon, CloseIcon, ChevronRightIcon } from "@plane/propel/icons";
+import { ChevronRightOutline, CloseOutline, DeleteOutline, EditOutline, LinkOutline } from "@makeplane/propel/icons";
 // plane imports
-import { Tooltip } from "@plane/propel/tooltip";
+import { Tooltip } from "@makeplane/propel/components/tooltip";
 import type { TIssue, TIssueServiceType, TSubIssueOperations } from "@plane/types";
 import { EIssueServiceType, EIssuesStoreType } from "@plane/types";
 import { ControlLink, CustomMenu } from "@plane/ui";
@@ -46,6 +45,89 @@ type Props = {
   storeType?: EIssuesStoreType;
 };
 
+type TSubIssuesListItemMenuProps = {
+  workspaceSlug: string;
+  parentIssueId: string;
+  issue: TIssue;
+  canEdit: boolean;
+  workItemLink: string;
+  handleIssueCrudState: Props["handleIssueCrudState"];
+  subIssueOperations: TSubIssueOperations;
+  issueServiceType: TIssueServiceType;
+};
+
+const SubIssuesListItemMenu = observer(function SubIssuesListItemMenu(props: TSubIssuesListItemMenuProps) {
+  const {
+    workspaceSlug,
+    parentIssueId,
+    issue,
+    canEdit,
+    workItemLink,
+    handleIssueCrudState,
+    subIssueOperations,
+    issueServiceType,
+  } = props;
+  const { t } = useTranslation();
+  const { toggleCreateIssueModal, toggleDeleteIssueModal } = useIssueDetail(issueServiceType);
+
+  return (
+    <CustomMenu placement="bottom-end" ellipsis>
+      {canEdit && (
+        <CustomMenu.MenuItem
+          onClick={() => {
+            handleIssueCrudState("update", parentIssueId, { ...issue });
+            toggleCreateIssueModal(true);
+          }}
+        >
+          <div className="flex items-center gap-2">
+            <EditOutline className="h-3.5 w-3.5" />
+            <span>{t("issue.edit")}</span>
+          </div>
+        </CustomMenu.MenuItem>
+      )}
+
+      <CustomMenu.MenuItem
+        onClick={() => {
+          subIssueOperations.copyLink(workItemLink);
+        }}
+      >
+        <div className="flex items-center gap-2">
+          <LinkOutline className="h-3.5 w-3.5" />
+          <span>{t("issue.copy_link")}</span>
+        </div>
+      </CustomMenu.MenuItem>
+
+      {canEdit && (
+        <CustomMenu.MenuItem
+          onClick={() => {
+            if (issue.project_id)
+              subIssueOperations.removeSubIssue(workspaceSlug, issue.project_id, parentIssueId, issue.id);
+          }}
+        >
+          <div className="flex items-center gap-2">
+            <CloseOutline className="h-3.5 w-3.5" />
+            {issueServiceType === EIssueServiceType.ISSUES ? t("issue.remove.parent.label") : t("issue.remove.label")}
+          </div>
+        </CustomMenu.MenuItem>
+      )}
+
+      {canEdit && (
+        <CustomMenu.MenuItem
+          onClick={() => {
+            handleIssueCrudState("delete", parentIssueId, issue);
+            toggleDeleteIssueModal(issue.id);
+          }}
+        >
+          <div className="flex items-center gap-2">
+            <DeleteOutline className="h-3.5 w-3.5" />
+            <span>{t("issue.delete.label")}</span>
+          </div>
+        </CustomMenu.MenuItem>
+      )}
+    </CustomMenu>
+  );
+});
+
 export const SubIssuesListItem = observer(function SubIssuesListItem(props: Props) {
   const {
     workspaceSlug,
@@ -60,7 +142,6 @@ export const SubIssuesListItem = observer(function SubIssuesListItem(props: Prop
     issueServiceType = EIssueServiceType.ISSUES,
     storeType = EIssuesStoreType.PROJECT,
   } = props;
-  const { t } = useTranslation();
   const {
     issue: { getIssueById },
     subIssues: {
@@ -71,14 +152,13 @@ export const SubIssuesListItem = observer(function SubIssuesListItem(props: Prop
     subIssues: { subIssueHelpersByIssueId, setSubIssueHelpers },
   } = useIssueDetail();
   const { fetchSubIssues } = useSubIssueOperations(EIssueServiceType.ISSUES);
-  const { toggleCreateIssueModal, toggleDeleteIssueModal } = useIssueDetail(issueServiceType);
   const project = useProject();
   const { handleRedirection } = useIssuePeekOverviewRedirection();
   const { isMobile } = usePlatformOS();
   const issue = getIssueById(issueId);
 
   // derived values
-  const projectDetail = (issue && issue.project_id && project.getProjectById(issue.project_id)) || undefined;
+  const projectDetail = issue?.project_id ? project.getProjectById(issue.project_id) : undefined;
 
   const subIssueHelpers = subIssueHelpersByIssueId(parentIssueId);
   const subIssueCount = issue?.sub_issues_count ?? 0;
@@ -122,7 +202,7 @@ export const SubIssuesListItem = observer(function SubIssuesListItem(props: Prop
                 <>
                   {subIssueHelpers.preview_loader.includes(issue.id) ? (
                     <div className="flex h-full w-full cursor-not-allowed items-center justify-center rounded-xs bg-layer-1 transition-all">
-                      <Loader width={14} strokeWidth={2} className="animate-spin" />
+                      <LinkOutline width={14} height={14} className="animate-spin" />
                     </div>
                   ) : (
                     <div
@@ -138,11 +218,10 @@ export const SubIssuesListItem = observer(function SubIssuesListItem(props: Prop
                         setSubIssueHelpers(parentIssueId, "issue_visibility", issueId);
                       }}
                     >
-                      <ChevronRightIcon
+                      <ChevronRightOutline
                         className={cn("size-3.5 transition-all", {
                           "rotate-90": subIssueHelpers.issue_visibility.includes(issue.id),
                         })}
-                        strokeWidth={2.5}
                       />
                     </div>
                   )}
@@ -151,7 +230,7 @@ export const SubIssuesListItem = observer(function SubIssuesListItem(props: Prop
             </div>
 
             <div className="flex w-full cursor-pointer items-center gap-3 truncate">
-              <WithDisplayPropertiesHOC displayProperties={displayProperties || {}} displayPropertyKey="key">
+              <WithDisplayPropertiesHOC displayProperties={displayProperties} displayPropertyKey="key">
                 <div className="flex-shrink-0">
                   {projectDetail && (
                     <IssueIdentifier
@@ -165,7 +244,7 @@ export const SubIssuesListItem = observer(function SubIssuesListItem(props: Prop
                   )}
                 </div>
               </WithDisplayPropertiesHOC>
-              <Tooltip tooltipContent={issue.name} isMobile={isMobile}>
+              <Tooltip label={issue.name} layout="stacked" disabled={isMobile}>
                 <span className="w-0 flex-1 truncate text-13 text-primary">{issue.name}</span>
               </Tooltip>
             </div>
@@ -189,62 +268,16 @@ export const SubIssuesListItem = observer(function SubIssuesListItem(props: Prop
             </div>
 
             <div className="flex-shrink-0 text-13">
-              <CustomMenu placement="bottom-end" ellipsis>
-                {canEdit && (
-                  <CustomMenu.MenuItem
-                    onClick={() => {
-                      handleIssueCrudState("update", parentIssueId, { ...issue });
-                      toggleCreateIssueModal(true);
-                    }}
-                  >
-                    <div className="flex items-center gap-2">
-                      <EditIcon className="h-3.5 w-3.5" strokeWidth={2} />
-                      <span>{t("issue.edit")}</span>
-                    </div>
-                  </CustomMenu.MenuItem>
-                )}
-
-                <CustomMenu.MenuItem
-                  onClick={() => {
-                    subIssueOperations.copyLink(workItemLink);
-                  }}
-                >
-                  <div className="flex items-center gap-2">
-                    <LinkIcon className="h-3.5 w-3.5" strokeWidth={2} />
-                    <span>{t("issue.copy_link")}</span>
-                  </div>
-                </CustomMenu.MenuItem>
-
-                {canEdit && (
-                  <CustomMenu.MenuItem
-                    onClick={() => {
-                      if (issue.project_id)
-                        subIssueOperations.removeSubIssue(workspaceSlug, issue.project_id, parentIssueId, issue.id);
-                    }}
-                  >
-                    <div className="flex items-center gap-2">
-                      <CloseIcon className="h-3.5 w-3.5" strokeWidth={2} />
-                      {issueServiceType === EIssueServiceType.ISSUES
-                        ? t("issue.remove.parent.label")
-                        : t("issue.remove.label")}
-                    </div>
-                  </CustomMenu.MenuItem>
-                )}
-
-                {canEdit && (
-                  <CustomMenu.MenuItem
-                    onClick={() => {
-                      handleIssueCrudState("delete", parentIssueId, issue);
-                      toggleDeleteIssueModal(issue.id);
-                    }}
-                  >
-                    <div className="flex items-center gap-2">
-                      <TrashIcon className="h-3.5 w-3.5" strokeWidth={2} />
-                      <span>{t("issue.delete.label")}</span>
-                    </div>
-                  </CustomMenu.MenuItem>
-                )}
-              </CustomMenu>
+              <SubIssuesListItemMenu
+                workspaceSlug={workspaceSlug}
+                parentIssueId={parentIssueId}
+                issue={issue}
+                canEdit={canEdit}
+                workItemLink={workItemLink}
+                handleIssueCrudState={handleIssueCrudState}
+                subIssueOperations={subIssueOperations}
+                issueServiceType={issueServiceType}
+              />
             </div>
           </div>
         )}

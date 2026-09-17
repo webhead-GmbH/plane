@@ -8,21 +8,21 @@ import type { ReactNode } from "react";
 import { useRef, useState } from "react";
 import { observer } from "mobx-react";
 import { usePopper } from "react-popper";
-import { Combobox } from "@headlessui/react";
 // plane imports
 import { useTranslation } from "@plane/i18n";
-import { SearchIcon, StateGroupIcon, ChevronDownIcon } from "@plane/propel/icons";
+import { StateGroupIcon } from "@plane/propel/icons";
+import { ChevronDownOutline } from "@makeplane/propel/icons";
 import type { IState } from "@plane/types";
 import { ComboDropDown, Spinner } from "@plane/ui";
 import { cn } from "@plane/utils";
 // components
 import { DropdownButton } from "@/components/dropdowns/buttons";
 import { BUTTON_VARIANTS_WITH_TEXT } from "@/components/dropdowns/constants";
-import type { TDropdownProps } from "@/components/dropdowns/types";
+import type { TButtonVariants, TDropdownProps } from "@/components/dropdowns/types";
 // hooks
 import { useDropdown } from "@/hooks/use-dropdown";
-// plane web imports
-import { StateOption } from "@/components/workflow";
+// local imports
+import { StateDropdownOptions } from "./state-options";
 
 export type TWorkItemStateDropdownBaseProps = TDropdownProps & {
   alwaysAllowStateChange?: boolean;
@@ -43,6 +43,46 @@ export type TWorkItemStateDropdownBaseProps = TDropdownProps & {
   stateIds: string[];
   value: string | undefined | null;
 };
+
+type TWorkItemStateButtonContentProps = {
+  buttonVariant: TButtonVariants;
+  dropdownArrow: boolean;
+  dropdownArrowClassName: string;
+  hideIcon: boolean;
+  iconSize: string;
+  isInitializing: boolean;
+  selectedState: IState | undefined;
+};
+
+const WorkItemStateButtonContent = observer(function WorkItemStateButtonContent(
+  props: TWorkItemStateButtonContentProps
+) {
+  const { buttonVariant, dropdownArrow, dropdownArrowClassName, hideIcon, iconSize, isInitializing, selectedState } =
+    props;
+  // plane hooks
+  const { t } = useTranslation();
+
+  if (isInitializing) return <Spinner className="h-3.5 w-3.5" />;
+
+  return (
+    <>
+      {!hideIcon && (
+        <StateGroupIcon
+          stateGroup={selectedState?.group ?? "backlog"}
+          color={selectedState?.color ?? "var(--text-color-tertiary)"}
+          className={cn("flex-shrink-0", iconSize)}
+          percentage={selectedState?.order}
+        />
+      )}
+      {BUTTON_VARIANTS_WITH_TEXT.includes(buttonVariant) && (
+        <span className="flex-grow truncate text-left">{selectedState?.name ?? t("state")}</span>
+      )}
+      {dropdownArrow && (
+        <ChevronDownOutline className={cn("h-2.5 w-2.5 flex-shrink-0", dropdownArrowClassName)} aria-hidden="true" />
+      )}
+    </>
+  );
+});
 
 export const WorkItemStateDropdownBase = observer(function WorkItemStateDropdownBase(
   props: TWorkItemStateDropdownBaseProps
@@ -136,71 +176,57 @@ export const WorkItemStateDropdownBase = observer(function WorkItemStateDropdown
     handleClose();
   };
 
-  const comboButton = (
-    <>
-      {button ? (
-        <button
-          ref={setReferenceElement}
-          type="button"
-          className={cn("clickable block h-full w-full outline-none", buttonContainerClassName)}
-          onClick={handleOnClick}
-          disabled={disabled}
-          tabIndex={tabIndex}
-        >
-          {button}
-        </button>
-      ) : (
-        <button
-          tabIndex={tabIndex}
-          ref={setReferenceElement}
-          type="button"
-          className={cn(
-            "clickable block h-full max-w-full outline-none",
-            {
-              "cursor-not-allowed text-secondary": disabled,
-              "cursor-pointer": !disabled,
-            },
-            buttonContainerClassName
-          )}
-          onClick={handleOnClick}
-          disabled={disabled}
-        >
-          <DropdownButton
-            className={buttonClassName}
-            isActive={isOpen}
-            tooltipHeading={t("state")}
-            tooltipContent={selectedState?.name ?? t("state")}
-            showTooltip={showTooltip}
-            variant={buttonVariant}
-            renderToolTipByDefault={renderByDefault}
-          >
-            {isInitializing ? (
-              <Spinner className="h-3.5 w-3.5" />
-            ) : (
-              <>
-                {!hideIcon && (
-                  <StateGroupIcon
-                    stateGroup={selectedState?.group ?? "backlog"}
-                    color={selectedState?.color ?? "var(--text-color-tertiary)"}
-                    className={cn("flex-shrink-0", iconSize)}
-                    percentage={selectedState?.order}
-                  />
-                )}
-                {BUTTON_VARIANTS_WITH_TEXT.includes(buttonVariant) && (
-                  <span className="flex-grow truncate text-left">{selectedState?.name ?? t("state")}</span>
-                )}
-                {dropdownArrow && (
-                  <ChevronDownIcon
-                    className={cn("h-2.5 w-2.5 flex-shrink-0", dropdownArrowClassName)}
-                    aria-hidden="true"
-                  />
-                )}
-              </>
-            )}
-          </DropdownButton>
-        </button>
+  const comboButton = button ? (
+    <button
+      ref={setReferenceElement}
+      type="button"
+      className={cn("clickable block h-full w-full outline-none", buttonContainerClassName)}
+      onClick={handleOnClick}
+      disabled={disabled}
+      tabIndex={tabIndex}
+      aria-haspopup="listbox"
+      aria-expanded={isOpen}
+    >
+      {button}
+    </button>
+  ) : (
+    <button
+      tabIndex={tabIndex}
+      ref={setReferenceElement}
+      type="button"
+      className={cn(
+        "clickable block h-full max-w-full outline-none",
+        {
+          "cursor-not-allowed text-secondary": disabled,
+          "cursor-pointer": !disabled,
+        },
+        buttonContainerClassName
       )}
-    </>
+      onClick={handleOnClick}
+      disabled={disabled}
+      aria-haspopup="listbox"
+      aria-expanded={isOpen}
+    >
+      <DropdownButton
+        className={buttonClassName}
+        isActive={isOpen}
+        tooltipHeading={t("state")}
+        tooltipContent={selectedState?.name ?? t("state")}
+        showTooltip={showTooltip}
+        variant={buttonVariant}
+        renderToolTipByDefault={renderByDefault}
+      >
+        <WorkItemStateButtonContent
+          buttonVariant={buttonVariant}
+          dropdownArrow={dropdownArrow}
+          dropdownArrowClassName={dropdownArrowClassName}
+          hideIcon={hideIcon}
+          iconSize={iconSize}
+          isInitializing={isInitializing}
+          selectedState={selectedState}
+        />
+      </DropdownButton>
+    </button>
   );
 
   return (
@@ -217,47 +243,18 @@ export const WorkItemStateDropdownBase = observer(function WorkItemStateDropdown
       renderByDefault={renderByDefault}
     >
       {isOpen && (
-        <Combobox.Options className="fixed z-10" static>
-          <div
-            className="my-1 w-48 rounded-sm border-[0.5px] border-strong bg-surface-1 px-2 py-2.5 text-11 shadow-raised-200 focus:outline-none"
-            ref={setPopperElement}
-            style={styles.popper}
-            {...attributes.popper}
-          >
-            <div className="flex items-center gap-1.5 rounded-sm border border-subtle bg-surface-2 px-2">
-              <SearchIcon className="h-3.5 w-3.5 text-placeholder" strokeWidth={1.5} />
-              <Combobox.Input
-                as="input"
-                ref={inputRef}
-                className="w-full bg-transparent py-1 text-11 text-secondary placeholder:text-placeholder focus:outline-none"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder={t("common.search.label")}
-                displayValue={(assigned: any) => assigned?.name}
-                onKeyDown={searchInputKeyDown}
-              />
-            </div>
-            <div className="mt-2 max-h-48 space-y-1 overflow-y-scroll">
-              {filteredOptions ? (
-                filteredOptions.length > 0 ? (
-                  filteredOptions.map((option) => (
-                    <StateOption
-                      {...props}
-                      key={option.value}
-                      option={option}
-                      selectedValue={value}
-                      className="flex w-full cursor-pointer items-center justify-between gap-2 truncate rounded-sm px-1 py-1.5 select-none"
-                    />
-                  ))
-                ) : (
-                  <p className="px-1.5 py-1 text-placeholder italic">{t("no_matching_results")}</p>
-                )
-              ) : (
-                <p className="px-1.5 py-1 text-placeholder italic">{t("loading")}</p>
-              )}
-            </div>
-          </div>
-        </Combobox.Options>
+        <StateDropdownOptions
+          filteredOptions={filteredOptions}
+          inputRef={inputRef}
+          popperAttributes={attributes.popper}
+          popperStyle={styles.popper}
+          query={query}
+          searchInputKeyDown={searchInputKeyDown}
+          setPopperElement={setPopperElement}
+          setQuery={setQuery}
+          stateOptionProps={props}
+          value={value}
+        />
       )}
     </ComboDropDown>
   );

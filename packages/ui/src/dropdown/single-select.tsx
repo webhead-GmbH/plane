@@ -11,11 +11,13 @@ import { usePopper } from "react-popper";
 // plane imports
 import { useOutsideClickDetector } from "@plane/hooks";
 // local imports
-import { useDropdownKeyPressed } from "../hooks/use-dropdown-key-pressed";
+import { ComboboxOptionsPanel } from "../dropdowns/combobox-options-panel";
+import { useCloseOnOptionClick } from "../dropdowns/use-close-on-option-click";
 import { cn } from "../utils";
 import { DropdownButton } from "./common";
 import { DropdownOptions } from "./common/options";
 import type { ISingleSelectDropdown } from "./dropdown";
+import { useOptionsKeyboard } from "./use-options-keyboard";
 
 export function Dropdown(props: ISingleSelectDropdown) {
   const {
@@ -75,12 +77,6 @@ export function Dropdown(props: ISingleSelectDropdown) {
     if (isOpen) onClose?.();
   };
 
-  const handleOnClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    e.stopPropagation();
-    e.preventDefault();
-    toggleDropdown();
-  };
-
   const handleClose = () => {
     if (!isOpen) return;
     setIsOpen(false);
@@ -109,23 +105,45 @@ export function Dropdown(props: ISingleSelectDropdown) {
   }, [query, options]);
 
   // hooks
-  const handleKeyDown = useDropdownKeyPressed(toggleDropdown, handleClose);
+  const { trackOpenSource, focusOptionOnOpen, handleKeyDown, closeFromSearch } = useOptionsKeyboard({
+    disableSearch,
+    options: sortedOptions,
+    keyExtractor,
+    onSelect: onChange,
+    onToggle: toggleDropdown,
+    onClose: handleClose,
+    triggerElement: referenceElement,
+  });
 
   useOutsideClickDetector(dropdownRef, handleClose, true);
+
+  const handleOnClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    e.stopPropagation();
+    e.preventDefault();
+    trackOpenSource(e);
+    toggleDropdown();
+  };
+
+  // close once the click that picked an option has finished
+  useCloseOnOptionClick(popperElement, handleClose, isOpen);
 
   return (
     <Combobox
       as="div"
       ref={dropdownRef}
       value={value}
-      onChange={onChange}
+      // Headless UI v2 widens a non-multiple Combobox to `T | null`. v1 never emitted
+      // null, so drop it here and keep this component's non-nullable onChange contract.
+      onChange={(selected) => {
+        if (selected !== null) onChange(selected);
+      }}
       className={cn(
         "h-full",
         typeof containerClassName === "function" ? containerClassName(isOpen) : containerClassName
       )}
-      tabIndex={tabIndex}
-      onKeyDown={handleKeyDown}
       disabled={disabled}
+      // opens Headless UI's list state as the search box takes focus, so its arrow keys and Enter work
+      immediate
     >
       <DropdownButton
         value={value}
@@ -136,16 +154,25 @@ export function Dropdown(props: ISingleSelectDropdown) {
         buttonClassName={buttonClassName}
         buttonContainerClassName={buttonContainerClassName}
         disabled={disabled}
+        tabIndex={tabIndex}
       />
-
       {isOpen && (
-        <Combobox.Options className="fixed z-10" static>
-          <div
+        // not modal: the search box sits inside the list, and Headless UI's modal mode makes everything
+        // beside the focused box inert, the options included
+        <Combobox.Options
+          as="ul"
+          className="fixed z-10"
+          static
+          modal={false}
+          ref={focusOptionOnOpen}
+          onKeyDown={handleKeyDown}
+        >
+          <ComboboxOptionsPanel
             className={cn(
               "my-1 w-48 rounded-sm border-[0.5px] border-strong bg-surface-1 px-2 py-2 text-11 shadow-raised-200 focus:outline-none",
               optionsContainerClassName
             )}
-            ref={setPopperElement}
+            panelRef={setPopperElement}
             style={styles.popper}
             {...attributes.popper}
           >
@@ -163,9 +190,9 @@ export function Dropdown(props: ISingleSelectDropdown) {
               value={value}
               renderItem={renderItem}
               loader={loader}
-              handleClose={handleClose}
+              handleClose={closeFromSearch}
             />
-          </div>
+          </ComboboxOptionsPanel>
         </Combobox.Options>
       )}
     </Combobox>

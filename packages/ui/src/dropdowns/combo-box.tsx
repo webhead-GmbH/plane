@@ -6,7 +6,7 @@
 
 import { Combobox } from "@headlessui/react";
 import type { ElementType, KeyboardEventHandler, ReactNode, Ref } from "react";
-import React, { Fragment, forwardRef, useEffect, useRef, useState } from "react";
+import React, { forwardRef, useEffect, useRef, useState } from "react";
 
 type Props = {
   as?: ElementType | undefined;
@@ -58,16 +58,14 @@ const ComboDropDown = forwardRef(function ComboDropDown(props: Props, ref) {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-expect-error
     <Combobox {...rest} ref={ref}>
-      <Combobox.Button as={Fragment}>{button}</Combobox.Button>
+      {/* The trigger stays a plain button: Combobox.Button would force tabIndex -1 on it and swallow
+          Enter, Space and ArrowDown, so keyboard users could neither reach nor open the dropdown. */}
+      {button}
       {children}
     </Combobox>
   );
 });
 
-const ComboOptions = Combobox.Options;
-const ComboOption = Combobox.Option;
-const ComboInput = Combobox.Input;
-
 ComboDropDown.displayName = "ComboDropDown";
 
-export { ComboDropDown, ComboOptions, ComboOption, ComboInput };
+export { ComboDropDown };

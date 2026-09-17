@@ -12,7 +12,7 @@ export type TResponsiveTabLayout = {
   overflowItems: TNavigationItem[];
   hasOverflow: boolean;
   itemRefs: React.MutableRefObject<(HTMLDivElement | null)[]>;
-  containerRef: (node: HTMLDivElement | null) => void;
+  containerRef: React.RefCallback<HTMLDivElement>;
 };
 
 type UseResponsiveTabLayoutProps = {
@@ -38,7 +38,6 @@ export const useResponsiveTabLayout = ({
 }: UseResponsiveTabLayoutProps): TResponsiveTabLayout => {
   // Refs for measuring items
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const resizeObserverRef = useRef<ResizeObserver | null>(null);
 
   // State for responsive behavior
   const [containerWidth, setContainerWidth] = useState<number>(0);
@@ -48,20 +47,9 @@ export const useResponsiveTabLayout = ({
   const gap = 4; // gap-1 = 4px
   const overflowButtonWidth = 40;
 
-  // Callback ref that sets up ResizeObserver when element is attached
-  const containerRef = useCallback((node: HTMLDivElement | null) => {
-    // Clean up previous observer if it exists
-    if (resizeObserverRef.current) {
-      resizeObserverRef.current.disconnect();
-      resizeObserverRef.current = null;
-    }
-
-    // If node is null (unmounting), just clean up
-    if (!node) {
-      setContainerWidth(0);
-      return;
-    }
-
+  // Callback ref that sets up ResizeObserver when element is attached.
+  // Because it returns a cleanup, React never calls it with null: the cleanup runs on detach instead.
+  const containerRef = useCallback((node: HTMLDivElement) => {
     // Set initial width immediately
     setContainerWidth(node.offsetWidth);
 
@@ -71,21 +59,14 @@ export const useResponsiveTabLayout = ({
         setContainerWidth(entry.contentRect.width);
       }
     });
-
-    resizeObserverRef.current = resizeObserver;
     resizeObserver.observe(node);
-  }, []); // Empty deps - callback function remains stable
 
-  // Cleanup effect to disconnect observer on component unmount
-  useEffect(
-    () => () => {
-      if (resizeObserverRef.current) {
-        resizeObserverRef.current.disconnect();
-        resizeObserverRef.current = null;
-      }
-    },
-    []
-  );
+    // Disconnect the observer when the element is detached or the component unmounts
+    return () => {
+      resizeObserver.disconnect();
+      setContainerWidth(0);
+    };
+  }, []); // Empty deps - callback function remains stable
 
   // Calculate how many items can fit
   useEffect(() => {

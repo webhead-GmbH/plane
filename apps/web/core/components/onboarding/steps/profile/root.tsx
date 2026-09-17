@@ -7,7 +7,7 @@
 import { useMemo, useState } from "react";
 import { observer } from "mobx-react";
 import { Controller, useForm } from "react-hook-form";
-import { ImageIcon } from "lucide-react";
+import { ImageOutline } from "@makeplane/propel/icons";
 // plane imports
 import { E_PASSWORD_STRENGTH } from "@plane/constants";
 import { Button } from "@plane/propel/button";
@@ -51,6 +51,39 @@ const defaultValues: Partial<TProfileSetupFormValues> = {
   password: undefined,
   confirm_password: undefined,
   has_marketing_email_consent: true,
+};
+
+type TProfileSubmitState = {
+  password: string | undefined;
+  confirmPassword: string | undefined;
+  isSubmitting: boolean;
+  isValid: boolean;
+  isPasswordAlreadySetup: boolean;
+};
+
+// Check for all available fields validation and if password field is available, then checks for password validation (strength + confirmation).
+// Also handles the condition for optional password i.e if password field is optional it only checks for above validation if it's not empty.
+const useIsProfileSubmitDisabled = (state: TProfileSubmitState) => {
+  const { isSubmitting, isValid, isPasswordAlreadySetup } = state;
+  const currentPassword = state.password || undefined;
+  const currentConfirmPassword = state.confirmPassword || undefined;
+
+  const isValidPassword = useMemo(() => {
+    if (currentPassword) {
+      if (
+        currentPassword === currentConfirmPassword &&
+        getPasswordStrength(currentPassword) === E_PASSWORD_STRENGTH.STRENGTH_VALID
+      ) {
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      return true;
+    }
+  }, [currentPassword, currentConfirmPassword]);
+
+  return !isSubmitting && isValid ? (isPasswordAlreadySetup ? false : isValidPassword ? false : true) : true;
 };
 
 export const ProfileSetupStep = observer(function ProfileSetupStep({ handleStepChange }: Props) {
@@ -121,28 +154,13 @@ export const ProfileSetupStep = observer(function ProfileSetupStep({ handleStepC
 
   // derived values
   const isPasswordAlreadySetup = !user?.is_password_autoset;
-  const currentPassword = watch("password") || undefined;
-  const currentConfirmPassword = watch("confirm_password") || undefined;
-
-  const isValidPassword = useMemo(() => {
-    if (currentPassword) {
-      if (
-        currentPassword === currentConfirmPassword &&
-        getPasswordStrength(currentPassword) === E_PASSWORD_STRENGTH.STRENGTH_VALID
-      ) {
-        return true;
-      } else {
-        return false;
-      }
-    } else {
-      return true;
-    }
-  }, [currentPassword, currentConfirmPassword]);
-
-  // Check for all available fields validation and if password field is available, then checks for password validation (strength + confirmation).
-  // Also handles the condition for optional password i.e if password field is optional it only checks for above validation if it's not empty.
-  const isButtonDisabled =
-    !isSubmitting && isValid ? (isPasswordAlreadySetup ? false : isValidPassword ? false : true) : true;
+  const isButtonDisabled = useIsProfileSubmitDisabled({
+    password: watch("password"),
+    confirmPassword: watch("confirm_password"),
+    isSubmitting,
+    isValid,
+    isPasswordAlreadySetup,
+  });
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-10">
@@ -189,7 +207,7 @@ export const ProfileSetupStep = observer(function ProfileSetupStep({ handleStepC
           type="button"
           onClick={() => setIsImageUploadModalOpen(true)}
         >
-          <ImageIcon className="size-4" />
+          <ImageOutline className="size-4" />
           <span className="text-13">{userAvatar ? "Change image" : "Upload image"}</span>
         </button>
       </div>

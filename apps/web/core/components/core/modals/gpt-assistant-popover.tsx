@@ -5,17 +5,18 @@
  */
 
 import type { Ref } from "react";
-import React, { useEffect, useState, useRef, Fragment } from "react";
+import React, { useEffect, useLayoutEffect, useState, useRef, Fragment } from "react";
 import type { Placement } from "@popperjs/core";
 import { Controller, useForm } from "react-hook-form"; // services
 import { usePopper } from "react-popper";
-import { AlertCircle } from "lucide-react";
+import { WarningCircleOutline } from "@makeplane/propel/icons";
 import { Popover, Transition } from "@headlessui/react";
 // plane imports
+import { Input, InputGroup } from "@makeplane/propel/components/input";
 import type { EditorRefApi } from "@plane/editor";
 import { Button } from "@plane/propel/button";
 import { TOAST_TYPE, setToast } from "@plane/propel/toast";
-import { Input } from "@plane/ui";
+
 // components
 import { RichTextEditor } from "@/components/editor/rich-text";
 // services
@@ -151,17 +152,25 @@ export function GptAssistantPopover(props: Props) {
     responseRef.current?.setEditorValue(`<p>${response}</p>`);
   }, [response, responseRef]);
 
+  // The window key listeners call this render's handlers through a ref, so they stay bound while the
+  // popover is open instead of being removed and re-added on every render.
+  const keyPressHandlersRef = useRef({ handleAIResponse, onClose });
+
+  useLayoutEffect(() => {
+    keyPressHandlersRef.current = { handleAIResponse, onClose };
+  });
+
   useEffect(() => {
     const handleEnterKeyPress = (event: KeyboardEvent) => {
       if (event.key === "Enter" && !event.shiftKey) {
         event.preventDefault();
-        handleSubmit(handleAIResponse)();
+        handleSubmit(keyPressHandlersRef.current.handleAIResponse)();
       }
     };
 
     const handleEscapeKeyPress = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        onClose();
+        keyPressHandlersRef.current.onClose();
       }
     };
 
@@ -174,8 +183,7 @@ export function GptAssistantPopover(props: Props) {
       window.removeEventListener("keydown", handleEnterKeyPress);
       window.removeEventListener("keydown", handleEscapeKeyPress);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOpen, handleSubmit, onClose]);
+  }, [isOpen, handleSubmit]);
 
   const responseActionButton = response !== "" && (
     <Button
@@ -260,19 +268,21 @@ export function GptAssistantPopover(props: Props) {
             control={control}
             name="task"
             render={({ field: { value, onChange, ref } }) => (
-              <Input
-                id="task"
-                name="task"
-                type="text"
-                value={value}
-                onChange={onChange}
-                ref={ref}
-                placeholder={`${
-                  prompt && prompt !== "" ? "Tell AI what action to perform on this content..." : "Ask AI anything..."
-                }`}
-                className="w-full"
-                autoFocus
-              />
+              <InputGroup size="2xl">
+                <Input
+                  size="2xl"
+                  id="task"
+                  name="task"
+                  type="text"
+                  value={value}
+                  onChange={onChange}
+                  ref={ref}
+                  placeholder={`${
+                    prompt && prompt !== "" ? "Tell AI what action to perform on this content..." : "Ask AI anything..."
+                  }`}
+                  autoFocus
+                />
+              </InputGroup>
             )}
           />
           <div className="flex justify-between gap-2">
@@ -281,7 +291,7 @@ export function GptAssistantPopover(props: Props) {
             ) : (
               <>
                 <div className="flex items-start justify-center gap-2 text-13 text-accent-primary">
-                  <AlertCircle className="h-4 w-4" />
+                  <WarningCircleOutline className="h-4 w-4" />
                   <p>By using this feature, you consent to sharing the message with a 3rd party service. </p>
                 </div>
               </>

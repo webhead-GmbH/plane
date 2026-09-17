@@ -12,8 +12,8 @@ import type { LucideIcon } from "lucide-react";
 import type { ISvgIcons } from "@plane/propel/icons";
 
 type Props = {
+  children: string;
   isActive: boolean;
-  label: string;
 } & ({ as: "button"; onClick: () => void } | { as: "link"; href: string }) &
   (
     | {
@@ -23,7 +23,7 @@ type Props = {
   );
 
 export function SettingsSidebarItem(props: Props) {
-  const { as, isActive, label } = props;
+  const { as, children, isActive } = props;
   // common class
   const className = cn(
     "flex items-center gap-2 rounded-lg px-2 py-1.5 text-left text-body-sm-medium text-secondary transition-colors",
@@ -40,7 +40,7 @@ export function SettingsSidebarItem(props: Props) {
       ) : (
         props.iconNode
       )}
-      <span className="truncate">{label}</span>
+      <span className="truncate">{children}</span>
     </>
   );
 
