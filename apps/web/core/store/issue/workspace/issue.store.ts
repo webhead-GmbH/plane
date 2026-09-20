@@ -123,10 +123,10 @@ export class WorkspaceIssues extends BaseIssuesStore implements IWorkspaceIssues
       this.onfetchIssues(response, options, workspaceSlug, undefined, undefined, !isExistingPaginationOptions);
       return response;
     } catch (error) {
-      // a newer fetch superseded this one, so it owns the loader now and nothing here failed
-      if (signal?.aborted) return undefined;
       // set loader to undefined if errored out
       this.setLoader(undefined);
+      // a newer fetch superseded this one: the cancellation is not a failure anyone has to handle
+      if (signal?.aborted) return undefined;
       throw error;
     }
   };

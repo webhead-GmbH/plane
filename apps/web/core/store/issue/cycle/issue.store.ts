@@ -213,10 +213,10 @@ export class CycleIssues extends BaseIssuesStore implements ICycleIssues {
       this.onfetchIssues(response, options, workspaceSlug, projectId, cycleId, !isExistingPaginationOptions);
       return response;
     } catch (error) {
-      // a newer fetch superseded this one, so it owns the loader now and nothing here failed
-      if (signal?.aborted) return undefined;
       // set loader to undefined once errored out
       this.setLoader(undefined);
+      // a newer fetch superseded this one: the cancellation is not a failure anyone has to handle
+      if (signal?.aborted) return undefined;
       throw error;
     }
   };
