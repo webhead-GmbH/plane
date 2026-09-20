@@ -8,11 +8,11 @@ import { useState } from "react";
 import { observer } from "mobx-react";
 import { useParams } from "next/navigation";
 import useSWR, { mutate } from "swr";
-import { CheckCircle } from "lucide-react";
+import { TickCircleOutline } from "@makeplane/propel/icons";
 import { EUserPermissions, EUserPermissionsLevel } from "@plane/constants";
 import { Button } from "@plane/propel/button";
 import { TOAST_TYPE, setToast } from "@plane/propel/toast";
-import { Tooltip } from "@plane/propel/tooltip";
+import { Tooltip } from "@makeplane/propel/components/tooltip";
 import type { IAppIntegration, IWorkspaceIntegration } from "@plane/types";
 // ui
 import { Loader } from "@plane/ui";
@@ -48,6 +48,56 @@ const integrationDetails: { [key: string]: any } = {
 
 // services
 const integrationService = new IntegrationService();
+
+type TIntegrationCardActionProps = {
+  isInstalled: boolean;
+  isUserAdmin: boolean;
+  isMobile: boolean;
+  deletingIntegration: boolean;
+  isInstalling: boolean;
+  handleRemoveIntegration: () => void;
+  startAuth: () => void;
+};
+
+function IntegrationCardAction(props: TIntegrationCardActionProps) {
+  const { isInstalled, isUserAdmin, isMobile, deletingIntegration, isInstalling, handleRemoveIntegration, startAuth } =
+    props;
+  // derived values
+  const permissionTooltipLabel = !isUserAdmin ? "You don't have permission to perform this" : "";
+  const isPermissionTooltipDisabled = isUserAdmin || isMobile;
+  const buttonClassName = `${!isUserAdmin ? "hover:cursor-not-allowed" : ""}`;
+
+  return isInstalled ? (
+    <Tooltip label={permissionTooltipLabel} layout="stacked" disabled={isPermissionTooltipDisabled}>
+      <Button
+        className={buttonClassName}
+        variant="error-fill"
+        onClick={() => {
+          if (!isUserAdmin) return;
+          handleRemoveIntegration();
+        }}
+        disabled={!isUserAdmin}
+        loading={deletingIntegration}
+      >
+        {deletingIntegration ? "Uninstalling..." : "Uninstall"}
+      </Button>
+    </Tooltip>
+  ) : (
+    <Tooltip label={permissionTooltipLabel} layout="stacked" disabled={isPermissionTooltipDisabled}>
+      <Button
+        className={buttonClassName}
+        variant="primary"
+        onClick={() => {
+          if (!isUserAdmin) return;
+          startAuth();
+        }}
+        loading={isInstalling}
+      >
+        {isInstalling ? "Installing..." : "Install"}
+      </Button>
+    </Tooltip>
+  );
+}
 
 export const SingleIntegrationCard = observer(function SingleIntegrationCard({ integration }: Props) {
   // states
@@ -124,7 +174,7 @@ export const SingleIntegrationCard = observer(function SingleIntegrationCard({ i
           <h3 className="flex items-center gap-2 text-body-xs-medium">
             {integration.title}
             {workspaceIntegrations
-              ? isInstalled && <CheckCircle className="h-3.5 w-3.5 fill-transparent text-success-primary" />
+              ? isInstalled && <TickCircleOutline className="h-3.5 w-3.5 fill-transparent text-success-primary" />
               : null}
           </h3>
           <p className="text-body-xs-regular text-secondary">
@@ -138,44 +188,15 @@ export const SingleIntegrationCard = observer(function SingleIntegrationCard({ i
       </div>
 
       {workspaceIntegrations ? (
-        isInstalled ? (
-          <Tooltip
-            isMobile={isMobile}
-            disabled={isUserAdmin}
-            tooltipContent={!isUserAdmin ? "You don't have permission to perform this" : null}
-          >
-            <Button
-              className={`${!isUserAdmin ? "hover:cursor-not-allowed" : ""}`}
-              variant="error-fill"
-              onClick={() => {
-                if (!isUserAdmin) return;
-                handleRemoveIntegration();
-              }}
-              disabled={!isUserAdmin}
-              loading={deletingIntegration}
-            >
-              {deletingIntegration ? "Uninstalling..." : "Uninstall"}
-            </Button>
-          </Tooltip>
-        ) : (
-          <Tooltip
-            isMobile={isMobile}
-            disabled={isUserAdmin}
-            tooltipContent={!isUserAdmin ? "You don't have permission to perform this" : null}
-          >
-            <Button
-              className={`${!isUserAdmin ? "hover:cursor-not-allowed" : ""}`}
-              variant="primary"
-              onClick={() => {
-                if (!isUserAdmin) return;
-                startAuth();
-              }}
-              loading={isInstalling}
-            >
-              {isInstalling ? "Installing..." : "Install"}
-            </Button>
-          </Tooltip>
-        )
+        <IntegrationCardAction
+          isInstalled={!!isInstalled}
+          isUserAdmin={isUserAdmin}
+          isMobile={isMobile}
+          deletingIntegration={deletingIntegration}
+          isInstalling={isInstalling}
+          handleRemoveIntegration={handleRemoveIntegration}
+          startAuth={startAuth}
+        />
       ) : (
         <Loader>
           <Loader.Item height="32px" width="64px" />

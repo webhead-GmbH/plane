@@ -6,22 +6,25 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { observer } from "mobx-react";
-import { Clock, FileStack, MoreHorizontal, MoveRight } from "lucide-react";
+import {
+  ArrowNarrowRightOutline,
+  ChevronDownOutline,
+  ChevronUpOutline,
+  ClockOutline,
+  CloseCircleFilled,
+  CopyOutline,
+  DeleteOutline,
+  DuplicateOfOutline,
+  LinkOutline,
+  MoreHorizontalOutline,
+  NewTabOutline,
+  TickCircleFilled,
+} from "@makeplane/propel/icons";
 // plane imports
 import { EUserPermissions, EUserPermissionsLevel } from "@plane/constants";
 import { useTranslation } from "@plane/i18n";
 import { Button } from "@plane/propel/button";
 import { IconButton, getIconButtonStyling } from "@plane/propel/icon-button";
-import {
-  LinkIcon,
-  CopyIcon,
-  NewTabIcon,
-  TrashIcon,
-  ChevronDownIcon,
-  ChevronUpIcon,
-  CheckCircleFilledIcon,
-  CloseCircleFilledIcon,
-} from "@plane/propel/icons";
 import { TOAST_TYPE, setToast } from "@plane/propel/toast";
 import type { TNameDescriptionLoader } from "@plane/types";
 import { EInboxIssueStatus } from "@plane/types";
@@ -56,6 +59,126 @@ type TInboxIssueActionsHeader = {
   embedRemoveCurrentNotification?: () => void;
 };
 
+type TInboxIssueMoreActionsMenu = {
+  inboxIssue: IInboxIssueStore;
+  numberOfDaysLeft: number | undefined;
+  canMarkAsAccepted: boolean;
+  canMarkAsDuplicate: boolean;
+  canDelete: boolean;
+  isProjectAdmin: boolean;
+  handleActionWithPermission: (isAdmin: boolean, action: () => void, errorMessage: string) => void;
+  handleIssueSnoozeAction: () => Promise<void>;
+  handleCopyIssueLink: () => void;
+  setSelectDuplicateIssue: (value: boolean) => void;
+  setDeleteIssueModal: (value: boolean) => void;
+};
+
+const useInboxIssueActionPermissions = (
+  workspaceSlug: string,
+  projectId: string,
+  inboxIssue: IInboxIssueStore | undefined
+) => {
+  // store
+  const { data: currentUser } = useUser();
+  const { allowPermissions } = useUserPermissions();
+  // derived values
+  const isAllowed = allowPermissions(
+    [EUserPermissions.ADMIN, EUserPermissions.MEMBER],
+    EUserPermissionsLevel.PROJECT,
+    workspaceSlug,
+    projectId
+  );
+  const canMarkAsDuplicate = isAllowed && (inboxIssue?.status === 0 || inboxIssue?.status === -2);
+  const canMarkAsAccepted = isAllowed && (inboxIssue?.status === 0 || inboxIssue?.status === -2);
+  const canMarkAsDeclined = isAllowed && (inboxIssue?.status === 0 || inboxIssue?.status === -2);
+  // can delete only if admin or is creator of the issue
+  const canDelete =
+    allowPermissions([EUserPermissions.ADMIN], EUserPermissionsLevel.PROJECT, workspaceSlug, projectId) ||
+    inboxIssue?.issue?.created_by === currentUser?.id;
+  const isProjectAdmin = allowPermissions(
+    [EUserPermissions.ADMIN],
+    EUserPermissionsLevel.PROJECT,
+    workspaceSlug,
+    projectId
+  );
+
+  return { isAllowed, canMarkAsDuplicate, canMarkAsAccepted, canMarkAsDeclined, canDelete, isProjectAdmin };
+};
+
+const InboxIssueMoreActionsMenu = observer(function InboxIssueMoreActionsMenu(props: TInboxIssueMoreActionsMenu) {
+  const {
+    inboxIssue,
+    numberOfDaysLeft,
+    canMarkAsAccepted,
+    canMarkAsDuplicate,
+    canDelete,
+    isProjectAdmin,
+    handleActionWithPermission,
+    handleIssueSnoozeAction,
+    handleCopyIssueLink,
+    setSelectDuplicateIssue,
+    setDeleteIssueModal,
+  } = props;
+  const { t } = useTranslation();
+
+  return (
+    <CustomMenu
+      customButton={<MoreHorizontalOutline className="size-4" />}
+      customButtonClassName={getIconButtonStyling("secondary", "lg")}
+      placement="bottom-start"
+    >
+      {canMarkAsAccepted && (
+        <CustomMenu.MenuItem
+          onClick={() =>
+            handleActionWithPermission(
+              isProjectAdmin,
+              handleIssueSnoozeAction,
+              t("inbox_issue.errors.snooze_permission")
+            )
+          }
+        >
+          <div className="flex items-center gap-2">
+            <ClockOutline width={14} height={14} />
+            {inboxIssue.snoozed_till && numberOfDaysLeft && numberOfDaysLeft > 0
+              ? t("inbox_issue.actions.unsnooze")
+              : t("inbox_issue.actions.snooze")}
+          </div>
+        </CustomMenu.MenuItem>
+      )}
+      {canMarkAsDuplicate && (
+        <CustomMenu.MenuItem
+          onClick={() =>
+            handleActionWithPermission(
+              isProjectAdmin,
+              () => setSelectDuplicateIssue(true),
+              "Only project admins can mark work item as duplicate"
+            )
+          }
+        >
+          <div className="flex items-center gap-2">
+            <DuplicateOfOutline width={14} height={14} />
+            {t("inbox_issue.actions.mark_as_duplicate")}
+          </div>
+        </CustomMenu.MenuItem>
+      )}
+      <CustomMenu.MenuItem onClick={handleCopyIssueLink}>
+        <div className="flex items-center gap-2">
+          <CopyOutline width={14} height={14} />
+          {t("inbox_issue.actions.copy")}
+        </div>
+      </CustomMenu.MenuItem>
+      {canDelete && (
+        <CustomMenu.MenuItem onClick={() => setDeleteIssueModal(true)}>
+          <div className="flex items-center gap-2">
+            <DeleteOutline width={14} height={14} />
+            {t("inbox_issue.actions.delete")}
+          </div>
+        </CustomMenu.MenuItem>
+      )}
+    </CustomMenu>
+  );
+});
+
 export const InboxIssueActionsHeader = observer(function InboxIssueActionsHeader(props: TInboxIssueActionsHeader) {
   const {
     workspaceSlug,
@@ -75,8 +198,8 @@ export const InboxIssueActionsHeader = observer(function InboxIssueActionsHeader
   const [deleteIssueModal, setDeleteIssueModal] = useState(false);
   // store
   const { currentTab, deleteInboxIssue, filteredInboxIssueIds } = useProjectInbox();
-  const { data: currentUser } = useUser();
-  const { allowPermissions } = useUserPermissions();
+  const { isAllowed, canMarkAsDuplicate, canMarkAsAccepted, canMarkAsDeclined, canDelete, isProjectAdmin } =
+    useInboxIssueActionPermissions(workspaceSlug, projectId, inboxIssue);
   const { getPartialProjectById } = useProject();
   const currentProjectDetails = getPartialProjectById(projectId);
   const { t } = useTranslation();
@@ -86,25 +209,6 @@ export const InboxIssueActionsHeader = observer(function InboxIssueActionsHeader
 
   const issue = inboxIssue?.issue;
   // derived values
-  const isAllowed = allowPermissions(
-    [EUserPermissions.ADMIN, EUserPermissions.MEMBER],
-    EUserPermissionsLevel.PROJECT,
-    workspaceSlug,
-    projectId
-  );
-  const canMarkAsDuplicate = isAllowed && (inboxIssue?.status === 0 || inboxIssue?.status === -2);
-  const canMarkAsAccepted = isAllowed && (inboxIssue?.status === 0 || inboxIssue?.status === -2);
-  const canMarkAsDeclined = isAllowed && (inboxIssue?.status === 0 || inboxIssue?.status === -2);
-  // can delete only if admin or is creator of the issue
-  const canDelete =
-    allowPermissions([EUserPermissions.ADMIN], EUserPermissionsLevel.PROJECT, workspaceSlug, projectId) ||
-    issue?.created_by === currentUser?.id;
-  const isProjectAdmin = allowPermissions(
-    [EUserPermissions.ADMIN],
-    EUserPermissionsLevel.PROJECT,
-    workspaceSlug,
-    projectId
-  );
   const isAcceptedOrDeclined = inboxIssue?.status ? [-1, 1, 2].includes(inboxIssue.status) : undefined;
   // days left for snooze
   const numberOfDaysLeft = findHowManyDaysLeft(inboxIssue?.snoozed_till);
@@ -290,7 +394,7 @@ export const InboxIssueActionsHeader = observer(function InboxIssueActionsHeader
         <div className="flex items-center gap-4">
           {isNotificationEmbed && (
             <button onClick={embedRemoveCurrentNotification}>
-              <MoveRight className="h-4 w-4 text-tertiary hover:text-secondary" />
+              <ArrowNarrowRightOutline className="h-4 w-4 text-tertiary hover:text-secondary" />
             </button>
           )}
           {issue?.project_id && issue.sequence_id && (
@@ -310,14 +414,14 @@ export const InboxIssueActionsHeader = observer(function InboxIssueActionsHeader
               <IconButton
                 variant="secondary"
                 size="lg"
-                icon={ChevronUpIcon}
+                icon={ChevronUpOutline}
                 aria-label="Previous work item"
                 onClick={() => handleInboxIssueNavigation("prev")}
               />
               <IconButton
                 variant="secondary"
                 size="lg"
-                icon={ChevronDownIcon}
+                icon={ChevronDownOutline}
                 aria-label="Next work item"
                 onClick={() => handleInboxIssueNavigation("next")}
               />
@@ -337,7 +441,7 @@ export const InboxIssueActionsHeader = observer(function InboxIssueActionsHeader
                   )
                 }
               >
-                <CheckCircleFilledIcon className="size-4 shrink-0 text-success-secondary" />
+                <TickCircleFilled className="size-4 shrink-0 text-success-secondary" />
                 {t("inbox_issue.actions.accept")}
               </Button>
             )}
@@ -354,7 +458,7 @@ export const InboxIssueActionsHeader = observer(function InboxIssueActionsHeader
                   )
                 }
               >
-                <CloseCircleFilledIcon className="size-4 shrink-0 text-danger-secondary" />
+                <CloseCircleFilled className="size-4 shrink-0 text-danger-secondary" />
                 {t("inbox_issue.actions.decline")}
               </Button>
             )}
@@ -364,13 +468,13 @@ export const InboxIssueActionsHeader = observer(function InboxIssueActionsHeader
                 <Button
                   variant="secondary"
                   size="lg"
-                  prependIcon={<LinkIcon className="h-2.5 w-2.5" />}
+                  prependIcon={<LinkOutline className="h-2.5 w-2.5" />}
                   onClick={() => handleCopyIssueLink(workItemLink)}
                 >
                   {t("inbox_issue.actions.copy")}
                 </Button>
                 <ControlLink href={workItemLink} onClick={() => router.push(workItemLink)} target="_self">
-                  <Button variant="secondary" size="lg" prependIcon={<NewTabIcon className="h-2.5 w-2.5" />}>
+                  <Button variant="secondary" size="lg" prependIcon={<NewTabOutline className="h-2.5 w-2.5" />}>
                     {t("inbox_issue.actions.open")}
                   </Button>
                 </ControlLink>
@@ -378,60 +482,19 @@ export const InboxIssueActionsHeader = observer(function InboxIssueActionsHeader
             ) : (
               <>
                 {isAllowed && (
-                  <CustomMenu
-                    customButton={<MoreHorizontal className="size-4" />}
-                    customButtonClassName={getIconButtonStyling("secondary", "lg")}
-                    placement="bottom-start"
-                  >
-                    {canMarkAsAccepted && (
-                      <CustomMenu.MenuItem
-                        onClick={() =>
-                          handleActionWithPermission(
-                            isProjectAdmin,
-                            handleIssueSnoozeAction,
-                            t("inbox_issue.errors.snooze_permission")
-                          )
-                        }
-                      >
-                        <div className="flex items-center gap-2">
-                          <Clock size={14} strokeWidth={2} />
-                          {inboxIssue?.snoozed_till && numberOfDaysLeft && numberOfDaysLeft > 0
-                            ? t("inbox_issue.actions.unsnooze")
-                            : t("inbox_issue.actions.snooze")}
-                        </div>
-                      </CustomMenu.MenuItem>
-                    )}
-                    {canMarkAsDuplicate && (
-                      <CustomMenu.MenuItem
-                        onClick={() =>
-                          handleActionWithPermission(
-                            isProjectAdmin,
-                            () => setSelectDuplicateIssue(true),
-                            "Only project admins can mark work item as duplicate"
-                          )
-                        }
-                      >
-                        <div className="flex items-center gap-2">
-                          <FileStack size={14} strokeWidth={2} />
-                          {t("inbox_issue.actions.mark_as_duplicate")}
-                        </div>
-                      </CustomMenu.MenuItem>
-                    )}
-                    <CustomMenu.MenuItem onClick={() => handleCopyIssueLink(workItemLink)}>
-                      <div className="flex items-center gap-2">
-                        <CopyIcon width={14} height={14} strokeWidth={2} />
-                        {t("inbox_issue.actions.copy")}
-                      </div>
-                    </CustomMenu.MenuItem>
-                    {canDelete && (
-                      <CustomMenu.MenuItem onClick={() => setDeleteIssueModal(true)}>
-                        <div className="flex items-center gap-2">
-                          <TrashIcon width={14} height={14} strokeWidth={2} />
-                          {t("inbox_issue.actions.delete")}
-                        </div>
-                      </CustomMenu.MenuItem>
-                    )}
-                  </CustomMenu>
+                  <InboxIssueMoreActionsMenu
+                    inboxIssue={inboxIssue}
+                    numberOfDaysLeft={numberOfDaysLeft}
+                    canMarkAsAccepted={canMarkAsAccepted}
+                    canMarkAsDuplicate={canMarkAsDuplicate}
+                    canDelete={canDelete}
+                    isProjectAdmin={isProjectAdmin}
+                    handleActionWithPermission={handleActionWithPermission}
+                    handleIssueSnoozeAction={handleIssueSnoozeAction}
+                    handleCopyIssueLink={() => handleCopyIssueLink(workItemLink)}
+                    setSelectDuplicateIssue={setSelectDuplicateIssue}
+                    setDeleteIssueModal={setDeleteIssueModal}
+                  />
                 )}
               </>
             )}

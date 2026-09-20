@@ -8,9 +8,9 @@ import { useCallback, useMemo } from "react";
 import { observer } from "mobx-react";
 import { useParams } from "next/navigation";
 // icons
-import { DueDatePropertyIcon, StartDatePropertyIcon } from "@plane/propel/icons";
+import { DueDateOutline, StartDateOutline } from "@makeplane/propel/icons";
 // types
-import type { TIssuePriorities, TWorkspaceDraftIssue } from "@plane/types";
+import type { IState, TIssuePriorities, TWorkspaceDraftIssue } from "@plane/types";
 import { getDate, renderFormattedPayloadDate, shouldHighlightIssueDueDate } from "@plane/utils";
 // components
 import { CycleDropdown } from "@/components/dropdowns/cycle";
@@ -38,6 +38,67 @@ export interface IIssueProperties {
     | undefined;
   className: string;
 }
+
+const handleEventPropagation = (e: React.MouseEvent) => {
+  e.stopPropagation();
+  e.preventDefault();
+};
+
+type TDraftIssueDatePropertiesProps = {
+  issue: TWorkspaceDraftIssue;
+  stateDetails: IState | undefined;
+  isMobile: boolean;
+  handleStartDate: (date: Date | null) => void;
+  handleTargetDate: (date: Date | null) => void;
+};
+
+const DraftIssueDateProperties = observer(function DraftIssueDateProperties(props: TDraftIssueDatePropertiesProps) {
+  const { issue, stateDetails, isMobile, handleStartDate, handleTargetDate } = props;
+
+  const minDate = getDate(issue.start_date);
+  minDate?.setDate(minDate.getDate());
+
+  const maxDate = getDate(issue.target_date);
+  maxDate?.setDate(maxDate.getDate());
+
+  return (
+    <>
+      {/* start date */}
+      <div className="h-5" onClick={handleEventPropagation}>
+        <DateDropdown
+          value={issue.start_date ?? null}
+          onChange={handleStartDate}
+          maxDate={maxDate}
+          placeholder="Start date"
+          icon={<StartDateOutline className="h-3 w-3 flex-shrink-0" />}
+          buttonVariant={issue.start_date ? "border-with-text" : "border-without-text"}
+          optionsClassName="z-10"
+          renderByDefault={isMobile}
+          showTooltip
+        />
+      </div>
+
+      {/* target/due date */}
+      <div className="h-5" onClick={handleEventPropagation}>
+        <DateDropdown
+          value={issue?.target_date ?? null}
+          onChange={handleTargetDate}
+          minDate={minDate}
+          placeholder="Due date"
+          icon={<DueDateOutline className="h-3 w-3 flex-shrink-0" />}
+          buttonVariant={issue.target_date ? "border-with-text" : "border-without-text"}
+          buttonClassName={
+            shouldHighlightIssueDueDate(issue?.target_date || null, stateDetails?.group) ? "text-danger-primary" : ""
+          }
+          clearIconClassName="!text-primary"
+          optionsClassName="z-10"
+          renderByDefault={isMobile}
+          showTooltip
+        />
+      </div>
+    </>
+  );
+});
 
 export const DraftIssueProperties = observer(function DraftIssueProperties(props: IIssueProperties) {
   const { issue, updateIssue, className } = props;
@@ -128,17 +189,6 @@ export const DraftIssueProperties = observer(function DraftIssueProperties(props
       return label ? [label] : [];
     }) || [];
 
-  const minDate = getDate(issue.start_date);
-  minDate?.setDate(minDate.getDate());
-
-  const maxDate = getDate(issue.target_date);
-  maxDate?.setDate(maxDate.getDate());
-
-  const handleEventPropagation = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    e.preventDefault();
-  };
-
   return (
     <div className={className}>
       {/* basic properties */}
@@ -178,39 +228,13 @@ export const DraftIssueProperties = observer(function DraftIssueProperties(props
         hideDropdownArrow
       />
 
-      {/* start date */}
-      <div className="h-5" onClick={handleEventPropagation}>
-        <DateDropdown
-          value={issue.start_date ?? null}
-          onChange={handleStartDate}
-          maxDate={maxDate}
-          placeholder="Start date"
-          icon={<StartDatePropertyIcon className="h-3 w-3 flex-shrink-0" />}
-          buttonVariant={issue.start_date ? "border-with-text" : "border-without-text"}
-          optionsClassName="z-10"
-          renderByDefault={isMobile}
-          showTooltip
-        />
-      </div>
-
-      {/* target/due date */}
-      <div className="h-5" onClick={handleEventPropagation}>
-        <DateDropdown
-          value={issue?.target_date ?? null}
-          onChange={handleTargetDate}
-          minDate={minDate}
-          placeholder="Due date"
-          icon={<DueDatePropertyIcon className="h-3 w-3 flex-shrink-0" />}
-          buttonVariant={issue.target_date ? "border-with-text" : "border-without-text"}
-          buttonClassName={
-            shouldHighlightIssueDueDate(issue?.target_date || null, stateDetails?.group) ? "text-danger-primary" : ""
-          }
-          clearIconClassName="!text-primary"
-          optionsClassName="z-10"
-          renderByDefault={isMobile}
-          showTooltip
-        />
-      </div>
+      <DraftIssueDateProperties
+        issue={issue}
+        stateDetails={stateDetails}
+        isMobile={isMobile}
+        handleStartDate={handleStartDate}
+        handleTargetDate={handleTargetDate}
+      />
 
       {/* assignee */}
       <div className="h-5" onClick={handleEventPropagation}>

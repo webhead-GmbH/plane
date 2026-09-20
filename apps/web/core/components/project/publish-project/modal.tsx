@@ -4,7 +4,7 @@
  * See the LICENSE file for details.
  */
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { observer } from "mobx-react";
 import { useParams } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
@@ -12,11 +12,12 @@ import { Controller, useForm } from "react-hook-form";
 // types
 import { SPACE_BASE_PATH, SPACE_BASE_URL } from "@plane/constants";
 import { Button } from "@plane/propel/button";
-import { GlobeIcon, NewTabIcon, CheckIcon } from "@plane/propel/icons";
+import { GlobeOutline, NewTabOutline, TickOutline } from "@makeplane/propel/icons";
 import { TOAST_TYPE, setToast } from "@plane/propel/toast";
 import type { TProjectPublishLayouts, TProjectPublishSettings } from "@plane/types";
 // ui
-import { Loader, ToggleSwitch, CustomSelect, ModalCore, EModalWidth } from "@plane/ui";
+import { Switch } from "@makeplane/propel/components/switch";
+import { Loader, CustomSelect, ModalCore, EModalWidth } from "@plane/ui";
 // helpers
 import { copyTextToClipboard } from "@plane/utils";
 // hooks
@@ -46,6 +47,12 @@ const VIEW_OPTIONS: {
   { key: "list", label: "List" },
   { key: "kanban", label: "Kanban" },
 ];
+
+// The origin of a page never changes, so there is nothing to subscribe to.
+const subscribeToOrigin = () => () => {};
+const getOrigin = () => window.location.origin;
+// the server has no window, so it (and the render that hydrates its HTML) has no origin
+const getServerOrigin = () => "";
 
 export const PublishProjectModal = observer(function PublishProjectModal(props: Props) {
   const { isOpen, onClose, projectId } = props;
@@ -164,7 +171,8 @@ export const PublishProjectModal = observer(function PublishProjectModal(props: 
     });
   }, [projectPublishSettings, reset]);
 
-  const SPACE_APP_URL = (SPACE_BASE_URL.trim() === "" ? window.location.origin : SPACE_BASE_URL) + SPACE_BASE_PATH;
+  const origin = useSyncExternalStore(subscribeToOrigin, getOrigin, getServerOrigin);
+  const SPACE_APP_URL = (SPACE_BASE_URL.trim() === "" ? origin : SPACE_BASE_URL) + SPACE_BASE_PATH;
   const publishLink = `${SPACE_APP_URL}/issues/${projectPublishSettings?.anchor}`;
 
   const handleCopyLink = () =>
@@ -221,7 +229,7 @@ export const PublishProjectModal = observer(function PublishProjectModal(props: 
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      <NewTabIcon className="size-4" />
+                      <NewTabOutline className="size-4" />
                     </a>
                     <button
                       type="button"
@@ -270,7 +278,7 @@ export const PublishProjectModal = observer(function PublishProjectModal(props: 
                           className="flex items-center justify-between gap-2"
                         >
                           {option.label}
-                          {selectedLayouts.includes(option.key) && <CheckIcon className="size-3.5 flex-shrink-0" />}
+                          {selectedLayouts.includes(option.key) && <TickOutline className="size-3.5 flex-shrink-0" />}
                         </CustomSelect.Option>
                       ))}
                     </CustomSelect>
@@ -283,7 +291,7 @@ export const PublishProjectModal = observer(function PublishProjectModal(props: 
                   control={control}
                   name="is_comments_enabled"
                   render={({ field: { onChange, value } }) => (
-                    <ToggleSwitch value={!!value} onChange={onChange} size="sm" />
+                    <Switch size="sm" checked={!!value} onCheckedChange={onChange} aria-label="Allow comments" />
                   )}
                 />
               </div>
@@ -293,7 +301,7 @@ export const PublishProjectModal = observer(function PublishProjectModal(props: 
                   control={control}
                   name="is_reactions_enabled"
                   render={({ field: { onChange, value } }) => (
-                    <ToggleSwitch value={!!value} onChange={onChange} size="sm" />
+                    <Switch size="sm" checked={!!value} onCheckedChange={onChange} aria-label="Allow reactions" />
                   )}
                 />
               </div>
@@ -303,7 +311,7 @@ export const PublishProjectModal = observer(function PublishProjectModal(props: 
                   control={control}
                   name="is_votes_enabled"
                   render={({ field: { onChange, value } }) => (
-                    <ToggleSwitch value={!!value} onChange={onChange} size="sm" />
+                    <Switch size="sm" checked={!!value} onCheckedChange={onChange} aria-label="Allow voting" />
                   )}
                 />
               </div>
@@ -314,7 +322,7 @@ export const PublishProjectModal = observer(function PublishProjectModal(props: 
         {/* modal handlers */}
         <div className="relative mt-4 flex items-center justify-between border-t border-subtle px-5 py-4">
           <div className="flex items-center gap-1 text-13 text-placeholder">
-            <GlobeIcon className="size-3.5" />
+            <GlobeOutline className="size-3.5" />
             <div className="text-13">Anyone with the link can access</div>
           </div>
           {!fetchSettingsLoader && (

@@ -13,8 +13,8 @@ import { useOutsideClickDetector } from "@plane/hooks";
 import { useTranslation } from "@plane/i18n";
 import { Logo } from "@plane/propel/emoji-icon-picker";
 import { IconButton } from "@plane/propel/icon-button";
-import { EditIcon, ChevronDownIcon } from "@plane/propel/icons";
-import { Tooltip } from "@plane/propel/tooltip";
+import { ChevronDownOutline, EditOutline } from "@makeplane/propel/icons";
+import { Tooltip } from "@makeplane/propel/components/tooltip";
 import type { IUserProfileProjectSegregation } from "@plane/types";
 import { Loader } from "@plane/ui";
 import { cn, renderFormattedDate, getFileURL } from "@plane/utils";
@@ -26,6 +26,7 @@ import { useCommandPalette } from "@/hooks/store/use-command-palette";
 import { useProject } from "@/hooks/store/use-project";
 import { useUser } from "@/hooks/store/user";
 import { usePlatformOS } from "@/hooks/use-platform-os";
+import useSize from "@/hooks/use-window-size";
 // components
 import { ProfileSidebarTime } from "./time";
 
@@ -46,6 +47,7 @@ export const ProfileSidebar = observer(function ProfileSidebar(props: TProfileSi
   const { getProjectById } = useProject();
   const { toggleProfileSettingsModal } = useCommandPalette();
   const { isMobile } = usePlatformOS();
+  const [windowWidth] = useSize();
   const { t } = useTranslation();
   // derived values
   const userData = userProjectsData?.user_data;
@@ -90,7 +92,7 @@ export const ProfileSidebar = observer(function ProfileSidebar(props: TProfileSi
         `vertical-scrollbar fixed z-5 scrollbar-md h-full w-full shrink-0 overflow-hidden overflow-y-auto border-l border-subtle bg-surface-1 shadow-raised-200 transition-all md:relative md:w-[300px]`,
         className
       )}
-      style={profileSidebarCollapsed ? { marginLeft: `${window?.innerWidth || 0}px` } : {}}
+      style={profileSidebarCollapsed ? { marginLeft: `${windowWidth || 0}px` } : {}}
     >
       {userProjectsData ? (
         <>
@@ -99,7 +101,7 @@ export const ProfileSidebar = observer(function ProfileSidebar(props: TProfileSi
               <div className="absolute top-3.5 right-3.5">
                 <IconButton
                   variant="secondary"
-                  icon={EditIcon}
+                  icon={EditOutline}
                   onClick={() =>
                     toggleProfileSettingsModal({
                       activeTab: "general",
@@ -171,7 +173,7 @@ export const ProfileSidebar = observer(function ProfileSidebar(props: TProfileSi
                           </div>
                           <div className="flex flex-shrink-0 items-center gap-2">
                             {project.assigned_issues > 0 && (
-                              <Tooltip tooltipContent="Completion percentage" position="left" isMobile={isMobile}>
+                              <Tooltip label="Completion percentage" side="left" disabled={isMobile}>
                                 <div
                                   className={`rounded-sm px-1 py-0.5 text-11 font-medium ${
                                     completedIssuePercentage <= 35
@@ -185,10 +187,11 @@ export const ProfileSidebar = observer(function ProfileSidebar(props: TProfileSi
                                 </div>
                               </Tooltip>
                             )}
-                            <ChevronDownIcon className="h-4 w-4" />
+                            <ChevronDownOutline className="h-4 w-4" />
                           </div>
                         </Disclosure.Button>
                         <Transition
+                          as="div"
                           show={open}
                           enter="transition duration-100 ease-out"
                           enterFrom="transform opacity-0"

@@ -6,17 +6,12 @@
 
 import { observer } from "mobx-react";
 import { useParams } from "next/navigation";
-import { LinkIcon } from "lucide-react";
 // plane imports
 import { useTranslation } from "@plane/i18n";
-import {
-  StatePropertyIcon,
-  StateGroupIcon,
-  PriorityPropertyIcon,
-  DueDatePropertyIcon,
-  PriorityIcon,
-} from "@plane/propel/icons";
+import { StateGroupIcon, PriorityIcon } from "@plane/propel/icons";
+import { DueDateOutline, LinkOutline, PriorityOutline, StateOutline } from "@makeplane/propel/icons";
 import { TOAST_TYPE, setToast } from "@plane/propel/toast";
+import type { TIssuePriorities, TStateGroups } from "@plane/types";
 import { cn, getIssuePriorityFilters } from "@plane/utils";
 // helpers
 import { renderFormattedDate } from "@/helpers/date-time.helper";
@@ -33,6 +28,37 @@ type Props = {
   mode?: IPeekMode;
 };
 
+const PRIORITY_CLASS_NAMES: Record<TIssuePriorities, string> = {
+  urgent: "border-priority-urgent text-priority-urgent",
+  high: "border-priority-high text-priority-high",
+  medium: "border-priority-medium text-priority-medium",
+  low: "border-priority-low text-priority-low",
+  none: "border-priority-none text-priority-none",
+};
+
+const getPriorityClassName = (priorityKey: TIssuePriorities | undefined): string =>
+  PRIORITY_CLASS_NAMES[priorityKey ?? "none"];
+
+type TDueDateValueProps = {
+  targetDate: string | null;
+  stateGroup: TStateGroups | undefined;
+};
+
+function PeekOverviewIssueDueDateValue({ targetDate, stateGroup }: TDueDateValueProps) {
+  if (!targetDate) return <span className="text-13 text-secondary">Empty</span>;
+
+  return (
+    <div
+      className={cn("flex items-center gap-1.5 rounded-sm py-0.5 text-11 text-primary", {
+        "text-danger-primary": shouldHighlightIssueDueDate(targetDate, stateGroup),
+      })}
+    >
+      <DueDateOutline className="size-3" />
+      {renderFormattedDate(targetDate)}
+    </div>
+  );
+}
+
 export const PeekOverviewIssueProperties = observer(function PeekOverviewIssueProperties({
   issueDetails,
   mode,
@@ -47,6 +73,9 @@ export const PeekOverviewIssueProperties = observer(function PeekOverviewIssuePr
   const { project_details } = usePublish(anchor?.toString());
 
   const priority = issueDetails.priority ? getIssuePriorityFilters(issueDetails.priority) : null;
+  const priorityClassName = getPriorityClassName(priority?.key);
+
+  const isFullMode = mode === "full";
 
   const handleCopyLink = () => {
     const urlToCopy = window.location.href;
@@ -61,23 +90,23 @@ export const PeekOverviewIssueProperties = observer(function PeekOverviewIssuePr
   };
 
   return (
-    <div className={mode === "full" ? "divide-y divide-subtle-1" : ""}>
-      {mode === "full" && (
+    <div className={isFullMode ? "divide-y divide-subtle-1" : ""}>
+      {isFullMode && (
         <div className="flex justify-between gap-2 pb-3">
           <h6 className="flex items-center gap-2 font-medium">
             {project_details?.identifier}-{issueDetails.sequence_id}
           </h6>
           <div className="flex items-center gap-2">
             <button type="button" onClick={handleCopyLink} className="-rotate-45">
-              <LinkIcon className="size-3.5 shrink-0" />
+              <LinkOutline className="size-3.5 shrink-0" />
             </button>
           </div>
         </div>
       )}
-      <div className={`space-y-2 ${mode === "full" ? "pt-3" : ""}`}>
+      <div className={`space-y-2 ${isFullMode ? "pt-3" : ""}`}>
         <div className="flex h-8 items-center gap-3">
           <div className="flex w-1/4 flex-shrink-0 items-center gap-1 text-13 text-tertiary">
-            <StatePropertyIcon className="size-4 flex-shrink-0" />
+            <StateOutline className="size-4 flex-shrink-0" />
             <span>State</span>
           </div>
           <div className="flex w-3/4 items-center gap-1.5 py-0.5 text-13">
@@ -88,22 +117,12 @@ export const PeekOverviewIssueProperties = observer(function PeekOverviewIssuePr
 
         <div className="flex h-8 items-center gap-3">
           <div className="flex w-1/4 flex-shrink-0 items-center gap-1 text-13 text-tertiary">
-            <PriorityPropertyIcon className="size-4 flex-shrink-0" />
+            <PriorityOutline className="size-4 flex-shrink-0" />
             <span>Priority</span>
           </div>
           <div className="w-3/4">
             <div
-              className={`inline-flex items-center gap-1.5 rounded-sm bg-layer-2 px-2.5 py-0.5 text-left text-13 capitalize ${
-                priority?.key === "urgent"
-                  ? "border-priority-urgent text-priority-urgent"
-                  : priority?.key === "high"
-                    ? "border-priority-high text-priority-high"
-                    : priority?.key === "medium"
-                      ? "border-priority-medium text-priority-medium"
-                      : priority?.key === "low"
-                        ? "border-priority-low text-priority-low"
-                        : "border-priority-none text-priority-none"
-              }`}
+              className={`inline-flex items-center gap-1.5 rounded-sm bg-layer-2 px-2.5 py-0.5 text-left text-13 capitalize ${priorityClassName}`}
             >
               {priority && <PriorityIcon priority={priority?.key} size={12} className="flex-shrink-0" />}
               <span>{t(priority?.titleTranslationKey || "common.none")}</span>
@@ -113,22 +132,11 @@ export const PeekOverviewIssueProperties = observer(function PeekOverviewIssuePr
 
         <div className="flex h-8 items-center gap-3">
           <div className="flex w-1/4 flex-shrink-0 items-center gap-1 text-13 text-tertiary">
-            <DueDatePropertyIcon className="size-4 flex-shrink-0" />
+            <DueDateOutline className="size-4 flex-shrink-0" />
             <span>Due date</span>
           </div>
           <div>
-            {issueDetails.target_date ? (
-              <div
-                className={cn("flex items-center gap-1.5 rounded-sm py-0.5 text-11 text-primary", {
-                  "text-danger-primary": shouldHighlightIssueDueDate(issueDetails.target_date, state?.group),
-                })}
-              >
-                <DueDatePropertyIcon className="size-3" />
-                {renderFormattedDate(issueDetails.target_date)}
-              </div>
-            ) : (
-              <span className="text-13 text-secondary">Empty</span>
-            )}
+            <PeekOverviewIssueDueDateValue targetDate={issueDetails.target_date} stateGroup={state?.group} />
           </div>
         </div>
       </div>

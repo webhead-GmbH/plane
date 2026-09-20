@@ -15,6 +15,7 @@ import { GanttChartHeader, GanttChartMainContent } from "@/components/gantt-char
 // helpers
 // hooks
 import { useUserProfile } from "@/hooks/store/user";
+import { usePortalContainer } from "@/hooks/use-portal-container";
 import { useTimeLineChartStore } from "@/hooks/use-timeline-chart";
 //
 import { SIDEBAR_WIDTH } from "../constants";
@@ -176,7 +177,7 @@ export const ChartViewRoot = observer(function ChartViewRoot(props: ChartViewRoo
     scrollContainer.scrollLeft = scrollWidth;
   };
 
-  const portalContainer = document.getElementById("full-screen-portal") as HTMLElement;
+  const portalContainer = usePortalContainer("full-screen-portal");
 
   const content = (
     <div

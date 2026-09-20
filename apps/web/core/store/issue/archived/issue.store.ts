@@ -98,6 +98,9 @@ export class ArchivedIssues extends BaseIssuesStore implements IArchivedIssues {
     options: IssuePaginationOptions,
     isExistingPaginationOptions: boolean = false
   ) => {
+    // a newer fetch aborts this one through clear(), and the cancellation reaches the catch as an
+    // error: hold on to the signal so the catch can tell that apart from a fetch that failed
+    let signal: AbortSignal | undefined;
     try {
       // set loader and clear store
       runInAction(() => {
@@ -108,8 +111,9 @@ export class ArchivedIssues extends BaseIssuesStore implements IArchivedIssues {
       // get params from pagination options
       const params = this.issueFilterStore?.getFilterParams(options, projectId, undefined, undefined, undefined);
       // call the fetch issues API with the params
+      signal = this.controller.signal;
       const response = await this.issueArchiveService.getArchivedIssues(workspaceSlug, projectId, params, {
-        signal: this.controller.signal,
+        signal,
       });
 
       // after fetching issues, call the base method to process the response further
@@ -118,6 +122,8 @@ export class ArchivedIssues extends BaseIssuesStore implements IArchivedIssues {
     } catch (error) {
       // set loader to undefined if errored out
       this.setLoader(undefined);
+      // a newer fetch superseded this one: the cancellation is not a failure anyone has to handle
+      if (signal?.aborted) return undefined;
       throw error;
     }
   };

@@ -27,9 +27,15 @@ type TGetOrCreateFilterParams = {
   onExpressionChange?: (expression: TWorkItemFilterExpression) => void;
 };
 
+type TRegisterFilterParams = TGetOrCreateFilterParams & {
+  filter: IWorkItemFilterInstance;
+};
+
 export interface IWorkItemFilterStore {
   filters: Map<TWorkItemFilterKey, IWorkItemFilterInstance>; // key is the entity id (project, cycle, workspace, teamspace, etc)
   getFilter: (entityType: EIssuesStoreType, entityId: string) => IWorkItemFilterInstance | undefined;
+  buildFilter: (params: TGetOrCreateFilterParams) => IWorkItemFilterInstance;
+  registerFilter: (params: TRegisterFilterParams) => IWorkItemFilterInstance;
   getOrCreateFilter: (params: TGetOrCreateFilterParams) => IWorkItemFilterInstance;
   resetExpression: (entityType: EIssuesStoreType, entityId: string, expression: TWorkItemFilterExpression) => void;
   updateFilterExpressionFromConditions: (
@@ -54,6 +60,7 @@ export class WorkItemFilterStore implements IWorkItemFilterStore {
     this.filters = new Map<TWorkItemFilterKey, IWorkItemFilterInstance>();
     makeObservable(this, {
       filters: observable,
+      registerFilter: action,
       getOrCreateFilter: action,
       resetExpression: action,
       updateFilterExpressionFromConditions: action,
@@ -76,34 +83,47 @@ export class WorkItemFilterStore implements IWorkItemFilterStore {
   // ------------ actions ------------
 
   /**
+   * Returns the instance already held for the entity, or a new one that is not in the store yet.
+   * It changes nothing, so a component can call it while rendering and hand the result to
+   * registerFilter from an effect.
+   */
+  buildFilter: IWorkItemFilterStore["buildFilter"] = (params) =>
+    this.getFilter(params.entityType, params.entityId) ?? this._initializeFilterInstance(params);
+
+  /**
+   * Puts a filter instance in the store, or keeps the one already held for that entity, and brings
+   * its expression options, callback and visibility up to date. Returns the instance the store
+   * holds afterwards, which is the one every consumer of the entity has to use.
+   */
+  registerFilter: IWorkItemFilterStore["registerFilter"] = action((params) => {
+    const filterKey = this._getFilterKey(params.entityType, params.entityId);
+    const filter = this.filters.get(filterKey) ?? params.filter;
+    if (!this.filters.has(filterKey)) {
+      this.filters.set(filterKey, filter);
+    }
+    // Update expression options on the filter to ensure they're current
+    if (params.expressionOptions) {
+      filter.updateExpressionOptions(params.expressionOptions);
+    }
+    // Update callback if provided
+    if (params.onExpressionChange) {
+      filter.onExpressionChange = params.onExpressionChange;
+    }
+    // Update visibility if provided
+    if (params.showOnMount !== undefined) {
+      filter.toggleVisibility(params.showOnMount);
+    }
+
+    return filter;
+  });
+
+  /**
    * Gets or creates a new filter instance.
    * If the instance already exists, updates its expression options to ensure they're current.
    */
-  getOrCreateFilter: IWorkItemFilterStore["getOrCreateFilter"] = action((params) => {
-    const existingFilter = this.getFilter(params.entityType, params.entityId);
-    if (existingFilter) {
-      // Update expression options on existing filter to ensure they're current
-      if (params.expressionOptions) {
-        existingFilter.updateExpressionOptions(params.expressionOptions);
-      }
-      // Update callback if provided
-      if (params.onExpressionChange) {
-        existingFilter.onExpressionChange = params.onExpressionChange;
-      }
-      // Update visibility if provided
-      if (params.showOnMount !== undefined) {
-        existingFilter.toggleVisibility(params.showOnMount);
-      }
-      return existingFilter;
-    }
-
-    // create new filter instance
-    const newFilter = this._initializeFilterInstance(params);
-    const filterKey = this._getFilterKey(params.entityType, params.entityId);
-    this.filters.set(filterKey, newFilter);
-
-    return newFilter;
-  });
+  getOrCreateFilter: IWorkItemFilterStore["getOrCreateFilter"] = action((params) =>
+    this.registerFilter({ ...params, filter: this.buildFilter(params) })
+  );
 
   /**
    * Resets the initial expression for a filter instance.

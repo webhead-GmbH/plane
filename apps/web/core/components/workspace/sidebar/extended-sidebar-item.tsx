@@ -11,12 +11,12 @@ import { attachInstruction, extractInstruction } from "@atlaskit/pragmatic-drag-
 import { observer } from "mobx-react";
 import Link from "next/link";
 import { useParams, usePathname } from "next/navigation";
-import { Pin, PinOff } from "lucide-react";
+import { PinOutline, UnpinOutline } from "@makeplane/propel/icons";
 // plane imports
 import type { IWorkspaceSidebarNavigationItem } from "@plane/constants";
 import { EUserPermissionsLevel } from "@plane/constants";
 import { useTranslation } from "@plane/i18n";
-import { Tooltip } from "@plane/propel/tooltip";
+import { Tooltip } from "@makeplane/propel/components/tooltip";
 import { DragHandle, DropIndicator } from "@plane/ui";
 import { cn } from "@plane/utils";
 // components
@@ -49,7 +49,7 @@ export const ExtendedSidebarItem = observer(function ExtendedSidebarItem(props: 
   const [instruction, setInstruction] = useState<"DRAG_OVER" | "DRAG_BELOW" | undefined>(undefined);
   // refs
   const navigationIemRef = useRef<HTMLDivElement | null>(null);
-  const dragHandleRef = useRef<HTMLButtonElement | null>(null);
+  const dragHandleRef = useRef<HTMLDivElement | null>(null);
 
   // nextjs hooks
   const pathname = usePathname();
@@ -172,14 +172,8 @@ export const ExtendedSidebarItem = observer(function ExtendedSidebarItem(props: 
         id={`${item.key}`}
       >
         {!disableDrag && (
-          <Tooltip
-            // isMobile={isMobile}
-            tooltipContent={t("drag_to_rearrange")}
-            position="top-start"
-            disabled={isDragging}
-          >
-            <button
-              type="button"
+          <Tooltip label={t("drag_to_rearrange")} align="start" disabled={isDragging}>
+            <div
               className={cn(
                 "absolute top-1/2 -left-3 flex -translate-y-1/2 cursor-grab items-center justify-center rounded text-placeholder opacity-0 group-hover/project-item:opacity-100",
                 {
@@ -190,7 +184,7 @@ export const ExtendedSidebarItem = observer(function ExtendedSidebarItem(props: 
               ref={dragHandleRef}
             >
               <DragHandle className="bg-transparent" />
-            </button>
+            </div>
           </Tooltip>
         )}
         <SidebarNavItem isActive={isActive}>
@@ -207,15 +201,15 @@ export const ExtendedSidebarItem = observer(function ExtendedSidebarItem(props: 
               </div>
             )}
             {isPinned ? (
-              <Tooltip tooltipContent="Unpin">
-                <PinOff
+              <Tooltip label="Unpin">
+                <UnpinOutline
                   className="size-3.5 flex-shrink-0 text-placeholder outline-none hover:text-tertiary"
                   onClick={() => unPinNavigationItem(item.key)}
                 />
               </Tooltip>
             ) : (
-              <Tooltip tooltipContent="Pin">
-                <Pin
+              <Tooltip label="Pin">
+                <PinOutline
                   className="size-3.5 flex-shrink-0 text-placeholder outline-none hover:text-tertiary"
                   onClick={() => pinNavigationItem(item.key)}
                 />

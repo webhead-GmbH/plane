@@ -7,10 +7,10 @@
 import * as React from "react";
 import { AnimatedCounter } from "../animated-counter";
 import { stringToEmoji } from "../emoji-icon-picker";
-import { AddReactionIcon } from "../icons";
+import { ReactionOutline } from "@makeplane/propel/icons";
 import { Tooltip } from "../tooltip";
 import { cn } from "../utils";
-import { IconButton } from "../icon-button";
+import { getIconButtonStyling } from "../icon-button";
 
 export interface EmojiReactionType {
   emoji: string;
@@ -32,14 +32,12 @@ export interface EmojiReactionProps extends React.ButtonHTMLAttributes<HTMLButto
 export interface EmojiReactionGroupProps extends React.HTMLAttributes<HTMLDivElement> {
   reactions: EmojiReactionType[];
   onReactionClick?: (emoji: string) => void;
-  onAddReaction?: () => void;
   className?: string;
   showAddButton?: boolean;
   maxDisplayUsers?: number;
 }
 
-export interface EmojiReactionButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  onAddReaction?: () => void;
+export interface EmojiReactionButtonProps extends React.HTMLAttributes<HTMLSpanElement> {
   className?: string;
 }
 
@@ -102,21 +100,17 @@ const EmojiReaction = React.forwardRef(function EmojiReaction(
   return button;
 });
 
+// This is always the content of the emoji picker's trigger button, so it is a span styled as a ghost
+// icon button: a button cannot contain a button, and the trigger is what opens the picker.
 const EmojiReactionButton = React.forwardRef(function EmojiReactionButton(
-  { onAddReaction, className, ...props }: EmojiReactionButtonProps,
-  ref: React.ForwardedRef<HTMLButtonElement>
+  { className, ...props }: EmojiReactionButtonProps,
+  ref: React.ForwardedRef<HTMLSpanElement>
 ) {
   return (
     <Tooltip tooltipContent="Add reaction">
-      <IconButton
-        ref={ref}
-        icon={AddReactionIcon}
-        variant="ghost"
-        size="sm"
-        onClick={onAddReaction}
-        className={className}
-        {...props}
-      />
+      <span ref={ref} className={cn(getIconButtonStyling("ghost", "sm"), className)} {...props}>
+        <ReactionOutline className="size-3.5" />
+      </span>
     </Tooltip>
   );
 });
@@ -125,7 +119,6 @@ const EmojiReactionGroup = React.forwardRef(function EmojiReactionGroup(
   {
     reactions,
     onReactionClick,
-    onAddReaction,
     className,
     showAddButton = true,
     maxDisplayUsers = 5,
@@ -145,7 +138,7 @@ const EmojiReactionGroup = React.forwardRef(function EmojiReactionGroup(
           onReactionClick={onReactionClick}
         />
       ))}
-      {showAddButton && <EmojiReactionButton onAddReaction={onAddReaction} />}
+      {showAddButton && <EmojiReactionButton />}
     </div>
   );
 });

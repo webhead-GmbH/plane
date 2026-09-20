@@ -127,6 +127,9 @@ export class ProfileIssues extends BaseIssuesStore implements IProfileIssues {
     view: TProfileViews,
     isExistingPaginationOptions: boolean = false
   ) => {
+    // a newer fetch aborts this one through clear(), and the cancellation reaches the catch as an
+    // error: hold on to the signal so the catch can tell that apart from a fetch that failed
+    let signal: AbortSignal | undefined;
     try {
       // set loader and clear store
       runInAction(() => {
@@ -151,8 +154,9 @@ export class ProfileIssues extends BaseIssuesStore implements IProfileIssues {
       else if (this.currentView === "subscribed") params = { ...params, subscriber: userId };
 
       // call the fetch issues API with the params
+      signal = this.controller.signal;
       const response = await this.userService.getUserProfileIssues(workspaceSlug, userId, params, {
-        signal: this.controller.signal,
+        signal,
       });
 
       // after fetching issues, call the base method to process the response further
@@ -161,6 +165,8 @@ export class ProfileIssues extends BaseIssuesStore implements IProfileIssues {
     } catch (error) {
       // set loader to undefined if errored out
       this.setLoader(undefined);
+      // a newer fetch superseded this one: the cancellation is not a failure anyone has to handle
+      if (signal?.aborted) return undefined;
       throw error;
     }
   };

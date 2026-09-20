@@ -9,9 +9,10 @@ import { observer } from "mobx-react";
 import { AlertTriangle, ChevronDown, ChevronRight, Timer } from "lucide-react";
 import useSWR from "swr";
 // plane imports
+import { Tooltip } from "@makeplane/propel/components/tooltip";
 import { useTranslation } from "@plane/i18n";
 import { EmptyStateCompact } from "@plane/propel/empty-state";
-import { Loader, Tooltip } from "@plane/ui";
+import { Loader } from "@plane/ui";
 import { cn } from "@plane/utils";
 // services
 import {
@@ -51,6 +52,12 @@ const CATEGORY_KEY: Record<number, string> = {
   [EHrTimeCategory.CORRECTION]: "correction",
   [EHrTimeCategory.IMPORTED]: "imported",
 };
+
+/** The text columns of the work-item table, in reading order. */
+const DETAIL_COLUMNS = ["hr.detail.column_what", "hr.detail.column_when", "hr.detail.column_note"];
+
+/** The text columns of the other-hours table: the day leads, since there is no work item to name. */
+const OTHER_COLUMNS = ["hr.detail.column_when", "hr.detail.column_what", "hr.detail.column_note"];
 
 /**
  * Raw seconds for one row, so a single entry never claims a rounded figure.
@@ -334,6 +341,27 @@ const DetailSummary = ({ detail }: { detail: THrWorklogDetail | null }) => {
   );
 };
 
+/**
+ * The heading row the two detail tables share: their text columns in the order
+ * given, then how long, which always closes the row on the right.
+ */
+const DetailTableHead = ({ columns }: { columns: string[] }) => {
+  const { t } = useTranslation();
+
+  return (
+    <thead className="border-b border-subtle text-13 text-placeholder">
+      <tr>
+        {columns.map((column) => (
+          <th key={column} className="px-4 py-2.5 text-left font-medium">
+            {t(column)}
+          </th>
+        ))}
+        <th className="px-4 py-2.5 text-right font-medium">{t("hr.detail.column_long")}</th>
+      </tr>
+    </thead>
+  );
+};
+
 /** The month's work-item hours, gathered the way the reader asked for them. */
 const DetailTable = ({
   detail,
@@ -374,14 +402,7 @@ const DetailTable = ({
   return (
     <div className="overflow-x-auto rounded-md border border-subtle">
       <table className="w-full min-w-[52rem] text-13">
-        <thead className="border-b border-subtle text-13 text-placeholder">
-          <tr>
-            <th className="px-4 py-2.5 text-left font-medium">{t("hr.detail.column_what")}</th>
-            <th className="px-4 py-2.5 text-left font-medium">{t("hr.detail.column_when")}</th>
-            <th className="px-4 py-2.5 text-left font-medium">{t("hr.detail.column_note")}</th>
-            <th className="px-4 py-2.5 text-right font-medium">{t("hr.detail.column_long")}</th>
-          </tr>
-        </thead>
+        <DetailTableHead columns={DETAIL_COLUMNS} />
         <tbody>
           {groups.map((row) => {
             // Days open by default, because that is the shape people read a
@@ -425,14 +446,7 @@ const OtherHours = ({ detail, locale }: { detail: THrWorklogDetail | null; local
       <p className="text-13 text-tertiary">{t("hr.detail.other_subtitle")}</p>
       <div className="overflow-x-auto rounded-md border border-subtle">
         <table className="w-full min-w-[36rem] text-13">
-          <thead className="border-b border-subtle text-13 text-placeholder">
-            <tr>
-              <th className="px-4 py-2.5 text-left font-medium">{t("hr.detail.column_when")}</th>
-              <th className="px-4 py-2.5 text-left font-medium">{t("hr.detail.column_what")}</th>
-              <th className="px-4 py-2.5 text-left font-medium">{t("hr.detail.column_note")}</th>
-              <th className="px-4 py-2.5 text-right font-medium">{t("hr.detail.column_long")}</th>
-            </tr>
-          </thead>
+          <DetailTableHead columns={OTHER_COLUMNS} />
           <tbody>
             {rows.map((row) => (
               <tr key={row.id} className="border-t border-subtle hover:bg-layer-1/60">
@@ -512,12 +526,12 @@ const EntryRow = ({ row, locale, showDay }: { row: THrWorklogRow; locale?: strin
           {key ? <span className="text-13 tracking-wide text-tertiary tabular-nums">{key}</span> : null}
           <span className="text-primary">{row.issue_name || t("hr.detail.unnamed")}</span>
           {row.is_running ? (
-            <Tooltip tooltipContent={t("hr.detail.still_running")} position="top">
+            <Tooltip label={t("hr.detail.still_running")} side="top">
               <Timer className="size-3.5 text-warning-primary" aria-label={t("hr.detail.still_running")} />
             </Tooltip>
           ) : null}
           {row.gone ? (
-            <Tooltip tooltipContent={t("hr.detail.gone")} position="top">
+            <Tooltip label={t("hr.detail.gone")} side="top">
               <AlertTriangle className="size-3.5 text-warning-primary" aria-label={t("hr.detail.gone")} />
             </Tooltip>
           ) : null}
@@ -528,7 +542,7 @@ const EntryRow = ({ row, locale, showDay }: { row: THrWorklogRow; locale?: strin
         {showDay ? formatDayLabel(row.day, locale) : null}
         {row.entered_by_hand ? <span className={showDay ? "ml-2" : undefined}>{t("hr.detail.by_hand")}</span> : null}
         {row.auto_stopped ? (
-          <Tooltip tooltipContent={t("hr.detail.auto_stopped_hint")} position="top">
+          <Tooltip label={t("hr.detail.auto_stopped_hint")} side="top">
             <span className="ml-2 text-warning-primary">{t("hr.detail.auto_stopped")}</span>
           </Tooltip>
         ) : null}

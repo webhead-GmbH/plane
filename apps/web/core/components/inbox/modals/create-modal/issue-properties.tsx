@@ -7,7 +7,7 @@
 import { useState } from "react";
 import { observer } from "mobx-react";
 import { ETabIndices } from "@plane/constants";
-import { ParentPropertyIcon } from "@plane/propel/icons";
+import { ParentOutline } from "@makeplane/propel/icons";
 import type { ISearchIssueResponse, TIssue } from "@plane/types";
 import { CustomMenu } from "@plane/ui";
 import { renderFormattedPayloadDate, getDate, getTabIndex } from "@plane/utils";
@@ -33,14 +33,116 @@ type TInboxIssueProperties = {
   isVisible?: boolean;
 };
 
-export const InboxIssueProperties = observer(function InboxIssueProperties(props: TInboxIssueProperties) {
-  const { projectId, data, handleData, isVisible = false } = props;
+type TInboxIssueEstimateProperty = {
+  projectId: string;
+  value: string | null | undefined;
+  handleData: TInboxIssueProperties["handleData"];
+  isVisible: boolean;
+  tabIndex: number | undefined;
+};
+
+type TInboxIssueParentProperty = {
+  projectId: string;
+  handleData: TInboxIssueProperties["handleData"];
+  isVisible: boolean;
+  tabIndex: number | undefined;
+};
+
+const InboxIssueEstimateProperty = observer(function InboxIssueEstimateProperty(props: TInboxIssueEstimateProperty) {
+  const { projectId, value, handleData, isVisible, tabIndex } = props;
   // hooks
   const { areEstimateEnabledByProjectId } = useProjectEstimates();
-  const { isMobile } = usePlatformOS();
+
+  if (!isVisible || !projectId || !areEstimateEnabledByProjectId(projectId)) return null;
+
+  return (
+    <div className="h-7">
+      <EstimateDropdown
+        value={value || undefined}
+        onChange={(estimatePoint) => handleData("estimate_point", estimatePoint)}
+        projectId={projectId}
+        buttonVariant="border-with-text"
+        placeholder="Estimate"
+        tabIndex={tabIndex}
+      />
+    </div>
+  );
+});
+
+function InboxIssueParentProperty(props: TInboxIssueParentProperty) {
+  const { projectId, handleData, isVisible, tabIndex } = props;
   // states
   const [parentIssueModalOpen, setParentIssueModalOpen] = useState(false);
   const [selectedParentIssue, setSelectedParentIssue] = useState<ISearchIssueResponse | undefined>(undefined);
+
+  if (!isVisible) return null;
+
+  return (
+    <div className="h-7">
+      {selectedParentIssue ? (
+        <CustomMenu
+          customButton={
+            <button
+              type="button"
+              className="flex h-full cursor-pointer items-center justify-between gap-1 rounded-sm border-[0.5px] border-strong px-2 py-0.5 text-11 hover:bg-layer-1"
+            >
+              <ParentOutline className="h-3 w-3 flex-shrink-0" />
+              <span className="whitespace-nowrap">
+                {selectedParentIssue
+                  ? `${selectedParentIssue.project__identifier}-${selectedParentIssue.sequence_id}`
+                  : `Add parent`}
+              </span>
+            </button>
+          }
+          placement="bottom-start"
+          className="h-full w-full"
+          customButtonClassName="h-full"
+          tabIndex={tabIndex}
+        >
+          <>
+            <CustomMenu.MenuItem className="!p-1" onClick={() => setParentIssueModalOpen(true)}>
+              Change parent work item
+            </CustomMenu.MenuItem>
+            <CustomMenu.MenuItem
+              className="!p-1"
+              onClick={() => {
+                handleData("parent_id", "");
+                setSelectedParentIssue(undefined);
+              }}
+            >
+              Remove parent work item
+            </CustomMenu.MenuItem>
+          </>
+        </CustomMenu>
+      ) : (
+        <button
+          type="button"
+          className="flex h-full cursor-pointer items-center justify-between gap-1 rounded-sm border-[0.5px] border-strong px-2 py-0.5 text-11 hover:bg-layer-1"
+          onClick={() => setParentIssueModalOpen(true)}
+        >
+          <ParentOutline className="h-3 w-3 flex-shrink-0" />
+          <span className="whitespace-nowrap">Add parent</span>
+        </button>
+      )}
+
+      <ParentIssuesListModal
+        isOpen={parentIssueModalOpen}
+        handleClose={() => setParentIssueModalOpen(false)}
+        onChange={(issue) => {
+          handleData("parent_id", issue?.id);
+          setSelectedParentIssue(issue);
+        }}
+        projectId={projectId}
+        issueId={undefined}
+      />
+    </div>
+  );
+}
+
+export const InboxIssueProperties = observer(function InboxIssueProperties(props: TInboxIssueProperties) {
+  const { projectId, data, handleData, isVisible = false } = props;
+  // hooks
+  const { isMobile } = usePlatformOS();
 
   const { getIndex } = getTabIndex(ETabIndices.INTAKE_ISSUE_FORM, isMobile);
 
@@ -52,6 +154,8 @@ export const InboxIssueProperties = observer(function InboxIssueProperties(props
 
   const maxDate = getDate(targetDate);
   maxDate?.setDate(maxDate.getDate());
+
+  const currentAssigneeIds = data?.assignee_ids || [];
 
   return (
     <div className="relative flex flex-wrap items-center gap-2">
@@ -81,10 +185,10 @@ export const InboxIssueProperties = observer(function InboxIssueProperties(props
       <div className="h-7">
         <MemberDropdown
           projectId={projectId}
-          value={data?.assignee_ids || []}
+          value={currentAssigneeIds}
           onChange={(assigneeIds) => handleData("assignee_ids", assigneeIds)}
-          buttonVariant={(data?.assignee_ids || [])?.length > 0 ? "transparent-without-text" : "border-with-text"}
-          buttonClassName={(data?.assignee_ids || [])?.length > 0 ? "hover:bg-transparent" : ""}
+          buttonVariant={currentAssigneeIds.length > 0 ? "transparent-without-text" : "border-with-text"}
+          buttonClassName={currentAssigneeIds.length > 0 ? "hover:bg-transparent" : ""}
           placeholder="Assignees"
           multiple
           tabIndex={getIndex("assignee_ids")}
@@ -158,80 +262,21 @@ export const InboxIssueProperties = observer(function InboxIssueProperties(props
       )}
 
       {/* estimate */}
-      {isVisible && projectId && areEstimateEnabledByProjectId(projectId) && (
-        <div className="h-7">
-          <EstimateDropdown
-            value={data?.estimate_point || undefined}
-            onChange={(estimatePoint) => handleData("estimate_point", estimatePoint)}
-            projectId={projectId}
-            buttonVariant="border-with-text"
-            placeholder="Estimate"
-            tabIndex={getIndex("estimate_point")}
-          />
-        </div>
-      )}
+      <InboxIssueEstimateProperty
+        projectId={projectId}
+        value={data?.estimate_point}
+        handleData={handleData}
+        isVisible={isVisible}
+        tabIndex={getIndex("estimate_point")}
+      />
 
       {/* add parent */}
-      {isVisible && (
-        <div className="h-7">
-          {selectedParentIssue ? (
-            <CustomMenu
-              customButton={
-                <button
-                  type="button"
-                  className="flex h-full cursor-pointer items-center justify-between gap-1 rounded-sm border-[0.5px] border-strong px-2 py-0.5 text-11 hover:bg-layer-1"
-                >
-                  <ParentPropertyIcon className="h-3 w-3 flex-shrink-0" />
-                  <span className="whitespace-nowrap">
-                    {selectedParentIssue
-                      ? `${selectedParentIssue.project__identifier}-${selectedParentIssue.sequence_id}`
-                      : `Add parent`}
-                  </span>
-                </button>
-              }
-              placement="bottom-start"
-              className="h-full w-full"
-              customButtonClassName="h-full"
-              tabIndex={getIndex("parent_id")}
-            >
-              <>
-                <CustomMenu.MenuItem className="!p-1" onClick={() => setParentIssueModalOpen(true)}>
-                  Change parent work item
-                </CustomMenu.MenuItem>
-                <CustomMenu.MenuItem
-                  className="!p-1"
-                  onClick={() => {
-                    handleData("parent_id", "");
-                    setSelectedParentIssue(undefined);
-                  }}
-                >
-                  Remove parent work item
-                </CustomMenu.MenuItem>
-              </>
-            </CustomMenu>
-          ) : (
-            <button
-              type="button"
-              className="flex h-full cursor-pointer items-center justify-between gap-1 rounded-sm border-[0.5px] border-strong px-2 py-0.5 text-11 hover:bg-layer-1"
-              onClick={() => setParentIssueModalOpen(true)}
-            >
-              <ParentPropertyIcon className="h-3 w-3 flex-shrink-0" />
-              <span className="whitespace-nowrap">Add parent</span>
-            </button>
-          )}
-
-          <ParentIssuesListModal
-            isOpen={parentIssueModalOpen}
-            handleClose={() => setParentIssueModalOpen(false)}
-            onChange={(issue) => {
-              handleData("parent_id", issue?.id);
-              setSelectedParentIssue(issue);
-            }}
-            projectId={projectId}
-            issueId={undefined}
-          />
-        </div>
-      )}
+      <InboxIssueParentProperty
+        projectId={projectId}
+        handleData={handleData}
+        isVisible={isVisible}
+        tabIndex={getIndex("parent_id")}
+      />
     </div>
   );
 });

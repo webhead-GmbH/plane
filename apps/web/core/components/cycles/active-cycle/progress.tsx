@@ -4,14 +4,16 @@
  * See the LICENSE file for details.
  */
 
+import { Fragment } from "react";
 import { observer } from "mobx-react";
 import { useTheme } from "next-themes";
 // plane imports
 import { PROGRESS_STATE_GROUPS_DETAILS } from "@plane/constants";
 import { useTranslation } from "@plane/i18n";
 import type { TWorkItemFilterCondition } from "@plane/shared-state";
+import { LinearProgress } from "@makeplane/propel/components/linear-progress";
 import type { ICycle } from "@plane/types";
-import { LinearProgressIndicator, Loader } from "@plane/ui";
+import { Loader } from "@plane/ui";
 // assets
 import darkProgressAsset from "@/app/assets/empty-state/active-cycle/progress-dark.webp?url";
 import lightProgressAsset from "@/app/assets/empty-state/active-cycle/progress-light.webp?url";
@@ -25,6 +27,63 @@ export type ActiveCycleProgressProps = {
   handleFiltersUpdate: (conditions: TWorkItemFilterCondition[]) => void;
 };
 
+type ActiveCycleProgressGroupsProps = {
+  cycle: ICycle;
+  handleFiltersUpdate: (conditions: TWorkItemFilterCondition[]) => void;
+};
+
+const ActiveCycleProgressGroups = observer(function ActiveCycleProgressGroups(props: ActiveCycleProgressGroupsProps) {
+  const { cycle, handleFiltersUpdate } = props;
+  // derived values
+  const groupedIssues: Record<string, number> = {
+    completed: cycle.completed_issues,
+    started: cycle.started_issues,
+    unstarted: cycle.unstarted_issues,
+    backlog: cycle.backlog_issues,
+  };
+
+  return (
+    <div className="flex flex-col gap-5">
+      {Object.keys(groupedIssues).map((group, index) => (
+        <Fragment key={group}>
+          {groupedIssues[group] > 0 && (
+            <div>
+              <div
+                className="flex cursor-pointer items-center justify-between gap-2 text-13"
+                onClick={() => {
+                  handleFiltersUpdate([{ property: "state_group", operator: "in", value: [group] }]);
+                }}
+              >
+                <div className="flex items-center gap-1.5">
+                  <span
+                    className="block h-3 w-3 rounded-full"
+                    style={{
+                      backgroundColor: PROGRESS_STATE_GROUPS_DETAILS[index].color,
+                    }}
+                  />
+                  <span className="w-16 font-medium text-tertiary capitalize">{group}</span>
+                </div>
+                <span className="text-tertiary">{`${groupedIssues[group]} ${
+                  groupedIssues[group] > 1 ? "Work items" : "Work item"
+                }`}</span>
+              </div>
+            </div>
+          )}
+        </Fragment>
+      ))}
+      {cycle.cancelled_issues > 0 && (
+        <span className="flex items-center gap-2 text-13 text-tertiary">
+          <span>
+            {`${cycle.cancelled_issues} cancelled ${
+              cycle.cancelled_issues > 1 ? "work items are" : "work item is"
+            } excluded from this report.`}{" "}
+          </span>
+        </span>
+      )}
+    </div>
+  );
+});
+
 export const ActiveCycleProgress = observer(function ActiveCycleProgress(props: ActiveCycleProgressProps) {
   const { handleFiltersUpdate, cycle } = props;
   // theme hook
@@ -32,20 +91,9 @@ export const ActiveCycleProgress = observer(function ActiveCycleProgress(props: 
   // plane hooks
   const { t } = useTranslation();
   // derived values
-  const progressIndicatorData = PROGRESS_STATE_GROUPS_DETAILS.map((group, index) => ({
-    id: index,
-    name: group.title,
-    value: cycle && cycle.total_issues > 0 ? (cycle[group.key as keyof ICycle] as number) : 0,
-    color: group.color,
-  }));
-  const groupedIssues: any = cycle
-    ? {
-        completed: cycle?.completed_issues,
-        started: cycle?.started_issues,
-        unstarted: cycle?.unstarted_issues,
-        backlog: cycle?.backlog_issues,
-      }
-    : {};
+  const closedIssues = cycle ? cycle.completed_issues + cycle.cancelled_issues : 0;
+  const closableIssues = cycle ? cycle.total_issues - cycle.cancelled_issues : 0;
+  const progressValue = closableIssues > 0 ? (closedIssues / closableIssues) * 100 : 0;
   const resolvedPath = resolvedTheme === "light" ? lightProgressAsset : darkProgressAsset;
 
   return cycle && cycle.hasOwnProperty("started_issues") ? (
@@ -61,48 +109,19 @@ export const ActiveCycleProgress = observer(function ActiveCycleProgress(props: 
             </span>
           )}
         </div>
-        {cycle.total_issues > 0 && <LinearProgressIndicator size="lg" data={progressIndicatorData} />}
+        {cycle.total_issues > 0 && (
+          <LinearProgress
+            value={progressValue}
+            size="md"
+            variant="brand"
+            showValue={false}
+            aria-label="Cycle progress"
+          />
+        )}
       </div>
 
       {cycle.total_issues > 0 ? (
-        <div className="flex flex-col gap-5">
-          {Object.keys(groupedIssues).map((group, index) => (
-            <>
-              {groupedIssues[group] > 0 && (
-                <div key={index}>
-                  <div
-                    className="flex cursor-pointer items-center justify-between gap-2 text-13"
-                    onClick={() => {
-                      handleFiltersUpdate([{ property: "state_group", operator: "in", value: [group] }]);
-                    }}
-                  >
-                    <div className="flex items-center gap-1.5">
-                      <span
-                        className="block h-3 w-3 rounded-full"
-                        style={{
-                          backgroundColor: PROGRESS_STATE_GROUPS_DETAILS[index].color,
-                        }}
-                      />
-                      <span className="w-16 font-medium text-tertiary capitalize">{group}</span>
-                    </div>
-                    <span className="text-tertiary">{`${groupedIssues[group]} ${
-                      groupedIssues[group] > 1 ? "Work items" : "Work item"
-                    }`}</span>
-                  </div>
-                </div>
-              )}
-            </>
-          ))}
-          {cycle.cancelled_issues > 0 && (
-            <span className="flex items-center gap-2 text-13 text-tertiary">
-              <span>
-                {`${cycle.cancelled_issues} cancelled ${
-                  cycle.cancelled_issues > 1 ? "work items are" : "work item is"
-                } excluded from this report.`}{" "}
-              </span>
-            </span>
-          )}
-        </div>
+        <ActiveCycleProgressGroups cycle={cycle} handleFiltersUpdate={handleFiltersUpdate} />
       ) : (
         <div className="flex h-full w-full items-center justify-center">
           <SimpleEmptyState title={t("active_cycle.empty_state.progress.title")} assetPath={resolvedPath} />

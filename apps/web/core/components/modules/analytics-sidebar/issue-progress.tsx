@@ -7,12 +7,11 @@
 import { Fragment, useMemo, useState } from "react";
 import { observer } from "mobx-react";
 import { useSearchParams } from "next/navigation";
-import { AlertCircle } from "lucide-react";
+import { ChevronDownOutline, ChevronUpOutline, WarningCircleOutline } from "@makeplane/propel/icons";
 import { Disclosure, Transition } from "@headlessui/react";
 import { EEstimateSystem } from "@plane/constants";
 import { useTranslation } from "@plane/i18n";
-import { ChevronUpIcon, ChevronDownIcon } from "@plane/propel/icons";
-import type { TModulePlotType } from "@plane/types";
+import type { IModule, TModulePlotType } from "@plane/types";
 import { EIssuesStoreType } from "@plane/types";
 import { CustomSelect, Spinner } from "@plane/ui";
 // components
@@ -36,6 +35,34 @@ const moduleBurnDownChartOptions = [
   { value: "burndown", i18n_label: "issues" },
   { value: "points", i18n_label: "points" },
 ];
+
+const getModuleProgressTotals = (moduleDetails: IModule | null, plotType: TModulePlotType) => {
+  const completedIssues = moduleDetails?.completed_issues || 0;
+  const totalIssues = moduleDetails?.total_issues || 0;
+  const completedEstimatePoints = moduleDetails?.completed_estimate_points || 0;
+  const totalEstimatePoints = moduleDetails?.total_estimate_points || 0;
+  const progressHeaderPercentage = moduleDetails
+    ? plotType === "points"
+      ? completedEstimatePoints != 0 && totalEstimatePoints != 0
+        ? Math.round((completedEstimatePoints / totalEstimatePoints) * 100)
+        : 0
+      : completedIssues != 0 && totalIssues != 0
+        ? Math.round((completedIssues / totalIssues) * 100)
+        : 0
+    : 0;
+
+  return { totalIssues, totalEstimatePoints, progressHeaderPercentage };
+};
+
+const getModuleDateDetails = (moduleDetails: IModule | null) => {
+  const moduleStartDate = getDate(moduleDetails?.start_date);
+  const moduleEndDate = getDate(moduleDetails?.target_date);
+  const isModuleStartDateValid = moduleStartDate && moduleStartDate <= new Date();
+  const isModuleEndDateValid = moduleStartDate && moduleEndDate && moduleEndDate >= moduleStartDate;
+  const isModuleDateValid = isModuleStartDateValid && isModuleEndDateValid;
+
+  return { moduleStartDate, moduleEndDate, isModuleDateValid };
+};
 
 export const ModuleAnalyticsProgress = observer(function ModuleAnalyticsProgress(props: TModuleAnalyticsProgress) {
   // props
@@ -63,19 +90,10 @@ export const ModuleAnalyticsProgress = observer(function ModuleAnalyticsProgress
   const estimateDetails =
     isCurrentProjectEstimateEnabled && currentActiveEstimateId && estimateById(currentActiveEstimateId);
   const isCurrentEstimateTypeIsPoints = estimateDetails && estimateDetails?.type === EEstimateSystem.POINTS;
-  const completedIssues = moduleDetails?.completed_issues || 0;
-  const totalIssues = moduleDetails?.total_issues || 0;
-  const completedEstimatePoints = moduleDetails?.completed_estimate_points || 0;
-  const totalEstimatePoints = moduleDetails?.total_estimate_points || 0;
-  const progressHeaderPercentage = moduleDetails
-    ? plotType === "points"
-      ? completedEstimatePoints != 0 && totalEstimatePoints != 0
-        ? Math.round((completedEstimatePoints / totalEstimatePoints) * 100)
-        : 0
-      : completedIssues != 0 && completedIssues != 0
-        ? Math.round((completedIssues / totalIssues) * 100)
-        : 0
-    : 0;
+  const { totalIssues, totalEstimatePoints, progressHeaderPercentage } = getModuleProgressTotals(
+    moduleDetails,
+    plotType
+  );
   const chartDistributionData =
     plotType === "points" ? moduleDetails?.estimate_distribution : moduleDetails?.distribution || undefined;
   const completionChartDistributionData = chartDistributionData?.completion_chart || undefined;
@@ -92,11 +110,7 @@ export const ModuleAnalyticsProgress = observer(function ModuleAnalyticsProgress
     }),
     [plotType, moduleDetails]
   );
-  const moduleStartDate = getDate(moduleDetails?.start_date);
-  const moduleEndDate = getDate(moduleDetails?.target_date);
-  const isModuleStartDateValid = moduleStartDate && moduleStartDate <= new Date();
-  const isModuleEndDateValid = moduleStartDate && moduleEndDate && moduleEndDate >= moduleStartDate;
-  const isModuleDateValid = isModuleStartDateValid && isModuleEndDateValid;
+  const { moduleStartDate, moduleEndDate, isModuleDateValid } = getModuleDateDetails(moduleDetails);
   const isArchived = !!moduleDetails?.archived_at;
 
   // handlers
@@ -157,9 +171,9 @@ export const ModuleAnalyticsProgress = observer(function ModuleAnalyticsProgress
                 )}
                 <Disclosure.Button className="ml-auto">
                   {open ? (
-                    <ChevronUpIcon className="h-3.5 w-3.5" aria-hidden="true" />
+                    <ChevronUpOutline className="h-3.5 w-3.5" aria-hidden="true" />
                   ) : (
-                    <ChevronDownIcon className="h-3.5 w-3.5" aria-hidden="true" />
+                    <ChevronDownOutline className="h-3.5 w-3.5" aria-hidden="true" />
                   )}
                 </Disclosure.Button>
               </div>
@@ -167,7 +181,7 @@ export const ModuleAnalyticsProgress = observer(function ModuleAnalyticsProgress
               <div className="relative flex w-full items-center justify-between gap-2">
                 <div className="text-13 font-medium text-secondary">Progress</div>
                 <div className="flex items-center gap-1">
-                  <AlertCircle height={14} width={14} className="text-secondary" />
+                  <WarningCircleOutline height={14} width={14} className="text-secondary" />
                   <span className="text-11 text-secondary italic">
                     {moduleDetails?.start_date && moduleDetails?.target_date
                       ? t("project_module.empty_state.sidebar.in_active")
@@ -177,7 +191,7 @@ export const ModuleAnalyticsProgress = observer(function ModuleAnalyticsProgress
               </div>
             )}
 
-            <Transition show={open}>
+            <Transition as="div" show={open}>
               <Disclosure.Panel className="space-y-4">
                 {/* progress burndown chart */}
                 <div>

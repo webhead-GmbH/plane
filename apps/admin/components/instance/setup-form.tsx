@@ -7,15 +7,17 @@
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 // icons
-import { Eye, EyeOff } from "lucide-react";
+import { HideOutline, ShowOutline } from "@makeplane/propel/icons";
 // plane internal packages
 import { API_BASE_URL, E_PASSWORD_STRENGTH } from "@plane/constants";
-import { Button } from "@plane/propel/button";
+import { Button } from "@makeplane/propel/components/button";
+import { Checkbox } from "@makeplane/propel/components/checkbox";
+import { Input, InputGroup } from "@makeplane/propel/components/input";
 import { AuthService } from "@plane/services";
-import { Checkbox, Input, PasswordStrengthIndicator, Spinner } from "@plane/ui";
 import { getPasswordStrength, validatePersonName, validateCompanyName } from "@plane/utils";
 // components
 import { AuthHeader } from "@/app/(all)/(home)/auth-header";
+import { PasswordStrengthIndicator } from "@/components/common/password-strength-indicator";
 import { Banner } from "../common/banner";
 import { FormHeader } from "./form-header";
 
@@ -57,36 +59,146 @@ const defaultFromData: TFormData = {
   is_telemetry_enabled: true,
 };
 
+function useInstanceSetupSearchParams() {
+  const searchParams = useSearchParams();
+
+  return {
+    firstNameParam: searchParams?.get("first_name") || undefined,
+    lastNameParam: searchParams?.get("last_name") || undefined,
+    companyParam: searchParams?.get("company") || undefined,
+    emailParam: searchParams?.get("email") || undefined,
+    isTelemetryEnabledParam: searchParams?.get("is_telemetry_enabled") === "True" || true,
+    errorCode: searchParams?.get("error_code") || undefined,
+    errorMessage: searchParams?.get("error_message") || undefined,
+  };
+}
+
+type TPasswordVisibilityToggleProps = {
+  isVisible: boolean;
+  onToggle: () => void;
+};
+
+function PasswordVisibilityToggle(props: TPasswordVisibilityToggleProps) {
+  const { isVisible, onToggle } = props;
+
+  return isVisible ? (
+    <button
+      type="button"
+      aria-label="Hide password"
+      className="flex items-center justify-center text-placeholder"
+      onClick={onToggle}
+    >
+      <HideOutline className="h-4 w-4" />
+    </button>
+  ) : (
+    <button
+      type="button"
+      aria-label="Show password"
+      className="flex items-center justify-center text-placeholder"
+      onClick={onToggle}
+    >
+      <ShowOutline className="h-4 w-4" />
+    </button>
+  );
+}
+
+type TPasswordFieldProps = {
+  value: string;
+  errorData: TError;
+  onChange: (value: string) => void;
+};
+
+function InstanceSetupPasswordField(props: TPasswordFieldProps) {
+  const { value, errorData, onChange } = props;
+  // states
+  const [showPassword, setShowPassword] = useState(false);
+  const [isPasswordInputFocused, setIsPasswordInputFocused] = useState(false);
+
+  return (
+    <div className="w-full space-y-1">
+      <label className="text-13 font-medium text-tertiary" htmlFor="password">
+        Set a password <span className="text-danger-primary">*</span>
+      </label>
+      <InputGroup size="lg">
+        <Input
+          size="lg"
+          id="password"
+          name="password"
+          type={showPassword ? "text" : "password"}
+          placeholder="New password"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          aria-invalid={errorData.type === EErrorCodes.INVALID_PASSWORD}
+          onFocus={() => setIsPasswordInputFocused(true)}
+          onBlur={() => setIsPasswordInputFocused(false)}
+          autoComplete="new-password"
+        />
+        <PasswordVisibilityToggle isVisible={showPassword} onToggle={() => setShowPassword((prev) => !prev)} />
+      </InputGroup>
+      {errorData.type && errorData.type === EErrorCodes.INVALID_PASSWORD && errorData.message && (
+        <p className="px-1 text-11 text-danger-primary">{errorData.message}</p>
+      )}
+      <PasswordStrengthIndicator password={value} isFocused={isPasswordInputFocused} />
+    </div>
+  );
+}
+
+type TConfirmPasswordFieldProps = {
+  password: string;
+  value: string | undefined;
+  onChange: (value: string) => void;
+};
+
+function InstanceSetupConfirmPasswordField(props: TConfirmPasswordFieldProps) {
+  const { password, value, onChange } = props;
+  // states
+  const [showPassword, setShowPassword] = useState(false);
+  const [isRetryPasswordInputFocused, setIsRetryPasswordInputFocused] = useState(false);
+  // derived values
+  const confirmPassword = value ?? "";
+  const renderPasswordMatchError = !isRetryPasswordInputFocused || confirmPassword.length >= password.length;
+
+  return (
+    <div className="w-full space-y-1">
+      <label className="text-13 font-medium text-tertiary" htmlFor="confirm_password">
+        Confirm password <span className="text-danger-primary">*</span>
+      </label>
+      <InputGroup size="lg">
+        <Input
+          size="lg"
+          type={showPassword ? "text" : "password"}
+          id="confirm_password"
+          name="confirm_password"
+          value={confirmPassword}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder="Confirm password"
+          onFocus={() => setIsRetryPasswordInputFocused(true)}
+          onBlur={() => setIsRetryPasswordInputFocused(false)}
+          autoComplete="new-password"
+        />
+        <PasswordVisibilityToggle isVisible={showPassword} onToggle={() => setShowPassword((prev) => !prev)} />
+      </InputGroup>
+      {!!value && password !== value && renderPasswordMatchError && (
+        <span className="text-13 text-danger-primary">Passwords don{"'"}t match</span>
+      )}
+    </div>
+  );
+}
+
 export function InstanceSetupForm() {
   // search params
-  const searchParams = useSearchParams();
-  const firstNameParam = searchParams?.get("first_name") || undefined;
-  const lastNameParam = searchParams?.get("last_name") || undefined;
-  const companyParam = searchParams?.get("company") || undefined;
-  const emailParam = searchParams?.get("email") || undefined;
-  const isTelemetryEnabledParam = (searchParams?.get("is_telemetry_enabled") === "True" ? true : false) || true;
-  const errorCode = searchParams?.get("error_code") || undefined;
-  const errorMessage = searchParams?.get("error_message") || undefined;
+  const { firstNameParam, lastNameParam, companyParam, emailParam, isTelemetryEnabledParam, errorCode, errorMessage } =
+    useInstanceSetupSearchParams();
   // state
-  const [showPassword, setShowPassword] = useState({
-    password: false,
-    retypePassword: false,
-  });
-  const [csrfToken, setCsrfToken] = useState<string | undefined>(undefined);
+  const [csrfToken, setCsrfToken] = useState("");
   const [formData, setFormData] = useState<TFormData>(defaultFromData);
-  const [isPasswordInputFocused, setIsPasswordInputFocused] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isRetryPasswordInputFocused, setIsRetryPasswordInputFocused] = useState(false);
-
-  const handleShowPassword = (key: keyof typeof showPassword) =>
-    setShowPassword((prev) => ({ ...prev, [key]: !prev[key] }));
 
   const handleFormChange = (key: keyof TFormData, value: string | boolean) =>
     setFormData((prev) => ({ ...prev, [key]: value }));
 
   useEffect(() => {
-    if (csrfToken === undefined)
-      authService.requestCSRFToken().then((data) => data?.csrf_token && setCsrfToken(data.csrf_token));
+    if (!csrfToken) authService.requestCSRFToken().then((data) => data?.csrf_token && setCsrfToken(data.csrf_token));
   }, [csrfToken]);
 
   useEffect(() => {
@@ -132,10 +244,6 @@ export function InstanceSetupForm() {
     [formData.confirm_password, formData.email, formData.first_name, formData.password, isSubmitting]
   );
 
-  const password = formData?.password ?? "";
-  const confirmPassword = formData?.confirm_password ?? "";
-  const renderPasswordMatchError = !isRetryPasswordInputFocused || confirmPassword.length >= password.length;
-
   return (
     <>
       <AuthHeader />
@@ -165,46 +273,48 @@ export function InstanceSetupForm() {
                 <label className="text-13 font-medium text-tertiary" htmlFor="first_name">
                   First name <span className="text-danger-primary">*</span>
                 </label>
-                <Input
-                  className="w-full border border-subtle !bg-surface-1 placeholder:text-placeholder"
-                  id="first_name"
-                  name="first_name"
-                  type="text"
-                  inputSize="md"
-                  placeholder="Wilber"
-                  value={formData.first_name}
-                  onChange={(e) => {
-                    const validation = validatePersonName(e.target.value);
-                    if (validation === true || e.target.value === "") {
-                      handleFormChange("first_name", e.target.value);
-                    }
-                  }}
-                  autoComplete="off"
-                  autoFocus
-                  maxLength={50}
-                />
+                <InputGroup size="lg">
+                  <Input
+                    size="lg"
+                    id="first_name"
+                    name="first_name"
+                    type="text"
+                    placeholder="Wilber"
+                    value={formData.first_name}
+                    onChange={(e) => {
+                      const validation = validatePersonName(e.target.value);
+                      if (validation === true || e.target.value === "") {
+                        handleFormChange("first_name", e.target.value);
+                      }
+                    }}
+                    autoComplete="off"
+                    autoFocus
+                    maxLength={50}
+                  />
+                </InputGroup>
               </div>
               <div className="w-full space-y-1">
                 <label className="text-13 font-medium text-tertiary" htmlFor="last_name">
                   Last name <span className="text-danger-primary">*</span>
                 </label>
-                <Input
-                  className="w-full border border-subtle !bg-surface-1 placeholder:text-placeholder"
-                  id="last_name"
-                  name="last_name"
-                  type="text"
-                  inputSize="md"
-                  placeholder="Wright"
-                  value={formData.last_name}
-                  onChange={(e) => {
-                    const validation = validatePersonName(e.target.value);
-                    if (validation === true || e.target.value === "") {
-                      handleFormChange("last_name", e.target.value);
-                    }
-                  }}
-                  autoComplete="off"
-                  maxLength={50}
-                />
+                <InputGroup size="lg">
+                  <Input
+                    size="lg"
+                    id="last_name"
+                    name="last_name"
+                    type="text"
+                    placeholder="Wright"
+                    value={formData.last_name}
+                    onChange={(e) => {
+                      const validation = validatePersonName(e.target.value);
+                      if (validation === true || e.target.value === "") {
+                        handleFormChange("last_name", e.target.value);
+                      }
+                    }}
+                    autoComplete="off"
+                    maxLength={50}
+                  />
+                </InputGroup>
               </div>
             </div>
 
@@ -212,18 +322,19 @@ export function InstanceSetupForm() {
               <label className="text-13 font-medium text-tertiary" htmlFor="email">
                 Email <span className="text-danger-primary">*</span>
               </label>
-              <Input
-                className="w-full border border-subtle !bg-surface-1 placeholder:text-placeholder"
-                id="email"
-                name="email"
-                type="email"
-                inputSize="md"
-                placeholder="name@company.com"
-                value={formData.email}
-                onChange={(e) => handleFormChange("email", e.target.value)}
-                hasError={errorData.type && errorData.type === EErrorCodes.INVALID_EMAIL ? true : false}
-                autoComplete="off"
-              />
+              <InputGroup size="lg">
+                <Input
+                  size="lg"
+                  id="email"
+                  name="email"
+                  type="email"
+                  placeholder="name@company.com"
+                  value={formData.email}
+                  onChange={(e) => handleFormChange("email", e.target.value)}
+                  aria-invalid={errorData.type === EErrorCodes.INVALID_EMAIL}
+                  autoComplete="off"
+                />
+              </InputGroup>
               {errorData.type && errorData.type === EErrorCodes.INVALID_EMAIL && errorData.message && (
                 <p className="px-1 text-11 text-danger-primary">{errorData.message}</p>
               )}
@@ -233,121 +344,43 @@ export function InstanceSetupForm() {
               <label className="text-13 font-medium text-tertiary" htmlFor="company_name">
                 Company name <span className="text-danger-primary">*</span>
               </label>
-              <Input
-                className="w-full border border-subtle !bg-surface-1 placeholder:text-placeholder"
-                id="company_name"
-                name="company_name"
-                type="text"
-                inputSize="md"
-                placeholder="Company name"
-                value={formData.company_name}
-                onChange={(e) => {
-                  const validation = validateCompanyName(e.target.value, false);
-                  if (validation === true || e.target.value === "") {
-                    handleFormChange("company_name", e.target.value);
-                  }
-                }}
-                maxLength={80}
-              />
+              <InputGroup size="lg">
+                <Input
+                  size="lg"
+                  id="company_name"
+                  name="company_name"
+                  type="text"
+                  placeholder="Company name"
+                  value={formData.company_name}
+                  onChange={(e) => {
+                    const validation = validateCompanyName(e.target.value, false);
+                    if (validation === true || e.target.value === "") {
+                      handleFormChange("company_name", e.target.value);
+                    }
+                  }}
+                  maxLength={80}
+                />
+              </InputGroup>
             </div>
 
-            <div className="w-full space-y-1">
-              <label className="text-13 font-medium text-tertiary" htmlFor="password">
-                Set a password <span className="text-danger-primary">*</span>
-              </label>
-              <div className="relative">
-                <Input
-                  className="w-full border border-subtle !bg-surface-1 placeholder:text-placeholder"
-                  id="password"
-                  name="password"
-                  type={showPassword.password ? "text" : "password"}
-                  inputSize="md"
-                  placeholder="New password"
-                  value={formData.password}
-                  onChange={(e) => handleFormChange("password", e.target.value)}
-                  hasError={errorData.type && errorData.type === EErrorCodes.INVALID_PASSWORD ? true : false}
-                  onFocus={() => setIsPasswordInputFocused(true)}
-                  onBlur={() => setIsPasswordInputFocused(false)}
-                  autoComplete="new-password"
-                />
-                {showPassword.password ? (
-                  <button
-                    type="button"
-                    aria-label="Hide password"
-                    className="absolute top-3.5 right-3 flex items-center justify-center text-placeholder"
-                    onClick={() => handleShowPassword("password")}
-                  >
-                    <EyeOff className="h-4 w-4" />
-                  </button>
-                ) : (
-                  <button
-                    type="button"
-                    aria-label="Show password"
-                    className="absolute top-3.5 right-3 flex items-center justify-center text-placeholder"
-                    onClick={() => handleShowPassword("password")}
-                  >
-                    <Eye className="h-4 w-4" />
-                  </button>
-                )}
-              </div>
-              {errorData.type && errorData.type === EErrorCodes.INVALID_PASSWORD && errorData.message && (
-                <p className="px-1 text-11 text-danger-primary">{errorData.message}</p>
-              )}
-              <PasswordStrengthIndicator password={formData.password} isFocused={isPasswordInputFocused} />
-            </div>
+            <InstanceSetupPasswordField
+              value={formData.password}
+              errorData={errorData}
+              onChange={(value) => handleFormChange("password", value)}
+            />
 
-            <div className="w-full space-y-1">
-              <label className="text-13 font-medium text-tertiary" htmlFor="confirm_password">
-                Confirm password <span className="text-danger-primary">*</span>
-              </label>
-              <div className="relative">
-                <Input
-                  type={showPassword.retypePassword ? "text" : "password"}
-                  id="confirm_password"
-                  name="confirm_password"
-                  inputSize="md"
-                  value={formData.confirm_password}
-                  onChange={(e) => handleFormChange("confirm_password", e.target.value)}
-                  placeholder="Confirm password"
-                  className="w-full border border-subtle !bg-surface-1 pr-12 placeholder:text-placeholder"
-                  onFocus={() => setIsRetryPasswordInputFocused(true)}
-                  onBlur={() => setIsRetryPasswordInputFocused(false)}
-                  autoComplete="new-password"
-                />
-                {showPassword.retypePassword ? (
-                  <button
-                    type="button"
-                    aria-label="Hide password"
-                    className="absolute top-3.5 right-3 flex items-center justify-center text-placeholder"
-                    onClick={() => handleShowPassword("retypePassword")}
-                  >
-                    <EyeOff className="h-4 w-4" />
-                  </button>
-                ) : (
-                  <button
-                    type="button"
-                    aria-label="Show password"
-                    className="absolute top-3.5 right-3 flex items-center justify-center text-placeholder"
-                    onClick={() => handleShowPassword("retypePassword")}
-                  >
-                    <Eye className="h-4 w-4" />
-                  </button>
-                )}
-              </div>
-              {!!formData.confirm_password &&
-                formData.password !== formData.confirm_password &&
-                renderPasswordMatchError && (
-                  <span className="text-13 text-danger-primary">Passwords don{"'"}t match</span>
-                )}
-            </div>
+            <InstanceSetupConfirmPasswordField
+              password={formData.password}
+              value={formData.confirm_password}
+              onChange={(value) => handleFormChange("confirm_password", value)}
+            />
 
             <div className="relative flex gap-2">
               <div>
                 <Checkbox
-                  className="h-4 w-4"
-                  iconClassName="w-3 h-3"
                   id="is_telemetry_enabled"
-                  onChange={() => handleFormChange("is_telemetry_enabled", !formData.is_telemetry_enabled)}
+                  aria-label="Allow Plane to anonymously collect usage events"
+                  onCheckedChange={(checked) => handleFormChange("is_telemetry_enabled", checked)}
                   checked={formData.is_telemetry_enabled}
                 />
               </div>
@@ -365,9 +398,15 @@ export function InstanceSetupForm() {
             </div>
 
             <div className="py-2">
-              <Button type="submit" size="xl" className="w-full" disabled={isButtonDisabled}>
-                {isSubmitting ? <Spinner height="20px" width="20px" /> : "Continue"}
-              </Button>
+              <Button
+                type="submit"
+                variant="primary"
+                size="lg"
+                stretch="full"
+                disabled={isButtonDisabled}
+                loading={isSubmitting}
+                label="Continue"
+              />
             </div>
           </form>
         </div>

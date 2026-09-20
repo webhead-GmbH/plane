@@ -6,10 +6,11 @@
 
 import { ISSUE_LAYOUTS } from "@plane/constants";
 import { useTranslation } from "@plane/i18n";
-import { Button } from "@plane/propel/button";
-import { ChevronDownIcon } from "@plane/propel/icons";
+import { getButtonStyling } from "@plane/propel/button";
+import { ChevronDownOutline } from "@makeplane/propel/icons";
 import type { EIssueLayoutTypes } from "@plane/types";
 import { CustomMenu } from "@plane/ui";
+import { cn } from "@plane/utils";
 import { IssueLayoutIcon } from "../../layout-icon";
 
 export function MobileLayoutSelection({
@@ -29,12 +30,13 @@ export function MobileLayoutSelection({
       className="flex flex-grow justify-center text-13 text-secondary"
       placement="bottom-start"
       customButton={
-        <Button variant="secondary" className="relative px-2">
+        // styled as a secondary button, not a Button: the menu trigger already is a button
+        <span className={cn(getButtonStyling("secondary", "base"), "relative px-2")}>
           {activeLayout && (
             <IssueLayoutIcon layout={activeLayout} size={14} strokeWidth={2} className={`h-3.5 w-3.5`} />
           )}
-          <ChevronDownIcon className="my-auto size-3 text-secondary" strokeWidth={2} />
-        </Button>
+          <ChevronDownOutline className="my-auto size-3 text-secondary" />
+        </span>
       }
       customButtonClassName="flex flex-grow justify-center text-secondary text-13"
       closeOnSelect

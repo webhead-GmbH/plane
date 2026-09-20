@@ -8,13 +8,11 @@ import { useState } from "react";
 import { observer } from "mobx-react";
 import type { TModuleStatus } from "@plane/propel/icons";
 // plane imports
-import { CloseIcon, SearchIcon } from "@plane/propel/icons";
 import type { TModuleDisplayFilters, TModuleFilters } from "@plane/types";
 // components
+import { FiltersSearchInput } from "@/components/common/filters/search-input";
 import { FilterOption } from "@/components/issues/issue-layouts/filters";
 import { FilterLead, FilterMembers, FilterStartDate, FilterStatus, FilterTargetDate } from "@/components/modules";
-// hooks
-import { usePlatformOS } from "@/hooks/use-platform-os";
 
 type Props = {
   displayFilters: TModuleDisplayFilters;
@@ -36,29 +34,10 @@ export const ModuleFiltersSelection = observer(function ModuleFiltersSelection(p
   } = props;
   // states
   const [filtersSearchQuery, setFiltersSearchQuery] = useState("");
-  // store
-  const { isMobile } = usePlatformOS();
 
   return (
     <div className="flex h-full w-full flex-col overflow-hidden">
-      <div className="bg-surface-1 p-2.5 pb-0">
-        <div className="flex items-center gap-1.5 rounded-sm border-[0.5px] border-subtle bg-surface-2 px-1.5 py-1 text-11">
-          <SearchIcon className="text-placeholder" width={12} height={12} strokeWidth={2} />
-          <input
-            type="text"
-            className="w-full bg-surface-2 outline-none placeholder:text-placeholder"
-            placeholder="Search"
-            value={filtersSearchQuery}
-            onChange={(e) => setFiltersSearchQuery(e.target.value)}
-            autoFocus={!isMobile}
-          />
-          {filtersSearchQuery !== "" && (
-            <button type="button" className="grid place-items-center" onClick={() => setFiltersSearchQuery("")}>
-              <CloseIcon className="text-tertiary" height={12} width={12} strokeWidth={2} />
-            </button>
-          )}
-        </div>
-      </div>
+      <FiltersSearchInput searchQuery={filtersSearchQuery} onSearchQueryChange={setFiltersSearchQuery} />
       <div className="vertical-scrollbar scrollbar-sm h-full w-full divide-y divide-subtle-1 overflow-y-auto px-2.5">
         {!isArchived && (
           <div className="py-2">

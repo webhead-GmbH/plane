@@ -6,9 +6,8 @@
 
 import React, { useState } from "react";
 import { observer } from "mobx-react";
-import { HelpCircle, User } from "lucide-react";
+import { HelpOutline, PagesOutline, UserOutline } from "@makeplane/propel/icons";
 import { useTranslation } from "@plane/i18n";
-import { PageIcon } from "@plane/propel/icons";
 // ui
 import { CustomMenu } from "@plane/ui";
 // components
@@ -33,9 +32,9 @@ export const HelpMenuRoot = observer(function HelpMenuRoot() {
       <CustomMenu
         customButton={
           <AppSidebarItem
-            variant="button"
+            variant="static"
             item={{
-              icon: <HelpCircle className="size-5" />,
+              icon: <HelpOutline className="size-5" />,
               isActive: isNeedHelpOpen,
             }}
           />
@@ -49,34 +48,26 @@ export const HelpMenuRoot = observer(function HelpMenuRoot() {
       >
         <CustomMenu.MenuItem onClick={() => window.open("https://go.plane.so/p-docs", "_blank")}>
           <div className="flex items-center gap-x-2 rounded-sm text-11">
-            <PageIcon className="h-3.5 w-3.5 text-secondary" height={14} width={14} />
+            <PagesOutline className="h-3.5 w-3.5 text-secondary" height={14} width={14} />
             <span className="text-11">{t("documentation")}</span>
           </div>
         </CustomMenu.MenuItem>
         <CustomMenu.MenuItem onClick={() => window.open("mailto:sales@plane.so", "_blank")}>
           <div className="flex items-center gap-x-2 rounded-sm text-11">
-            <User className="h-3.5 w-3.5 text-secondary" size={14} />
+            <UserOutline className="h-3.5 w-3.5 text-secondary" width={14} height={14} />
             <span className="text-11">{t("contact_sales")}</span>
           </div>
         </CustomMenu.MenuItem>
         <div className="my-1 border-t border-subtle" />
-        <CustomMenu.MenuItem>
-          <button
-            type="button"
-            onClick={() => toggleShortcutsListModal(true)}
-            className="justify-sbg-layer-211 flex w-full items-center hover:bg-layer-1"
-          >
+        <CustomMenu.MenuItem onClick={() => toggleShortcutsListModal(true)}>
+          <span className="justify-sbg-layer-211 flex w-full items-center hover:bg-layer-1">
             <span className="text-11">{t("keyboard_shortcuts")}</span>
-          </button>
+          </span>
         </CustomMenu.MenuItem>
-        <CustomMenu.MenuItem>
-          <button
-            type="button"
-            onClick={() => setProductUpdatesModalOpen(true)}
-            className="justify-sbg-layer-211 flex w-full items-center hover:bg-layer-1"
-          >
+        <CustomMenu.MenuItem onClick={() => setProductUpdatesModalOpen(true)}>
+          <span className="justify-sbg-layer-211 flex w-full items-center hover:bg-layer-1">
             <span className="text-11">{t("whats_new")}</span>
-          </button>
+          </span>
         </CustomMenu.MenuItem>
         <CustomMenu.MenuItem onClick={() => window.open("https://forum.plane.so", "_blank", "noopener,noreferrer")}>
           <div className="flex items-center gap-x-2 rounded-sm text-11">

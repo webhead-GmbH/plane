@@ -14,11 +14,11 @@ import { Combobox } from "@headlessui/react";
 // plane imports
 import { useTranslation } from "@plane/i18n";
 import { Button } from "@plane/propel/button";
-import { SearchIcon } from "@plane/propel/icons";
+import { SearchOutline } from "@makeplane/propel/icons";
 import { TOAST_TYPE, setToast } from "@plane/propel/toast";
 import type { ISearchIssueResponse, IUser } from "@plane/types";
 import { EIssuesStoreType } from "@plane/types";
-import { Loader, EModalPosition, EModalWidth, ModalCore } from "@plane/ui";
+import { EModalPosition, EModalWidth, ModalCore } from "@plane/ui";
 // assets
 import darkIssuesAsset from "@/app/assets/empty-state/search/issues-dark.webp?url";
 import lightIssuesAsset from "@/app/assets/empty-state/search/issues-light.webp?url";
@@ -33,6 +33,7 @@ import useDebounce from "@/hooks/use-debounce";
 import { ProjectService } from "@/services/project";
 // local components
 import { BulkDeleteIssuesModalItem } from "./bulk-delete-issues-modal-item";
+import { IssueSearchModalOptions } from "./issue-search-modal-options";
 
 type FormInput = {
   delete_issue_ids: string[];
@@ -159,7 +160,8 @@ export const BulkDeleteIssuesModal = observer(function BulkDeleteIssuesModal(pro
     <ModalCore isOpen={isOpen} handleClose={handleClose} position={EModalPosition.CENTER} width={EModalWidth.XXL}>
       <form>
         <Combobox
-          onChange={(val: string) => {
+          onChange={(val: string | null) => {
+            if (val === null) return;
             const selectedIssues = watch("delete_issue_ids");
             if (selectedIssues.includes(val))
               setValue(
@@ -170,7 +172,7 @@ export const BulkDeleteIssuesModal = observer(function BulkDeleteIssuesModal(pro
           }}
         >
           <div className="relative m-1">
-            <SearchIcon
+            <SearchOutline
               className="text-opacity-40 pointer-events-none absolute top-3.5 left-4 h-5 w-5 text-primary"
               aria-hidden="true"
             />
@@ -182,18 +184,7 @@ export const BulkDeleteIssuesModal = observer(function BulkDeleteIssuesModal(pro
             />
           </div>
 
-          <Combobox.Options static className="max-h-80 scroll-py-2 divide-y divide-subtle-1 overflow-y-auto">
-            {isSearching ? (
-              <Loader className="space-y-3 p-3">
-                <Loader.Item height="40px" />
-                <Loader.Item height="40px" />
-                <Loader.Item height="40px" />
-                <Loader.Item height="40px" />
-              </Loader>
-            ) : (
-              <>{issueList}</>
-            )}
-          </Combobox.Options>
+          <IssueSearchModalOptions isSearching={isSearching}>{issueList}</IssueSearchModalOptions>
         </Combobox>
 
         {issues.length > 0 && (

@@ -4,22 +4,31 @@
  * See the LICENSE file for details.
  */
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 
-const useSize = () => {
-  const [windowSize, setWindowSize] = useState([window.innerWidth, window.innerHeight]);
+// the server has no window, so it (and the render that hydrates its HTML) sees no size
+const SERVER_WINDOW_SIZE = [0, 0];
 
-  useEffect(() => {
-    const windowSizeHandler = () => {
-      setWindowSize([window.innerWidth, window.innerHeight]);
-    };
-    window.addEventListener("resize", windowSizeHandler);
-    return () => {
-      window.removeEventListener("resize", windowSizeHandler);
-    };
-  }, []);
+let windowSize: number[] | undefined;
 
+const subscribeToWindowSize = (onWindowSizeChange: () => void) => {
+  window.addEventListener("resize", onWindowSizeChange);
+  return () => {
+    window.removeEventListener("resize", onWindowSizeChange);
+  };
+};
+
+// hands out the same array until the window size changes, so only a real resize renders again
+const getWindowSize = () => {
+  const { innerWidth, innerHeight } = window;
+  if (!windowSize || windowSize[0] !== innerWidth || windowSize[1] !== innerHeight) {
+    windowSize = [innerWidth, innerHeight];
+  }
   return windowSize;
 };
+
+const getServerWindowSize = () => SERVER_WINDOW_SIZE;
+
+const useSize = () => useSyncExternalStore(subscribeToWindowSize, getWindowSize, getServerWindowSize);
 
 export default useSize;

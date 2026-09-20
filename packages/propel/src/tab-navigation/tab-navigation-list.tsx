@@ -4,15 +4,18 @@
  * See the LICENSE file for details.
  */
 
-import { LayoutGroup } from "framer-motion";
+import { LayoutGroup, MotionConfig } from "framer-motion";
 import { cn } from "../utils";
 import type { TTabNavigationListProps } from "./tab-navigation-types";
 
 export function TabNavigationList({ children, className }: TTabNavigationListProps) {
+  // reducedMotion="user" honours prefers-reduced-motion for the active-tab animation of every item in the list.
   return (
-    <LayoutGroup id="tab-navigation">
-      <div className={cn("relative flex items-center gap-1 rounded-md", className)}>{children}</div>
-    </LayoutGroup>
+    <MotionConfig reducedMotion="user">
+      <LayoutGroup id="tab-navigation">
+        <div className={cn("relative flex items-center gap-1 rounded-md", className)}>{children}</div>
+      </LayoutGroup>
+    </MotionConfig>
   );
 }
 

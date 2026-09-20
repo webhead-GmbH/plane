@@ -321,17 +321,17 @@ const PeopleDialogs = ({
       />
 
       <HrOpeningBalanceModal
-        key={subjectKey(opening)}
+        key={`opening:${subjectKey(opening)}`}
         person={opening}
         isOwn={false}
         canRecord
         onClose={onCloseOpening}
       />
 
-      <HrRateCardModal key={subjectKey(rating)} person={rating} onClose={onCloseRates} />
+      <HrRateCardModal key={`rates:${subjectKey(rating)}`} person={rating} onClose={onCloseRates} />
 
       <HrLeaveModal
-        key={subjectKey(leaving)}
+        key={`leave:${subjectKey(leaving)}`}
         person={leaving}
         schedule={leaving ? scheduleFor(schedules, leaving.id) : null}
         onClose={onCloseLeave}
@@ -563,7 +563,12 @@ function personName(person: THrEmploymentProfile | null): string {
   return person?.member_display_name || person?.member_email || "";
 }
 
-/** A dialog belongs to one record, and is rebuilt when it belongs to another. */
+/**
+ * A dialog belongs to one record, and is rebuilt when it belongs to another.
+ *
+ * Every closed dialog's record is null, so sibling dialogs keyed on this also put their
+ * own name in the key: on its own, three of them shared the key "none".
+ */
 function subjectKey(record: { id: string } | null): string {
   return record?.id ?? "none";
 }

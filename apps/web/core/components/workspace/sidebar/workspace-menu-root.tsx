@@ -4,16 +4,15 @@
  * See the LICENSE file for details.
  */
 
-import { Fragment, useState, useEffect } from "react";
+import { Fragment, useEffect } from "react";
 import { observer } from "mobx-react";
 import Link from "next/link";
 // icons
-import { CirclePlus, LogOut, Mails } from "lucide-react";
+import { ChevronDownOutline, LogOutOutline, MailOutline, PlusCircleOutline } from "@makeplane/propel/icons";
 // ui
 import { Menu, Transition } from "@headlessui/react";
 // plane imports
 import { useTranslation } from "@plane/i18n";
-import { ChevronDownIcon } from "@plane/propel/icons";
 import { TOAST_TYPE, setToast } from "@plane/propel/toast";
 import type { IWorkspace } from "@plane/types";
 import { Loader } from "@plane/ui";
@@ -33,10 +32,28 @@ type WorkspaceMenuRootProps = {
   variant: "sidebar" | "top-navigation";
 };
 
+type TWorkspaceMenuOpenStateProps = {
+  open: boolean;
+};
+
+// Tells the sidebar whether the workspace menu is open. It is an effect of the menu rendering, not a
+// state update made while the menu renders its children, which React reports as an error.
+const WorkspaceMenuOpenState = observer(function WorkspaceMenuOpenState(props: TWorkspaceMenuOpenStateProps) {
+  const { open } = props;
+  // store hooks
+  const { toggleAnySidebarDropdown } = useAppTheme();
+
+  useEffect(() => {
+    toggleAnySidebarDropdown(open);
+  }, [open, toggleAnySidebarDropdown]);
+
+  return null;
+});
+
 export const WorkspaceMenuRoot = observer(function WorkspaceMenuRoot(props: WorkspaceMenuRootProps) {
   const { variant } = props;
   // store hooks
-  const { toggleSidebar, toggleAnySidebarDropdown } = useAppTheme();
+  const { toggleSidebar } = useAppTheme();
   const { config } = useInstance();
   const { data: currentUser } = useUser();
   const { signOut } = useUser();
@@ -46,8 +63,6 @@ export const WorkspaceMenuRoot = observer(function WorkspaceMenuRoot(props: Work
   const isWorkspaceCreationDisabled = config?.is_workspace_creation_disabled ?? false;
   // translation
   const { t } = useTranslation();
-  // local state
-  const [isWorkspaceMenuOpen, setIsWorkspaceMenuOpen] = useState(false);
 
   const handleWorkspaceNavigation = (workspace: IWorkspace) => updateUserProfile({ last_workspace_id: workspace?.id });
 
@@ -69,11 +84,6 @@ export const WorkspaceMenuRoot = observer(function WorkspaceMenuRoot(props: Work
   const workspacesList = orderWorkspacesList(Object.values(workspaces ?? {}));
   // TODO: fix workspaces list scroll
 
-  // Toggle sidebar dropdown state when either menu is open
-  useEffect(() => {
-    toggleAnySidebarDropdown(isWorkspaceMenuOpen);
-  }, [isWorkspaceMenuOpen, toggleAnySidebarDropdown]);
-
   return (
     <Menu
       as="div"
@@ -83,13 +93,10 @@ export const WorkspaceMenuRoot = observer(function WorkspaceMenuRoot(props: Work
       })}
     >
       {({ open, close }: { open: boolean; close: () => void }) => {
-        // Update local state directly
-        if (isWorkspaceMenuOpen !== open) {
-          setIsWorkspaceMenuOpen(open);
-        }
-
         return (
           <>
+            {/* Toggle sidebar dropdown state when the menu is open */}
+            <WorkspaceMenuOpenState open={open} />
             {variant === "sidebar" && (
               <Menu.Button
                 className={cn("flex size-8 w-full items-center justify-center rounded-md", {
@@ -97,7 +104,7 @@ export const WorkspaceMenuRoot = observer(function WorkspaceMenuRoot(props: Work
                 })}
               >
                 <AppSidebarItem
-                  variant="button"
+                  variant="static"
                   item={{
                     icon: (
                       <WorkspaceLogo
@@ -128,7 +135,7 @@ export const WorkspaceMenuRoot = observer(function WorkspaceMenuRoot(props: Work
                   />
                   <h4 className="truncate text-14 font-medium text-primary">{activeWorkspace?.name ?? t("loading")}</h4>
                 </div>
-                <ChevronDownIcon
+                <ChevronDownOutline
                   className={cn("size-4 flex-shrink-0 text-placeholder duration-300", {
                     "rotate-180": open,
                   })}
@@ -154,7 +161,7 @@ export const WorkspaceMenuRoot = observer(function WorkspaceMenuRoot(props: Work
                     }
                   )}
                 >
-                  <div className="vertical-scrollbar flex scrollbar-sm max-h-96 flex-col items-start justify-start overflow-x-hidden overflow-y-scroll">
+                  <div className="vertical-scrollbar scrollbar-sm flex max-h-96 flex-col items-start justify-start overflow-x-hidden overflow-y-scroll">
                     <span className="sticky top-0 z-21 h-full w-full flex-shrink-0 truncate rounded-md bg-surface-1 px-4 pt-3 pb-1 text-left text-13 font-medium text-placeholder">
                       {currentUser?.email}
                     </span>
@@ -193,7 +200,7 @@ export const WorkspaceMenuRoot = observer(function WorkspaceMenuRoot(props: Work
                           as="div"
                           className="flex items-center gap-2 rounded-sm px-2 py-1 text-13 font-medium text-secondary hover:bg-layer-transparent-hover"
                         >
-                          <CirclePlus className="size-4 flex-shrink-0" />
+                          <PlusCircleOutline className="size-4 flex-shrink-0" />
                           {t("create_workspace")}
                         </Menu.Item>
                       </Link>
@@ -204,7 +211,7 @@ export const WorkspaceMenuRoot = observer(function WorkspaceMenuRoot(props: Work
                         as="div"
                         className="flex items-center gap-2 rounded-sm px-2 py-1 text-13 font-medium text-secondary hover:bg-layer-transparent-hover"
                       >
-                        <Mails className="h-4 w-4 flex-shrink-0" />
+                        <MailOutline className="h-4 w-4 flex-shrink-0" />
                         {t("workspace_invites")}
                       </Menu.Item>
                     </Link>
@@ -216,7 +223,7 @@ export const WorkspaceMenuRoot = observer(function WorkspaceMenuRoot(props: Work
                         className="flex w-full items-center gap-2 rounded-sm px-2 py-1 text-13 font-medium text-danger-primary hover:bg-layer-transparent-hover"
                         onClick={handleSignOut}
                       >
-                        <LogOut className="size-4 flex-shrink-0" />
+                        <LogOutOutline className="size-4 flex-shrink-0" />
                         {t("sign_out")}
                       </Menu.Item>
                     </div>

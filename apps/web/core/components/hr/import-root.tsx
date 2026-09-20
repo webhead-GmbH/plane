@@ -185,7 +185,7 @@ const ImportToolbar = ({
   onFile,
 }: {
   kind: EHrImportKind;
-  fileField: React.RefObject<HTMLInputElement>;
+  fileField: React.RefObject<HTMLInputElement | null>;
   isBusy: boolean;
   onKindChange: (kind: EHrImportKind) => void;
   onFile: (file: File) => void;
