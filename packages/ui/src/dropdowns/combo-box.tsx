@@ -6,7 +6,7 @@
 
 import { Combobox } from "@headlessui/react";
 import type { ElementType, KeyboardEventHandler, ReactNode, Ref } from "react";
-import React, { forwardRef, useEffect, useRef, useState } from "react";
+import React, { cloneElement, forwardRef, isValidElement, useEffect, useRef, useState } from "react";
 
 type Props = {
   as?: ElementType | undefined;
@@ -16,7 +16,7 @@ type Props = {
   value?: string | string[] | null;
   onChange?: (value: any) => void;
   disabled?: boolean | undefined;
-  onKeyDown?: KeyboardEventHandler<HTMLDivElement> | undefined;
+  onKeyDown?: KeyboardEventHandler<HTMLElement> | undefined;
   multiple?: boolean;
   renderByDefault?: boolean;
   button: ReactNode;
@@ -47,9 +47,21 @@ const ComboDropDown = forwardRef(function ComboDropDown(props: Props, ref) {
   }, [dropDownButtonRef, shouldRender]);
 
   if (!shouldRender) {
+    // a keyboard user never hovers, so the combobox would never mount for them: the first key on
+    // the trigger mounts it and goes to the dropdown's own handler, which opens it on Enter
+    const trigger = isValidElement<{ onKeyDown?: KeyboardEventHandler<HTMLElement> }>(button)
+      ? cloneElement(button, {
+          onKeyDown: (event: React.KeyboardEvent<HTMLElement>) => {
+            button.props.onKeyDown?.(event);
+            onHover();
+            rest.onKeyDown?.(event);
+          },
+        })
+      : button;
+
     return (
       <div ref={dropDownButtonRef} className="flex h-full items-center">
-        {button}
+        {trigger}
       </div>
     );
   }

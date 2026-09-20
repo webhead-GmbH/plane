@@ -96,6 +96,9 @@ export class ProjectViewIssues extends BaseIssuesStore implements IProjectViewIs
     options: IssuePaginationOptions,
     isExistingPaginationOptions: boolean = false
   ) => {
+    // a newer fetch aborts this one through clear(), and the cancellation reaches the catch as an
+    // error: hold on to the signal so the catch can tell that apart from a fetch that failed
+    let signal: AbortSignal | undefined;
     try {
       // set loader and clear store
       runInAction(() => {
@@ -106,14 +109,17 @@ export class ProjectViewIssues extends BaseIssuesStore implements IProjectViewIs
       // get params from pagination options
       const params = this.issueFilterStore?.getFilterParams(options, viewId, undefined, undefined, undefined);
       // call the fetch issues API with the params
+      signal = this.controller.signal;
       const response = await this.issueService.getIssues(workspaceSlug, projectId, params, {
-        signal: this.controller.signal,
+        signal,
       });
 
       // after fetching issues, call the base method to process the response further
       this.onfetchIssues(response, options, workspaceSlug, projectId, viewId, !isExistingPaginationOptions);
       return response;
     } catch (error) {
+      // a newer fetch superseded this one, so it owns the loader now and nothing here failed
+      if (signal?.aborted) return undefined;
       // set loader to undefined if errored out
       this.setLoader(undefined);
       throw error;

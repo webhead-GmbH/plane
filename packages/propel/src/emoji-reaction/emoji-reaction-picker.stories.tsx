@@ -128,12 +128,7 @@ export const InlineReactions: Story = {
 
     return (
       <div className="p-4">
-        <EmojiReactionGroup
-          reactions={reactions}
-          onReactionClick={handleReactionClick}
-          onAddReaction={() => setIsOpen(true)}
-          showAddButton={false}
-        />
+        <EmojiReactionGroup reactions={reactions} onReactionClick={handleReactionClick} showAddButton={false} />
         <EmojiReactionPicker
           isOpen={isOpen}
           handleToggle={setIsOpen}

@@ -191,8 +191,7 @@ export function FavoriteFolder(props: Props) {
                         align="end"
                         disabled={isDragging || isMobile}
                       >
-                        <button
-                          type="button"
+                        <span
                           className={cn(
                             "absolute top-1/2 -left-3 hidden -translate-y-1/2 cursor-grab items-center justify-center rounded-sm text-placeholder group-hover/project-item:flex",
                             {
@@ -201,8 +200,8 @@ export function FavoriteFolder(props: Props) {
                             }
                           )}
                         >
-                          <DragHandle className="bg-transparent" />
-                        </button>
+                          <DragHandle as="span" className="bg-transparent" />
+                        </span>
                       </Tooltip>
                       <div className="grid size-5 flex-shrink-0 place-items-center">
                         <FavoriteFolderIcon />

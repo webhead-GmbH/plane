@@ -30,7 +30,7 @@ import { EUserPermissions, EUserPermissionsLevel } from "@plane/constants";
 import { useOutsideClickDetector } from "@plane/hooks";
 import { useTranslation } from "@plane/i18n";
 import { Logo } from "@plane/propel/emoji-icon-picker";
-import { IconButton } from "@plane/propel/icon-button";
+import { getIconButtonStyling, IconButton } from "@plane/propel/icon-button";
 import { Tooltip } from "@makeplane/propel/components/tooltip";
 import type { TPartialProject } from "@plane/types";
 import { CustomMenu, DropIndicator, DragHandle, ControlLink } from "@plane/ui";
@@ -112,7 +112,7 @@ type TSidebarProjectsListItemMenuProps = {
   isAuthorized: boolean;
   isMenuActive: boolean;
   setIsMenuActive: (value: boolean) => void;
-  actionSectionRef: RefObject<HTMLButtonElement | null>;
+  actionSectionRef: RefObject<HTMLSpanElement | null>;
   handleCopyText: () => void;
   handleLeaveProject: () => void;
   setPublishModal: (value: boolean) => void;
@@ -141,15 +141,12 @@ const SidebarProjectsListItemMenu = observer(function SidebarProjectsListItemMen
   return (
     <CustomMenu
       customButton={
-        <IconButton
-          ref={actionSectionRef}
-          variant="ghost"
-          size="sm"
-          icon={MoreHorizontalOutline}
-          onClick={() => setIsMenuActive(!isMenuActive)}
-          className="text-placeholder"
-        />
+        // styled as a ghost icon button, not an IconButton: the menu trigger already is a button
+        <span ref={actionSectionRef} className={cn(getIconButtonStyling("ghost", "sm"), "text-placeholder")}>
+          <MoreHorizontalOutline className="size-3.5" />
+        </span>
       }
+      menuButtonOnClick={() => setIsMenuActive(!isMenuActive)}
       className={cn(
         "pointer-events-none flex-shrink-0 opacity-0 group-hover/project-item:pointer-events-auto group-hover/project-item:opacity-100",
         {
@@ -259,9 +256,9 @@ export const SidebarProjectsListItem = observer(function SidebarProjectsListItem
   const isProjectListOpen = getIsProjectListOpen(projectId);
   const [instruction, setInstruction] = useState<"DRAG_OVER" | "DRAG_BELOW" | undefined>(undefined);
   // refs
-  const actionSectionRef = useRef<HTMLButtonElement | null>(null);
+  const actionSectionRef = useRef<HTMLSpanElement | null>(null);
   const projectRef = useRef<HTMLDivElement | null>(null);
-  const dragHandleRef = useRef<HTMLButtonElement | null>(null);
+  const dragHandleRef = useRef<HTMLDivElement | null>(null);
   // router
   const { workspaceSlug, projectId: URLProjectId } = useParams();
   const router = useRouter();
@@ -479,8 +476,7 @@ export const SidebarProjectsListItem = observer(function SidebarProjectsListItem
                 align="end"
                 disabled={isDragging || isMobile}
               >
-                <button
-                  type="button"
+                <div
                   className={cn(
                     "absolute top-1/2 -left-3 hidden -translate-y-1/2 cursor-grab items-center justify-center rounded-sm text-placeholder group-hover/project-item:flex",
                     {
@@ -492,7 +488,7 @@ export const SidebarProjectsListItem = observer(function SidebarProjectsListItem
                   ref={dragHandleRef}
                 >
                   <DragHandle className="bg-transparent" />
-                </button>
+                </div>
               </Tooltip>
             )}
             <>

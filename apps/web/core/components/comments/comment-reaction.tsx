@@ -8,7 +8,7 @@ import { useMemo, useState } from "react";
 import { observer } from "mobx-react";
 // plane imports
 import { stringToEmoji } from "@plane/propel/emoji-icon-picker";
-import { EmojiReactionGroup, EmojiReactionPicker } from "@plane/propel/emoji-reaction";
+import { EmojiReactionButton, EmojiReactionGroup, EmojiReactionPicker } from "@plane/propel/emoji-reaction";
 import type { EmojiReactionType } from "@plane/propel/emoji-reaction";
 import type { TCommentsOperations, TIssueComment } from "@plane/types";
 // helpers
@@ -72,22 +72,19 @@ export const CommentReactions = observer(function CommentReactions(props: TProps
   const showAddButton = !disabled && reactions.length > 0;
 
   return (
-    <div className="relative">
-      <EmojiReactionPicker
-        isOpen={isPickerOpen}
-        handleToggle={setIsPickerOpen}
-        onChange={handleEmojiSelect}
-        disabled={disabled}
-        label={
-          <EmojiReactionGroup
-            reactions={reactions}
-            onReactionClick={handleReactionClick}
-            showAddButton={showAddButton}
-            onAddReaction={() => setIsPickerOpen(true)}
-          />
-        }
-        placement="bottom-start"
-      />
+    <div className="relative flex flex-wrap items-center gap-2">
+      {/* the reactions stay outside the picker's trigger: inside it every one of them would open the
+          picker as well as toggle the reaction, and a button cannot contain a button */}
+      <EmojiReactionGroup reactions={reactions} onReactionClick={handleReactionClick} showAddButton={false} />
+      {showAddButton && (
+        <EmojiReactionPicker
+          isOpen={isPickerOpen}
+          handleToggle={setIsPickerOpen}
+          onChange={handleEmojiSelect}
+          label={<EmojiReactionButton />}
+          placement="bottom-start"
+        />
+      )}
     </div>
   );
 });

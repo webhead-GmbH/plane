@@ -136,11 +136,7 @@ export const AddButton: Story = {
     count: 0,
   },
   render() {
-    const handleAdd = () => {
-      alert("Add reaction clicked");
-    };
-
-    return <EmojiReactionButton onAddReaction={handleAdd} />;
+    return <EmojiReactionButton />;
   },
 };
 
@@ -172,17 +168,7 @@ export const ReactionGroup: Story = {
       );
     };
 
-    const handleAddReaction = () => {
-      alert("Add reaction clicked");
-    };
-
-    return (
-      <EmojiReactionGroup
-        reactions={reactions}
-        onReactionClick={handleReactionClick}
-        onAddReaction={handleAddReaction}
-      />
-    );
+    return <EmojiReactionGroup reactions={reactions} onReactionClick={handleReactionClick} />;
   },
 };
 

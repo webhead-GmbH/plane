@@ -183,9 +183,10 @@ export const IssuePeekOverviewHeader = observer(function IssuePeekOverviewHeader
               onChange={(val: any) => setPeekMode(val)}
               customButton={
                 <Tooltip label={t("common.toggle_peek_view_layout")} disabled={isMobile}>
-                  <button type="button" className="">
+                  {/* a span, not a button: this is the content of the select's trigger button */}
+                  <span className="flex">
                     <currentMode.icon className="h-4 w-4 text-tertiary hover:text-secondary" />
-                  </button>
+                  </span>
                 </Tooltip>
               }
             >
