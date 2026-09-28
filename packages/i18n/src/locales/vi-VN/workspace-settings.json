@@ -177,7 +177,9 @@
           "required": "Bắt buộc",
           "admin_only": "Chỉ quản trị viên",
           "inactive": "Không hoạt động",
-          "width": "Chiều rộng {width}/12"
+          "width": "Chiều rộng {width}/12",
+          "move_up": "Di chuyển lên",
+          "move_down": "Di chuyển xuống"
         },
         "empty": {
           "title": "Chưa có trường tùy chỉnh nào",

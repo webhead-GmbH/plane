@@ -44,21 +44,25 @@ export function IssueLinkDetail(props: TIssueLinkDetail) {
 
   const createdByDetails = getUserDetails(linkDetail.created_by_id);
 
+  const handleCopyLink = () => {
+    copyTextToClipboard(linkDetail.url);
+    setToast({
+      type: "success",
+      title: "Link copied!",
+      message: "Link copied to clipboard",
+    });
+  };
+
   return (
     <div key={linkId}>
       <div className="relative flex flex-col rounded-md bg-surface-2 p-2.5">
-        <div
-          className="flex w-full cursor-pointer items-start justify-between gap-2"
-          onClick={() => {
-            copyTextToClipboard(linkDetail.url);
-            setToast({
-              type: "success",
-              title: "Link copied!",
-              message: "Link copied to clipboard",
-            });
-          }}
-        >
-          <div className="flex items-start gap-2 truncate">
+        <div className="flex w-full items-start justify-between gap-2">
+          {/* The link's name copies it; the actions beside it are controls of their own. */}
+          <button
+            type="button"
+            className="flex min-w-0 flex-1 cursor-pointer items-start gap-2 truncate text-left"
+            onClick={handleCopyLink}
+          >
             <span className="py-1">
               <Icon className="size-3 flex-shrink-0 stroke-2 text-tertiary group-hover:text-primary" />
             </span>
@@ -71,7 +75,7 @@ export function IssueLinkDetail(props: TIssueLinkDetail) {
                 {linkDetail.title && linkDetail.title !== "" ? linkDetail.title : linkDetail.url}
               </span>
             </Tooltip>
-          </div>
+          </button>
 
           {!isNotAllowed && (
             <div className="z-[1] flex flex-shrink-0 items-center gap-2">

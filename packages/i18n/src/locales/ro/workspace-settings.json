@@ -177,7 +177,9 @@
           "required": "Obligatoriu",
           "admin_only": "Doar administratori",
           "inactive": "Inactiv",
-          "width": "Lățime {width}/12"
+          "width": "Lățime {width}/12",
+          "move_up": "Mută în sus",
+          "move_down": "Mută în jos"
         },
         "empty": {
           "title": "Nu există încă câmpuri personalizate",

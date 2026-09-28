@@ -177,7 +177,9 @@
           "required": "Wymagane",
           "admin_only": "Tylko dla administratorów",
           "inactive": "Nieaktywne",
-          "width": "Szerokość {width}/12"
+          "width": "Szerokość {width}/12",
+          "move_up": "Przenieś w górę",
+          "move_down": "Przenieś w dół"
         },
         "empty": {
           "title": "Brak pól niestandardowych",

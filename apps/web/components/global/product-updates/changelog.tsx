@@ -82,9 +82,11 @@ export const ProductUpdatesChangelog = observer(function ProductUpdatesChangelog
           <Loader.Item height="95%" width="95%" />
         </Loader>
       )}
-      {/* oxlint-disable-next-line react/iframe-missing-sandbox */}
+      {/* The changelog is someone else's page: it may run its scripts and open its links in new tabs,
+          but gets no origin to share storage with and cannot navigate this page. */}
       <iframe
         src={changeLogUrl}
+        sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox"
         className={`h-full w-full ${isLoading ? "opacity-0" : "opacity-100"} transition-opacity duration-200`}
         title={t("whats_new")}
         onLoad={handleIframeLoad}

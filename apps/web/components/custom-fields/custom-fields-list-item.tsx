@@ -39,6 +39,7 @@ export function CustomFieldsListItem(props: Props) {
           type="button"
           disabled={isFirst}
           onClick={() => onMove(field, "up")}
+          aria-label={t("workspace_settings.settings.custom_fields.list.move_up")}
           className="grid size-4 place-items-center text-tertiary hover:text-primary disabled:opacity-30"
         >
           <ChevronUp className="size-3.5" />
@@ -47,6 +48,7 @@ export function CustomFieldsListItem(props: Props) {
           type="button"
           disabled={isLast}
           onClick={() => onMove(field, "down")}
+          aria-label={t("workspace_settings.settings.custom_fields.list.move_down")}
           className="grid size-4 place-items-center text-tertiary hover:text-primary disabled:opacity-30"
         >
           <ChevronDown className="size-3.5" />
@@ -88,6 +90,7 @@ export function CustomFieldsListItem(props: Props) {
         <button
           type="button"
           onClick={() => onEdit(field)}
+          aria-label={t("common.edit")}
           className="grid size-7 place-items-center rounded-md text-tertiary hover:bg-layer-1 hover:text-primary"
         >
           <Pencil className="size-4" />
@@ -95,6 +98,7 @@ export function CustomFieldsListItem(props: Props) {
         <button
           type="button"
           onClick={() => onDelete(field)}
+          aria-label={t("common.delete")}
           className="grid size-7 place-items-center rounded-md text-tertiary hover:bg-layer-1 hover:text-danger-primary"
         >
           <Trash2 className="size-4" />

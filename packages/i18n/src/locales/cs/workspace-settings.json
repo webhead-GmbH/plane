@@ -177,7 +177,9 @@
           "required": "Povinné",
           "admin_only": "Pouze pro administrátory",
           "inactive": "Neaktivní",
-          "width": "Šířka {width}/12"
+          "width": "Šířka {width}/12",
+          "move_up": "Posunout nahoru",
+          "move_down": "Posunout dolů"
         },
         "empty": {
           "title": "Zatím žádná vlastní pole",

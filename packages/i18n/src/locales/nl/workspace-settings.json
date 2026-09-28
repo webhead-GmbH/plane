@@ -177,7 +177,9 @@
           "required": "Verplicht",
           "admin_only": "Alleen beheerders",
           "inactive": "Inactief",
-          "width": "Breedte {width}/12"
+          "width": "Breedte {width}/12",
+          "move_up": "Omhoog verplaatsen",
+          "move_down": "Omlaag verplaatsen"
         },
         "empty": {
           "title": "Nog geen aangepaste velden",

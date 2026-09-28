@@ -177,7 +177,9 @@
           "required": "Required",
           "admin_only": "Admin only",
           "inactive": "Inactive",
-          "width": "Width {width}/12"
+          "width": "Width {width}/12",
+          "move_up": "Move up",
+          "move_down": "Move down"
         },
         "empty": {
           "title": "No custom fields yet",
