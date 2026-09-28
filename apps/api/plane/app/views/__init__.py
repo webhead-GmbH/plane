@@ -252,6 +252,7 @@ from .crm_integration.base import (
     CrmIntegrationTestEndpoint,
     CrmIntegrationSyncEndpoint,
 )
+from .crm_integration.webhook import CrmTimerWebhookEndpoint
 
 from .error_404 import custom_404_view
 

@@ -2,6 +2,9 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 # See the LICENSE file for details.
 
+# Python imports
+import secrets
+
 # Django imports
 from django.db import models
 
@@ -51,6 +54,9 @@ class CrmIntegration(BaseModel):
     )
     is_active = models.BooleanField(default=True)
     last_synced_at = models.DateTimeField(null=True, blank=True)
+    # Secret the CRM signs its timer webhooks with (HMAC-SHA256), encrypted at rest
+    # like the API key. Created the first time Plane registers the webhook.
+    timer_webhook_secret_encrypted = models.TextField(blank=True, default="")
 
     # Fields whose change alters which CRM project a Plane project resolves to, or
     # whether the sync runs at all. Snapshotted on load so a post_save receiver can
@@ -99,6 +105,22 @@ class CrmIntegration(BaseModel):
         if not self.crm_api_key_encrypted:
             return ""
         return decrypt_data(self.crm_api_key_encrypted)
+
+    def get_timer_webhook_secret(self):
+        """Return the decrypted timer webhook secret, or an empty string when unset."""
+        if not self.timer_webhook_secret_encrypted:
+            return ""
+        return decrypt_data(self.timer_webhook_secret_encrypted)
+
+    def ensure_timer_webhook_secret(self):
+        """Return the timer webhook secret, creating and saving one the first time."""
+        secret = self.get_timer_webhook_secret()
+        if secret:
+            return secret
+        secret = secrets.token_hex(32)
+        self.timer_webhook_secret_encrypted = encrypt_data(secret)
+        self.save(update_fields=["timer_webhook_secret_encrypted", "updated_at"])
+        return secret
 
     def __str__(self):
         return f"{self.workspace.slug} CRM integration"

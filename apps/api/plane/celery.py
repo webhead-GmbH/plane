@@ -92,6 +92,10 @@ app.conf.beat_schedule = {
         "task": "plane.bgtasks.exporter_expired_task.delete_old_s3_link",
         "schedule": crontab(hour=3, minute=45),  # UTC 03:45
     },
+    "check-every-minute-for-crm-timer-stops": {
+        "task": "plane.bgtasks.crm_sync_task.reconcile_crm_timer_stops",
+        "schedule": crontab(),  # every minute; asks the CRM only while a mirrored timer runs
+    },
     "check-every-hour-for-timers-left-running": {
         "task": "plane.hr.bgtasks.timer_sweeper.close_runaway_timers",
         "schedule": crontab(minute=5),  # hourly, at :05
