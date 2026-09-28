@@ -8,11 +8,14 @@ import { useEffect, useState } from "react";
 import { observer } from "mobx-react";
 import useSWR from "swr";
 // plane imports
-import { Switch } from "@plane/propel/switch";
+import { Switch } from "@makeplane/propel/components/switch";
 import { useTranslation } from "@plane/i18n";
-import { Button } from "@plane/propel/button";
-import { TOAST_TYPE, setToast } from "@plane/propel/toast";
-import { CustomSelect, Input, Loader } from "@plane/ui";
+import { cn } from "@plane/utils";
+import { Button } from "@makeplane/propel/components/button";
+import { Select } from "@plane/blocks/select";
+import { Input, InputGroup } from "@makeplane/propel/components/input";
+import { Loader } from "@plane/blocks/skeleton";
+import { setToast } from "@plane/blocks/toast";
 // services
 import {
   CrmIntegrationService,
@@ -27,6 +30,11 @@ type Props = {
 };
 
 const I18N = "workspace_settings.settings.crm_sync";
+const MAPPING_SOURCES: TCrmProjectMappingSource[] = ["custom_field", "identifier"];
+// the select's values are strings, so "no field" needs one of its own
+const NO_PROJECT_FIELD = "";
+
+type TProjectFieldOption = { id: string; name: string };
 
 export const CrmSyncRoot = observer(function CrmSyncRoot({ workspaceSlug }: Props) {
   const { t } = useTranslation();
@@ -79,12 +87,12 @@ export const CrmSyncRoot = observer(function CrmSyncRoot({ workspaceSlug }: Prop
 
   const handleSave = async () => {
     if (!crmApiUrl.trim()) {
-      setToast({ type: TOAST_TYPE.ERROR, title: t(`${I18N}.form.crm_url_required`) });
+      setToast({ type: "error", title: t(`${I18N}.form.crm_url_required`) });
       return;
     }
     // a key is required the first time the integration is created
     if (!isConfigured && !crmApiKey.trim()) {
-      setToast({ type: TOAST_TYPE.ERROR, title: t(`${I18N}.form.api_key_required`) });
+      setToast({ type: "error", title: t(`${I18N}.form.api_key_required`) });
       return;
     }
     setIsSaving(true);
@@ -96,13 +104,13 @@ export const CrmSyncRoot = observer(function CrmSyncRoot({ workspaceSlug }: Prop
       await mutate(saved, { revalidate: false });
       setCrmApiKey("");
       setToast({
-        type: TOAST_TYPE.SUCCESS,
+        type: "success",
         title: t(`${I18N}.toasts.saved.title`),
         message: t(`${I18N}.toasts.saved.message`),
       });
     } catch {
       setToast({
-        type: TOAST_TYPE.ERROR,
+        type: "error",
         title: t(`${I18N}.toasts.error.title`),
         message: t(`${I18N}.toasts.error.message`),
       });
@@ -120,7 +128,7 @@ export const CrmSyncRoot = observer(function CrmSyncRoot({ workspaceSlug }: Prop
       });
       if (result.success) {
         setToast({
-          type: TOAST_TYPE.SUCCESS,
+          type: "success",
           title: t(`${I18N}.toasts.connection_ok.title`),
           message: t(`${I18N}.toasts.connection_ok.message`, { count: result.projects_count ?? 0 }),
         });
@@ -129,7 +137,7 @@ export const CrmSyncRoot = observer(function CrmSyncRoot({ workspaceSlug }: Prop
       }
     } catch {
       setToast({
-        type: TOAST_TYPE.ERROR,
+        type: "error",
         title: t(`${I18N}.toasts.connection_failed.title`),
         message: t(`${I18N}.toasts.connection_failed.message`),
       });
@@ -143,13 +151,13 @@ export const CrmSyncRoot = observer(function CrmSyncRoot({ workspaceSlug }: Prop
     try {
       await crmIntegrationService.backfill(workspaceSlug);
       setToast({
-        type: TOAST_TYPE.SUCCESS,
+        type: "success",
         title: t(`${I18N}.toasts.backfill_started.title`),
         message: t(`${I18N}.toasts.backfill_started.message`),
       });
     } catch {
       setToast({
-        type: TOAST_TYPE.ERROR,
+        type: "error",
         title: t(`${I18N}.toasts.error.title`),
         message: t(`${I18N}.toasts.error.message`),
       });
@@ -178,14 +186,16 @@ export const CrmSyncRoot = observer(function CrmSyncRoot({ workspaceSlug }: Prop
         <label htmlFor="crm-url" className="text-body-sm-medium text-secondary">
           {t(`${I18N}.form.crm_url`)}
         </label>
-        <Input
-          id="crm-url"
-          type="url"
-          value={crmApiUrl}
-          onChange={(e) => setCrmApiUrl(e.target.value)}
-          placeholder={t(`${I18N}.form.crm_url_placeholder`)}
-          className="w-full"
-        />
+        <InputGroup size="xl">
+          <Input
+            size="xl"
+            id="crm-url"
+            type="url"
+            value={crmApiUrl}
+            onChange={(e) => setCrmApiUrl(e.target.value)}
+            placeholder={t(`${I18N}.form.crm_url_placeholder`)}
+          />
+        </InputGroup>
       </div>
 
       {/* API key */}
@@ -193,15 +203,17 @@ export const CrmSyncRoot = observer(function CrmSyncRoot({ workspaceSlug }: Prop
         <label htmlFor="crm-key" className="text-body-sm-medium text-secondary">
           {t(`${I18N}.form.api_key`)}
         </label>
-        <Input
-          id="crm-key"
-          type="password"
-          autoComplete="off"
-          value={crmApiKey}
-          onChange={(e) => setCrmApiKey(e.target.value)}
-          placeholder={hasApiKey ? t(`${I18N}.form.api_key_set`) : t(`${I18N}.form.api_key_placeholder`)}
-          className="w-full"
-        />
+        <InputGroup size="xl">
+          <Input
+            size="xl"
+            id="crm-key"
+            type="password"
+            autoComplete="off"
+            value={crmApiKey}
+            onChange={(e) => setCrmApiKey(e.target.value)}
+            placeholder={hasApiKey ? t(`${I18N}.form.api_key_set`) : t(`${I18N}.form.api_key_placeholder`)}
+          />
+        </InputGroup>
       </div>
 
       {/* How each Plane project resolves to a CRM project.
@@ -211,19 +223,24 @@ export const CrmSyncRoot = observer(function CrmSyncRoot({ workspaceSlug }: Prop
         <span id="crm-mapping-source-label" className="text-body-sm-medium text-secondary">
           {t(`${I18N}.form.mapping_source`)}
         </span>
-        <CustomSelect
+        <Select<TCrmProjectMappingSource>
+          getValues={() => MAPPING_SOURCES}
           value={mappingSource}
-          onChange={(val: TCrmProjectMappingSource) => setMappingSource(val)}
-          label={<span>{t(`${I18N}.form.mapping_source_${mappingSource}`)}</span>}
-          className="w-full"
-          buttonClassName="w-full justify-between"
-          input
+          onChange={(val) => setMappingSource(val as TCrmProjectMappingSource)}
+          getOptionValue={(source) => source}
+          getOptionLabel={(source) => t(`${I18N}.form.mapping_source_${source}`)}
+          showSearch={false}
+          pinSelected={false}
+          contentSizing="anchor"
         >
-          <CustomSelect.Option value="custom_field">
-            {t(`${I18N}.form.mapping_source_custom_field`)}
-          </CustomSelect.Option>
-          <CustomSelect.Option value="identifier">{t(`${I18N}.form.mapping_source_identifier`)}</CustomSelect.Option>
-        </CustomSelect>
+          <Select.Trigger<TCrmProjectMappingSource> variant="select-xl" className="w-full">
+            {(selected) => (
+              <span className="min-w-0 grow truncate text-left">
+                {t(`${I18N}.form.mapping_source_${selected[0] ?? mappingSource}`)}
+              </span>
+            )}
+          </Select.Trigger>
+        </Select>
         <p className="text-body-xs-regular text-tertiary">{t(`${I18N}.form.mapping_source_${mappingSource}_help`)}</p>
       </div>
 
@@ -233,26 +250,31 @@ export const CrmSyncRoot = observer(function CrmSyncRoot({ workspaceSlug }: Prop
           <span id="crm-project-id-field-label" className="text-body-sm-medium text-secondary">
             {t(`${I18N}.form.project_id_field`)}
           </span>
-          <CustomSelect
-            value={projectIdField}
-            onChange={(val: string | null) => setProjectIdField(val)}
-            label={
-              <span className={projectIdField ? "" : "text-placeholder"}>
-                {projectFields?.find((f) => f.id === projectIdField)?.display_name ??
-                  t(`${I18N}.form.project_id_field_none`)}
-              </span>
+          <Select<TProjectFieldOption>
+            getValues={() => [
+              { id: NO_PROJECT_FIELD, name: t(`${I18N}.form.project_id_field_none`) },
+              ...(projectFields ?? []).map((field) => ({ id: field.id, name: field.display_name })),
+            ]}
+            value={
+              projectIdField
+                ? { id: projectIdField, name: projectFields?.find((f) => f.id === projectIdField)?.display_name ?? "" }
+                : null
             }
-            className="w-full"
-            buttonClassName="w-full justify-between"
-            input
+            onChange={(val) => setProjectIdField(val === NO_PROJECT_FIELD ? null : val)}
+            getOptionValue={(option) => option.id}
+            getOptionLabel={(option) => option.name}
+            showSearch={false}
+            pinSelected={false}
+            contentSizing="anchor"
           >
-            <CustomSelect.Option value={null}>{t(`${I18N}.form.project_id_field_none`)}</CustomSelect.Option>
-            {(projectFields ?? []).map((field) => (
-              <CustomSelect.Option key={field.id} value={field.id}>
-                {field.display_name}
-              </CustomSelect.Option>
-            ))}
-          </CustomSelect>
+            <Select.Trigger<TProjectFieldOption> variant="select-xl" className="w-full">
+              {(selected) => (
+                <span className={cn("min-w-0 grow truncate text-left", { "text-placeholder": !selected[0] })}>
+                  {selected[0]?.name || t(`${I18N}.form.project_id_field_none`)}
+                </span>
+              )}
+            </Select.Trigger>
+          </Select>
           <p className="text-body-xs-regular text-tertiary">{t(`${I18N}.form.project_id_field_help`)}</p>
         </div>
       )}
@@ -263,25 +285,36 @@ export const CrmSyncRoot = observer(function CrmSyncRoot({ workspaceSlug }: Prop
           <span className="text-body-sm-medium text-secondary">{t(`${I18N}.form.active`)}</span>
           <p className="text-body-xs-regular text-tertiary">{t(`${I18N}.form.active_help`)}</p>
         </div>
-        <Switch value={isActive} onChange={setIsActive} />
+        <Switch size="sm" checked={isActive} onCheckedChange={(checked) => setIsActive(checked)} />
       </div>
 
       {/* Actions */}
       <div className="flex flex-wrap items-center gap-3 border-t border-subtle pt-4">
-        <Button variant="primary" onClick={handleSave} loading={isSaving}>
-          {t(`${I18N}.form.save`)}
-        </Button>
-        <Button variant="secondary" onClick={handleTestConnection} loading={isTesting}>
-          {t(`${I18N}.form.test_connection`)}
-        </Button>
+        <Button
+          variant="primary"
+          size="sm"
+          stretch="auto"
+          label={t(`${I18N}.form.save`)}
+          onClick={handleSave}
+          loading={isSaving}
+        />
         <Button
           variant="secondary"
+          size="sm"
+          stretch="auto"
+          label={t(`${I18N}.form.test_connection`)}
+          onClick={handleTestConnection}
+          loading={isTesting}
+        />
+        <Button
+          variant="secondary"
+          size="sm"
+          stretch="auto"
+          label={t(`${I18N}.form.backfill`)}
           onClick={handleBackfill}
           loading={isBackfilling}
           disabled={!isConfigured || !isActive}
-        >
-          {t(`${I18N}.form.backfill`)}
-        </Button>
+        />
       </div>
     </div>
   );

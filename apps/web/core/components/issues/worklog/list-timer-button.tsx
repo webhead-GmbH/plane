@@ -11,8 +11,8 @@ import type { SyntheticEvent } from "react";
 import { observer } from "mobx-react";
 import { Play, Square } from "lucide-react";
 import { useTranslation } from "@plane/i18n";
-import { Button } from "@plane/propel/button";
-import { Tooltip } from "@plane/propel/tooltip";
+import { Button } from "@makeplane/propel/components/button";
+import { Tooltip } from "@makeplane/propel/components/tooltip";
 import { cn } from "@plane/utils";
 import { useIssueDetail } from "@/hooks/store/use-issue-detail";
 import { useUser } from "@/hooks/store/user";
@@ -120,7 +120,7 @@ export const WorkItemTimerButton = observer(function WorkItemTimerButton(props: 
 
   return (
     <>
-      <Tooltip tooltipContent={activeTimer ? t("common.stop_timer") : t("common.start_timer")} isMobile={isMobile}>
+      <Tooltip label={activeTimer ? t("common.stop_timer") : t("common.start_timer")} disabled={isMobile}>
         <button
           ref={btnRef}
           type="button"
@@ -171,7 +171,9 @@ export const WorkItemTimerButton = observer(function WorkItemTimerButton(props: 
           <div className="mt-2 flex justify-end gap-2">
             <Button
               variant="secondary"
-              size="sm"
+              size="xs"
+              stretch="auto"
+              label={t("common.cancel")}
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
@@ -179,12 +181,15 @@ export const WorkItemTimerButton = observer(function WorkItemTimerButton(props: 
                 setDescription("");
               }}
               disabled={busy}
-            >
-              {t("common.cancel")}
-            </Button>
-            <Button variant="primary" size="sm" onClick={handleStop} disabled={busy}>
-              {t("common.save")}
-            </Button>
+            />
+            <Button
+              variant="primary"
+              size="xs"
+              stretch="auto"
+              label={t("common.save")}
+              onClick={handleStop}
+              disabled={busy}
+            />
           </div>
         </div>
       )}

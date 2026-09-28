@@ -8,9 +8,11 @@ import { useState } from "react";
 import { Plus, Trash2 } from "lucide-react";
 // plane imports
 import { useTranslation } from "@plane/i18n";
-import { Button } from "@plane/propel/button";
-import { setToast, TOAST_TYPE } from "@plane/propel/toast";
-import { AlertModalCore, EModalPosition, EModalWidth, ModalCore } from "@plane/ui";
+import { Button } from "@makeplane/propel/components/button";
+import { Icon } from "@makeplane/propel/components/icon";
+import { Dialog, DialogContent, DialogTitle } from "@makeplane/propel/components/dialog";
+import { ConfirmDialog } from "@plane/blocks/dialog";
+import { setToast } from "@plane/blocks/toast";
 // services
 import { HrService, type THrAbsenceType } from "@/services/hr.service";
 
@@ -57,7 +59,7 @@ export const HrAbsenceTypesModal = ({ isOpen, types, onClose, onChanged }: TProp
 
   const complain = (failure: unknown) =>
     setToast({
-      type: TOAST_TYPE.ERROR,
+      type: "error",
       title: t("hr.absences.types.refused"),
       message: refusalMessage(failure, t, currentLocale) ?? t("hr.absences.types.try_again"),
     });
@@ -116,140 +118,145 @@ export const HrAbsenceTypesModal = ({ isOpen, types, onClose, onChanged }: TProp
   const field = "border-subtle bg-layer-1 text-primary w-full rounded-md border px-3 py-1.5 text-13";
 
   return (
-    <ModalCore isOpen={isOpen} handleClose={onClose} position={EModalPosition.CENTER} width={EModalWidth.XXL}>
-      <div className="flex flex-col gap-4 p-5">
-        <div>
-          <h3 className="text-14 font-semibold text-primary">{t("hr.absences.types.title")}</h3>
-          <p className="text-13 text-tertiary">{t("hr.absences.types.subtitle")}</p>
-        </div>
+    <Dialog
+      open={isOpen}
+      onOpenChange={(open) => {
+        if (!open) onClose();
+      }}
+    >
+      <DialogContent size="md">
+        <div className="flex flex-col gap-4 p-5">
+          <div>
+            <DialogTitle>{t("hr.absences.types.title")}</DialogTitle>
+            <p className="text-13 text-tertiary">{t("hr.absences.types.subtitle")}</p>
+          </div>
 
-        <div className="overflow-x-auto rounded-md border border-subtle">
-          <table className="w-full min-w-[40rem] text-13">
-            <thead className="border-b border-subtle text-13 text-placeholder">
-              <tr>
-                <th className="px-3 py-2 text-left font-medium">{t("hr.absences.types.column_code")}</th>
-                <th className="px-3 py-2 text-left font-medium">{t("hr.absences.types.column_name")}</th>
-                <th className="px-3 py-2 text-center font-medium">{t("hr.absences.types.column_counts")}</th>
-                <th className="px-3 py-2 text-center font-medium">{t("hr.absences.types.column_leave")}</th>
-                <th className="px-3 py-2 text-right font-medium">{t("hr.absences.types.column_action")}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {types.length === 0 && (
+          <div className="overflow-x-auto rounded-md border border-subtle">
+            <table className="w-full min-w-[40rem] text-13">
+              <thead className="border-b border-subtle text-13 text-placeholder">
                 <tr>
-                  <td colSpan={5} className="px-3 py-6 text-center text-tertiary">
-                    {t("hr.absences.types.none_yet")}
-                  </td>
+                  <th className="px-3 py-2 text-left font-medium">{t("hr.absences.types.column_code")}</th>
+                  <th className="px-3 py-2 text-left font-medium">{t("hr.absences.types.column_name")}</th>
+                  <th className="px-3 py-2 text-center font-medium">{t("hr.absences.types.column_counts")}</th>
+                  <th className="px-3 py-2 text-center font-medium">{t("hr.absences.types.column_leave")}</th>
+                  <th className="px-3 py-2 text-right font-medium">{t("hr.absences.types.column_action")}</th>
                 </tr>
-              )}
-              {types.map((type) => (
-                <tr key={type.id} className="border-t border-subtle">
-                  <td className="px-3 py-2 text-13 tracking-wide text-secondary tabular-nums">{type.code}</td>
-                  <td className="px-3 py-2">
-                    <span className={type.is_active ? "text-primary" : "text-tertiary line-through"}>
-                      {localName(type, currentLocale)}
-                    </span>
-                  </td>
-                  <td className="px-3 py-2 text-center text-tertiary">
-                    {type.credits_actual ? t("common.yes") : t("common.no")}
-                  </td>
-                  <td className="px-3 py-2 text-center text-tertiary">
-                    {type.consumes_leave_entitlement ? t("common.yes") : t("common.no")}
-                  </td>
-                  <td className="px-3 py-2 text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      <button
-                        type="button"
-                        className="text-13 text-tertiary hover:text-primary"
-                        disabled={isBusy}
-                        onClick={() => void handleToggleActive(type)}
-                      >
-                        {type.is_active ? t("hr.absences.types.retire") : t("hr.absences.types.bring_back")}
-                      </button>
-                      <button
-                        type="button"
-                        className="text-tertiary hover:text-danger-primary"
-                        aria-label={t("hr.absences.types.delete")}
-                        disabled={isBusy}
-                        onClick={() => setRemoving(type)}
-                      >
-                        <Trash2 className="size-4" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        <div className="flex flex-col gap-3 rounded-md border border-subtle p-3">
-          <p className="text-13 font-medium text-secondary">{t("hr.absences.types.add")}</p>
-          <div className="grid gap-3 sm:grid-cols-2">
-            <input
-              className={field}
-              value={draft.code}
-              placeholder={t("hr.absences.types.code_placeholder")}
-              onChange={(event) => setDraft({ ...draft, code: event.target.value })}
-            />
-            <input
-              className={field}
-              value={draft.name_de}
-              placeholder={t("hr.absences.types.name_placeholder")}
-              onChange={(event) => setDraft({ ...draft, name_de: event.target.value })}
-            />
+              </thead>
+              <tbody>
+                {types.length === 0 && (
+                  <tr>
+                    <td colSpan={5} className="px-3 py-6 text-center text-tertiary">
+                      {t("hr.absences.types.none_yet")}
+                    </td>
+                  </tr>
+                )}
+                {types.map((type) => (
+                  <tr key={type.id} className="border-t border-subtle">
+                    <td className="px-3 py-2 text-13 tracking-wide text-secondary tabular-nums">{type.code}</td>
+                    <td className="px-3 py-2">
+                      <span className={type.is_active ? "text-primary" : "text-tertiary line-through"}>
+                        {localName(type, currentLocale)}
+                      </span>
+                    </td>
+                    <td className="px-3 py-2 text-center text-tertiary">
+                      {type.credits_actual ? t("common.yes") : t("common.no")}
+                    </td>
+                    <td className="px-3 py-2 text-center text-tertiary">
+                      {type.consumes_leave_entitlement ? t("common.yes") : t("common.no")}
+                    </td>
+                    <td className="px-3 py-2 text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <button
+                          type="button"
+                          className="text-13 text-tertiary hover:text-primary"
+                          disabled={isBusy}
+                          onClick={() => void handleToggleActive(type)}
+                        >
+                          {type.is_active ? t("hr.absences.types.retire") : t("hr.absences.types.bring_back")}
+                        </button>
+                        <button
+                          type="button"
+                          className="text-tertiary hover:text-danger-primary"
+                          aria-label={t("hr.absences.types.delete")}
+                          disabled={isBusy}
+                          onClick={() => setRemoving(type)}
+                        >
+                          <Trash2 className="size-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-          <label className="flex items-center gap-2 text-13 text-tertiary">
-            <input
-              type="checkbox"
-              checked={draft.credits_actual}
-              onChange={(event) => setDraft({ ...draft, credits_actual: event.target.checked })}
-            />
-            {t("hr.absences.types.counts_as_worked")}
-          </label>
-          <label className="flex items-center gap-2 text-13 text-tertiary">
-            <input
-              type="checkbox"
-              checked={draft.consumes_leave_entitlement}
-              onChange={(event) => setDraft({ ...draft, consumes_leave_entitlement: event.target.checked })}
-            />
-            {t("hr.absences.types.draws_on_leave")}
-          </label>
-          <div className="flex justify-end">
-            <Button
-              variant="primary"
-              size="lg"
-              prependIcon={<Plus />}
-              disabled={isBusy || !draft.code.trim() || !draft.name_de.trim()}
-              onClick={() => void handleAdd()}
-            >
-              {t("hr.absences.types.add_button")}
-            </Button>
+
+          <div className="flex flex-col gap-3 rounded-md border border-subtle p-3">
+            <p className="text-13 font-medium text-secondary">{t("hr.absences.types.add")}</p>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <input
+                className={field}
+                value={draft.code}
+                placeholder={t("hr.absences.types.code_placeholder")}
+                onChange={(event) => setDraft({ ...draft, code: event.target.value })}
+              />
+              <input
+                className={field}
+                value={draft.name_de}
+                placeholder={t("hr.absences.types.name_placeholder")}
+                onChange={(event) => setDraft({ ...draft, name_de: event.target.value })}
+              />
+            </div>
+            <label className="flex items-center gap-2 text-13 text-tertiary">
+              <input
+                type="checkbox"
+                checked={draft.credits_actual}
+                onChange={(event) => setDraft({ ...draft, credits_actual: event.target.checked })}
+              />
+              {t("hr.absences.types.counts_as_worked")}
+            </label>
+            <label className="flex items-center gap-2 text-13 text-tertiary">
+              <input
+                type="checkbox"
+                checked={draft.consumes_leave_entitlement}
+                onChange={(event) => setDraft({ ...draft, consumes_leave_entitlement: event.target.checked })}
+              />
+              {t("hr.absences.types.draws_on_leave")}
+            </label>
+            <div className="flex justify-end">
+              <Button
+                variant="primary"
+                size="md"
+                stretch="auto"
+                label={t("hr.absences.types.add_button")}
+                icon={<Icon icon={Plus} />}
+                disabled={isBusy || !draft.code.trim() || !draft.name_de.trim()}
+                onClick={() => void handleAdd()}
+              />
+            </div>
+          </div>
+
+          <div className="flex items-center justify-end">
+            <Button variant="secondary" size="md" stretch="auto" label={t("close")} onClick={onClose} />
           </div>
         </div>
-
-        <div className="flex items-center justify-end">
-          <Button variant="secondary" size="lg" onClick={onClose}>
-            {t("close")}
-          </Button>
-        </div>
-      </div>
-      <AlertModalCore
-        isOpen={removing !== null}
-        handleClose={() => setRemoving(null)}
-        handleSubmit={() => void handleRemove()}
-        isSubmitting={isBusy}
-        variant="danger"
-        title={t("hr.absences.types.confirm_remove_title")}
-        content={t("hr.absences.types.confirm_remove_body", {
-          kind: removing ? localName(removing, currentLocale) : "",
-        })}
-        primaryButtonText={{
-          default: t("hr.absences.types.delete"),
-          loading: t("hr.absences.types.deleting"),
-        }}
-        secondaryButtonText={t("common.cancel")}
-      />
-    </ModalCore>
+        <ConfirmDialog
+          isOpen={removing !== null}
+          handleClose={() => setRemoving(null)}
+          handleSubmit={() => void handleRemove()}
+          isSubmitting={isBusy}
+          variant="danger"
+          title={t("hr.absences.types.confirm_remove_title")}
+          content={t("hr.absences.types.confirm_remove_body", {
+            kind: removing ? localName(removing, currentLocale) : "",
+          })}
+          primaryButtonText={{
+            default: t("hr.absences.types.delete"),
+            loading: t("hr.absences.types.deleting"),
+          }}
+          secondaryButtonText={t("common.cancel")}
+        />
+      </DialogContent>
+    </Dialog>
   );
 };

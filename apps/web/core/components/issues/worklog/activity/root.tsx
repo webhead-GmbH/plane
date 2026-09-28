@@ -7,12 +7,12 @@
 import { useState } from "react";
 import { observer } from "mobx-react";
 import { Clock } from "lucide-react";
-import { Button } from "@plane/propel/button";
-import { Tooltip } from "@plane/propel/tooltip";
+import { Button } from "@makeplane/propel/components/button";
+import { Tooltip } from "@makeplane/propel/components/tooltip";
 import { useTranslation } from "@plane/i18n";
 import { EUserPermissions } from "@plane/constants";
 import type { TIssueActivityComment } from "@plane/types";
-import { AlertModalCore } from "@plane/ui";
+import { ConfirmDialog } from "@plane/blocks/dialog";
 import { calculateTimeAgo, renderFormattedDate, renderFormattedTime } from "@plane/utils";
 import { useIssueDetail } from "@/hooks/store/use-issue-detail";
 import { usePlatformOS } from "@/hooks/use-platform-os";
@@ -112,8 +112,8 @@ export const IssueActivityWorklog = observer(function IssueActivityWorklog(props
           <span>{t("common.logged")}</span>
           <span className="font-semibold text-success-primary">{formatDuration(entry.duration)}</span>
           <Tooltip
-            isMobile={isMobile}
-            tooltipContent={`${renderFormattedDate(entry.logged_at)}, ${renderFormattedTime(entry.logged_at)}`}
+            disabled={isMobile}
+            label={`${renderFormattedDate(entry.logged_at)}, ${renderFormattedTime(entry.logged_at)}`}
           >
             <span className="whitespace-nowrap text-tertiary"> {calculateTimeAgo(entry.logged_at)}</span>
           </Tooltip>
@@ -151,12 +151,14 @@ export const IssueActivityWorklog = observer(function IssueActivityWorklog(props
             />
             {editError && <p className="text-xs text-danger-primary">{editError}</p>}
             <div className="mt-1 flex gap-2">
-              <Button variant="primary" size="sm" onClick={handleSaveEdit}>
-                {t("common.save")}
-              </Button>
-              <Button variant="secondary" size="sm" onClick={() => setIsEditing(false)}>
-                {t("common.cancel")}
-              </Button>
+              <Button variant="primary" size="xs" stretch="auto" label={t("common.save")} onClick={handleSaveEdit} />
+              <Button
+                variant="secondary"
+                size="xs"
+                stretch="auto"
+                label={t("common.cancel")}
+                onClick={() => setIsEditing(false)}
+              />
             </div>
           </div>
         ) : (
@@ -184,7 +186,7 @@ export const IssueActivityWorklog = observer(function IssueActivityWorklog(props
         )}
       </div>
 
-      <AlertModalCore
+      <ConfirmDialog
         isOpen={showDeleteModal}
         handleClose={() => setShowDeleteModal(false)}
         handleSubmit={handleDelete}

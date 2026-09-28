@@ -21,20 +21,20 @@ import { EUserPermissions, EUserPermissionsLevel, IS_FAVORITE_MENU_OPEN } from "
 import { useLocalStorage } from "@plane/hooks";
 import { useTranslation } from "@plane/i18n";
 import { Avatar } from "@makeplane/propel/components/avatar";
-import { setPromiseToast } from "@plane/propel/toast";
+import { AvatarGroup } from "@makeplane/propel/components/avatar-group";
+import { setPromiseToast } from "@plane/blocks/toast";
 import { Tooltip } from "@makeplane/propel/components/tooltip";
-import type { ICycle, IUserLite, TCycleGroups } from "@plane/types";
-import { FavoriteStar } from "@plane/ui";
+import type { ICycle, TCycleGroups } from "@plane/types";
+import { FavoriteStar } from "@plane/blocks/common";
+import { DateRangeSelect } from "@plane/blocks/property-select";
 import { getDate, getFileURL, generateQueryParams } from "@plane/utils";
 // components
-import { AvatarGroupOverflow } from "@/components/common/avatar-group-overflow";
-import { DateRangeDropdown } from "@/components/dropdowns/date-range";
 import { ButtonAvatars } from "@/components/dropdowns/member/avatar";
 import { MergedDateDisplay } from "@/components/dropdowns/merged-date";
 // hooks
 import { useCycle } from "@/hooks/store/use-cycle";
 import { useMember } from "@/hooks/store/use-member";
-import { useUserPermissions } from "@/hooks/store/user";
+import { useUserPermissions, useUserProfile } from "@/hooks/store/user";
 import { useAppRouter } from "@/hooks/use-app-router";
 import { usePlatformOS } from "@/hooks/use-platform-os";
 import { useTimeZoneConverter } from "@/hooks/use-timezone-converter";
@@ -56,119 +56,6 @@ const defaultValues: Partial<ICycle> = {
   end_date: null,
 };
 
-const getTransferableIssuesCount = (cycleDetails: ICycle) =>
-  cycleDetails ? cycleDetails.total_issues - (cycleDetails.cancelled_issues + cycleDetails.completed_issues) : 0;
-
-type CycleListItemDatesProps = {
-  projectId: string;
-  cycleDetails: ICycle;
-  isActive: boolean;
-  createdByDetails: IUserLite | undefined;
-};
-
-const CycleListItemDates = observer(function CycleListItemDates(props: CycleListItemDatesProps) {
-  const { projectId, cycleDetails, isActive, createdByDetails } = props;
-  // hooks
-  const { t } = useTranslation();
-  const { isProjectTimeZoneDifferent, getProjectUTCOffset, renderFormattedDateInUserTimezone } =
-    useTimeZoneConverter(projectId);
-  // derived values
-  const projectUTCOffset = getProjectUTCOffset();
-
-  return isActive ? (
-    <>
-      <div className="flex gap-2">
-        {/* Duration */}
-        <Tooltip
-          label={`${t("project_cycles.in_your_timezone")}: ${renderFormattedDateInUserTimezone(
-            cycleDetails.start_date ?? ""
-          )} → ${renderFormattedDateInUserTimezone(cycleDetails.end_date ?? "")}`}
-          layout="stacked"
-          disabled={!isProjectTimeZoneDifferent()}
-        >
-          <div className="flex items-center gap-1 text-11 font-medium text-tertiary">
-            <CalendarOutline className="my-auto h-3 w-3 flex-shrink-0" />
-            <MergedDateDisplay startDate={cycleDetails.start_date} endDate={cycleDetails.end_date} />
-          </div>
-        </Tooltip>
-        {projectUTCOffset && (
-          <span className="cursor-default rounded-md bg-layer-1 px-2 py-1 text-11 text-tertiary">
-            {projectUTCOffset}
-          </span>
-        )}
-        {/* created by */}
-        {createdByDetails && <ButtonAvatars showTooltip={false} userIds={createdByDetails?.id} />}
-      </div>
-    </>
-  ) : (
-    cycleDetails.start_date && (
-      <>
-        <DateRangeDropdown
-          buttonVariant={"transparent-with-text"}
-          buttonContainerClassName={`h-6 w-full cursor-auto flex items-center gap-1.5 text-tertiary rounded-sm text-11 [&>div]:hover:bg-transparent`}
-          buttonClassName="p-0"
-          minDate={new Date()}
-          value={{
-            from: getDate(cycleDetails.start_date),
-            to: getDate(cycleDetails.end_date),
-          }}
-          placeholder={{
-            from: t("project_cycles.start_date"),
-            to: t("project_cycles.end_date"),
-          }}
-          showTooltip={isProjectTimeZoneDifferent()}
-          customTooltipHeading={t("project_cycles.in_your_timezone")}
-          customTooltipContent={`${renderFormattedDateInUserTimezone(
-            cycleDetails.start_date ?? ""
-          )} → ${renderFormattedDateInUserTimezone(cycleDetails.end_date ?? "")}`}
-          mergeDates
-          required={cycleDetails.status !== "draft"}
-          disabled
-          hideIcon={{
-            from: false,
-            to: false,
-          }}
-        />
-      </>
-    )
-  );
-});
-
-type CycleListItemMembersProps = {
-  cycleDetails: ICycle;
-};
-
-const CycleListItemMembers = observer(function CycleListItemMembers(props: CycleListItemMembersProps) {
-  const { cycleDetails } = props;
-  // hooks
-  const { isMobile } = usePlatformOS();
-  const { getUserDetails } = useMember();
-
-  return (
-    <Tooltip label={`${cycleDetails.assignee_ids?.length} Members`} layout="stacked" disabled={isMobile}>
-      <div className="flex w-min cursor-default items-center justify-center">
-        {cycleDetails.assignee_ids && cycleDetails.assignee_ids?.length > 0 ? (
-          <AvatarGroupOverflow size="xs">
-            {cycleDetails.assignee_ids?.map((assignee_id) => {
-              const member = getUserDetails(assignee_id);
-              return (
-                <Avatar
-                  key={member?.id}
-                  alt={member?.display_name}
-                  fallback={member?.display_name?.[0]?.toUpperCase()}
-                  src={getFileURL(member?.avatar_url ?? "")}
-                />
-              );
-            })}
-          </AvatarGroupOverflow>
-        ) : (
-          <MembersOutline className="h-4 w-4 text-tertiary" />
-        )}
-      </div>
-    </Tooltip>
-  );
-});
-
 export const CycleListItemAction = observer(function CycleListItemAction(props: Props) {
   const { workspaceSlug, projectId, cycleId, cycleDetails, parentRef, isActive = false } = props;
   // router
@@ -178,6 +65,8 @@ export const CycleListItemAction = observer(function CycleListItemAction(props: 
   // hooks
   const { isMobile } = usePlatformOS();
   const { t } = useTranslation();
+  const { isProjectTimeZoneDifferent, getProjectUTCOffset, renderFormattedDateInUserTimezone } =
+    useTimeZoneConverter(projectId);
   // router
   const router = useAppRouter();
   const searchParams = useSearchParams();
@@ -185,6 +74,7 @@ export const CycleListItemAction = observer(function CycleListItemAction(props: 
   // store hooks
   const { addCycleToFavorites, removeCycleFromFavorites } = useCycle();
   const { allowPermissions } = useUserPermissions();
+  const { data: userProfile } = useUserProfile();
 
   // local storage
   const { setValue: toggleFavoriteMenu, storedValue: isFavoriteMenuOpen } = useLocalStorage<boolean>(
@@ -204,9 +94,13 @@ export const CycleListItemAction = observer(function CycleListItemAction(props: 
 
   const showIssueCount = useMemo(() => cycleStatus === "draft" || cycleStatus === "upcoming", [cycleStatus]);
 
-  const transferableIssuesCount = getTransferableIssuesCount(cycleDetails);
+  const transferableIssuesCount = cycleDetails
+    ? cycleDetails.total_issues - (cycleDetails.cancelled_issues + cycleDetails.completed_issues)
+    : 0;
 
   const showTransferIssues = routerProjectId && transferableIssuesCount > 0 && cycleStatus === "completed";
+
+  const projectUTCOffset = getProjectUTCOffset();
 
   const isEditingAllowed = allowPermissions(
     [EUserPermissions.ADMIN, EUserPermissions.MEMBER],
@@ -317,15 +211,77 @@ export const CycleListItemAction = observer(function CycleListItemAction(props: 
           <span>{t("project_cycles.transfer_work_items", { count: transferableIssuesCount })}</span>
         </div>
       )}
-      <CycleListItemDates
-        projectId={projectId}
-        cycleDetails={cycleDetails}
-        isActive={isActive}
-        createdByDetails={createdByDetails}
-      />
+      {isActive ? (
+        <>
+          <div className="flex gap-2">
+            {/* Duration */}
+            <Tooltip
+              label={`${t("project_cycles.in_your_timezone")}: ${renderFormattedDateInUserTimezone(
+                cycleDetails.start_date ?? ""
+              )} → ${renderFormattedDateInUserTimezone(cycleDetails.end_date ?? "")}`}
+              layout="stacked"
+              disabled={!isProjectTimeZoneDifferent()}
+            >
+              <div className="flex items-center gap-1 text-11 font-medium text-tertiary">
+                <CalendarOutline className="my-auto h-3 w-3 flex-shrink-0" />
+                <MergedDateDisplay startDate={cycleDetails.start_date} endDate={cycleDetails.end_date} />
+              </div>
+            </Tooltip>
+            {projectUTCOffset && (
+              <span className="cursor-default rounded-md bg-layer-1 px-2 py-1 text-11 text-tertiary">
+                {projectUTCOffset}
+              </span>
+            )}
+            {/* created by */}
+            {createdByDetails && <ButtonAvatars showTooltip={false} userIds={createdByDetails?.id} />}
+          </div>
+        </>
+      ) : (
+        cycleDetails.start_date && (
+          <>
+            <DateRangeSelect
+              variant="select-ghost-md"
+              className="flex h-6 w-full cursor-auto items-center gap-1.5 rounded-sm p-0 text-11 text-tertiary [&>div]:hover:bg-transparent"
+              minDate={new Date()}
+              value={{
+                from: getDate(cycleDetails.start_date) ?? null,
+                to: getDate(cycleDetails.end_date) ?? null,
+              }}
+              onChange={() => {}}
+              placeholder={`${t("project_cycles.start_date")} - ${t("project_cycles.end_date")}`}
+              showTooltip={isProjectTimeZoneDifferent()}
+              tooltipHeading={t("project_cycles.in_your_timezone")}
+              tooltipContent={`${renderFormattedDateInUserTimezone(
+                cycleDetails.start_date ?? ""
+              )} → ${renderFormattedDateInUserTimezone(cycleDetails.end_date ?? "")}`}
+              mergeDates
+              disabled
+              weekStartsOn={userProfile?.start_of_the_week}
+              icon={<CalendarOutline />}
+            />
+          </>
+        )
+      )}
       {/* created by */}
       {createdByDetails && !isActive && <ButtonAvatars showTooltip={false} userIds={createdByDetails?.id} />}
-      {!isActive && <CycleListItemMembers cycleDetails={cycleDetails} />}
+      {!isActive && (
+        <Tooltip label={`${cycleDetails.assignee_ids?.length} Members`} layout="stacked" disabled={isMobile}>
+          <div className="flex w-min cursor-default items-center justify-center">
+            {cycleDetails.assignee_ids && cycleDetails.assignee_ids?.length > 0 ? (
+              <AvatarGroup size="xs" max={2}>
+                {cycleDetails.assignee_ids?.map((assignee_id) => {
+                  const member = getUserDetails(assignee_id);
+                  return (
+                    <Avatar key={assignee_id} alt={member?.display_name} src={getFileURL(member?.avatar_url ?? "")} />
+                  );
+                })}
+              </AvatarGroup>
+            ) : (
+              <MembersOutline className="h-4 w-4 text-tertiary" />
+            )}
+          </div>
+        </Tooltip>
+      )}
       {isEditingAllowed && !cycleDetails.archived_at && (
         <FavoriteStar
           onClick={(e) => {

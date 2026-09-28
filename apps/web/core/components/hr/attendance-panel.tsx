@@ -9,9 +9,9 @@ import { AlertTriangle, Trash2 } from "lucide-react";
 import useSWR from "swr";
 // plane imports
 import { useTranslation } from "@plane/i18n";
-import { Button } from "@plane/propel/button";
-import { AlertModalCore } from "@plane/ui";
-import { setToast, TOAST_TYPE } from "@plane/propel/toast";
+import { Button } from "@makeplane/propel/components/button";
+import { ConfirmDialog } from "@plane/blocks/dialog";
+import { setToast } from "@plane/blocks/toast";
 // services
 import { EHrWorkLocation, HrService, type THrAttendanceDay } from "@/services/hr.service";
 // local imports
@@ -231,7 +231,7 @@ const HrAttendanceEditor = ({
 
   const complain = (failure: unknown) =>
     setToast({
-      type: TOAST_TYPE.ERROR,
+      type: "error",
       title: t("hr.attendance.toasts.refused"),
       message: refusalMessage(failure, t, currentLocale) ?? t("hr.attendance.toasts.try_again"),
     });
@@ -267,7 +267,7 @@ const HrAttendanceEditor = ({
       edit({ problem: null });
       await refresh();
       onChanged();
-      setToast({ type: TOAST_TYPE.SUCCESS, title: t("hr.attendance.toasts.saved") });
+      setToast({ type: "success", title: t("hr.attendance.toasts.saved") });
     } catch (failure) {
       complain(failure);
     } finally {
@@ -283,7 +283,7 @@ const HrAttendanceEditor = ({
       await refresh();
       setRemoving(false);
       onChanged();
-      setToast({ type: TOAST_TYPE.SUCCESS, title: t("hr.attendance.toasts.removed") });
+      setToast({ type: "success", title: t("hr.attendance.toasts.removed") });
     } catch (failure) {
       complain(failure);
     } finally {
@@ -354,11 +354,16 @@ const HrAttendanceEditor = ({
             onClick={() => setRemoving(true)}
           />
         ) : null}
-        <Button variant="primary" size="lg" loading={isBusy} onClick={() => void handleSave()}>
-          {day ? t("hr.attendance.update") : t("hr.attendance.record")}
-        </Button>
+        <Button
+          variant="primary"
+          size="md"
+          stretch="auto"
+          label={day ? t("hr.attendance.update") : t("hr.attendance.record")}
+          loading={isBusy}
+          onClick={() => void handleSave()}
+        />
       </div>
-      <AlertModalCore
+      <ConfirmDialog
         isOpen={removing}
         handleClose={() => setRemoving(false)}
         handleSubmit={() => void handleRemove()}

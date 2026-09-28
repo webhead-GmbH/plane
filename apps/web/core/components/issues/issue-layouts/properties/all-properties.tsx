@@ -14,7 +14,9 @@ import { AttachOutline, DueDateOutline, LinkOutline, StartDateOutline, ViewsOutl
 // i18n
 import { useTranslation } from "@plane/i18n";
 import { Tooltip } from "@makeplane/propel/components/tooltip";
-import type { TIssue, IIssueDisplayProperties, IState, TIssuePriorities, TProject } from "@plane/types";
+import type { DateRangeValue } from "@plane/blocks/property-select";
+import { DateRangeSelect, DateSelect } from "@plane/blocks/property-select";
+import type { TIssue, IIssueDisplayProperties, TIssuePriorities } from "@plane/types";
 // ui
 import {
   cn,
@@ -24,28 +26,26 @@ import {
   shouldHighlightIssueDueDate,
 } from "@plane/utils";
 // components
-import { CycleDropdown } from "@/components/dropdowns/cycle";
-import { DateDropdown } from "@/components/dropdowns/date";
-import { DateRangeDropdown } from "@/components/dropdowns/date-range";
-import { EstimateDropdown } from "@/components/dropdowns/estimate";
-import { MemberDropdown } from "@/components/dropdowns/member/dropdown";
-import { ModuleDropdown } from "@/components/dropdowns/module/dropdown";
-import { PriorityDropdown } from "@/components/dropdowns/priority";
-import { StateDropdown } from "@/components/dropdowns/state/dropdown";
+import { CycleSelect } from "@/components/dropdowns/cycle/cycle-select";
+import { EstimateSelect } from "@/components/dropdowns/estimate/estimate-select";
+import { MemberSelect } from "@/components/dropdowns/member/member-select";
+import { ModuleSelect } from "@/components/dropdowns/module/module-select";
+import { PrioritySelect } from "@/components/dropdowns/priority/priority-select";
+import { StateSelect } from "@/components/dropdowns/state/state-select";
 // hooks
 import { useProjectEstimates } from "@/hooks/store/estimates";
 import { useIssues } from "@/hooks/store/use-issues";
 import { useLabel } from "@/hooks/store/use-label";
 import { useProject } from "@/hooks/store/use-project";
 import { useProjectState } from "@/hooks/store/use-project-state";
+import { useUserProfile } from "@/hooks/store/user";
 import { useAppRouter } from "@/hooks/use-app-router";
 import { useIssueStoreType } from "@/hooks/use-issue-layout-store";
 import { usePlatformOS } from "@/hooks/use-platform-os";
-// worklog components
-import { WorkItemTimerButton } from "@/components/issues/worklog/list-timer-button";
 // local components
 import { IssuePropertyLabels } from "./labels";
 import { WithDisplayPropertiesHOC } from "./with-display-properties-HOC";
+import { WorkItemTimerButton } from "@/components/issues/worklog/list-timer-button";
 
 export interface IIssueProperties {
   issue: TIssue;
@@ -56,225 +56,6 @@ export interface IIssueProperties {
   activeLayout: string;
   isEpic?: boolean;
 }
-
-const handleEventPropagation = (e: SyntheticEvent<HTMLDivElement>) => {
-  e.stopPropagation();
-  e.preventDefault();
-};
-
-type TIssuePropertiesDatesProps = {
-  issue: TIssue;
-  displayProperties: IIssueDisplayProperties;
-  stateDetails: IState | undefined;
-  isReadOnly: boolean;
-  isMobile: boolean;
-  handleStartDate: (date: Date | null) => Promise<void>;
-  handleTargetDate: (date: Date | null) => Promise<void>;
-};
-
-const IssuePropertiesDates = observer(function IssuePropertiesDates(props: TIssuePropertiesDatesProps) {
-  const { issue, displayProperties, stateDetails, isReadOnly, isMobile, handleStartDate, handleTargetDate } = props;
-  // i18n
-  const { t } = useTranslation();
-
-  // date range is enabled only when both dates are available and both dates are enabled
-  const isDateRangeEnabled: boolean = Boolean(
-    issue.start_date && issue.target_date && displayProperties.start_date && displayProperties.due_date
-  );
-
-  const minDate = getDate(issue.start_date);
-  const maxDate = getDate(issue.target_date);
-
-  return (
-    <>
-      {/* merged dates */}
-      <WithDisplayPropertiesHOC
-        displayProperties={displayProperties}
-        displayPropertyKey={["start_date", "due_date"]}
-        shouldRenderProperty={() => isDateRangeEnabled}
-      >
-        {/* oxlint-disable-next-line jsx_a11y/click-events-have-key-events oxlint-disable-next-line jsx_a11y/no-static-element-interactions */}
-        <div className="h-5" onFocus={handleEventPropagation} onClick={handleEventPropagation}>
-          <DateRangeDropdown
-            value={{
-              from: getDate(issue.start_date) || undefined,
-              to: getDate(issue.target_date) || undefined,
-            }}
-            onSelect={(range) => {
-              handleStartDate(range?.from ?? null);
-              handleTargetDate(range?.to ?? null);
-            }}
-            hideIcon={{
-              from: false,
-            }}
-            isClearable
-            mergeDates
-            buttonVariant={issue.start_date || issue.target_date ? "border-with-text" : "border-without-text"}
-            buttonClassName={
-              shouldHighlightIssueDueDate(issue.target_date, stateDetails?.group) ? "text-danger-primary" : ""
-            }
-            clearIconClassName="text-primary!"
-            disabled={isReadOnly}
-            renderByDefault={isMobile}
-            showTooltip
-            renderPlaceholder={false}
-            customTooltipHeading="Date Range"
-          />
-        </div>
-      </WithDisplayPropertiesHOC>
-
-      {/* start date */}
-      <WithDisplayPropertiesHOC
-        displayProperties={displayProperties}
-        displayPropertyKey="start_date"
-        shouldRenderProperty={() => !isDateRangeEnabled}
-      >
-        {/* oxlint-disable-next-line jsx_a11y/click-events-have-key-events oxlint-disable-next-line jsx_a11y/no-static-element-interactions */}
-        <div className="h-5" onFocus={handleEventPropagation} onClick={handleEventPropagation}>
-          <DateDropdown
-            value={issue.start_date ?? null}
-            onChange={handleStartDate}
-            maxDate={maxDate}
-            placeholder={t("common.order_by.start_date")}
-            icon={<StartDateOutline className="h-3 w-3 flex-shrink-0" />}
-            buttonVariant={issue.start_date ? "border-with-text" : "border-without-text"}
-            optionsClassName="z-10"
-            disabled={isReadOnly}
-            renderByDefault={isMobile}
-            showTooltip
-            labelClassName="text-caption-sm-regular"
-          />
-        </div>
-      </WithDisplayPropertiesHOC>
-
-      {/* target/due date */}
-      <WithDisplayPropertiesHOC
-        displayProperties={displayProperties}
-        displayPropertyKey="due_date"
-        shouldRenderProperty={() => !isDateRangeEnabled}
-      >
-        {/* oxlint-disable-next-line jsx_a11y/click-events-have-key-events oxlint-disable-next-line jsx_a11y/no-static-element-interactions */}
-        <div className="h-5" onFocus={handleEventPropagation} onClick={handleEventPropagation}>
-          <DateDropdown
-            value={issue?.target_date ?? null}
-            onChange={handleTargetDate}
-            minDate={minDate}
-            placeholder={t("common.order_by.due_date")}
-            icon={<DueDateOutline className="h-3 w-3 shrink-0" />}
-            buttonVariant={issue.target_date ? "border-with-text" : "border-without-text"}
-            buttonClassName={
-              shouldHighlightIssueDueDate(issue.target_date, stateDetails?.group) ? "text-danger-primary" : ""
-            }
-            clearIconClassName="text-primary!"
-            optionsClassName="z-10"
-            disabled={isReadOnly}
-            renderByDefault={isMobile}
-            showTooltip
-            labelClassName="text-caption-sm-regular"
-          />
-        </div>
-      </WithDisplayPropertiesHOC>
-    </>
-  );
-});
-
-type TIssuePropertiesModulesAndCyclesProps = {
-  issue: TIssue;
-  projectId: string;
-  projectDetails: TProject | undefined;
-  displayProperties: IIssueDisplayProperties;
-  isReadOnly: boolean;
-  isMobile: boolean;
-  handleModule: (moduleIds: string[] | null) => void;
-  handleCycle: (cycleId: string | null) => void;
-};
-
-const IssuePropertiesModulesAndCycles = observer(function IssuePropertiesModulesAndCycles(
-  props: TIssuePropertiesModulesAndCyclesProps
-) {
-  const { issue, projectId, projectDetails, displayProperties, isReadOnly, isMobile, handleModule, handleCycle } =
-    props;
-
-  return (
-    <>
-      {/* modules */}
-      {projectDetails?.module_view && (
-        <WithDisplayPropertiesHOC displayProperties={displayProperties} displayPropertyKey="modules">
-          {/* oxlint-disable-next-line jsx_a11y/click-events-have-key-events oxlint-disable-next-line jsx_a11y/no-static-element-interactions */}
-          <div className="h-5" onFocus={handleEventPropagation} onClick={handleEventPropagation}>
-            <ModuleDropdown
-              buttonContainerClassName="truncate max-w-40"
-              projectId={projectId}
-              value={issue?.module_ids ?? []}
-              onChange={handleModule}
-              disabled={isReadOnly}
-              renderByDefault={isMobile}
-              multiple
-              buttonVariant="border-with-text"
-              showCount
-              showTooltip
-            />
-          </div>
-        </WithDisplayPropertiesHOC>
-      )}
-
-      {/* cycles */}
-      {projectDetails?.cycle_view && (
-        <WithDisplayPropertiesHOC displayProperties={displayProperties} displayPropertyKey="cycle">
-          {/* oxlint-disable-next-line jsx_a11y/click-events-have-key-events oxlint-disable-next-line jsx_a11y/no-static-element-interactions */}
-          <div className="h-5" onFocus={handleEventPropagation} onClick={handleEventPropagation}>
-            <CycleDropdown
-              buttonContainerClassName="truncate max-w-40"
-              projectId={projectId}
-              value={issue?.cycle_id}
-              onChange={handleCycle}
-              disabled={isReadOnly}
-              buttonVariant="border-with-text"
-              renderByDefault={isMobile}
-              showTooltip
-            />
-          </div>
-        </WithDisplayPropertiesHOC>
-      )}
-    </>
-  );
-});
-
-type TIssuePropertiesEstimateProps = {
-  issue: TIssue;
-  projectId: string;
-  displayProperties: IIssueDisplayProperties;
-  isReadOnly: boolean;
-  isMobile: boolean;
-  handleEstimate: (value: string | undefined) => Promise<void>;
-};
-
-const IssuePropertiesEstimate = observer(function IssuePropertiesEstimate(props: TIssuePropertiesEstimateProps) {
-  const { issue, projectId, displayProperties, isReadOnly, isMobile, handleEstimate } = props;
-  // router
-  const { projectId: routerProjectId } = useParams();
-  // store hooks
-  const { areEstimateEnabledByProjectId } = useProjectEstimates();
-
-  if (!routerProjectId || !areEstimateEnabledByProjectId(routerProjectId.toString())) return null;
-
-  return (
-    <WithDisplayPropertiesHOC displayProperties={displayProperties} displayPropertyKey="estimate">
-      {/* oxlint-disable-next-line jsx_a11y/click-events-have-key-events oxlint-disable-next-line jsx_a11y/no-static-element-interactions */}
-      <div className="h-5" onFocus={handleEventPropagation} onClick={handleEventPropagation}>
-        <EstimateDropdown
-          value={issue.estimate_point ?? undefined}
-          onChange={handleEstimate}
-          projectId={projectId}
-          disabled={isReadOnly}
-          buttonVariant="border-with-text"
-          renderByDefault={isMobile}
-          showTooltip
-        />
-      </div>
-    </WithDisplayPropertiesHOC>
-  );
-});
 
 export const IssueProperties = observer(function IssueProperties(props: IIssueProperties) {
   const { issue, updateIssue, displayProperties, isReadOnly, className, isEpic = false } = props;
@@ -290,13 +71,15 @@ export const IssueProperties = observer(function IssueProperties(props: IIssuePr
   const {
     issues: { addCycleToIssue, removeCycleFromIssue },
   } = useIssues(storeType);
+  const { areEstimateEnabledByProjectId } = useProjectEstimates();
   const { getStateById } = useProjectState();
+  const { data: userProfile } = useUserProfile();
   const { isMobile } = usePlatformOS();
   const projectDetails = getProjectById(issue.project_id);
 
   // router
   const router = useAppRouter();
-  const { workspaceSlug } = useParams();
+  const { workspaceSlug, projectId } = useParams();
 
   // derived values
   const stateDetails = getStateById(issue.state_id);
@@ -345,11 +128,10 @@ export const IssueProperties = observer(function IssueProperties(props: IIssuePr
       if (!issue || !issue.module_ids || !moduleIds) return;
 
       const updatedModuleIds = xor(issue.module_ids, moduleIds);
-      const currentModuleIds = new Set(issue.module_ids);
       const modulesToAdd: string[] = [];
       const modulesToRemove: string[] = [];
       for (const moduleId of updatedModuleIds)
-        if (currentModuleIds.has(moduleId)) modulesToRemove.push(moduleId);
+        if (issue.module_ids.includes(moduleId)) modulesToRemove.push(moduleId);
         else modulesToAdd.push(moduleId);
       if (modulesToAdd.length > 0) issueOperations.addModulesToIssue(modulesToAdd);
       if (modulesToRemove.length > 0) issueOperations.removeModulesFromIssue(modulesToRemove);
@@ -376,7 +158,15 @@ export const IssueProperties = observer(function IssueProperties(props: IIssuePr
       await updateIssue(issue.project_id, issue.id, { target_date: date ? renderFormattedPayloadDate(date) : null });
   };
 
-  const handleEstimate = async (value: string | undefined) => {
+  const handleDateRangeUpdate = async (range: DateRangeValue) => {
+    if (updateIssue)
+      await updateIssue(issue.project_id, issue.id, {
+        start_date: range.from ? renderFormattedPayloadDate(range.from) : null,
+        target_date: range.to ? renderFormattedPayloadDate(range.to) : null,
+      });
+  };
+
+  const handleEstimate = async (value: string | null) => {
     if (updateIssue) await updateIssue(issue.project_id, issue.id, { estimate_point: value });
   };
 
@@ -394,11 +184,25 @@ export const IssueProperties = observer(function IssueProperties(props: IIssuePr
 
   if (!displayProperties || !issue.project_id) return null;
 
+  // date range is enabled only when both dates are available and both dates are enabled
+  const isDateRangeEnabled: boolean = Boolean(
+    issue.start_date && issue.target_date && displayProperties.start_date && displayProperties.due_date
+  );
+
   const defaultLabelOptions =
     issue?.label_ids?.flatMap((id) => {
       const label = labelMap[id];
       return label ? [label] : [];
     }) || [];
+
+  const minDate = getDate(issue.start_date);
+  const maxDate = getDate(issue.target_date);
+
+  // oxlint-disable-next-line unicorn/consistent-function-scoping
+  const handleEventPropagation = (e: SyntheticEvent<HTMLDivElement>) => {
+    e.stopPropagation();
+    e.preventDefault();
+  };
 
   return (
     <div className={className}>
@@ -407,15 +211,13 @@ export const IssueProperties = observer(function IssueProperties(props: IIssuePr
       <WithDisplayPropertiesHOC displayProperties={displayProperties} displayPropertyKey="state">
         {/* oxlint-disable-next-line jsx_a11y/click-events-have-key-events oxlint-disable-next-line jsx_a11y/no-static-element-interactions */}
         <div className="h-5" onFocus={handleEventPropagation} onClick={handleEventPropagation}>
-          <StateDropdown
-            buttonContainerClassName="truncate max-w-40"
+          <StateSelect
             value={issue.state_id}
             onChange={handleState}
             projectId={issue.project_id}
             disabled={isReadOnly}
-            buttonVariant="border-with-text"
-            renderByDefault={isMobile}
-            showTooltip
+            variant="pill-sm"
+            tooltip
           />
         </div>
       </WithDisplayPropertiesHOC>
@@ -439,72 +241,170 @@ export const IssueProperties = observer(function IssueProperties(props: IIssuePr
       <WithDisplayPropertiesHOC displayProperties={displayProperties} displayPropertyKey="priority">
         {/* oxlint-disable-next-line jsx_a11y/click-events-have-key-events oxlint-disable-next-line jsx_a11y/no-static-element-interactions */}
         <div className="h-5" onFocus={handleEventPropagation} onClick={handleEventPropagation}>
-          <PriorityDropdown
+          <PrioritySelect
             value={issue?.priority}
             onChange={handlePriority}
             disabled={isReadOnly}
-            buttonVariant="border-without-text"
-            renderByDefault={isMobile}
-            showTooltip
+            variant="pill-sm"
+            tooltip
           />
         </div>
       </WithDisplayPropertiesHOC>
 
-      <IssuePropertiesDates
-        issue={issue}
+      {/* merged dates */}
+      <WithDisplayPropertiesHOC
         displayProperties={displayProperties}
-        stateDetails={stateDetails}
-        isReadOnly={isReadOnly}
-        isMobile={isMobile}
-        handleStartDate={handleStartDate}
-        handleTargetDate={handleTargetDate}
-      />
+        displayPropertyKey={["start_date", "due_date"]}
+        shouldRenderProperty={() => isDateRangeEnabled}
+      >
+        {/* oxlint-disable-next-line jsx_a11y/click-events-have-key-events oxlint-disable-next-line jsx_a11y/no-static-element-interactions */}
+        <div className="h-5" onFocus={handleEventPropagation} onClick={handleEventPropagation}>
+          <DateRangeSelect
+            value={{
+              from: getDate(issue.start_date) ?? null,
+              to: getDate(issue.target_date) ?? null,
+            }}
+            onChange={handleDateRangeUpdate}
+            icon={<StartDateOutline />}
+            clearable
+            mergeDates
+            className={cn({
+              "text-danger-primary": shouldHighlightIssueDueDate(issue.target_date, stateDetails?.group),
+            })}
+            disabled={isReadOnly}
+            showTooltip
+            tooltipHeading={t("project_cycles.date_range")}
+            weekStartsOn={userProfile?.start_of_the_week}
+            variant="pill-sm"
+          />
+        </div>
+      </WithDisplayPropertiesHOC>
+
+      {/* start date */}
+      <WithDisplayPropertiesHOC
+        displayProperties={displayProperties}
+        displayPropertyKey="start_date"
+        shouldRenderProperty={() => !isDateRangeEnabled}
+      >
+        {/* oxlint-disable-next-line jsx_a11y/click-events-have-key-events oxlint-disable-next-line jsx_a11y/no-static-element-interactions */}
+        <div className="h-5" onFocus={handleEventPropagation} onClick={handleEventPropagation}>
+          <DateSelect
+            value={getDate(issue.start_date) ?? null}
+            onChange={handleStartDate}
+            maxDate={maxDate}
+            placeholder={t("common.order_by.start_date")}
+            icon={<StartDateOutline />}
+            clearable
+            disabled={isReadOnly}
+            showTooltip
+            tooltipHeading={t("common.order_by.start_date")}
+            weekStartsOn={userProfile?.start_of_the_week}
+            variant="pill-sm"
+          />
+        </div>
+      </WithDisplayPropertiesHOC>
+
+      {/* target/due date */}
+      <WithDisplayPropertiesHOC
+        displayProperties={displayProperties}
+        displayPropertyKey="due_date"
+        shouldRenderProperty={() => !isDateRangeEnabled}
+      >
+        {/* oxlint-disable-next-line jsx_a11y/click-events-have-key-events oxlint-disable-next-line jsx_a11y/no-static-element-interactions */}
+        <div className="h-5" onFocus={handleEventPropagation} onClick={handleEventPropagation}>
+          <DateSelect
+            value={getDate(issue?.target_date) ?? null}
+            onChange={handleTargetDate}
+            minDate={minDate}
+            placeholder={t("common.order_by.due_date")}
+            icon={<DueDateOutline />}
+            className={cn({
+              "text-danger-primary": shouldHighlightIssueDueDate(issue.target_date, stateDetails?.group),
+            })}
+            clearable
+            disabled={isReadOnly}
+            showTooltip
+            tooltipHeading={t("common.order_by.due_date")}
+            weekStartsOn={userProfile?.start_of_the_week}
+            variant="pill-sm"
+          />
+        </div>
+      </WithDisplayPropertiesHOC>
 
       {/* assignee */}
       <WithDisplayPropertiesHOC displayProperties={displayProperties} displayPropertyKey="assignee">
         {/* oxlint-disable-next-line jsx_a11y/click-events-have-key-events oxlint-disable-next-line jsx_a11y/no-static-element-interactions */}
         <div className="h-5" onFocus={handleEventPropagation} onClick={handleEventPropagation}>
-          <MemberDropdown
-            projectId={issue?.project_id}
-            value={issue?.assignee_ids}
+          <MemberSelect
+            projectId={issue?.project_id ?? undefined}
+            value={issue?.assignee_ids ?? []}
             onChange={handleAssignee}
             disabled={isReadOnly}
             multiple
-            buttonVariant={issue.assignee_ids?.length > 0 ? "transparent-without-text" : "border-without-text"}
-            buttonClassName={issue.assignee_ids?.length > 0 ? "hover:bg-transparent px-0" : ""}
-            showTooltip={issue?.assignee_ids?.length === 0}
+            variant={issue.assignee_ids?.length ? "avatar-group-sm" : "pill-sm"}
             placeholder={t("common.assignees")}
-            optionsClassName="z-10"
-            tooltipContent=""
-            renderByDefault={isMobile}
+            tooltip={{ heading: t("common.assignees") }}
           />
         </div>
       </WithDisplayPropertiesHOC>
 
       <>
         {!isEpic && (
-          <IssuePropertiesModulesAndCycles
-            issue={issue}
-            projectId={issue.project_id}
-            projectDetails={projectDetails}
-            displayProperties={displayProperties}
-            isReadOnly={isReadOnly}
-            isMobile={isMobile}
-            handleModule={handleModule}
-            handleCycle={handleCycle}
-          />
+          <>
+            {/* modules */}
+            {projectDetails?.module_view && (
+              <WithDisplayPropertiesHOC displayProperties={displayProperties} displayPropertyKey="modules">
+                {/* oxlint-disable-next-line jsx_a11y/click-events-have-key-events oxlint-disable-next-line jsx_a11y/no-static-element-interactions */}
+                <div className="h-5" onFocus={handleEventPropagation} onClick={handleEventPropagation}>
+                  <ModuleSelect
+                    multiple
+                    projectId={issue?.project_id ?? undefined}
+                    value={issue?.module_ids ?? []}
+                    onChange={handleModule}
+                    disabled={isReadOnly}
+                    variant="pill-sm"
+                    tooltip
+                  />
+                </div>
+              </WithDisplayPropertiesHOC>
+            )}
+
+            {/* cycles */}
+            {projectDetails?.cycle_view && (
+              <WithDisplayPropertiesHOC displayProperties={displayProperties} displayPropertyKey="cycle">
+                {/* oxlint-disable-next-line jsx_a11y/click-events-have-key-events oxlint-disable-next-line jsx_a11y/no-static-element-interactions */}
+                <div className="h-5" onFocus={handleEventPropagation} onClick={handleEventPropagation}>
+                  <CycleSelect
+                    projectId={issue?.project_id ?? undefined}
+                    value={issue?.cycle_id}
+                    onChange={handleCycle}
+                    disabled={isReadOnly}
+                    variant="pill-sm"
+                    tooltip
+                  />
+                </div>
+              </WithDisplayPropertiesHOC>
+            )}
+          </>
         )}
       </>
 
       {/* estimates */}
-      <IssuePropertiesEstimate
-        issue={issue}
-        projectId={issue.project_id}
-        displayProperties={displayProperties}
-        isReadOnly={isReadOnly}
-        isMobile={isMobile}
-        handleEstimate={handleEstimate}
-      />
+      {projectId && areEstimateEnabledByProjectId(projectId?.toString()) && (
+        <WithDisplayPropertiesHOC displayProperties={displayProperties} displayPropertyKey="estimate">
+          {/* oxlint-disable-next-line jsx_a11y/click-events-have-key-events oxlint-disable-next-line jsx_a11y/no-static-element-interactions */}
+          <div className="h-5" onFocus={handleEventPropagation} onClick={handleEventPropagation}>
+            <EstimateSelect
+              value={issue.estimate_point ?? undefined}
+              onChange={handleEstimate}
+              projectId={issue.project_id}
+              disabled={isReadOnly}
+              variant="pill-sm"
+              tooltip
+            />
+          </div>
+        </WithDisplayPropertiesHOC>
+      )}
 
       {/* extra render properties */}
       {/* sub-issues */}

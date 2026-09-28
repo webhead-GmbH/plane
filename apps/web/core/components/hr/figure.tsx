@@ -4,8 +4,8 @@
  * See the LICENSE file for details.
  */
 
-import { Card, ECardDirection, ECardSpacing } from "@plane/ui";
 import { cn } from "@plane/utils";
+import { Card } from "@plane/blocks/card";
 
 type TProps = {
   label: string;
@@ -30,7 +30,7 @@ type TProps = {
  * behind it rather than a louder number, so a set of them stays legible.
  */
 export const HrFigure = ({ label, value, hint, tone, accent }: TProps) => (
-  <Card direction={ECardDirection.COLUMN} spacing={ECardSpacing.SM} className={cn("gap-1 space-y-0", accent)}>
+  <Card direction="column" spacing="sm" className={cn("gap-1 space-y-0", accent)}>
     <span className="text-13 text-placeholder">{label}</span>
     <span className={cn("text-18 font-semibold tabular-nums", tone ?? "text-primary")}>{value}</span>
     {hint ? <span className="text-11 text-tertiary">{hint}</span> : null}

@@ -10,7 +10,8 @@ import { useEffect } from "react";
 import { observer } from "mobx-react";
 import { Timer } from "lucide-react";
 import { useTranslation } from "@plane/i18n";
-import { Avatar } from "@plane/ui";
+import { Avatar } from "@makeplane/propel/components/avatar";
+import { getFileURL } from "@plane/utils";
 import { useIssueDetail } from "@/hooks/store/use-issue-detail";
 import { useUser } from "@/hooks/store/user";
 
@@ -48,10 +49,11 @@ export const ActiveTimerBanner = observer(function ActiveTimerBanner(props: TAct
         {others.slice(0, 5).map((timer) => (
           <Avatar
             key={timer.id}
-            name={timer.logged_by_detail?.display_name}
-            src={timer.logged_by_detail?.avatar_url}
-            size="sm"
-            showTooltip
+            alt={timer.logged_by_detail?.display_name}
+            fallback={timer.logged_by_detail?.display_name?.[0]?.toUpperCase()}
+            src={getFileURL(timer.logged_by_detail?.avatar_url ?? "")}
+            size="2xs"
+            tooltip
           />
         ))}
       </span>

@@ -10,11 +10,14 @@ import { ChevronLeft, ChevronRight, Circle, Contrast, Plus, Trash2 } from "lucid
 import useSWR from "swr";
 // plane imports
 import { useTranslation } from "@plane/i18n";
-import { Button } from "@plane/propel/button";
-import { EmptyStateCompact } from "@plane/propel/empty-state";
-import { setToast, TOAST_TYPE } from "@plane/propel/toast";
-import { AlertModalCore, Loader } from "@plane/ui";
+import { Button } from "@makeplane/propel/components/button";
+import { Icon } from "@makeplane/propel/components/icon";
+import { IconButton } from "@makeplane/propel/components/icon-button";
+import { ConfirmDialog } from "@plane/blocks/dialog";
 import { cn } from "@plane/utils";
+import { EmptyStateCompact } from "@plane/blocks/empty-state";
+import { Loader } from "@plane/blocks/skeleton";
+import { setToast } from "@plane/blocks/toast";
 // services
 import { HrService, type THrHoliday, type THrHolidayCalendar } from "@/services/hr.service";
 // local imports
@@ -37,7 +40,7 @@ type TTranslate = (key: string, values?: Record<string, unknown>) => string;
 /** The server's own words where it named a reason, and an apology where it did not. */
 const complainAbout = (failure: unknown, t: TTranslate, locale?: string) =>
   setToast({
-    type: TOAST_TYPE.ERROR,
+    type: "error",
     title: t("hr.holidays.toasts.refused"),
     message: refusalMessage(failure, t, locale) ?? t("hr.holidays.toasts.try_again"),
   });
@@ -147,7 +150,7 @@ export const HrHolidaysRoot = observer(function HrHolidaysRoot() {
       setProblem(null);
       if (!Number.isNaN(landedIn) && landedIn !== year) setYear(landedIn);
       await mutate();
-      setToast({ type: TOAST_TYPE.SUCCESS, title: t("hr.holidays.toasts.added") });
+      setToast({ type: "success", title: t("hr.holidays.toasts.added") });
     } catch (failure) {
       complainAbout(failure, t, currentLocale);
     } finally {
@@ -165,7 +168,7 @@ export const HrHolidaysRoot = observer(function HrHolidaysRoot() {
       // every open month, so it should say out loud what the day is now. Without
       // it somebody unsure whether the click landed presses again and puts it back.
       setToast({
-        type: TOAST_TYPE.SUCCESS,
+        type: "success",
         title: localName(holiday, currentLocale),
         message: isHalf(length) ? t("hr.holidays.half_day") : t("hr.holidays.whole_day"),
       });
@@ -183,7 +186,7 @@ export const HrHolidaysRoot = observer(function HrHolidaysRoot() {
       await hrService.deleteHoliday(removing.id);
       await mutate();
       setRemoving(null);
-      setToast({ type: TOAST_TYPE.SUCCESS, title: t("hr.holidays.toasts.removed") });
+      setToast({ type: "success", title: t("hr.holidays.toasts.removed") });
     } catch (failure) {
       complainAbout(failure, t, currentLocale);
     } finally {
@@ -258,7 +261,7 @@ export const HrHolidaysRoot = observer(function HrHolidaysRoot() {
         />
       )}
 
-      <AlertModalCore
+      <ConfirmDialog
         isOpen={removing !== null}
         handleClose={() => setRemoving(null)}
         handleSubmit={() => void handleRemove()}
@@ -330,13 +333,21 @@ const HolidayScope = ({ calendars, calendarId, onCalendar, year, onYear }: TScop
       )}
 
       <div className="flex items-center gap-1">
-        <Button variant="ghost" size="lg" onClick={() => onYear(year - 1)} aria-label={t("hr.holidays.previous_year")}>
-          <ChevronLeft className="size-4" />
-        </Button>
+        <IconButton
+          variant="ghost"
+          size="md"
+          icon={<Icon icon={ChevronLeft} />}
+          aria-label={t("hr.holidays.previous_year")}
+          onClick={() => onYear(year - 1)}
+        />
         <span className="min-w-[4rem] text-center text-13 font-medium text-primary">{year}</span>
-        <Button variant="ghost" size="lg" onClick={() => onYear(year + 1)} aria-label={t("hr.holidays.next_year")}>
-          <ChevronRight className="size-4" />
-        </Button>
+        <IconButton
+          variant="ghost"
+          size="md"
+          icon={<Icon icon={ChevronRight} />}
+          aria-label={t("hr.holidays.next_year")}
+          onClick={() => onYear(year + 1)}
+        />
       </div>
     </div>
   );
@@ -412,9 +423,15 @@ const AddHolidayForm = ({ date, name, half, problem, isBusy, onDate, onName, onH
           {t("hr.holidays.only_half")}
         </label>
 
-        <Button variant="primary" size="lg" type="submit" loading={isBusy} prependIcon={<Plus />}>
-          {t("hr.holidays.add_button")}
-        </Button>
+        <Button
+          variant="primary"
+          size="md"
+          stretch="auto"
+          label={t("hr.holidays.add_button")}
+          type="submit"
+          loading={isBusy}
+          icon={<Icon icon={Plus} />}
+        />
       </div>
 
       {problem && (

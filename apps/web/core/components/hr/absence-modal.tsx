@@ -7,8 +7,8 @@
 import { useMemo, useState } from "react";
 // plane imports
 import { useTranslation } from "@plane/i18n";
-import { Button } from "@plane/propel/button";
-import { EModalPosition, EModalWidth, ModalCore } from "@plane/ui";
+import { Button } from "@makeplane/propel/components/button";
+import { Dialog, DialogContent, DialogTitle } from "@makeplane/propel/components/dialog";
 import { cn } from "@plane/utils";
 // services
 import {
@@ -188,22 +188,29 @@ export const HrAbsenceModal = ({ isOpen, absence, people, types, fixedProfileId,
   const sitting = useSitting(isOpen, absence);
 
   return (
-    <ModalCore isOpen={isOpen} handleClose={onClose} position={EModalPosition.CENTER} width={EModalWidth.XL}>
-      {/* One dialog per sitting: opening it on another absence, or opening it
+    <Dialog
+      open={isOpen}
+      onOpenChange={(open) => {
+        if (!open) onClose();
+      }}
+    >
+      <DialogContent size="sm">
+        {/* One dialog per sitting: opening it on another absence, or opening it
           again on the same one, builds a new one with the boxes filled in from
           the record. Anything on the page behind refreshing hands back new
           arrays and leaves whoever is halfway through filling this in alone. */}
-      <AbsenceForm
-        key={sitting}
-        absence={absence}
-        people={people}
-        activeTypes={activeTypes}
-        fixedProfileId={fixedProfileId}
-        isBusy={isBusy}
-        onClose={onClose}
-        onSave={onSave}
-      />
-    </ModalCore>
+        <AbsenceForm
+          key={sitting}
+          absence={absence}
+          people={people}
+          activeTypes={activeTypes}
+          fixedProfileId={fixedProfileId}
+          isBusy={isBusy}
+          onClose={onClose}
+          onSave={onSave}
+        />
+      </DialogContent>
+    </Dialog>
   );
 };
 
@@ -318,9 +325,7 @@ const AbsenceHeading = ({ isEdit }: { isEdit: boolean }) => {
 
   return (
     <div>
-      <h3 className="text-14 font-semibold text-primary">
-        {isEdit ? t("hr.absences.modal.edit_title") : t("hr.absences.modal.title")}
-      </h3>
+      <DialogTitle>{isEdit ? t("hr.absences.modal.edit_title") : t("hr.absences.modal.title")}</DialogTitle>
       <p className="text-13 text-tertiary">{t("hr.absences.modal.subtitle")}</p>
     </div>
   );
@@ -637,12 +642,15 @@ const AbsenceFooter = ({
 
   return (
     <div className="flex items-center justify-end gap-2">
-      <Button variant="secondary" size="lg" onClick={onClose}>
-        {t("common.cancel")}
-      </Button>
-      <Button variant="primary" size="lg" disabled={!canSave} onClick={onSave}>
-        {isEdit ? t("common.save_changes") : t("hr.absences.modal.record")}
-      </Button>
+      <Button variant="secondary" size="md" stretch="auto" label={t("common.cancel")} onClick={onClose} />
+      <Button
+        variant="primary"
+        size="md"
+        stretch="auto"
+        label={isEdit ? t("common.save_changes") : t("hr.absences.modal.record")}
+        disabled={!canSave}
+        onClick={onSave}
+      />
     </div>
   );
 };

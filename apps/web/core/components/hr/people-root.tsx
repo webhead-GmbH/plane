@@ -10,11 +10,15 @@ import { BadgeEuro, MoreHorizontal, Palmtree, Pencil, Plus, Scale, UserMinus, Us
 import useSWR from "swr";
 // plane imports
 import { useTranslation } from "@plane/i18n";
-import { Button } from "@plane/propel/button";
-import { EmptyStateCompact } from "@plane/propel/empty-state";
-import { setToast, TOAST_TYPE } from "@plane/propel/toast";
-import { AlertModalCore, CustomMenu, Loader } from "@plane/ui";
+import { Button } from "@makeplane/propel/components/button";
+import { Icon } from "@makeplane/propel/components/icon";
+import { IconButton } from "@makeplane/propel/components/icon-button";
+import { Menu, MenuContent, MenuItem, MenuTrigger } from "@makeplane/propel/components/menu";
+import { ConfirmDialog } from "@plane/blocks/dialog";
 import { cn } from "@plane/utils";
+import { EmptyStateCompact } from "@plane/blocks/empty-state";
+import { Loader } from "@plane/blocks/skeleton";
+import { setToast } from "@plane/blocks/toast";
 // services
 import {
   HrService,
@@ -61,7 +65,7 @@ export const HrPeopleRoot = observer(function HrPeopleRoot() {
 
   const complain = (failure: unknown) =>
     setToast({
-      type: TOAST_TYPE.ERROR,
+      type: "error",
       title: t("hr.people.toasts.refused"),
       message: refusalMessage(failure, t, currentLocale) ?? t("hr.people.toasts.try_again"),
     });
@@ -76,7 +80,7 @@ export const HrPeopleRoot = observer(function HrPeopleRoot() {
       });
       await Promise.all([mutate(), refreshCandidates()]);
       setAdding(false);
-      setToast({ type: TOAST_TYPE.SUCCESS, title: t("hr.people.toasts.added") });
+      setToast({ type: "success", title: t("hr.people.toasts.added") });
       // Straight on to their hours and terms. A person with no schedule of their
       // own has months computed against nothing, and the mistake only surfaces
       // weeks later as a balance nobody can explain.
@@ -101,7 +105,7 @@ export const HrPeopleRoot = observer(function HrPeopleRoot() {
       await hrService.updateEmployee(editing.id, draft.profile);
       await Promise.all([mutate(), refreshSchedules(), refreshContracts()]);
       setEditing(null);
-      setToast({ type: TOAST_TYPE.SUCCESS, title: t("hr.people.toasts.saved") });
+      setToast({ type: "success", title: t("hr.people.toasts.saved") });
     } catch (failure) {
       complain(failure);
     } finally {
@@ -127,7 +131,7 @@ export const HrPeopleRoot = observer(function HrPeopleRoot() {
     try {
       await hrService.updateEmployee(person.id, { is_active: true, exit_date: null });
       await Promise.all([mutate(), refreshCandidates()]);
-      setToast({ type: TOAST_TYPE.SUCCESS, title: t("hr.people.toasts.brought_back") });
+      setToast({ type: "success", title: t("hr.people.toasts.brought_back") });
     } catch (failure) {
       complain(failure);
     } finally {
@@ -142,7 +146,7 @@ export const HrPeopleRoot = observer(function HrPeopleRoot() {
       await hrService.removeEmployee(removing.id);
       await Promise.all([mutate(), refreshCandidates()]);
       setRemoving(null);
-      setToast({ type: TOAST_TYPE.SUCCESS, title: t("hr.people.toasts.removed") });
+      setToast({ type: "success", title: t("hr.people.toasts.removed") });
     } catch (failure) {
       complain(failure);
     } finally {
@@ -173,9 +177,14 @@ export const HrPeopleRoot = observer(function HrPeopleRoot() {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <p className="text-13 text-tertiary">{t("hr.people.subtitle")}</p>
         <div className="flex items-center gap-2">
-          <Button variant="primary" size="lg" prependIcon={<Plus />} onClick={() => setAdding(true)}>
-            {t("hr.people.add")}
-          </Button>
+          <Button
+            variant="primary"
+            size="md"
+            stretch="auto"
+            label={t("hr.people.add")}
+            icon={<Icon icon={Plus} />}
+            onClick={() => setAdding(true)}
+          />
         </div>
       </div>
 
@@ -340,7 +349,7 @@ const PeopleDialogs = ({
       {/* Marking somebody as having left is the one action here that changes what
           every future month says about them, and it used to happen on one click
           of the fifth identical link in a row. */}
-      <AlertModalCore
+      <ConfirmDialog
         isOpen={removing !== null}
         handleClose={onCloseRemove}
         handleSubmit={onRemove}
@@ -488,39 +497,37 @@ const PersonRowActions = ({
         subject={personName(person)}
         onClick={() => onEdit(person)}
       />
-      <CustomMenu
-        customButton={
-          <span className="grid size-7 place-items-center rounded-md text-tertiary transition-colors hover:bg-layer-2 hover:text-primary">
-            <MoreHorizontal className="size-4" />
-          </span>
-        }
-        placement="bottom-end"
-        closeOnSelect
-      >
-        <CustomMenu.MenuItem onClick={() => onOpening(person)} className="flex items-center gap-2">
-          <Scale className="size-3 shrink-0" />
-          {t("hr.people.opening")}
-        </CustomMenu.MenuItem>
-        <CustomMenu.MenuItem onClick={() => onRates(person)} className="flex items-center gap-2">
-          <BadgeEuro className="size-3 shrink-0" />
-          {t("hr.people.rates")}
-        </CustomMenu.MenuItem>
-        <CustomMenu.MenuItem onClick={() => onLeave(person)} className="flex items-center gap-2">
-          <Palmtree className="size-3 shrink-0" />
-          {t("hr.people.leave")}
-        </CustomMenu.MenuItem>
-        {person.is_active ? (
-          <CustomMenu.MenuItem onClick={() => onRemove(person)} className="flex items-center gap-2 text-danger-primary">
-            <UserMinus className="size-3 shrink-0" />
-            {t("hr.people.remove")}
-          </CustomMenu.MenuItem>
-        ) : (
-          <CustomMenu.MenuItem onClick={() => onReturn(person)} className="flex items-center gap-2">
-            <UserPlus className="size-3 shrink-0" />
-            {t("hr.people.bring_back")}
-          </CustomMenu.MenuItem>
-        )}
-      </CustomMenu>
+      <Menu>
+        <MenuTrigger
+          render={
+            <IconButton
+              variant="ghost"
+              size="md"
+              icon={<Icon icon={MoreHorizontal} />}
+              aria-label={t("common.options")}
+            />
+          }
+        />
+        <MenuContent side="bottom" align="end">
+          <MenuItem icon={<Icon icon={Scale} />} label={t("hr.people.opening")} onClick={() => onOpening(person)} />
+          <MenuItem icon={<Icon icon={BadgeEuro} />} label={t("hr.people.rates")} onClick={() => onRates(person)} />
+          <MenuItem icon={<Icon icon={Palmtree} />} label={t("hr.people.leave")} onClick={() => onLeave(person)} />
+          {person.is_active ? (
+            <MenuItem
+              variant="danger"
+              icon={<Icon icon={UserMinus} />}
+              label={t("hr.people.remove")}
+              onClick={() => onRemove(person)}
+            />
+          ) : (
+            <MenuItem
+              icon={<Icon icon={UserPlus} />}
+              label={t("hr.people.bring_back")}
+              onClick={() => onReturn(person)}
+            />
+          )}
+        </MenuContent>
+      </Menu>
     </div>
   );
 };

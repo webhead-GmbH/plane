@@ -8,8 +8,8 @@ import { useState } from "react";
 import { observer } from "mobx-react";
 // plane imports
 import { useTranslation } from "@plane/i18n";
-import { Button } from "@plane/propel/button";
-import { TOAST_TYPE, setToast } from "@plane/propel/toast";
+import { Button } from "@makeplane/propel/components/button";
+import { setToast } from "@plane/blocks/toast";
 // components
 import { CustomFieldsSection } from "@/components/custom-fields";
 // hooks
@@ -36,7 +36,7 @@ export const ProjectCustomFieldsSettings = observer(function ProjectCustomFields
   const handleSave = async () => {
     if (!customFields.validate()) {
       setToast({
-        type: TOAST_TYPE.ERROR,
+        type: "error",
         title: t("toast.error"),
         message: t("workspace_settings.settings.custom_fields.form.required_fields_missing"),
       });
@@ -46,13 +46,13 @@ export const ProjectCustomFieldsSettings = observer(function ProjectCustomFields
     try {
       await updateProjectValues(workspaceSlug, projectId, customFields.getPayload());
       setToast({
-        type: TOAST_TYPE.SUCCESS,
+        type: "success",
         title: t("workspace_settings.settings.custom_fields.toasts.values_saved.title"),
         message: t("workspace_settings.settings.custom_fields.toasts.values_saved.message"),
       });
     } catch (_error) {
       setToast({
-        type: TOAST_TYPE.ERROR,
+        type: "error",
         title: t("toast.error"),
         message: t("workspace_settings.settings.custom_fields.toasts.error.message"),
       });
@@ -78,9 +78,14 @@ export const ProjectCustomFieldsSettings = observer(function ProjectCustomFields
       />
       {!disabled && (
         <div className="mt-5">
-          <Button variant="primary" onClick={handleSave} loading={isSaving}>
-            {t("workspace_settings.settings.custom_fields.projects.save_values")}
-          </Button>
+          <Button
+            variant="primary"
+            size="sm"
+            stretch="auto"
+            label={t("workspace_settings.settings.custom_fields.projects.save_values")}
+            onClick={handleSave}
+            loading={isSaving}
+          />
         </div>
       )}
     </div>

@@ -6,7 +6,7 @@
 
 import { useState } from "react";
 import { observer } from "mobx-react";
-import type { TModuleStatus } from "@plane/propel/icons";
+import type { TModuleStatus } from "@plane/blocks/icons";
 // plane imports
 import type { TModuleDisplayFilters, TModuleFilters } from "@plane/types";
 // components

@@ -11,9 +11,9 @@ import useSWR from "swr";
 // plane imports
 import { EUserPermissions, EUserPermissionsLevel } from "@plane/constants";
 import { useTranslation } from "@plane/i18n";
-import { Button } from "@plane/propel/button";
+import { Button } from "@makeplane/propel/components/button";
 import type { ECustomFieldEntityType, TCustomField } from "@plane/types";
-import { Loader } from "@plane/ui";
+import { Loader } from "@plane/blocks/skeleton";
 // components
 import { NotAuthorizedView } from "@/components/auth-screens/not-authorized-view";
 import { PageHead } from "@/components/core/page-title";
@@ -97,9 +97,13 @@ export const CustomFieldsManagementRoot = observer(function CustomFieldsManageme
           title={t(`${i18nPrefix}.title`)}
           description={t(`${i18nPrefix}.description`)}
           control={
-            <Button variant="primary" size="lg" onClick={openCreate}>
-              {t("workspace_settings.settings.custom_fields.add_field")}
-            </Button>
+            <Button
+              variant="primary"
+              size="md"
+              stretch="auto"
+              label={t("workspace_settings.settings.custom_fields.add_field")}
+              onClick={openCreate}
+            />
           }
         />
 

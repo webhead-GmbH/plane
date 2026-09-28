@@ -7,7 +7,8 @@
 import { AlertTriangle, Timer } from "lucide-react";
 // plane imports
 import { Tooltip } from "@makeplane/propel/components/tooltip";
-import { Button } from "@plane/propel/button";
+import { Button } from "@makeplane/propel/components/button";
+import { Icon } from "@makeplane/propel/components/icon";
 import { useTranslation } from "@plane/i18n";
 
 import { cn } from "@plane/utils";
@@ -140,21 +141,41 @@ export const HrOverviewTable = ({ rows, busyPeriodId, onApprove, onLock, onReope
                       reopening one are not blocked by a flag, so those two keep
                       their own action. */}
                   {row.state === EHrPeriodState.SUBMITTED ? (
-                    <Button variant="primary" size="lg" loading={isBusy} onClick={() => onApprove(row)}>
-                      {t("hr.overview_table.agree")}
-                    </Button>
+                    <Button
+                      variant="primary"
+                      size="md"
+                      stretch="auto"
+                      label={t("hr.overview_table.agree")}
+                      loading={isBusy}
+                      onClick={() => onApprove(row)}
+                    />
                   ) : row.state === EHrPeriodState.LOCKED ? (
-                    <Button variant="link" size="lg" loading={isBusy} onClick={() => onReopen(row)}>
-                      {t("hr.overview_table.reopen")}
-                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="md"
+                      stretch="auto"
+                      label={t("hr.overview_table.reopen")}
+                      loading={isBusy}
+                      onClick={() => onReopen(row)}
+                    />
                   ) : row.needs_review ? (
-                    <Button variant="secondary" size="lg" prependIcon={<AlertTriangle />} onClick={() => onReview(row)}>
-                      {t("hr.overview_table.blocked_by_review")}
-                    </Button>
+                    <Button
+                      variant="secondary"
+                      size="md"
+                      stretch="auto"
+                      label={t("hr.overview_table.blocked_by_review")}
+                      icon={<Icon icon={AlertTriangle} />}
+                      onClick={() => onReview(row)}
+                    />
                   ) : row.state === EHrPeriodState.APPROVED ? (
-                    <Button variant="primary" size="lg" loading={isBusy} onClick={() => onLock(row)}>
-                      {t("hr.overview_table.close")}
-                    </Button>
+                    <Button
+                      variant="primary"
+                      size="md"
+                      stretch="auto"
+                      label={t("hr.overview_table.close")}
+                      loading={isBusy}
+                      onClick={() => onLock(row)}
+                    />
                   ) : (
                     <span className="text-13 text-tertiary">
                       {monthStillRunning

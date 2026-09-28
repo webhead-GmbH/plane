@@ -9,9 +9,10 @@ import { AlertTriangle, Trash2 } from "lucide-react";
 import useSWR from "swr";
 // plane imports
 import { useTranslation } from "@plane/i18n";
-import { Button } from "@plane/propel/button";
-import { setToast, TOAST_TYPE } from "@plane/propel/toast";
-import { AlertModalCore, EModalPosition, EModalWidth, ModalCore } from "@plane/ui";
+import { Button } from "@makeplane/propel/components/button";
+import { Dialog, DialogContent, DialogTitle } from "@makeplane/propel/components/dialog";
+import { ConfirmDialog } from "@plane/blocks/dialog";
+import { setToast } from "@plane/blocks/toast";
 // services
 import { EHrTimeCategory, EHrTimeSource, HrService, type THrTimeEntry } from "@/services/hr.service";
 // local imports
@@ -145,10 +146,10 @@ export const HrDayEntriesModal = ({
       setProblem(null);
       await mutate();
       onChanged();
-      setToast({ type: TOAST_TYPE.SUCCESS, title: t("hr.entries.toasts.added") });
+      setToast({ type: "success", title: t("hr.entries.toasts.added") });
     } catch (failure) {
       setToast({
-        type: TOAST_TYPE.ERROR,
+        type: "error",
         title: t("hr.entries.toasts.refused"),
         message: refusalMessage(failure, t, currentLocale) ?? t("hr.entries.toasts.try_again"),
       });
@@ -167,7 +168,7 @@ export const HrDayEntriesModal = ({
       onChanged();
     } catch (failure) {
       setToast({
-        type: TOAST_TYPE.ERROR,
+        type: "error",
         title: t("hr.entries.toasts.refused"),
         message: refusalMessage(failure, t, currentLocale) ?? t("hr.entries.toasts.try_again"),
       });
@@ -177,140 +178,140 @@ export const HrDayEntriesModal = ({
   };
 
   return (
-    <ModalCore
-      isOpen={workDate !== null}
-      handleClose={onClose}
-      position={EModalPosition.CENTER}
-      width={EModalWidth.XXL}
+    <Dialog
+      open={workDate !== null}
+      onOpenChange={(open) => {
+        if (!open) onClose();
+      }}
     >
-      <div className="flex flex-col gap-4 p-5">
-        <h3 className="text-16 font-medium text-primary">{workDate ? dayTitle(workDate, currentLocale) : ""}</h3>
+      <DialogContent size="md">
+        <div className="flex flex-col gap-4 p-5">
+          <DialogTitle>{workDate ? dayTitle(workDate, currentLocale) : ""}</DialogTitle>
 
-        {/* When they were at work comes first, and separately: it is the record the
+          {/* When they were at work comes first, and separately: it is the record the
             law asks for, and the hours below are what those hours went on. */}
-        {recordsAttendance ? (
-          <HrAttendancePanel workDate={workDate} profileId={profileId} isLocked={isLocked} onChanged={onChanged} />
-        ) : null}
+          {recordsAttendance ? (
+            <HrAttendancePanel workDate={workDate} profileId={profileId} isLocked={isLocked} onChanged={onChanged} />
+          ) : null}
 
-        <p className="text-13 text-tertiary">{t("hr.entries.hint")}</p>
+          <p className="text-13 text-tertiary">{t("hr.entries.hint")}</p>
 
-        {mine.length > 0 ? (
-          <div className="divide-y divide-subtle rounded-md border border-subtle">
-            {mine.map((entry) => (
-              <div key={entry.id} className="flex items-center gap-3 px-3 py-2">
-                <span className="w-16 text-13 text-primary tabular-nums">{formatMinutes(entry.minutes)}</span>
-                <span className="text-13 text-secondary">
-                  {t(`hr.entries.category.${CATEGORY_KEY[entry.category] ?? "admin"}`)}
-                </span>
-                <span className="flex-1 truncate text-13 text-tertiary">{entry.note}</span>
-                {entry.source === EHrTimeSource.IMPORT ? (
-                  <span className="rounded bg-layer-2 px-1.5 py-0.5 text-13 text-tertiary">
-                    {t("hr.entries.imported")}
+          {mine.length > 0 ? (
+            <div className="divide-y divide-subtle rounded-md border border-subtle">
+              {mine.map((entry) => (
+                <div key={entry.id} className="flex items-center gap-3 px-3 py-2">
+                  <span className="w-16 text-13 text-primary tabular-nums">{formatMinutes(entry.minutes)}</span>
+                  <span className="text-13 text-secondary">
+                    {t(`hr.entries.category.${CATEGORY_KEY[entry.category] ?? "admin"}`)}
                   </span>
-                ) : null}
-                {!isLocked && !entry.locked_period ? (
-                  <button
-                    type="button"
-                    aria-label={t("hr.entries.remove")}
-                    onClick={() => setRemoving(entry)}
-                    disabled={isBusy}
-                    className="text-tertiary hover:text-danger-primary"
-                  >
-                    <Trash2 className="size-4" />
-                  </button>
-                ) : null}
+                  <span className="flex-1 truncate text-13 text-tertiary">{entry.note}</span>
+                  {entry.source === EHrTimeSource.IMPORT ? (
+                    <span className="rounded bg-layer-2 px-1.5 py-0.5 text-13 text-tertiary">
+                      {t("hr.entries.imported")}
+                    </span>
+                  ) : null}
+                  {!isLocked && !entry.locked_period ? (
+                    <button
+                      type="button"
+                      aria-label={t("hr.entries.remove")}
+                      onClick={() => setRemoving(entry)}
+                      disabled={isBusy}
+                      className="text-tertiary hover:text-danger-primary"
+                    >
+                      <Trash2 className="size-4" />
+                    </button>
+                  ) : null}
+                </div>
+              ))}
+              <div className="flex items-center justify-between px-3 py-2 text-13 text-tertiary">
+                <span>{t("hr.entries.day_total")}</span>
+                <span className="text-primary tabular-nums">{formatMinutes(dayTotal)}</span>
               </div>
-            ))}
-            <div className="flex items-center justify-between px-3 py-2 text-13 text-tertiary">
-              <span>{t("hr.entries.day_total")}</span>
-              <span className="text-primary tabular-nums">{formatMinutes(dayTotal)}</span>
             </div>
-          </div>
-        ) : (
-          <HrNothingListed isLoading={isLoading} failed={error !== undefined} />
-        )}
+          ) : (
+            <HrNothingListed isLoading={isLoading} failed={error !== undefined} />
+          )}
 
-        {isLocked ? (
-          <p className="rounded-md bg-layer-1 px-3 py-2 text-13 text-tertiary">{t("hr.entries.month_closed")}</p>
-        ) : (
-          <div className="flex flex-col gap-3">
-            <div className="grid gap-3 sm:grid-cols-[7rem_1fr]">
+          {isLocked ? (
+            <p className="rounded-md bg-layer-1 px-3 py-2 text-13 text-tertiary">{t("hr.entries.month_closed")}</p>
+          ) : (
+            <div className="flex flex-col gap-3">
+              <div className="grid gap-3 sm:grid-cols-[7rem_1fr]">
+                <label className="flex flex-col gap-1">
+                  <span className="text-13 font-medium text-tertiary">{t("hr.entries.how_long")}</span>
+                  <input
+                    value={minutes}
+                    onChange={(e) => setMinutes(e.target.value)}
+                    placeholder="1:30"
+                    className={inputClass}
+                  />
+                </label>
+                <label className="flex flex-col gap-1">
+                  <span className="text-13 font-medium text-tertiary">{t("hr.entries.what_it_was")}</span>
+                  <select
+                    value={category}
+                    onChange={(e) => setCategory(Number(e.target.value) as EHrTimeCategory)}
+                    className={inputClass}
+                  >
+                    {CATEGORIES.map((value) => (
+                      <option key={value} value={value}>
+                        {t(`hr.entries.category.${CATEGORY_KEY[value]}`)}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </div>
               <label className="flex flex-col gap-1">
-                <span className="text-13 font-medium text-tertiary">{t("hr.entries.how_long")}</span>
+                <span className="text-13 font-medium text-tertiary">{t("hr.entries.note")}</span>
                 <input
-                  value={minutes}
-                  onChange={(e) => setMinutes(e.target.value)}
-                  placeholder="1:30"
+                  value={note}
+                  onChange={(e) => setNote(e.target.value)}
+                  placeholder={t("hr.entries.note_placeholder")}
                   className={inputClass}
                 />
               </label>
-              <label className="flex flex-col gap-1">
-                <span className="text-13 font-medium text-tertiary">{t("hr.entries.what_it_was")}</span>
-                <select
-                  value={category}
-                  onChange={(e) => setCategory(Number(e.target.value) as EHrTimeCategory)}
-                  className={inputClass}
-                >
-                  {CATEGORIES.map((value) => (
-                    <option key={value} value={value}>
-                      {t(`hr.entries.category.${CATEGORY_KEY[value]}`)}
-                    </option>
-                  ))}
-                </select>
-              </label>
+              {problem ? <p className="text-13 text-danger-primary">{problem}</p> : null}
             </div>
-            <label className="flex flex-col gap-1">
-              <span className="text-13 font-medium text-tertiary">{t("hr.entries.note")}</span>
-              <input
-                value={note}
-                onChange={(e) => setNote(e.target.value)}
-                placeholder={t("hr.entries.note_placeholder")}
-                className={inputClass}
+          )}
+
+          <div className="flex items-center justify-end gap-3">
+            {hasUnsaved ? (
+              <span className="mr-auto inline-flex items-center gap-1.5 text-13 text-warning-primary">
+                <AlertTriangle className="size-3.5" />
+                {t("hr.entries.not_added_yet")}
+              </span>
+            ) : null}
+            <Button variant="secondary" size="md" stretch="auto" label={t("hr.entries.close")} onClick={onClose} />
+            {!isLocked ? (
+              <Button
+                variant="primary"
+                size="md"
+                stretch="auto"
+                label={t("hr.entries.add")}
+                loading={isBusy}
+                disabled={!hasUnsaved}
+                onClick={() => void handleAdd()}
               />
-            </label>
-            {problem ? <p className="text-13 text-danger-primary">{problem}</p> : null}
+            ) : null}
           </div>
-        )}
-
-        <div className="flex items-center justify-end gap-3">
-          {hasUnsaved ? (
-            <span className="mr-auto inline-flex items-center gap-1.5 text-13 text-warning-primary">
-              <AlertTriangle className="size-3.5" />
-              {t("hr.entries.not_added_yet")}
-            </span>
-          ) : null}
-          <Button variant="secondary" size="lg" onClick={onClose}>
-            {t("hr.entries.close")}
-          </Button>
-          {!isLocked ? (
-            <Button
-              variant="primary"
-              size="lg"
-              loading={isBusy}
-              disabled={!hasUnsaved}
-              onClick={() => void handleAdd()}
-            >
-              {t("hr.entries.add")}
-            </Button>
-          ) : null}
         </div>
-      </div>
 
-      <AlertModalCore
-        isOpen={removing !== null}
-        handleClose={() => setRemoving(null)}
-        handleSubmit={() => void handleDelete()}
-        isSubmitting={isBusy}
-        variant="danger"
-        title={t("hr.entries.confirm_remove_title")}
-        content={t("hr.entries.confirm_remove_body", {
-          duration: removing ? formatMinutes(removing.minutes) : "",
-          category: removing ? t(`hr.entries.category.${CATEGORY_KEY[removing.category] ?? "admin"}`) : "",
-        })}
-        primaryButtonText={{ default: t("hr.entries.remove"), loading: t("hr.entries.removing") }}
-        secondaryButtonText={t("common.cancel")}
-      />
-    </ModalCore>
+        <ConfirmDialog
+          isOpen={removing !== null}
+          handleClose={() => setRemoving(null)}
+          handleSubmit={() => void handleDelete()}
+          isSubmitting={isBusy}
+          variant="danger"
+          title={t("hr.entries.confirm_remove_title")}
+          content={t("hr.entries.confirm_remove_body", {
+            duration: removing ? formatMinutes(removing.minutes) : "",
+            category: removing ? t(`hr.entries.category.${CATEGORY_KEY[removing.category] ?? "admin"}`) : "",
+          })}
+          primaryButtonText={{ default: t("hr.entries.remove"), loading: t("hr.entries.removing") }}
+          secondaryButtonText={t("common.cancel")}
+        />
+      </DialogContent>
+    </Dialog>
   );
 };
 

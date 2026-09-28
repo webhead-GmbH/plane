@@ -7,13 +7,16 @@
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 // plane imports
-import { Switch } from "@plane/propel/switch";
+import { Switch } from "@makeplane/propel/components/switch";
 import { CUSTOM_FIELD_TYPES, CUSTOM_FIELD_TYPE_CONFIG_MAP, CUSTOM_FIELD_DEFAULT_WIDTH } from "@plane/constants";
 import { useTranslation } from "@plane/i18n";
-import { Button } from "@plane/propel/button";
+import { Button } from "@makeplane/propel/components/button";
 import { ECustomFieldType } from "@plane/types";
 import type { TCustomField } from "@plane/types";
-import { Input, TextArea } from "@plane/ui";
+import { Field } from "@makeplane/propel/components/field";
+import { Input, InputGroup } from "@makeplane/propel/components/input";
+import { TextArea, TextAreaGroup } from "@makeplane/propel/components/text-area";
+import { DialogTitle } from "@makeplane/propel/components/dialog";
 import { cn } from "@plane/utils";
 // local imports
 import { CustomFieldInput } from "./custom-field-input";
@@ -92,11 +95,11 @@ export function FieldForm(props: Props) {
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)} className="flex max-h-[80vh] flex-col">
       <div className="flex-1 space-y-5 overflow-y-auto p-5">
-        <h3 className="text-18 font-medium text-primary">
+        <DialogTitle>
           {isEditing
             ? t("workspace_settings.settings.custom_fields.form.edit_title")
             : t("workspace_settings.settings.custom_fields.form.create_title")}
-        </h3>
+        </DialogTitle>
 
         {/* Field type picker */}
         <div className="space-y-1.5">
@@ -153,14 +156,17 @@ export function FieldForm(props: Props) {
                 (val ?? "").trim() !== "" || t("workspace_settings.settings.custom_fields.form.name_required"),
             }}
             render={({ field: { value, onChange } }) => (
-              <Input
-                type="text"
-                value={value ?? ""}
-                onChange={onChange}
-                hasError={Boolean(errors.display_name)}
-                placeholder={t("workspace_settings.settings.custom_fields.form.name_placeholder")}
-                className="w-full text-body-sm-regular"
-              />
+              <Field invalid={Boolean(errors.display_name)}>
+                <InputGroup size="xl">
+                  <Input
+                    size="xl"
+                    type="text"
+                    value={value ?? ""}
+                    onChange={onChange}
+                    placeholder={t("workspace_settings.settings.custom_fields.form.name_placeholder")}
+                  />
+                </InputGroup>
+              </Field>
             )}
           />
           {errors.display_name && (
@@ -177,12 +183,16 @@ export function FieldForm(props: Props) {
             control={control}
             name="description"
             render={({ field: { value, onChange } }) => (
-              <TextArea
-                value={value ?? ""}
-                onChange={onChange}
-                placeholder={t("workspace_settings.settings.custom_fields.form.description_placeholder")}
-                className="min-h-16 w-full resize-none text-body-sm-regular"
-              />
+              <TextAreaGroup resize="none">
+                <TextArea
+                  size="lg"
+                  surface="field"
+                  rows={2}
+                  value={value ?? ""}
+                  onChange={onChange}
+                  placeholder={t("workspace_settings.settings.custom_fields.form.description_placeholder")}
+                />
+              </TextAreaGroup>
             )}
           />
         </div>
@@ -204,12 +214,14 @@ export function FieldForm(props: Props) {
             <label className="text-body-sm-medium text-secondary">
               {t("workspace_settings.settings.custom_fields.form.placeholder")}
             </label>
-            <Input
-              type="text"
-              value={settings.placeholder ?? ""}
-              onChange={(e) => updateSetting("placeholder", e.target.value)}
-              className="w-full text-body-sm-regular"
-            />
+            <InputGroup size="xl">
+              <Input
+                size="xl"
+                type="text"
+                value={settings.placeholder ?? ""}
+                onChange={(e) => updateSetting("placeholder", e.target.value)}
+              />
+            </InputGroup>
           </div>
         )}
 
@@ -219,29 +231,33 @@ export function FieldForm(props: Props) {
               <label className="text-body-sm-medium text-secondary">
                 {t("workspace_settings.settings.custom_fields.form.min_length")}
               </label>
-              <Input
-                type="number"
-                min={0}
-                value={settings.min_length ?? ""}
-                onChange={(e) =>
-                  updateSetting("min_length", e.target.value === "" ? undefined : Number(e.target.value))
-                }
-                className="w-full text-body-sm-regular"
-              />
+              <InputGroup size="xl">
+                <Input
+                  size="xl"
+                  type="number"
+                  min={0}
+                  value={settings.min_length ?? ""}
+                  onChange={(e) =>
+                    updateSetting("min_length", e.target.value === "" ? undefined : Number(e.target.value))
+                  }
+                />
+              </InputGroup>
             </div>
             <div className="space-y-1">
               <label className="text-body-sm-medium text-secondary">
                 {t("workspace_settings.settings.custom_fields.form.max_length")}
               </label>
-              <Input
-                type="number"
-                min={0}
-                value={settings.max_length ?? ""}
-                onChange={(e) =>
-                  updateSetting("max_length", e.target.value === "" ? undefined : Number(e.target.value))
-                }
-                className="w-full text-body-sm-regular"
-              />
+              <InputGroup size="xl">
+                <Input
+                  size="xl"
+                  type="number"
+                  min={0}
+                  value={settings.max_length ?? ""}
+                  onChange={(e) =>
+                    updateSetting("max_length", e.target.value === "" ? undefined : Number(e.target.value))
+                  }
+                />
+              </InputGroup>
             </div>
           </div>
         )}
@@ -252,34 +268,40 @@ export function FieldForm(props: Props) {
               <label className="text-body-sm-medium text-secondary">
                 {t("workspace_settings.settings.custom_fields.form.min")}
               </label>
-              <Input
-                type="number"
-                value={settings.min ?? ""}
-                onChange={(e) => updateSetting("min", e.target.value === "" ? undefined : Number(e.target.value))}
-                className="w-full text-body-sm-regular"
-              />
+              <InputGroup size="xl">
+                <Input
+                  size="xl"
+                  type="number"
+                  value={settings.min ?? ""}
+                  onChange={(e) => updateSetting("min", e.target.value === "" ? undefined : Number(e.target.value))}
+                />
+              </InputGroup>
             </div>
             <div className="space-y-1">
               <label className="text-body-sm-medium text-secondary">
                 {t("workspace_settings.settings.custom_fields.form.max")}
               </label>
-              <Input
-                type="number"
-                value={settings.max ?? ""}
-                onChange={(e) => updateSetting("max", e.target.value === "" ? undefined : Number(e.target.value))}
-                className="w-full text-body-sm-regular"
-              />
+              <InputGroup size="xl">
+                <Input
+                  size="xl"
+                  type="number"
+                  value={settings.max ?? ""}
+                  onChange={(e) => updateSetting("max", e.target.value === "" ? undefined : Number(e.target.value))}
+                />
+              </InputGroup>
             </div>
             <div className="space-y-1">
               <label className="text-body-sm-medium text-secondary">
                 {t("workspace_settings.settings.custom_fields.form.step")}
               </label>
-              <Input
-                type="number"
-                value={settings.step ?? ""}
-                onChange={(e) => updateSetting("step", e.target.value === "" ? undefined : Number(e.target.value))}
-                className="w-full text-body-sm-regular"
-              />
+              <InputGroup size="xl">
+                <Input
+                  size="xl"
+                  type="number"
+                  value={settings.step ?? ""}
+                  onChange={(e) => updateSetting("step", e.target.value === "" ? undefined : Number(e.target.value))}
+                />
+              </InputGroup>
             </div>
           </div>
         )}
@@ -314,12 +336,14 @@ export function FieldForm(props: Props) {
             <label className="text-body-sm-medium text-secondary">
               {t("workspace_settings.settings.custom_fields.form.checkbox_label")}
             </label>
-            <Input
-              type="text"
-              value={settings.label ?? ""}
-              onChange={(e) => updateSetting("label", e.target.value)}
-              className="w-full text-body-sm-regular"
-            />
+            <InputGroup size="xl">
+              <Input
+                size="xl"
+                type="text"
+                value={settings.label ?? ""}
+                onChange={(e) => updateSetting("label", e.target.value)}
+              />
+            </InputGroup>
           </div>
         )}
 
@@ -361,14 +385,18 @@ export function FieldForm(props: Props) {
             name="width"
             render={({ field: { value, onChange } }) => (
               <div className="flex items-center gap-3">
-                <Input
-                  type="number"
-                  min={1}
-                  max={12}
-                  value={value ?? CUSTOM_FIELD_DEFAULT_WIDTH}
-                  onChange={(e) => onChange(Math.max(1, Math.min(12, Number(e.target.value) || 12)))}
-                  className="w-20 text-body-sm-regular"
-                />
+                <div className="w-20">
+                  <InputGroup size="xl">
+                    <Input
+                      size="xl"
+                      type="number"
+                      min={1}
+                      max={12}
+                      value={value ?? CUSTOM_FIELD_DEFAULT_WIDTH}
+                      onChange={(e) => onChange(Math.max(1, Math.min(12, Number(e.target.value) || 12)))}
+                    />
+                  </InputGroup>
+                </div>
                 <span className="text-11 text-placeholder">
                   {t("workspace_settings.settings.custom_fields.form.width_hint")}
                 </span>
@@ -401,14 +429,19 @@ export function FieldForm(props: Props) {
       </div>
 
       <div className="flex items-center justify-end gap-2 border-t border-subtle px-5 py-4">
-        <Button variant="secondary" onClick={handleClose}>
-          {t("cancel")}
-        </Button>
-        <Button variant="primary" type="submit" loading={isSubmitting}>
-          {isEditing
-            ? t("workspace_settings.settings.custom_fields.form.save")
-            : t("workspace_settings.settings.custom_fields.form.create")}
-        </Button>
+        <Button variant="secondary" size="sm" stretch="auto" label={t("cancel")} onClick={handleClose} />
+        <Button
+          variant="primary"
+          size="sm"
+          stretch="auto"
+          label={
+            isEditing
+              ? t("workspace_settings.settings.custom_fields.form.save")
+              : t("workspace_settings.settings.custom_fields.form.create")
+          }
+          type="submit"
+          loading={isSubmitting}
+        />
       </div>
     </form>
   );
@@ -432,7 +465,9 @@ function ToggleRow({ label, description, control, name }: ToggleRowProps) {
       <Controller
         control={control}
         name={name}
-        render={({ field: { value, onChange } }) => <Switch value={Boolean(value)} onChange={onChange} size="sm" />}
+        render={({ field: { value, onChange } }) => (
+          <Switch size="sm" checked={Boolean(value)} onCheckedChange={onChange} />
+        )}
       />
     </div>
   );

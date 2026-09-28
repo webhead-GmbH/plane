@@ -6,8 +6,8 @@
 
 import useSWR from "swr";
 // plane imports
-import { TOAST_TYPE, setToast } from "@plane/propel/toast";
 import type { TCustomFieldRawValue, TCustomFieldWithValue } from "@plane/types";
+import { setToast } from "@plane/blocks/toast";
 // hooks
 import { useCustomField } from "@/hooks/store/use-custom-field";
 
@@ -43,7 +43,7 @@ export const useIssueCustomFields = (params: Params) => {
       // write the server response into the shared cache (no refetch needed)
       mutate(updated, { revalidate: false });
     } catch (_error) {
-      setToast({ type: TOAST_TYPE.ERROR, title: "Error!", message: "Could not save custom field. Please try again." });
+      setToast({ type: "error", title: "Error!", message: "Could not save custom field. Please try again." });
       mutate();
     }
   };

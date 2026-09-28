@@ -10,7 +10,7 @@ import { useState } from "react";
 import { observer } from "mobx-react";
 import { EUserPermissions } from "@plane/constants";
 import { useTranslation } from "@plane/i18n";
-import { setToast, TOAST_TYPE } from "@plane/propel/toast";
+import { setToast } from "@plane/blocks/toast";
 import { useWorkspace } from "@/hooks/store/use-workspace";
 import { TimerStatesField } from "./timer-states-field";
 
@@ -28,9 +28,9 @@ export const WorkspaceTimerSettings = observer(function WorkspaceTimerSettings()
     setSubmitting(true);
     try {
       await updateWorkspace(currentWorkspace.slug, { worklog_timer_state_groups: groups });
-      setToast({ type: TOAST_TYPE.SUCCESS, title: t("common.success"), message: t("common.time_tracking") });
+      setToast({ type: "success", title: t("common.success"), message: t("common.time_tracking") });
     } catch {
-      setToast({ type: TOAST_TYPE.ERROR, title: t("common.error.label") });
+      setToast({ type: "error", title: t("common.error.label") });
     } finally {
       setSubmitting(false);
     }

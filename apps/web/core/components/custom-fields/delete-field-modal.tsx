@@ -7,9 +7,9 @@
 import { useState } from "react";
 // ui
 import { useTranslation } from "@plane/i18n";
-import { TOAST_TYPE, setToast } from "@plane/propel/toast";
 import type { ECustomFieldEntityType, TCustomField } from "@plane/types";
-import { AlertModalCore } from "@plane/ui";
+import { ConfirmDialog } from "@plane/blocks/dialog";
+import { setToast } from "@plane/blocks/toast";
 // hooks
 import { useCustomField } from "@/hooks/store/use-custom-field";
 
@@ -35,14 +35,14 @@ export function DeleteFieldModal(props: Props) {
     try {
       await removeCustomField(workspaceSlug, entityType, field.id);
       setToast({
-        type: TOAST_TYPE.SUCCESS,
+        type: "success",
         title: t("workspace_settings.settings.custom_fields.toasts.removed.title"),
         message: t("workspace_settings.settings.custom_fields.toasts.removed.message"),
       });
       onClose();
     } catch (_error) {
       setToast({
-        type: TOAST_TYPE.ERROR,
+        type: "error",
         title: t("workspace_settings.settings.custom_fields.toasts.error.title"),
         message: t("workspace_settings.settings.custom_fields.toasts.not_removed.message"),
       });
@@ -51,7 +51,7 @@ export function DeleteFieldModal(props: Props) {
   };
 
   return (
-    <AlertModalCore
+    <ConfirmDialog
       handleClose={onClose}
       handleSubmit={handleDelete}
       isSubmitting={isDeleting}

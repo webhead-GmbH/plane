@@ -21,28 +21,29 @@ import {
   StateOutline,
   UserOutline,
 } from "@makeplane/propel/icons";
-import type { TIssue } from "@plane/types";
+import { DateSelect } from "@plane/blocks/property-select";
 import { cn, getDate, renderFormattedPayloadDate, shouldHighlightIssueDueDate } from "@plane/utils";
 // components
-import { DateDropdown } from "@/components/dropdowns/date";
-import { EstimateDropdown } from "@/components/dropdowns/estimate";
+import { EstimateSelect } from "@/components/dropdowns/estimate/estimate-select";
 import { ButtonAvatars } from "@/components/dropdowns/member/avatar";
-import { MemberDropdown } from "@/components/dropdowns/member/dropdown";
-import { PriorityDropdown } from "@/components/dropdowns/priority";
-import { StateDropdown } from "@/components/dropdowns/state/dropdown";
-import { IssueCustomFieldsProperties } from "@/components/custom-fields";
+import { MemberSelect } from "@/components/dropdowns/member/member-select";
+import { PrioritySelect } from "@/components/dropdowns/priority/priority-select";
+import { StateSelect } from "@/components/dropdowns/state/state-select";
 import { SidebarPropertyListItem } from "@/components/common/layout/sidebar/property-list-item";
 // helpers
 import { useIssueDetail } from "@/hooks/store/use-issue-detail";
 import { useMember } from "@/hooks/store/use-member";
 import { useProject } from "@/hooks/store/use-project";
 import { useProjectState } from "@/hooks/store/use-project-state";
+import { useUserProfile } from "@/hooks/store/user";
+// plane web components
 import { IssueParentSelectRoot } from "@/components/issues/parent-select-root";
-import { IssueWorklogProperty } from "@/components/issues/worklog/property";
 import type { TIssueOperations } from "../issue-detail";
 import { IssueCycleSelect } from "../issue-detail/cycle-select";
 import { IssueLabel } from "../issue-detail/label";
 import { IssueModuleSelect } from "../issue-detail/module-select";
+import { IssueCustomFieldsProperties } from "@/components/custom-fields";
+import { IssueWorklogProperty } from "@/components/issues/worklog/property";
 
 interface IPeekOverviewProperties {
   workspaceSlug: string;
@@ -52,45 +53,23 @@ interface IPeekOverviewProperties {
   issueOperations: TIssueOperations;
 }
 
-interface IPeekOverviewIssueProperty extends IPeekOverviewProperties {
-  issue: TIssue;
-}
-
-interface IPeekOverviewCreatedByProperty {
-  createdBy: string;
-}
-
-const PeekOverviewCreatedByProperty = observer(function PeekOverviewCreatedByProperty(
-  props: IPeekOverviewCreatedByProperty
-) {
-  const { createdBy } = props;
+export const PeekOverviewProperties = observer(function PeekOverviewProperties(props: IPeekOverviewProperties) {
+  const { workspaceSlug, projectId, issueId, issueOperations, disabled } = props;
   const { t } = useTranslation();
   // store hooks
-  const { getUserDetails } = useMember();
-  // derived values
-  const createdByDetails = getUserDetails(createdBy);
-
-  if (!createdByDetails) return null;
-
-  return (
-    <SidebarPropertyListItem icon={UserOutline} label={t("common.created_by")} childrenClassName="px-2">
-      <ButtonAvatars
-        showTooltip
-        userIds={createdByDetails?.display_name?.includes("-intake") ? null : createdByDetails?.id}
-      />
-      <span className="grow truncate text-body-xs-medium leading-5 text-secondary">
-        {createdByDetails?.display_name?.includes("-intake") ? "Plane" : createdByDetails?.display_name}
-      </span>
-    </SidebarPropertyListItem>
-  );
-});
-
-const PeekOverviewDateProperties = observer(function PeekOverviewDateProperties(props: IPeekOverviewIssueProperty) {
-  const { workspaceSlug, projectId, issueId, issueOperations, disabled, issue } = props;
-  const { t } = useTranslation();
-  // store hooks
+  const { getProjectById } = useProject();
+  const {
+    issue: { getIssueById },
+  } = useIssueDetail();
   const { getStateById } = useProjectState();
+  const { getUserDetails } = useMember();
+  const { data: userProfile } = useUserProfile();
   // derived values
+  const issue = getIssueById(issueId);
+  if (!issue) return <></>;
+  const createdByDetails = getUserDetails(issue?.created_by);
+  const projectDetails = getProjectById(issue.project_id);
+  const isEstimateEnabled = projectDetails?.estimate;
   const stateDetails = getStateById(issue.state_id);
 
   const minDate = getDate(issue.start_date);
@@ -100,166 +79,117 @@ const PeekOverviewDateProperties = observer(function PeekOverviewDateProperties(
   maxDate?.setDate(maxDate.getDate());
 
   return (
-    <>
-      <SidebarPropertyListItem icon={StartDateOutline} label={t("common.order_by.start_date")}>
-        <DateDropdown
-          value={issue.start_date}
-          onChange={(val) =>
-            issueOperations.update(workspaceSlug, projectId, issueId, {
-              start_date: val ? renderFormattedPayloadDate(val) : null,
-            })
-          }
-          placeholder={t("issue.add.start_date")}
-          buttonVariant="transparent-with-text"
-          maxDate={maxDate ?? undefined}
-          disabled={disabled}
-          className="group w-full grow"
-          buttonContainerClassName="w-full text-left h-7.5"
-          buttonClassName={`text-body-xs-medium ${issue?.start_date ? "" : "text-placeholder"}`}
-          hideIcon
-          clearIconClassName="h-3 w-3 hidden group-hover:inline"
-        />
-      </SidebarPropertyListItem>
-
-      <SidebarPropertyListItem icon={DueDateOutline} label={t("common.order_by.due_date")}>
-        <div className="flex w-full items-center gap-2">
-          <DateDropdown
-            value={issue.target_date}
-            onChange={(val) =>
-              issueOperations.update(workspaceSlug, projectId, issueId, {
-                target_date: val ? renderFormattedPayloadDate(val) : null,
-              })
-            }
-            placeholder={t("issue.add.due_date")}
-            buttonVariant="transparent-with-text"
-            minDate={minDate ?? undefined}
-            disabled={disabled}
-            className="group w-full grow"
-            buttonContainerClassName="w-full text-left h-7.5"
-            buttonClassName={cn("text-body-xs-medium", {
-              "text-placeholder": !issue.target_date,
-              "text-danger-primary": shouldHighlightIssueDueDate(issue.target_date, stateDetails?.group),
-            })}
-            hideIcon
-            clearIconClassName="h-3 w-3 hidden group-hover:inline text-primary"
-          />
-        </div>
-      </SidebarPropertyListItem>
-    </>
-  );
-});
-
-const PeekOverviewEstimateProperty = observer(function PeekOverviewEstimateProperty(props: IPeekOverviewIssueProperty) {
-  const { workspaceSlug, projectId, issueId, issueOperations, disabled, issue } = props;
-  const { t } = useTranslation();
-  // store hooks
-  const { getProjectById } = useProject();
-  // derived values
-  const isEstimateEnabled = getProjectById(issue.project_id)?.estimate;
-
-  if (!isEstimateEnabled) return null;
-
-  return (
-    <SidebarPropertyListItem icon={EstimateOutline} label={t("common.estimate")}>
-      <EstimateDropdown
-        value={issue.estimate_point ?? undefined}
-        onChange={(val) => issueOperations.update(workspaceSlug, projectId, issueId, { estimate_point: val })}
-        projectId={projectId}
-        disabled={disabled}
-        buttonVariant="transparent-with-text"
-        className="group w-full grow"
-        buttonContainerClassName="w-full text-left h-7.5"
-        buttonClassName={`text-body-xs-medium ${issue?.estimate_point !== undefined ? "" : "text-placeholder"}`}
-        placeholder="None"
-        hideIcon
-        dropdownArrow
-        dropdownArrowClassName="h-3.5 w-3.5 hidden group-hover:inline"
-      />
-    </SidebarPropertyListItem>
-  );
-});
-
-export const PeekOverviewProperties = observer(function PeekOverviewProperties(props: IPeekOverviewProperties) {
-  const { workspaceSlug, projectId, issueId, issueOperations, disabled } = props;
-  const { t } = useTranslation();
-  // store hooks
-  const { getProjectById } = useProject();
-  const {
-    issue: { getIssueById },
-  } = useIssueDetail();
-  // derived values
-  const issue = getIssueById(issueId);
-  if (!issue) return <></>;
-  const projectDetails = getProjectById(issue.project_id);
-
-  return (
     <div>
       <h6 className="text-body-xs-medium">{t("common.properties")}</h6>
       <div className={`mt-3 w-full space-y-3 ${disabled ? "opacity-60" : ""}`}>
         <SidebarPropertyListItem icon={StateOutline} label={t("common.state")}>
-          <StateDropdown
+          <StateSelect
+            testId="work-item-state-select"
             value={issue?.state_id}
             onChange={(val) => issueOperations.update(workspaceSlug, projectId, issueId, { state_id: val })}
             projectId={projectId}
             disabled={disabled}
-            buttonVariant="transparent-with-text"
-            className="group w-full grow"
-            buttonContainerClassName="w-full text-left h-7.5"
-            buttonClassName={`text-body-xs-medium ${issue?.state_id ? "" : "text-placeholder"}`}
-            dropdownArrow
-            dropdownArrowClassName="h-3.5 w-3.5 hidden group-hover:inline"
+            variant="select-ghost-md"
+            tooltip
           />
         </SidebarPropertyListItem>
 
         <SidebarPropertyListItem icon={MembersOutline} label={t("common.assignees")}>
-          <MemberDropdown
-            value={issue?.assignee_ids ?? undefined}
+          <MemberSelect
+            testId="work-item-assignee-select"
+            value={issue?.assignee_ids ?? []}
             onChange={(val) => issueOperations.update(workspaceSlug, projectId, issueId, { assignee_ids: val })}
             disabled={disabled}
             projectId={projectId}
             placeholder={t("issue.add.assignee")}
             multiple
-            buttonVariant={issue?.assignee_ids?.length > 1 ? "transparent-without-text" : "transparent-with-text"}
-            className="group w-full grow"
-            buttonContainerClassName="w-full text-left h-7.5"
-            buttonClassName={`text-body-xs-medium justify-between ${issue?.assignee_ids?.length > 0 ? "" : "text-placeholder"}`}
-            hideIcon={issue.assignee_ids?.length === 0}
-            dropdownArrow
-            dropdownArrowClassName="h-3.5 w-3.5 hidden group-hover:inline"
+            variant="select-ghost-md"
+            showLabel={(issue?.assignee_ids?.length ?? 0) <= 1}
+            tooltip={{ heading: t("common.assignees") }}
           />
         </SidebarPropertyListItem>
 
         <SidebarPropertyListItem icon={PriorityOutline} label={t("common.priority")}>
-          <PriorityDropdown
+          <PrioritySelect
+            testId="work-item-priority-select"
             value={issue?.priority}
             onChange={(val) => issueOperations.update(workspaceSlug, projectId, issueId, { priority: val })}
             disabled={disabled}
-            buttonVariant="transparent-with-text"
-            className="h-7.5 w-full grow rounded-sm"
-            buttonContainerClassName="w-full text-left h-7.5"
-            buttonClassName={`text-body-xs-medium whitespace-nowrap [&_svg]:size-3.5 ${!issue?.priority || issue?.priority === "none" ? "text-placeholder" : ""}`}
+            variant="select-ghost-md"
+            tooltip
           />
         </SidebarPropertyListItem>
 
-        <PeekOverviewCreatedByProperty createdBy={issue.created_by} />
+        {createdByDetails && (
+          <SidebarPropertyListItem icon={UserOutline} label={t("common.created_by")} childrenClassName="px-2">
+            <ButtonAvatars
+              showTooltip
+              userIds={createdByDetails?.display_name?.includes("-intake") ? null : createdByDetails?.id}
+            />
+            <span className="grow truncate text-body-xs-medium leading-5 text-secondary">
+              {createdByDetails?.display_name?.includes("-intake") ? "Plane" : createdByDetails?.display_name}
+            </span>
+          </SidebarPropertyListItem>
+        )}
 
-        <PeekOverviewDateProperties
-          workspaceSlug={workspaceSlug}
-          projectId={projectId}
-          issueId={issueId}
-          issueOperations={issueOperations}
-          disabled={disabled}
-          issue={issue}
-        />
+        <SidebarPropertyListItem icon={StartDateOutline} label={t("common.order_by.start_date")}>
+          <DateSelect
+            testId="work-item-start-date-select"
+            value={getDate(issue.start_date) ?? null}
+            onChange={(val) =>
+              issueOperations.update(workspaceSlug, projectId, issueId, {
+                start_date: val ? renderFormattedPayloadDate(val) : null,
+              })
+            }
+            placeholder={t("issue.add.start_date")}
+            maxDate={maxDate ?? undefined}
+            disabled={disabled}
+            clearable
+            weekStartsOn={userProfile?.start_of_the_week}
+            variant="select-ghost-md"
+            showTooltip
+            tooltipHeading={t("common.order_by.start_date")}
+          />
+        </SidebarPropertyListItem>
 
-        <PeekOverviewEstimateProperty
-          workspaceSlug={workspaceSlug}
-          projectId={projectId}
-          issueId={issueId}
-          issueOperations={issueOperations}
-          disabled={disabled}
-          issue={issue}
-        />
+        <SidebarPropertyListItem icon={DueDateOutline} label={t("common.order_by.due_date")}>
+          <div className="flex w-full items-center gap-2">
+            <DateSelect
+              testId="work-item-due-date-select"
+              value={getDate(issue.target_date) ?? null}
+              onChange={(val) =>
+                issueOperations.update(workspaceSlug, projectId, issueId, {
+                  target_date: val ? renderFormattedPayloadDate(val) : null,
+                })
+              }
+              placeholder={t("issue.add.due_date")}
+              minDate={minDate ?? undefined}
+              disabled={disabled}
+              clearable
+              className={cn({
+                "text-danger-primary": shouldHighlightIssueDueDate(issue.target_date, stateDetails?.group),
+              })}
+              weekStartsOn={userProfile?.start_of_the_week}
+              variant="select-ghost-md"
+              showTooltip
+              tooltipHeading={t("common.order_by.due_date")}
+            />
+          </div>
+        </SidebarPropertyListItem>
+
+        {isEstimateEnabled && (
+          <SidebarPropertyListItem icon={EstimateOutline} label={t("common.estimate")}>
+            <EstimateSelect
+              value={issue.estimate_point ?? undefined}
+              onChange={(val) => issueOperations.update(workspaceSlug, projectId, issueId, { estimate_point: val })}
+              projectId={projectId}
+              disabled={disabled}
+              variant="select-ghost-md"
+              placeholder={t("common.none")}
+              tooltip
+            />
+          </SidebarPropertyListItem>
+        )}
 
         {projectDetails?.module_view && (
           <SidebarPropertyListItem icon={ModuleOutline} label={t("common.modules")}>

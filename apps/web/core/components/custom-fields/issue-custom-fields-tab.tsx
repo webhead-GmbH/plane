@@ -11,7 +11,7 @@ import { CUSTOM_FIELD_GRID_COLUMNS } from "@plane/constants";
 import { useTranslation } from "@plane/i18n";
 import { ECustomFieldType } from "@plane/types";
 import type { TCustomFieldRawValue, TCustomFieldWithValue } from "@plane/types";
-import { Loader } from "@plane/ui";
+import { Loader } from "@plane/blocks/skeleton";
 // hooks
 import { useIssueCustomFields } from "@/hooks/use-issue-custom-fields";
 // local imports

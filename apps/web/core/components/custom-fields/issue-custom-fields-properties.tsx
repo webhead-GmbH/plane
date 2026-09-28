@@ -9,7 +9,7 @@ import { observer } from "mobx-react";
 import { ExternalLink } from "lucide-react";
 // plane imports
 import { EUserPermissions, EUserPermissionsLevel } from "@plane/constants";
-import { EditIcon } from "@plane/propel/icons";
+import { EditOutline } from "@makeplane/propel/icons";
 import { ECustomFieldType } from "@plane/types";
 import type { TCustomFieldRawValue, TCustomFieldWithValue } from "@plane/types";
 import { cn } from "@plane/utils";
@@ -140,7 +140,7 @@ function PropertyEditRow({ field, canEdit, onSave }: RowProps) {
               <ExternalLink className="size-3.5" />
             </button>
           )}
-          {canEdit && <EditIcon className="size-3 shrink-0 text-tertiary" />}
+          {canEdit && <EditOutline className="size-3 shrink-0 text-tertiary" />}
         </span>
       </button>
     </SidebarPropertyListItem>

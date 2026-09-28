@@ -11,10 +11,10 @@ import { observer } from "mobx-react";
 import { Square } from "lucide-react";
 import { EActivityFilterType, EUserPermissions } from "@plane/constants";
 import { useTranslation } from "@plane/i18n";
-import { Tooltip } from "@plane/propel/tooltip";
+import { Tooltip } from "@makeplane/propel/components/tooltip";
 import type { TIssueActivityComment, TIssueWorkLog } from "@plane/types";
-import { Avatar } from "@plane/ui";
-import { cn } from "@plane/utils";
+import { Avatar } from "@makeplane/propel/components/avatar";
+import { cn, getFileURL } from "@plane/utils";
 import { useIssueDetail } from "@/hooks/store/use-issue-detail";
 import { useUserPermissions } from "@/hooks/store/user";
 import { formatDuration, formatElapsed } from "../utils";
@@ -162,7 +162,12 @@ export const IssueWorklogList = observer(function IssueWorklogList(props: TIssue
                 onClick={() => setSelectedUser((prev) => (prev === person.userId ? null : person.userId))}
                 className="flex min-w-0 flex-1 items-center gap-2 text-left outline-none active:scale-[0.99]"
               >
-                <Avatar name={person.name} src={person.avatarUrl} size="sm" showTooltip={false} />
+                <Avatar
+                  alt={person.name}
+                  fallback={person.name?.[0]?.toUpperCase()}
+                  src={getFileURL(person.avatarUrl ?? "")}
+                  size="2xs"
+                />
                 <span
                   className={cn("truncate text-body-xs-medium", isSelected ? "text-accent-primary" : "text-primary")}
                 >
@@ -182,7 +187,7 @@ export const IssueWorklogList = observer(function IssueWorklogList(props: TIssue
 
               {/* admins can stop a running timer for any user */}
               {isAdmin && person.activeTimer && (
-                <Tooltip tooltipContent={t("common.stop_timer")}>
+                <Tooltip label={t("common.stop_timer")}>
                   <button
                     type="button"
                     onClick={() => handleAdminStop(person.activeTimer!.id)}

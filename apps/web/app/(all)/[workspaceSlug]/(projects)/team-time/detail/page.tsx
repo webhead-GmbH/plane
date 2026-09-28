@@ -6,7 +6,7 @@
 
 // components
 import { useTranslation } from "@plane/i18n";
-import { ContentWrapper } from "@plane/ui";
+import { ContentWrapper } from "@plane/blocks/layout";
 import { PageHead } from "@/components/core/page-title";
 import { HrWorklogDetailRoot } from "@/components/hr";
 

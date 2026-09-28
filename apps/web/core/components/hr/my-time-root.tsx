@@ -11,11 +11,15 @@ import { Download, ListTree, MoreHorizontal, Plus, RefreshCw, Scale, Send, Users
 import useSWR from "swr";
 // plane imports
 import { Tooltip } from "@makeplane/propel/components/tooltip";
-import { Button } from "@plane/propel/button";
+import { Button } from "@makeplane/propel/components/button";
+import { Icon } from "@makeplane/propel/components/icon";
 import { useTranslation } from "@plane/i18n";
-import { setToast, TOAST_TYPE } from "@plane/propel/toast";
-import { EmptyStateCompact } from "@plane/propel/empty-state";
-import { AlertModalCore, CustomMenu, Loader } from "@plane/ui";
+import { IconButton } from "@makeplane/propel/components/icon-button";
+import { Menu, MenuContent, MenuItem, MenuTrigger } from "@makeplane/propel/components/menu";
+import { ConfirmDialog } from "@plane/blocks/dialog";
+import { EmptyStateCompact } from "@plane/blocks/empty-state";
+import { Loader } from "@plane/blocks/skeleton";
+import { setToast } from "@plane/blocks/toast";
 // local imports
 import { HrService, type THrMe, type THrPeriod } from "@/services/hr.service";
 import { HrDayTable } from "./day-table";
@@ -179,10 +183,10 @@ const MonthActions = ({
     try {
       await hrService.recompute(period.id);
       await onRefresh();
-      setToast({ type: TOAST_TYPE.SUCCESS, title: t("hr.my_time.toasts.recomputed") });
+      setToast({ type: "success", title: t("hr.my_time.toasts.recomputed") });
     } catch (failure) {
       setToast({
-        type: TOAST_TYPE.ERROR,
+        type: "error",
         title: t("hr.my_time.toasts.not_recomputed"),
         message: refusalOrRetry(failure, t, currentLocale),
       });
@@ -198,13 +202,13 @@ const MonthActions = ({
       await hrService.submit(period.id);
       await onRefresh();
       setToast({
-        type: TOAST_TYPE.SUCCESS,
+        type: "success",
         title: t("hr.my_time.toasts.handed_in"),
         message: t("hr.my_time.toasts.handed_in_message", { month: monthLabel }),
       });
     } catch (failure) {
       setToast({
-        type: TOAST_TYPE.ERROR,
+        type: "error",
         title: t("hr.my_time.toasts.not_handed_in"),
         message: refusalOrRetry(failure, t, currentLocale),
       });
@@ -221,9 +225,14 @@ const MonthActions = ({
             Everything else — the exports, the starting balance, the rebuild —
             is occasional and lives behind the menu, because six buttons of
             equal weight is a wall rather than a choice. */}
-        <Button variant="secondary" size="lg" onClick={onRecordToday} prependIcon={<Plus />}>
-          {t("hr.my_time.record_time")}
-        </Button>
+        <Button
+          variant="secondary"
+          size="md"
+          stretch="auto"
+          label={t("hr.my_time.record_time")}
+          onClick={onRecordToday}
+          icon={<Icon icon={Plus} />}
+        />
 
         <HandInButton
           period={period}
@@ -243,7 +252,7 @@ const MonthActions = ({
       {/* The one press on this screen that cannot be taken back by the person
           making it: the month stops being theirs to change, and only whoever
           looks after the team can give it back. Worth asking first. */}
-      <AlertModalCore
+      <ConfirmDialog
         variant="primary"
         isOpen={confirming}
         handleClose={() => setConfirming(false)}
@@ -300,14 +309,14 @@ const HandInButton = ({
       <span>
         <Button
           variant="primary"
-          size="lg"
+          size="md"
+          stretch="auto"
+          label={t("hr.my_time.hand_in")}
           onClick={onHandIn}
           disabled={!canHandIn}
           loading={isBusy}
-          prependIcon={<Send />}
-        >
-          {t("hr.my_time.hand_in")}
-        </Button>
+          icon={<Icon icon={Send} />}
+        />
       </span>
     </Tooltip>
   );
@@ -332,64 +341,54 @@ const MonthMenu = ({
   const navigate = useNavigate();
 
   return (
-    <CustomMenu
-      customButton={
-        <span className="grid size-7 place-items-center rounded-md text-tertiary transition-colors hover:bg-layer-2 hover:text-primary">
-          <MoreHorizontal className="size-4" />
-        </span>
-      }
-      placement="bottom-end"
-      closeOnSelect
-    >
-      <CustomMenu.MenuItem onClick={onOpeningBalance} className="flex items-center gap-2">
-        <Scale className="size-3 shrink-0" />
-        {t("hr.my_time.opening")}
-      </CustomMenu.MenuItem>
-      {period ? (
-        <>
-          <CustomMenu.MenuItem
-            onClick={() => window.open(hrService.periodExportUrl(period.id, "csv"), "_self")}
-            className="flex items-center gap-2"
-          >
-            <Download className="size-3 shrink-0" />
-            {t("hr.my_time.export_csv")}
-          </CustomMenu.MenuItem>
-          <CustomMenu.MenuItem
-            onClick={() => window.open(hrService.periodExportUrl(period.id, "xlsx"), "_self")}
-            className="flex items-center gap-2"
-          >
-            <Download className="size-3 shrink-0" />
-            {t("hr.my_time.export_excel")}
-          </CustomMenu.MenuItem>
-        </>
-      ) : null}
-      {period && isPeriodEditable(period.state) ? (
-        <CustomMenu.MenuItem onClick={onRecompute} className="flex items-center gap-2">
-          <RefreshCw className="size-3 shrink-0" />
-          {t("hr.my_time.bring_up_to_date")}
-        </CustomMenu.MenuItem>
-      ) : null}
-      {/* Everybody's own hours, not just a manager's view of somebody's.
+    <Menu>
+      <MenuTrigger
+        render={
+          <IconButton
+            variant="ghost"
+            size="md"
+            icon={<Icon icon={MoreHorizontal} />}
+            aria-label={t("common.options")}
+          />
+        }
+      />
+      <MenuContent side="bottom" align="end">
+        <MenuItem icon={<Icon icon={Scale} />} label={t("hr.my_time.opening")} onClick={onOpeningBalance} />
+        {period ? (
+          <>
+            <MenuItem
+              icon={<Icon icon={Download} />}
+              label={t("hr.my_time.export_csv")}
+              onClick={() => window.open(hrService.periodExportUrl(period.id, "csv"), "_self")}
+            />
+            <MenuItem
+              icon={<Icon icon={Download} />}
+              label={t("hr.my_time.export_excel")}
+              onClick={() => window.open(hrService.periodExportUrl(period.id, "xlsx"), "_self")}
+            />
+          </>
+        ) : null}
+        {period && isPeriodEditable(period.state) ? (
+          <MenuItem icon={<Icon icon={RefreshCw} />} label={t("hr.my_time.bring_up_to_date")} onClick={onRecompute} />
+        ) : null}
+        {/* Everybody's own hours, not just a manager's view of somebody's.
           The month has only ever shown a figure a day, and the question it
           invites — on what — belongs to the person being asked about it
           first. */}
-      <CustomMenu.MenuItem
-        onClick={() => navigate(`/${workspaceSlug}/team-time/detail`)}
-        className="flex items-center gap-2"
-      >
-        <ListTree className="size-3 shrink-0" />
-        {t("hr.detail.title")}
-      </CustomMenu.MenuItem>
-      {isHrManager ? (
-        <CustomMenu.MenuItem
-          onClick={() => navigate(`/${workspaceSlug}/team-time`)}
-          className="flex items-center gap-2"
-        >
-          <Users className="size-3 shrink-0" />
-          {t("hr.my_time.everyone")}
-        </CustomMenu.MenuItem>
-      ) : null}
-    </CustomMenu>
+        <MenuItem
+          icon={<Icon icon={ListTree} />}
+          label={t("hr.detail.title")}
+          onClick={() => navigate(`/${workspaceSlug}/team-time/detail`)}
+        />
+        {isHrManager ? (
+          <MenuItem
+            icon={<Icon icon={Users} />}
+            label={t("hr.my_time.everyone")}
+            onClick={() => navigate(`/${workspaceSlug}/team-time`)}
+          />
+        ) : null}
+      </MenuContent>
+    </Menu>
   );
 };
 

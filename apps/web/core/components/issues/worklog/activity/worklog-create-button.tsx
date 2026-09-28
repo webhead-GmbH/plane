@@ -9,7 +9,9 @@
 import { useEffect, useRef, useState } from "react";
 import { observer } from "mobx-react";
 import { Clock, Play, Square } from "lucide-react";
-import { Button } from "@plane/propel/button";
+import { Button } from "@makeplane/propel/components/button";
+import { Icon } from "@makeplane/propel/components/icon";
+import { Button as ButtonElement } from "@makeplane/propel/elements/button";
 import { useTranslation } from "@plane/i18n";
 import { useIssueDetail } from "@/hooks/store/use-issue-detail";
 import { useUser } from "@/hooks/store/user";
@@ -88,49 +90,52 @@ export const IssueActivityWorklogCreateButton = observer(function IssueActivityW
           the tab strip; the accessible name is kept on the button itself. */}
       {/* timer button — only for assignees, and only when the state allows starting a timer */}
       {isAssigned && !activeTimer && timerAllowed && (
-        <Button
+        <ButtonElement
+          type="button"
           variant="secondary"
-          size="sm"
+          size="xs"
+          stretch="auto"
           disabled={disabled}
           onClick={handleStartTimer}
-          className="shrink-0"
           aria-label={t("common.start_timer")}
           title={t("common.start_timer")}
         >
-          <Play className="h-3.5 w-3.5 shrink-0" />
+          <Icon icon={Play} />
           <span className="hidden whitespace-nowrap sm:inline">{t("common.start_timer")}</span>
-        </Button>
+        </ButtonElement>
       )}
 
       {activeTimer && (
-        <Button
+        <ButtonElement
+          type="button"
           variant="secondary"
-          size="sm"
+          size="xs"
+          stretch="auto"
           disabled={disabled}
           onClick={() => setShowStopPopup((v) => !v)}
-          className="shrink-0 gap-1.5"
           aria-label={t("common.stop_timer")}
           title={t("common.stop_timer")}
         >
           <span className="font-mono text-xs text-success-primary">{elapsed}</span>
-          <Square className="h-3.5 w-3.5 shrink-0 fill-current text-danger-primary" />
+          <Icon icon={<Square className="fill-current" />} tint="danger" />
           <span className="hidden whitespace-nowrap sm:inline">{t("common.stop_timer")}</span>
-        </Button>
+        </ButtonElement>
       )}
 
       {/* log work button */}
-      <Button
+      <ButtonElement
+        type="button"
         variant="secondary"
-        size="sm"
+        size="xs"
+        stretch="auto"
         disabled={disabled}
         onClick={() => setIsLogWorkOpen(true)}
-        className="shrink-0"
         aria-label={t("common.log_work")}
         title={t("common.log_work")}
       >
-        <Clock className="h-3.5 w-3.5 shrink-0" />
+        <Icon icon={Clock} />
         <span className="hidden whitespace-nowrap sm:inline">{t("common.log_work")}</span>
-      </Button>
+      </ButtonElement>
 
       {/* stop popup */}
       {showStopPopup && (
@@ -148,17 +153,15 @@ export const IssueActivityWorklogCreateButton = observer(function IssueActivityW
           <div className="mt-2 flex justify-end gap-2">
             <Button
               variant="secondary"
-              size="sm"
+              size="xs"
+              stretch="auto"
+              label={t("common.cancel")}
               onClick={() => {
                 setShowStopPopup(false);
                 setDescription("");
               }}
-            >
-              {t("common.cancel")}
-            </Button>
-            <Button variant="primary" size="sm" onClick={handleStopTimer}>
-              {t("common.save")}
-            </Button>
+            />
+            <Button variant="primary" size="xs" stretch="auto" label={t("common.save")} onClick={handleStopTimer} />
           </div>
         </div>
       )}

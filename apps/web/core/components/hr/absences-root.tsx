@@ -10,11 +10,13 @@ import { Check, ChevronLeft, ChevronRight, Pencil, Plus, Settings2, Trash2, X } 
 import useSWR from "swr";
 // plane imports
 import { useTranslation } from "@plane/i18n";
-import { Button } from "@plane/propel/button";
-import { EmptyStateCompact } from "@plane/propel/empty-state";
-import { setToast, TOAST_TYPE } from "@plane/propel/toast";
-import { AlertModalCore, Loader } from "@plane/ui";
+import { Button } from "@makeplane/propel/components/button";
+import { Icon } from "@makeplane/propel/components/icon";
+import { ConfirmDialog } from "@plane/blocks/dialog";
 import { cn } from "@plane/utils";
+import { EmptyStateCompact } from "@plane/blocks/empty-state";
+import { Loader } from "@plane/blocks/skeleton";
+import { setToast } from "@plane/blocks/toast";
 // services
 import {
   EHrAbsenceState,
@@ -122,7 +124,7 @@ export const HrAbsencesRoot = observer(function HrAbsencesRoot() {
 
   const complain = (failure: unknown) =>
     setToast({
-      type: TOAST_TYPE.ERROR,
+      type: "error",
       title: t("hr.absences.toasts.refused"),
       message: refusalMessage(failure, t, currentLocale) ?? t("hr.absences.toasts.try_again"),
     });
@@ -141,7 +143,7 @@ export const HrAbsencesRoot = observer(function HrAbsencesRoot() {
       await mutate();
       setRecording(false);
       setEditing(null);
-      setToast({ type: TOAST_TYPE.SUCCESS, title: t("hr.absences.toasts.saved") });
+      setToast({ type: "success", title: t("hr.absences.toasts.saved") });
     } catch (failure) {
       complain(failure);
     } finally {
@@ -156,7 +158,7 @@ export const HrAbsencesRoot = observer(function HrAbsencesRoot() {
       await mutate();
       // Agreeing charges somebody's leave and cannot be taken back from here, and
       // a pill quietly changing colour is not an answer to a click on a small icon.
-      if (decision === "approve") setToast({ type: TOAST_TYPE.SUCCESS, title: t("hr.absences.state.approved") });
+      if (decision === "approve") setToast({ type: "success", title: t("hr.absences.state.approved") });
     } catch (failure) {
       complain(failure);
     } finally {
@@ -170,7 +172,7 @@ export const HrAbsencesRoot = observer(function HrAbsencesRoot() {
       await hrService.decideAbsence(absence.id, "reject", reason);
       await mutate();
       setRefusing(null);
-      setToast({ type: TOAST_TYPE.SUCCESS, title: t("hr.absences.state.rejected") });
+      setToast({ type: "success", title: t("hr.absences.state.rejected") });
     } catch (failure) {
       complain(failure);
     } finally {
@@ -185,7 +187,7 @@ export const HrAbsencesRoot = observer(function HrAbsencesRoot() {
       await hrService.removeAbsence(removing.id);
       await mutate();
       setRemoving(null);
-      setToast({ type: TOAST_TYPE.SUCCESS, title: t("hr.absences.toasts.removed") });
+      setToast({ type: "success", title: t("hr.absences.toasts.removed") });
     } catch (failure) {
       complain(failure);
     } finally {
@@ -215,24 +217,24 @@ export const HrAbsencesRoot = observer(function HrAbsencesRoot() {
           {isManager ? (
             <Button
               variant="secondary"
-              size="lg"
-              prependIcon={<Settings2 className="size-4" />}
+              size="md"
+              stretch="auto"
+              label={t("hr.absences.manage_types")}
+              icon={<Icon icon={Settings2} />}
               onClick={() => setManagingTypes(true)}
-            >
-              {t("hr.absences.manage_types")}
-            </Button>
+            />
           ) : null}
           <Button
             variant="primary"
-            size="lg"
-            prependIcon={<Plus />}
+            size="md"
+            stretch="auto"
+            label={isManager ? t("hr.absences.record") : t("hr.absences.request")}
+            icon={<Icon icon={Plus} />}
             onClick={() => {
               setEditing(null);
               setRecording(true);
             }}
-          >
-            {isManager ? t("hr.absences.record") : t("hr.absences.request")}
-          </Button>
+          />
         </div>
       </div>
 
@@ -403,7 +405,7 @@ const AbsenceDialogs = ({
         }}
       />
 
-      <AlertModalCore
+      <ConfirmDialog
         isOpen={removing !== null}
         handleClose={onCloseRemoval}
         handleSubmit={onRemove}

@@ -7,7 +7,7 @@
 import { SlidersHorizontal } from "lucide-react";
 // plane imports
 import { useTranslation } from "@plane/i18n";
-import { Button } from "@plane/propel/button";
+import { Button } from "@makeplane/propel/components/button";
 
 type Props = {
   onCreate: () => void;
@@ -27,9 +27,13 @@ export function CustomFieldsEmptyState({ onCreate }: Props) {
           {t("workspace_settings.settings.custom_fields.empty.description")}
         </p>
       </div>
-      <Button variant="primary" onClick={onCreate}>
-        {t("workspace_settings.settings.custom_fields.add_field")}
-      </Button>
+      <Button
+        variant="primary"
+        size="sm"
+        stretch="auto"
+        label={t("workspace_settings.settings.custom_fields.add_field")}
+        onClick={onCreate}
+      />
     </div>
   );
 }

@@ -9,10 +9,11 @@ import { Check, Pencil } from "lucide-react";
 import useSWR from "swr";
 // plane imports
 import { useTranslation } from "@plane/i18n";
-import { Button } from "@plane/propel/button";
-import { setToast, TOAST_TYPE } from "@plane/propel/toast";
-import { AlertModalCore, EModalPosition, EModalWidth, ModalCore } from "@plane/ui";
+import { Button } from "@makeplane/propel/components/button";
+import { Dialog, DialogContent, DialogTitle } from "@makeplane/propel/components/dialog";
+import { ConfirmDialog } from "@plane/blocks/dialog";
 import { cn } from "@plane/utils";
+import { setToast } from "@plane/blocks/toast";
 // services
 import {
   EHrBalanceKind,
@@ -51,7 +52,7 @@ const personName = (person: THrEmploymentProfile | null) => person?.member_displ
 
 const complain = (failure: unknown, t: TTranslate, locale: string) =>
   setToast({
-    type: TOAST_TYPE.ERROR,
+    type: "error",
     title: t("hr.opening.toasts.refused"),
     message: refusalMessage(failure, t, locale) ?? t("hr.opening.toasts.try_again"),
   });
@@ -187,7 +188,7 @@ export const HrOpeningBalanceModal = ({ person, isOwn, canRecord, onClose }: TPr
       await hrService.agreeOpeningBalance(person.id, row.id);
       await mutate();
       setAgreeing(null);
-      setToast({ type: TOAST_TYPE.SUCCESS, title: t("hr.opening.toasts.agreed") });
+      setToast({ type: "success", title: t("hr.opening.toasts.agreed") });
     } catch (failure) {
       complain(failure, t, currentLocale);
     } finally {
@@ -200,55 +201,60 @@ export const HrOpeningBalanceModal = ({ person, isOwn, canRecord, onClose }: TPr
   const replaced = balances.filter((row) => row.superseded_by !== null);
 
   return (
-    <ModalCore isOpen={person !== null} handleClose={onClose} position={EModalPosition.CENTER} width={EModalWidth.XXXL}>
-      <div className="flex max-h-[80vh] flex-col gap-4 overflow-y-auto p-5">
-        <div>
-          <h3 className="text-16 font-medium text-primary">{t("hr.opening.title", { person: personName(person) })}</h3>
-          <p className="text-13 text-tertiary">{t("hr.opening.hint")}</p>
-        </div>
+    <Dialog
+      open={person !== null}
+      onOpenChange={(open) => {
+        if (!open) onClose();
+      }}
+    >
+      <DialogContent size="lg">
+        <div className="flex max-h-[80vh] flex-col gap-4 overflow-y-auto p-5">
+          <div>
+            <DialogTitle>{t("hr.opening.title", { person: personName(person) })}</DialogTitle>
+            <p className="text-13 text-tertiary">{t("hr.opening.hint")}</p>
+          </div>
 
-        <CurrentBalances
-          rows={current}
-          isOwn={isOwn}
-          isBusy={isBusy}
-          onCorrect={(row) => dispatch({ type: "correct", row })}
-          onAgree={setAgreeing}
-        />
-
-        <ReplacedBalances rows={replaced} />
-
-        {canRecord ? (
-          <RecordBalanceForm
-            person={person}
-            draft={draft}
-            dispatch={dispatch}
+          <CurrentBalances
+            rows={current}
+            isOwn={isOwn}
             isBusy={isBusy}
-            onBusyChange={setIsBusy}
-            onRecorded={mutate}
+            onCorrect={(row) => dispatch({ type: "correct", row })}
+            onAgree={setAgreeing}
           />
-        ) : null}
 
-        <div className="flex items-center justify-end">
-          <Button variant="secondary" size="lg" onClick={onClose}>
-            {t("hr.opening.done")}
-          </Button>
+          <ReplacedBalances rows={replaced} />
+
+          {canRecord ? (
+            <RecordBalanceForm
+              person={person}
+              draft={draft}
+              dispatch={dispatch}
+              isBusy={isBusy}
+              onBusyChange={setIsBusy}
+              onRecorded={mutate}
+            />
+          ) : null}
+
+          <div className="flex items-center justify-end">
+            <Button variant="secondary" size="md" stretch="auto" label={t("hr.opening.done")} onClick={onClose} />
+          </div>
         </div>
-      </div>
 
-      <AlertModalCore
-        isOpen={agreeing !== null}
-        handleClose={() => setAgreeing(null)}
-        handleSubmit={() => void handleAgree()}
-        isSubmitting={isBusy}
-        variant="primary"
-        title={t("hr.opening.confirm_agree_title")}
-        content={t("hr.opening.confirm_agree_body", {
-          amount: agreeing ? formatBalance(agreeing.minutes) : "",
-        })}
-        primaryButtonText={{ default: t("hr.opening.agree"), loading: t("hr.opening.agreeing") }}
-        secondaryButtonText={t("common.cancel")}
-      />
-    </ModalCore>
+        <ConfirmDialog
+          isOpen={agreeing !== null}
+          handleClose={() => setAgreeing(null)}
+          handleSubmit={() => void handleAgree()}
+          isSubmitting={isBusy}
+          variant="primary"
+          title={t("hr.opening.confirm_agree_title")}
+          content={t("hr.opening.confirm_agree_body", {
+            amount: agreeing ? formatBalance(agreeing.minutes) : "",
+          })}
+          primaryButtonText={{ default: t("hr.opening.agree"), loading: t("hr.opening.agreeing") }}
+          secondaryButtonText={t("common.cancel")}
+        />
+      </DialogContent>
+    </Dialog>
   );
 };
 
@@ -323,9 +329,14 @@ const OpeningBalanceRow = ({ row, isOwn, isBusy, onCorrect, onAgree }: TRowProps
           {t("hr.opening.agreed")}
         </span>
       ) : isOwn ? (
-        <Button variant="secondary" size="lg" loading={isBusy} onClick={() => onAgree(row)}>
-          {t("hr.opening.agree")}
-        </Button>
+        <Button
+          variant="secondary"
+          size="md"
+          stretch="auto"
+          label={t("hr.opening.agree")}
+          loading={isBusy}
+          onClick={() => onAgree(row)}
+        />
       ) : (
         <span className="text-13 text-warning-primary">{t("hr.opening.not_agreed")}</span>
       )}
@@ -384,7 +395,7 @@ const RecordBalanceForm = ({ person, draft, dispatch, isBusy, onBusyChange, onRe
       else await hrService.recordOpeningBalance(person.id, payload);
       dispatch({ type: "filed" });
       await onRecorded();
-      setToast({ type: TOAST_TYPE.SUCCESS, title: t("hr.opening.toasts.recorded") });
+      setToast({ type: "success", title: t("hr.opening.toasts.recorded") });
     } catch (failure) {
       complain(failure, t, currentLocale);
     } finally {
@@ -399,9 +410,13 @@ const RecordBalanceForm = ({ person, draft, dispatch, isBusy, onBusyChange, onRe
           {correcting ? t("hr.opening.correcting_heading") : t("hr.opening.record")}
         </p>
         {correcting ? (
-          <Button variant="link" size="lg" onClick={() => dispatch({ type: "abandon" })}>
-            {t("hr.opening.stop_correcting")}
-          </Button>
+          <Button
+            variant="ghost"
+            size="md"
+            stretch="auto"
+            label={t("hr.opening.stop_correcting")}
+            onClick={() => dispatch({ type: "abandon" })}
+          />
         ) : null}
       </div>
       <BalanceFields draft={draft} dispatch={dispatch} />
@@ -420,9 +435,14 @@ const RecordBalanceForm = ({ person, draft, dispatch, isBusy, onBusyChange, onRe
         </p>
       ) : null}
       <div className="flex justify-end">
-        <Button variant="primary" size="lg" loading={isBusy} onClick={() => void handleRecord()}>
-          {correcting ? t("hr.opening.correct_confirm") : t("hr.opening.record_confirm")}
-        </Button>
+        <Button
+          variant="primary"
+          size="md"
+          stretch="auto"
+          label={correcting ? t("hr.opening.correct_confirm") : t("hr.opening.record_confirm")}
+          loading={isBusy}
+          onClick={() => void handleRecord()}
+        />
       </div>
     </div>
   );

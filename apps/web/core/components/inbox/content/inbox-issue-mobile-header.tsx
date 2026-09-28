@@ -19,10 +19,13 @@ import {
   NewTabOutline,
   TickCircleFilled,
 } from "@makeplane/propel/icons";
-import { IconButton, getIconButtonStyling } from "@plane/propel/icon-button";
+import { useTranslation } from "@plane/i18n";
+import { IconButton } from "@makeplane/propel/components/icon-button";
+import { Icon } from "@makeplane/propel/components/icon";
+import { Menu, MenuContent, MenuItem, MenuTrigger } from "@makeplane/propel/components/menu";
 import type { TNameDescriptionLoader } from "@plane/types";
 
-import { Header, CustomMenu, EHeaderVariant } from "@plane/ui";
+import { Header, EHeaderVariant } from "@plane/blocks/layout";
 import { cn, findHowManyDaysLeft, generateWorkItemLink } from "@plane/utils";
 // components
 import { NameDescriptionUpdateStatus } from "@/components/issues/issue-update-status";
@@ -59,146 +62,6 @@ type Props = {
   handleActionWithPermission: (isAdmin: boolean, action: () => void, errorMessage: string) => void;
 };
 
-type TInboxIssueMobileActionsMenu = Pick<
-  Props,
-  | "canMarkAsAccepted"
-  | "canMarkAsDeclined"
-  | "isAcceptedOrDeclined"
-  | "canMarkAsDuplicate"
-  | "canDelete"
-  | "setAcceptIssueModal"
-  | "setDeclineIssueModal"
-  | "setDeleteIssueModal"
-  | "handleIssueSnoozeAction"
-  | "setSelectDuplicateIssue"
-  | "handleCopyIssueLink"
-  | "isProjectAdmin"
-  | "handleActionWithPermission"
-> & {
-  inboxIssue: IInboxIssueStore;
-  numberOfDaysLeft: number | undefined;
-  workItemLink: string;
-};
-
-const InboxIssueMobileActionsMenu = observer(function InboxIssueMobileActionsMenu(props: TInboxIssueMobileActionsMenu) {
-  const {
-    inboxIssue,
-    numberOfDaysLeft,
-    workItemLink,
-    canMarkAsAccepted,
-    canMarkAsDeclined,
-    canDelete,
-    canMarkAsDuplicate,
-    isAcceptedOrDeclined,
-    setAcceptIssueModal,
-    setDeclineIssueModal,
-    setDeleteIssueModal,
-    handleIssueSnoozeAction,
-    setSelectDuplicateIssue,
-    handleCopyIssueLink,
-    isProjectAdmin,
-    handleActionWithPermission,
-  } = props;
-  const router = useAppRouter();
-
-  return (
-    <CustomMenu
-      customButton={<MoreHorizontalOutline className="size-4" />}
-      customButtonClassName={getIconButtonStyling("secondary", "lg")}
-      placement="bottom-start"
-    >
-      {isAcceptedOrDeclined && (
-        <CustomMenu.MenuItem onClick={handleCopyIssueLink}>
-          <div className="flex items-center gap-2">
-            <LinkOutline width={14} height={14} />
-            Copy work item link
-          </div>
-        </CustomMenu.MenuItem>
-      )}
-      {isAcceptedOrDeclined && (
-        <CustomMenu.MenuItem onClick={() => router.push(workItemLink)}>
-          <div className="flex items-center gap-2">
-            <NewTabOutline width={14} height={14} />
-            Open work item
-          </div>
-        </CustomMenu.MenuItem>
-      )}
-      {canMarkAsAccepted && !isAcceptedOrDeclined && (
-        <CustomMenu.MenuItem
-          onClick={() =>
-            handleActionWithPermission(
-              isProjectAdmin,
-              handleIssueSnoozeAction,
-              "Only project admins can snooze/Un-snooze work items"
-            )
-          }
-        >
-          <div className="flex items-center gap-2">
-            <ClockOutline width={14} height={14} />
-            {inboxIssue.snoozed_till && numberOfDaysLeft && numberOfDaysLeft > 0 ? "Un-snooze" : "Snooze"}
-          </div>
-        </CustomMenu.MenuItem>
-      )}
-      {canMarkAsDuplicate && !isAcceptedOrDeclined && (
-        <CustomMenu.MenuItem
-          onClick={() =>
-            handleActionWithPermission(
-              isProjectAdmin,
-              () => setSelectDuplicateIssue(true),
-              "Only project admins can mark work items as duplicate"
-            )
-          }
-        >
-          <div className="flex items-center gap-2">
-            <DuplicateOfOutline width={14} height={14} />
-            Mark as duplicate
-          </div>
-        </CustomMenu.MenuItem>
-      )}
-      {canMarkAsAccepted && (
-        <CustomMenu.MenuItem
-          onClick={() =>
-            handleActionWithPermission(
-              isProjectAdmin,
-              () => setAcceptIssueModal(true),
-              "Only project admins can accept work items"
-            )
-          }
-        >
-          <div className="flex items-center gap-2 text-success-secondary">
-            <TickCircleFilled width={14} height={14} />
-            Accept
-          </div>
-        </CustomMenu.MenuItem>
-      )}
-      {canMarkAsDeclined && (
-        <CustomMenu.MenuItem
-          onClick={() =>
-            handleActionWithPermission(
-              isProjectAdmin,
-              () => setDeclineIssueModal(true),
-              "Only project admins can deny work items"
-            )
-          }
-        >
-          <div className="flex items-center gap-2 text-danger-secondary">
-            <CloseCircleFilled width={14} height={14} />
-            Decline
-          </div>
-        </CustomMenu.MenuItem>
-      )}
-      {canDelete && !isAcceptedOrDeclined && (
-        <CustomMenu.MenuItem onClick={() => setDeleteIssueModal(true)}>
-          <div className="flex items-center gap-2 text-danger-primary">
-            <DeleteOutline height={14} width={14} />
-            Delete
-          </div>
-        </CustomMenu.MenuItem>
-      )}
-    </CustomMenu>
-  );
-});
-
 export const InboxIssueActionsMobileHeader = observer(function InboxIssueActionsMobileHeader(props: Props) {
   const {
     inboxIssue,
@@ -223,6 +86,8 @@ export const InboxIssueActionsMobileHeader = observer(function InboxIssueActions
     isProjectAdmin,
     handleActionWithPermission,
   } = props;
+  const router = useAppRouter();
+  const { t } = useTranslation();
   const { getProjectIdentifierById } = useProject();
 
   const issue = inboxIssue?.issue;
@@ -257,15 +122,15 @@ export const InboxIssueActionsMobileHeader = observer(function InboxIssueActions
         <div className="flex items-center gap-x-2">
           <IconButton
             variant="secondary"
-            size="lg"
-            icon={ChevronUpOutline}
+            size="md"
+            icon={<Icon icon={ChevronUpOutline} />}
             aria-label="Previous work item"
             onClick={() => handleInboxIssueNavigation("prev")}
           />
           <IconButton
             variant="secondary"
-            size="lg"
-            icon={ChevronDownOutline}
+            size="md"
+            icon={<Icon icon={ChevronDownOutline} />}
             aria-label="Next work item"
             onClick={() => handleInboxIssueNavigation("next")}
           />
@@ -277,24 +142,95 @@ export const InboxIssueActionsMobileHeader = observer(function InboxIssueActions
           </div>
         </div>
         <div className="ml-auto">
-          <InboxIssueMobileActionsMenu
-            inboxIssue={inboxIssue}
-            numberOfDaysLeft={numberOfDaysLeft}
-            workItemLink={workItemLink}
-            canMarkAsAccepted={canMarkAsAccepted}
-            canMarkAsDeclined={canMarkAsDeclined}
-            canDelete={canDelete}
-            canMarkAsDuplicate={canMarkAsDuplicate}
-            isAcceptedOrDeclined={isAcceptedOrDeclined}
-            setAcceptIssueModal={setAcceptIssueModal}
-            setDeclineIssueModal={setDeclineIssueModal}
-            setDeleteIssueModal={setDeleteIssueModal}
-            handleIssueSnoozeAction={handleIssueSnoozeAction}
-            setSelectDuplicateIssue={setSelectDuplicateIssue}
-            handleCopyIssueLink={handleCopyIssueLink}
-            isProjectAdmin={isProjectAdmin}
-            handleActionWithPermission={handleActionWithPermission}
-          />
+          <Menu>
+            <MenuTrigger
+              render={
+                <IconButton
+                  variant="secondary"
+                  size="md"
+                  icon={<Icon icon={MoreHorizontalOutline} />}
+                  aria-label={t("aria_labels.common.more_actions")}
+                />
+              }
+            />
+            <MenuContent side="bottom" align="start">
+              {isAcceptedOrDeclined && (
+                <MenuItem
+                  icon={<Icon icon={LinkOutline} />}
+                  label="Copy work item link"
+                  onClick={handleCopyIssueLink}
+                />
+              )}
+              {isAcceptedOrDeclined && (
+                <MenuItem
+                  icon={<Icon icon={NewTabOutline} />}
+                  label="Open work item"
+                  onClick={() => router.push(workItemLink)}
+                />
+              )}
+              {canMarkAsAccepted && !isAcceptedOrDeclined && (
+                <MenuItem
+                  icon={<Icon icon={ClockOutline} />}
+                  label={inboxIssue?.snoozed_till && numberOfDaysLeft && numberOfDaysLeft > 0 ? "Un-snooze" : "Snooze"}
+                  onClick={() =>
+                    handleActionWithPermission(
+                      isProjectAdmin,
+                      handleIssueSnoozeAction,
+                      "Only project admins can snooze/Un-snooze work items"
+                    )
+                  }
+                />
+              )}
+              {canMarkAsDuplicate && !isAcceptedOrDeclined && (
+                <MenuItem
+                  icon={<Icon icon={DuplicateOfOutline} />}
+                  label="Mark as duplicate"
+                  onClick={() =>
+                    handleActionWithPermission(
+                      isProjectAdmin,
+                      () => setSelectDuplicateIssue(true),
+                      "Only project admins can mark work items as duplicate"
+                    )
+                  }
+                />
+              )}
+              {canMarkAsAccepted && (
+                // Propel menu rows are neutral/accent/danger only, so the accept/decline tint lives on the glyph.
+                <MenuItem
+                  icon={<Icon icon={<TickCircleFilled className="text-success-secondary" />} />}
+                  label="Accept"
+                  onClick={() =>
+                    handleActionWithPermission(
+                      isProjectAdmin,
+                      () => setAcceptIssueModal(true),
+                      "Only project admins can accept work items"
+                    )
+                  }
+                />
+              )}
+              {canMarkAsDeclined && (
+                <MenuItem
+                  icon={<Icon icon={<CloseCircleFilled className="text-danger-secondary" />} />}
+                  label="Decline"
+                  onClick={() =>
+                    handleActionWithPermission(
+                      isProjectAdmin,
+                      () => setDeclineIssueModal(true),
+                      "Only project admins can deny work items"
+                    )
+                  }
+                />
+              )}
+              {canDelete && !isAcceptedOrDeclined && (
+                <MenuItem
+                  variant="danger"
+                  icon={<Icon icon={DeleteOutline} />}
+                  label="Delete"
+                  onClick={() => setDeleteIssueModal(true)}
+                />
+              )}
+            </MenuContent>
+          </Menu>
         </div>
       </div>
     </Header>

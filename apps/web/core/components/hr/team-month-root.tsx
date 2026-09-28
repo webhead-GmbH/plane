@@ -10,10 +10,14 @@ import { useParams } from "react-router";
 import { CalendarDays, CalendarOff, Download, ListTree, MoreHorizontal, Upload, UserCog } from "lucide-react";
 import useSWR from "swr";
 // plane imports
-import { EmptyStateCompact } from "@plane/propel/empty-state";
 import { useTranslation } from "@plane/i18n";
-import { setToast, TOAST_TYPE } from "@plane/propel/toast";
-import { AlertModalCore, CustomMenu, Loader } from "@plane/ui";
+import { Icon } from "@makeplane/propel/components/icon";
+import { IconButton } from "@makeplane/propel/components/icon-button";
+import { Menu, MenuContent, MenuItem, MenuTrigger } from "@makeplane/propel/components/menu";
+import { ConfirmDialog } from "@plane/blocks/dialog";
+import { EmptyStateCompact } from "@plane/blocks/empty-state";
+import { Loader } from "@plane/blocks/skeleton";
+import { setToast } from "@plane/blocks/toast";
 // local imports
 import { EHrPeriodState, HrService, type THrOverviewRow } from "@/services/hr.service";
 import { HrFigure } from "./figure";
@@ -87,7 +91,7 @@ export const HrTeamMonthRoot = observer(function HrTeamMonthRoot() {
     try {
       await work();
       await mutate();
-      setToast({ type: TOAST_TYPE.SUCCESS, title: done });
+      setToast({ type: "success", title: done });
       return true;
     } catch (failure) {
       // A refusal is nearly always the table being out of date — somebody else
@@ -97,7 +101,7 @@ export const HrTeamMonthRoot = observer(function HrTeamMonthRoot() {
       // useful of the two things to put on screen.
       await mutate().catch(() => undefined);
       setToast({
-        type: TOAST_TYPE.ERROR,
+        type: "error",
         title: t("hr.team_time.toasts.refused"),
         message: refusalMessage(failure, t, currentLocale) ?? t("hr.team_time.toasts.try_again"),
       });
@@ -233,30 +237,30 @@ const TeamMonthToolbar = ({ year, month, monthLabel, workspaceSlug, onPrevious, 
 
         <span className="mx-1 h-4 w-px bg-layer-3" aria-hidden />
 
-        <CustomMenu
-          customButton={
-            <span className="grid size-7 place-items-center rounded-md text-tertiary transition-colors hover:bg-layer-2 hover:text-primary">
-              <MoreHorizontal className="size-4" />
-            </span>
-          }
-          placement="bottom-end"
-          closeOnSelect
-        >
-          <CustomMenu.MenuItem
-            onClick={() => window.open(hrService.monthExportUrl(year, month, "csv"), "_self")}
-            className="flex items-center gap-2"
-          >
-            <Download className="size-3 shrink-0" />
-            {t("hr.team_time.export_csv")}
-          </CustomMenu.MenuItem>
-          <CustomMenu.MenuItem
-            onClick={() => window.open(hrService.monthExportUrl(year, month, "xlsx"), "_self")}
-            className="flex items-center gap-2"
-          >
-            <Download className="size-3 shrink-0" />
-            {t("hr.team_time.export_excel")}
-          </CustomMenu.MenuItem>
-        </CustomMenu>
+        <Menu>
+          <MenuTrigger
+            render={
+              <IconButton
+                variant="ghost"
+                size="md"
+                icon={<Icon icon={MoreHorizontal} />}
+                aria-label={t("common.options")}
+              />
+            }
+          />
+          <MenuContent side="bottom" align="end">
+            <MenuItem
+              icon={<Icon icon={Download} />}
+              label={t("hr.team_time.export_csv")}
+              onClick={() => window.open(hrService.monthExportUrl(year, month, "csv"), "_self")}
+            />
+            <MenuItem
+              icon={<Icon icon={Download} />}
+              label={t("hr.team_time.export_excel")}
+              onClick={() => window.open(hrService.monthExportUrl(year, month, "xlsx"), "_self")}
+            />
+          </MenuContent>
+        </Menu>
       </div>
     </div>
   );
@@ -336,7 +340,7 @@ type TCloseMonthProps = {
 const CloseMonthDialog = ({ row, busyPeriodId, onClose, onConfirm }: TCloseMonthProps) => {
   const { t } = useTranslation();
   return (
-    <AlertModalCore
+    <ConfirmDialog
       isOpen={row !== null}
       handleClose={onClose}
       handleSubmit={onConfirm}

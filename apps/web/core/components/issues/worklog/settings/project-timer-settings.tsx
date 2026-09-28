@@ -8,9 +8,9 @@
 
 import { useState } from "react";
 import { observer } from "mobx-react";
-import { Switch } from "@plane/propel/switch";
+import { Switch } from "@makeplane/propel/components/switch";
 import { useTranslation } from "@plane/i18n";
-import { setToast, TOAST_TYPE } from "@plane/propel/toast";
+import { setToast } from "@plane/blocks/toast";
 
 import { useProject } from "@/hooks/store/use-project";
 import { useWorkspace } from "@/hooks/store/use-workspace";
@@ -38,9 +38,9 @@ export const ProjectTimerSettings = observer(function ProjectTimerSettings(props
     setSubmitting(true);
     try {
       await updateProject(workspaceSlug, projectId, { worklog_timer_state_groups: groups });
-      setToast({ type: TOAST_TYPE.SUCCESS, title: t("common.success"), message: t("common.time_tracking") });
+      setToast({ type: "success", title: t("common.success"), message: t("common.time_tracking") });
     } catch {
-      setToast({ type: TOAST_TYPE.ERROR, title: t("common.error.label") });
+      setToast({ type: "error", title: t("common.error.label") });
     } finally {
       setSubmitting(false);
     }
@@ -53,7 +53,12 @@ export const ProjectTimerSettings = observer(function ProjectTimerSettings(props
           <h4 className="text-lg font-medium text-primary">{t("common.time_tracking")}</h4>
           <p className="text-sm mt-1 text-secondary">{t("common.worklog_override_workspace")}</p>
         </div>
-        <Switch value={isOverriding} onChange={(enabled) => save(enabled ? [...value] : null)} disabled={submitting} />
+        <Switch
+          size="sm"
+          checked={isOverriding}
+          onCheckedChange={(enabled) => save(enabled ? [...value] : null)}
+          disabled={submitting}
+        />
       </div>
       {isOverriding && (
         <div className="mt-4">

@@ -10,8 +10,8 @@ import { useEffect, useRef, useState } from "react";
 import { observer } from "mobx-react";
 import { EUserPermissions } from "@plane/constants";
 import { useTranslation } from "@plane/i18n";
-import { Button } from "@plane/propel/button";
-import { MemberDropdown } from "@/components/dropdowns/member/dropdown";
+import { Button } from "@makeplane/propel/components/button";
+import { MemberSelect } from "@/components/dropdowns/member/member-select";
 import { useIssueDetail } from "@/hooks/store/use-issue-detail";
 import { useUser, useUserPermissions } from "@/hooks/store/user";
 import { isoToLocalInput, localInputToISO } from "../utils";
@@ -135,12 +135,12 @@ export const LogWorkPanel = observer(function LogWorkPanel(props: TLogWorkPanel)
       {isAdmin && (
         <div className="flex flex-col gap-1">
           <label className="text-xs text-tertiary">{t("common.log_work_for")}</label>
-          <MemberDropdown
+          <MemberSelect
             value={loggedBy}
-            onChange={(val: string | null) => setLoggedBy(val ?? currentUser?.id ?? "")}
+            onChange={(id) => setLoggedBy(id || currentUser?.id || "")}
             projectId={projectId}
-            multiple={false}
-            buttonVariant="border-with-text"
+            variant="select-md"
+            className="w-full"
             placeholder={t("common.select_member")}
           />
         </div>
@@ -149,12 +149,22 @@ export const LogWorkPanel = observer(function LogWorkPanel(props: TLogWorkPanel)
       {error && <p className="text-xs text-danger-primary">{error}</p>}
 
       <div className="flex justify-end gap-2">
-        <Button variant="secondary" size="sm" onClick={onClose} disabled={submitting}>
-          {t("common.cancel")}
-        </Button>
-        <Button variant="primary" size="sm" onClick={handleSave} disabled={submitting}>
-          {t("common.save")}
-        </Button>
+        <Button
+          variant="secondary"
+          size="xs"
+          stretch="auto"
+          label={t("common.cancel")}
+          onClick={onClose}
+          disabled={submitting}
+        />
+        <Button
+          variant="primary"
+          size="xs"
+          stretch="auto"
+          label={t("common.save")}
+          onClick={handleSave}
+          disabled={submitting}
+        />
       </div>
     </div>
   );

@@ -8,9 +8,9 @@ import { useState } from "react";
 import { observer } from "mobx-react";
 // plane imports
 import { useTranslation } from "@plane/i18n";
-import { TOAST_TYPE, setToast } from "@plane/propel/toast";
 import type { ECustomFieldEntityType, TCustomField } from "@plane/types";
-import { EModalPosition, EModalWidth, ModalCore } from "@plane/ui";
+import { Dialog, DialogContent } from "@makeplane/propel/components/dialog";
+import { setToast } from "@plane/blocks/toast";
 // hooks
 import { useCustomField } from "@/hooks/store/use-custom-field";
 // local imports
@@ -38,7 +38,7 @@ export const CreateUpdateFieldModal = observer(function CreateUpdateFieldModal(p
       if (data?.id) {
         await updateCustomField(workspaceSlug, entityType, data.id, payload);
         setToast({
-          type: TOAST_TYPE.SUCCESS,
+          type: "success",
           title: t("workspace_settings.settings.custom_fields.toasts.updated.title"),
           message: t("workspace_settings.settings.custom_fields.toasts.updated.message"),
         });
@@ -51,7 +51,7 @@ export const CreateUpdateFieldModal = observer(function CreateUpdateFieldModal(p
           sort_order: nextSortOrder,
         });
         setToast({
-          type: TOAST_TYPE.SUCCESS,
+          type: "success",
           title: t("workspace_settings.settings.custom_fields.toasts.created.title"),
           message: t("workspace_settings.settings.custom_fields.toasts.created.message"),
         });
@@ -63,7 +63,7 @@ export const CreateUpdateFieldModal = observer(function CreateUpdateFieldModal(p
         (error as { error?: string })?.error ??
         t("workspace_settings.settings.custom_fields.toasts.error.message");
       setToast({
-        type: TOAST_TYPE.ERROR,
+        type: "error",
         title: t("workspace_settings.settings.custom_fields.toasts.error.title"),
         message,
       });
@@ -73,14 +73,21 @@ export const CreateUpdateFieldModal = observer(function CreateUpdateFieldModal(p
   };
 
   return (
-    <ModalCore isOpen={isOpen} handleClose={onClose} position={EModalPosition.TOP} width={EModalWidth.XXL}>
-      <FieldForm
-        key={data?.id ?? "new"}
-        data={data}
-        isSubmitting={isSubmitting}
-        onSubmit={handleSubmit}
-        handleClose={onClose}
-      />
-    </ModalCore>
+    <Dialog
+      open={isOpen}
+      onOpenChange={(open) => {
+        if (!open) onClose();
+      }}
+    >
+      <DialogContent size="md">
+        <FieldForm
+          key={data?.id ?? "new"}
+          data={data}
+          isSubmitting={isSubmitting}
+          onSubmit={handleSubmit}
+          handleClose={onClose}
+        />
+      </DialogContent>
+    </Dialog>
   );
 });

@@ -10,11 +10,12 @@ import { AlertTriangle, CheckCircle2, Download, MinusCircle, Undo2, Upload } fro
 import useSWR from "swr";
 // plane imports
 import { useTranslation } from "@plane/i18n";
-import { Button } from "@plane/propel/button";
-import { EmptyStateCompact } from "@plane/propel/empty-state";
-import { setToast, TOAST_TYPE } from "@plane/propel/toast";
-import { Loader } from "@plane/ui";
+import { Button } from "@makeplane/propel/components/button";
+import { Icon } from "@makeplane/propel/components/icon";
 import { cn } from "@plane/utils";
+import { EmptyStateCompact } from "@plane/blocks/empty-state";
+import { Loader } from "@plane/blocks/skeleton";
+import { setToast } from "@plane/blocks/toast";
 // services
 import {
   EHrImportKind,
@@ -100,7 +101,7 @@ export const HrImportRoot = observer(function HrImportRoot() {
       setChecking(null);
       await mutate();
       setToast({
-        type: TOAST_TYPE.SUCCESS,
+        type: "success",
         title: t("hr.imports.toasts.applied"),
         message: t("hr.imports.toasts.written", { count: applied.written }),
       });
@@ -119,7 +120,7 @@ export const HrImportRoot = observer(function HrImportRoot() {
       setUndoing(null);
       await mutate();
       setToast({
-        type: TOAST_TYPE.SUCCESS,
+        type: "success",
         title: t("hr.imports.toasts.undone"),
         message: t("hr.imports.toasts.removed", { count: undone.removed }),
       });
@@ -222,18 +223,23 @@ const ImportToolbar = ({
             if (file) onFile(file);
           }}
         />
-        <Button variant="secondary" size="lg" prependIcon={<Download />} onClick={() => downloadTemplate(kind)}>
-          {t("hr.imports.template")}
-        </Button>
+        <Button
+          variant="secondary"
+          size="md"
+          stretch="auto"
+          label={t("hr.imports.template")}
+          icon={<Icon icon={Download} />}
+          onClick={() => downloadTemplate(kind)}
+        />
         <Button
           variant="primary"
-          size="lg"
+          size="md"
+          stretch="auto"
+          label={t("hr.imports.choose_file")}
           loading={isBusy}
-          prependIcon={<Upload />}
+          icon={<Icon icon={Upload} />}
           onClick={() => fileField.current?.click()}
-        >
-          {t("hr.imports.choose_file")}
-        </Button>
+        />
       </div>
       <p className="text-13 text-tertiary">{t(`hr.imports.columns.${KIND_KEY[kind]}`)}</p>
     </section>
@@ -274,12 +280,16 @@ const ImportPreview = ({
           <p className="text-13 text-tertiary">{t("hr.imports.preview_hint")}</p>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="secondary" size="lg" onClick={onDiscard}>
-            {t("hr.imports.discard")}
-          </Button>
-          <Button variant="primary" size="lg" loading={isBusy} disabled={batch.valid_count === 0} onClick={onApply}>
-            {t("hr.imports.apply", { count: batch.valid_count })}
-          </Button>
+          <Button variant="secondary" size="md" stretch="auto" label={t("hr.imports.discard")} onClick={onDiscard} />
+          <Button
+            variant="primary"
+            size="md"
+            stretch="auto"
+            label={t("hr.imports.apply", { count: batch.valid_count })}
+            loading={isBusy}
+            disabled={batch.valid_count === 0}
+            onClick={onApply}
+          />
         </div>
       </div>
 
@@ -402,14 +412,23 @@ const ImportHistoryRow = ({
         {t(`hr.imports.state.${batch.state}`)}
       </span>
       {batch.state === EHrImportState.PREVIEW_READY ? (
-        <Button variant="secondary" size="lg" onClick={() => onResume(batch)}>
-          {t("hr.imports.resume")}
-        </Button>
+        <Button
+          variant="secondary"
+          size="md"
+          stretch="auto"
+          label={t("hr.imports.resume")}
+          onClick={() => onResume(batch)}
+        />
       ) : null}
       {batch.state === EHrImportState.COMMITTED ? (
-        <Button variant="link" size="lg" prependIcon={<Undo2 className="size-3.5" />} onClick={() => onUndo(batch)}>
-          {t("hr.imports.undo")}
-        </Button>
+        <Button
+          variant="ghost"
+          size="md"
+          stretch="auto"
+          label={t("hr.imports.undo")}
+          icon={<Icon icon={Undo2} />}
+          onClick={() => onUndo(batch)}
+        />
       ) : null}
     </div>
   );
@@ -517,7 +536,7 @@ function downloadTemplate(kind: EHrImportKind) {
 /** The screen's one way of saying that the server would not do it. */
 function complainAbout(failure: unknown, t: (key: string, values?: Record<string, unknown>) => string, locale: string) {
   setToast({
-    type: TOAST_TYPE.ERROR,
+    type: "error",
     title: t("hr.imports.toasts.refused"),
     message: refusalMessage(failure, t, locale) ?? t("hr.imports.toasts.try_again"),
   });

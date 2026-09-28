@@ -9,10 +9,10 @@ import { Check, Search } from "lucide-react";
 // plane imports
 import { Tooltip } from "@makeplane/propel/components/tooltip";
 import { useTranslation } from "@plane/i18n";
-import { Button } from "@plane/propel/button";
-import { EmptyStateCompact } from "@plane/propel/empty-state";
-import { EModalPosition, EModalWidth, ModalCore } from "@plane/ui";
+import { Button } from "@makeplane/propel/components/button";
+import { Dialog, DialogContent, DialogTitle } from "@makeplane/propel/components/dialog";
 import { cn } from "@plane/utils";
+import { EmptyStateCompact } from "@plane/blocks/empty-state";
 // services
 import type { THrCandidate } from "@/services/hr.service";
 
@@ -50,95 +50,100 @@ export const HrAddPersonModal = ({ isOpen, candidates, isBusy, onClose, onAdd }:
     : candidates;
 
   return (
-    <ModalCore isOpen={isOpen} handleClose={onClose} position={EModalPosition.CENTER} width={EModalWidth.XXL}>
-      <div className="flex flex-col gap-4 p-5">
-        <div>
-          <h3 className="text-16 font-medium text-primary">{t("hr.people.add_title")}</h3>
-          <p className="text-13 text-tertiary">{t("hr.people.add_hint")}</p>
-        </div>
+    <Dialog
+      open={isOpen}
+      onOpenChange={(open) => {
+        if (!open) onClose();
+      }}
+    >
+      <DialogContent size="md">
+        <div className="flex flex-col gap-4 p-5">
+          <div>
+            <DialogTitle>{t("hr.people.add_title")}</DialogTitle>
+            <p className="text-13 text-tertiary">{t("hr.people.add_hint")}</p>
+          </div>
 
-        <div className="flex items-center gap-2 rounded-md border border-subtle px-3 focus-within:border-accent-strong">
-          <Search className="size-4 text-tertiary" />
-          <input
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder={t("hr.people.search_placeholder")}
-            className="w-full bg-transparent py-2 text-13 text-primary outline-none"
-          />
-        </div>
-
-        <div className="max-h-64 overflow-y-auto rounded-md border border-subtle">
-          {shown.length === 0 ? (
-            <EmptyStateCompact
-              assetKey={candidates.length === 0 ? "work-item" : "search"}
-              assetClassName="size-20"
-              rootClassName="py-8"
-              title={candidates.length === 0 ? t("hr.people.everybody_added") : t("hr.people.nobody_matches")}
-              description={
-                candidates.length === 0 ? t("hr.people.everybody_added_detail") : t("hr.people.nobody_matches_detail")
-              }
+          <div className="flex items-center gap-2 rounded-md border border-subtle px-3 focus-within:border-accent-strong">
+            <Search className="size-4 text-tertiary" />
+            <input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder={t("hr.people.search_placeholder")}
+              className="w-full bg-transparent py-2 text-13 text-primary outline-none"
             />
-          ) : (
-            shown.map((person) => (
-              <button
-                key={person.id}
-                type="button"
-                onClick={() => setChosen(person.id)}
-                aria-pressed={chosen === person.id}
-                className={cn(
-                  "flex w-full items-center gap-3 border-b border-subtle px-3 py-2 text-left last:border-b-0",
-                  chosen === person.id ? "bg-accent-primary/10" : "hover:bg-layer-1"
-                )}
-              >
-                <span className="flex size-7 items-center justify-center rounded-full bg-layer-2 text-13 font-medium text-secondary uppercase">
-                  {(person.display_name || person.email).charAt(0)}
-                </span>
-                <span className="flex flex-col">
-                  <span className="text-13 text-primary">{person.display_name || person.email}</span>
-                  {person.display_name ? <span className="text-13 text-tertiary">{person.email}</span> : null}
-                </span>
-                {/* Colour alone did not say which row was picked. */}
-                {chosen === person.id ? <Check className="ml-auto size-4 text-accent-primary" /> : null}
-              </button>
-            ))
-          )}
-        </div>
+          </div>
 
-        <label className="flex flex-col gap-1">
-          <span className="text-13 font-medium text-tertiary">{t("hr.people.hire_date")}</span>
-          <input
-            type="date"
-            value={hireDate}
-            onChange={(e) => setHireDate(e.target.value)}
-            className="rounded-md border border-subtle bg-layer-1 px-3 py-1.5 text-13 text-primary outline-none focus:border-accent-strong"
-          />
-        </label>
+          <div className="max-h-64 overflow-y-auto rounded-md border border-subtle">
+            {shown.length === 0 ? (
+              <EmptyStateCompact
+                assetKey={candidates.length === 0 ? "work-item" : "search"}
+                assetClassName="size-20"
+                rootClassName="py-8"
+                title={candidates.length === 0 ? t("hr.people.everybody_added") : t("hr.people.nobody_matches")}
+                description={
+                  candidates.length === 0 ? t("hr.people.everybody_added_detail") : t("hr.people.nobody_matches_detail")
+                }
+              />
+            ) : (
+              shown.map((person) => (
+                <button
+                  key={person.id}
+                  type="button"
+                  onClick={() => setChosen(person.id)}
+                  aria-pressed={chosen === person.id}
+                  className={cn(
+                    "flex w-full items-center gap-3 border-b border-subtle px-3 py-2 text-left last:border-b-0",
+                    chosen === person.id ? "bg-accent-primary/10" : "hover:bg-layer-1"
+                  )}
+                >
+                  <span className="flex size-7 items-center justify-center rounded-full bg-layer-2 text-13 font-medium text-secondary uppercase">
+                    {(person.display_name || person.email).charAt(0)}
+                  </span>
+                  <span className="flex flex-col">
+                    <span className="text-13 text-primary">{person.display_name || person.email}</span>
+                    {person.display_name ? <span className="text-13 text-tertiary">{person.email}</span> : null}
+                  </span>
+                  {/* Colour alone did not say which row was picked. */}
+                  {chosen === person.id ? <Check className="ml-auto size-4 text-accent-primary" /> : null}
+                </button>
+              ))
+            )}
+          </div>
 
-        <div className="flex items-center justify-end gap-2">
-          <Button variant="secondary" size="lg" onClick={onClose}>
-            {t("hr.people.cancel")}
-          </Button>
-          <Tooltip
-            label={chosen ? t("hr.people.pick_date_first") : t("hr.people.pick_somebody_first")}
-            disabled={Boolean(chosen && hireDate)}
-            side="top"
-          >
-            {/* A wrapper: a disabled button takes no pointer events of its own,
+          <label className="flex flex-col gap-1">
+            <span className="text-13 font-medium text-tertiary">{t("hr.people.hire_date")}</span>
+            <input
+              type="date"
+              value={hireDate}
+              onChange={(e) => setHireDate(e.target.value)}
+              className="rounded-md border border-subtle bg-layer-1 px-3 py-1.5 text-13 text-primary outline-none focus:border-accent-strong"
+            />
+          </label>
+
+          <div className="flex items-center justify-end gap-2">
+            <Button variant="secondary" size="md" stretch="auto" label={t("hr.people.cancel")} onClick={onClose} />
+            <Tooltip
+              label={chosen ? t("hr.people.pick_date_first") : t("hr.people.pick_somebody_first")}
+              disabled={Boolean(chosen && hireDate)}
+              side="top"
+            >
+              {/* A wrapper: a disabled button takes no pointer events of its own,
                 so without this the reason never reaches the person stuck on it. */}
-            <span>
-              <Button
-                variant="primary"
-                size="lg"
-                disabled={!chosen || !hireDate || isBusy}
-                loading={isBusy}
-                onClick={() => chosen && onAdd(chosen, hireDate)}
-              >
-                {t("hr.people.add_confirm")}
-              </Button>
-            </span>
-          </Tooltip>
+              <span>
+                <Button
+                  variant="primary"
+                  size="md"
+                  stretch="auto"
+                  label={t("hr.people.add_confirm")}
+                  disabled={!chosen || !hireDate || isBusy}
+                  loading={isBusy}
+                  onClick={() => chosen && onAdd(chosen, hireDate)}
+                />
+              </span>
+            </Tooltip>
+          </div>
         </div>
-      </div>
-    </ModalCore>
+      </DialogContent>
+    </Dialog>
   );
 };

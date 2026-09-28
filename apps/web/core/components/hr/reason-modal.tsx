@@ -7,8 +7,8 @@
 import { useEffect, useRef, useState } from "react";
 import { AlertTriangle } from "lucide-react";
 // plane imports
-import { Button } from "@plane/propel/button";
-import { EModalPosition, EModalWidth, ModalCore } from "@plane/ui";
+import { Button } from "@makeplane/propel/components/button";
+import { Dialog, DialogContent, DialogTitle } from "@makeplane/propel/components/dialog";
 
 type TProps = {
   isOpen: boolean;
@@ -61,53 +61,60 @@ export const HrReasonModal = ({
     // Escape and a click outside are held shut while the request is in flight:
     // the reason is required and was typed by hand, and letting the dialog go
     // mid-sentence loses it without saying whether the thing was done.
-    <ModalCore
-      isOpen={isOpen}
-      handleClose={isBusy ? () => {} : onClose}
-      position={EModalPosition.CENTER}
-      width={EModalWidth.XL}
+    <Dialog
+      open={isOpen}
+      onOpenChange={(open) => {
+        if (!open && !isBusy) onClose();
+      }}
     >
-      <div className="flex flex-col gap-4 p-5">
-        <div className="flex items-start gap-3">
-          <span className="flex size-9 flex-shrink-0 items-center justify-center rounded-full bg-warning-subtle">
-            <AlertTriangle className="size-4 text-warning-primary" />
-          </span>
-          <div className="flex flex-col gap-1">
-            <h3 className="text-16 font-medium text-primary">{title}</h3>
-            <p className="text-13 text-tertiary">{body}</p>
+      <DialogContent size="sm">
+        <div className="flex flex-col gap-4 p-5">
+          <div className="flex items-start gap-3">
+            <span className="flex size-9 flex-shrink-0 items-center justify-center rounded-full bg-warning-subtle">
+              <AlertTriangle className="size-4 text-warning-primary" />
+            </span>
+            <div className="flex flex-col gap-1">
+              <DialogTitle>{title}</DialogTitle>
+              <p className="text-13 text-tertiary">{body}</p>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <label htmlFor="hr-reason" className="text-13 font-medium text-secondary">
+              {label}
+            </label>
+            <textarea
+              id="hr-reason"
+              ref={field}
+              value={reason}
+              onChange={(event) => setReason(event.target.value)}
+              rows={3}
+              placeholder={placeholder}
+              className="w-full resize-none rounded-md border border-subtle bg-layer-1 px-3 py-2 text-13 text-primary outline-none placeholder:text-tertiary focus:border-accent-strong"
+            />
+          </div>
+
+          <div className="flex items-center justify-end gap-2">
+            <Button
+              variant="secondary"
+              size="md"
+              stretch="auto"
+              label={cancelLabel}
+              disabled={isBusy}
+              onClick={onClose}
+            />
+            <Button
+              variant="primary"
+              size="md"
+              stretch="auto"
+              label={confirmLabel}
+              disabled={reason.trim().length === 0 || isBusy}
+              loading={isBusy}
+              onClick={() => onConfirm(reason.trim())}
+            />
           </div>
         </div>
-
-        <div className="flex flex-col gap-1.5">
-          <label htmlFor="hr-reason" className="text-13 font-medium text-secondary">
-            {label}
-          </label>
-          <textarea
-            id="hr-reason"
-            ref={field}
-            value={reason}
-            onChange={(event) => setReason(event.target.value)}
-            rows={3}
-            placeholder={placeholder}
-            className="w-full resize-none rounded-md border border-subtle bg-layer-1 px-3 py-2 text-13 text-primary outline-none placeholder:text-tertiary focus:border-accent-strong"
-          />
-        </div>
-
-        <div className="flex items-center justify-end gap-2">
-          <Button variant="secondary" size="lg" disabled={isBusy} onClick={onClose}>
-            {cancelLabel}
-          </Button>
-          <Button
-            variant="primary"
-            size="lg"
-            disabled={reason.trim().length === 0 || isBusy}
-            loading={isBusy}
-            onClick={() => onConfirm(reason.trim())}
-          >
-            {confirmLabel}
-          </Button>
-        </div>
-      </div>
-    </ModalCore>
+      </DialogContent>
+    </Dialog>
   );
 };

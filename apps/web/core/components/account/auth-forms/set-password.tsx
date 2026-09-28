@@ -8,13 +8,15 @@ import type { FormEvent } from "react";
 import { useEffect, useMemo, useState } from "react";
 import { observer } from "mobx-react";
 import { useSearchParams } from "next/navigation";
+// icons
+import { HideOutline, ShowOutline } from "@makeplane/propel/icons";
 // plane imports
 import { Input, InputGroup } from "@makeplane/propel/components/input";
 import { E_PASSWORD_STRENGTH } from "@plane/constants";
 import { useTranslation } from "@plane/i18n";
-import { Button } from "@plane/propel/button";
-import { TOAST_TYPE, setToast } from "@plane/propel/toast";
-import { PasswordStrengthIndicator } from "@plane/ui";
+import { Button } from "@makeplane/propel/components/button";
+import { setToast } from "@plane/blocks/toast";
+import { PasswordStrengthIndicator } from "@plane/blocks/auth";
 // components
 import { getPasswordStrength } from "@plane/utils";
 // hooks
@@ -25,7 +27,6 @@ import { AuthService } from "@/services/auth.service";
 // local components
 import { FormContainer } from "./common/container";
 import { AuthFormHeader } from "./common/header";
-import { AuthPasswordField } from "./common/password-field";
 
 type TResetPasswordFormValues = {
   email: string;
@@ -98,7 +99,7 @@ export const SetPasswordForm = observer(function SetPasswordForm() {
         message = err.error;
       }
       setToast({
-        type: TOAST_TYPE.ERROR,
+        type: "error",
         title: t("common.errors.default.title"),
         message: message ?? t("common.errors.default.message"),
       });
@@ -130,41 +131,82 @@ export const SetPasswordForm = observer(function SetPasswordForm() {
             />
           </InputGroup>
         </div>
-        <AuthPasswordField
-          id="password"
-          label={t("auth.common.password.label")}
-          value={passwordFormData.password}
-          placeholder={t("auth.common.password.placeholder")}
-          isPasswordVisible={showPassword.password}
-          onTogglePasswordVisibility={() => handleShowPassword("password")}
-          onChange={(value) => handleFormChange("password", value)}
-          onFocus={() => setIsPasswordInputFocused(true)}
-          onBlur={() => setIsPasswordInputFocused(false)}
-          minLength={8}
-          autoFocus
-        >
+        <div className="space-y-1">
+          <label className="text-13 font-medium text-tertiary" htmlFor="password">
+            {t("auth.common.password.label")}
+          </label>
+          <InputGroup size="2xl">
+            <Input
+              size="2xl"
+              type={showPassword.password ? "text" : "password"}
+              name="password"
+              id="password"
+              value={passwordFormData.password}
+              onChange={(e) => handleFormChange("password", e.target.value)}
+              placeholder={t("auth.common.password.placeholder")}
+              minLength={8}
+              onFocus={() => setIsPasswordInputFocused(true)}
+              onBlur={() => setIsPasswordInputFocused(false)}
+              autoComplete="new-password"
+              autoFocus
+            />
+            <button
+              type="button"
+              onClick={() => handleShowPassword("password")}
+              className="grid size-5 place-items-center"
+            >
+              {showPassword.password ? (
+                <HideOutline className="size-5 text-placeholder" />
+              ) : (
+                <ShowOutline className="size-5 text-placeholder" />
+              )}
+            </button>
+          </InputGroup>
           <PasswordStrengthIndicator password={passwordFormData.password} isFocused={isPasswordInputFocused} />
-        </AuthPasswordField>
-        <AuthPasswordField
-          id="confirm_password"
-          label={t("auth.common.password.confirm_password.label")}
-          value={passwordFormData.confirm_password}
-          placeholder={t("auth.common.password.confirm_password.placeholder")}
-          isPasswordVisible={showPassword.retypePassword}
-          onTogglePasswordVisibility={() => handleShowPassword("retypePassword")}
-          onChange={(value) => handleFormChange("confirm_password", value)}
-          onFocus={() => setIsRetryPasswordInputFocused(true)}
-          onBlur={() => setIsRetryPasswordInputFocused(false)}
-        >
+        </div>
+        <div className="space-y-1">
+          <label className="text-13 font-medium text-tertiary" htmlFor="confirm_password">
+            {t("auth.common.password.confirm_password.label")}
+          </label>
+          <InputGroup size="2xl">
+            <Input
+              size="2xl"
+              type={showPassword.retypePassword ? "text" : "password"}
+              name="confirm_password"
+              id="confirm_password"
+              value={passwordFormData.confirm_password}
+              onChange={(e) => handleFormChange("confirm_password", e.target.value)}
+              placeholder={t("auth.common.password.confirm_password.placeholder")}
+              onFocus={() => setIsRetryPasswordInputFocused(true)}
+              onBlur={() => setIsRetryPasswordInputFocused(false)}
+              autoComplete="new-password"
+            />
+            <button
+              type="button"
+              onClick={() => handleShowPassword("retypePassword")}
+              className="grid size-5 place-items-center"
+            >
+              {showPassword.retypePassword ? (
+                <HideOutline className="size-5 text-placeholder" />
+              ) : (
+                <ShowOutline className="size-5 text-placeholder" />
+              )}
+            </button>
+          </InputGroup>
           {!!passwordFormData.confirm_password &&
             passwordFormData.password !== passwordFormData.confirm_password &&
             renderPasswordMatchError && (
               <span className="text-13 text-danger-primary">{t("auth.common.password.errors.match")}</span>
             )}
-        </AuthPasswordField>
-        <Button type="submit" variant="primary" className="w-full" size="xl" disabled={isButtonDisabled}>
-          {t("common.continue")}
-        </Button>
+        </div>
+        <Button
+          type="submit"
+          variant="primary"
+          size="lg"
+          stretch="full"
+          label={t("common.continue")}
+          disabled={isButtonDisabled}
+        />
       </form>
     </FormContainer>
   );

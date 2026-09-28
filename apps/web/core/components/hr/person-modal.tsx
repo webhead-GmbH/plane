@@ -7,8 +7,8 @@
 import { useId, useState } from "react";
 // plane imports
 import { useTranslation } from "@plane/i18n";
-import { Button } from "@plane/propel/button";
-import { EModalPosition, EModalWidth, ModalCore } from "@plane/ui";
+import { Button } from "@makeplane/propel/components/button";
+import { Dialog, DialogContent, DialogTitle } from "@makeplane/propel/components/dialog";
 import { cn } from "@plane/utils";
 // services
 import {
@@ -156,136 +156,146 @@ export const HrPersonModal = ({ isOpen, person, contract, schedule, isBusy, onCl
   };
 
   return (
-    <ModalCore isOpen={isOpen} handleClose={onClose} position={EModalPosition.CENTER} width={EModalWidth.XXXL}>
-      <div className="flex max-h-[80vh] flex-col gap-5 overflow-y-auto p-5">
-        <div>
-          <h3 className="text-16 font-medium text-primary">{person?.member_display_name || person?.member_email}</h3>
-          <p className="text-13 text-tertiary">{t("hr.people.modal_hint")}</p>
-        </div>
+    <Dialog
+      open={isOpen}
+      onOpenChange={(open) => {
+        if (!open) onClose();
+      }}
+    >
+      <DialogContent size="lg">
+        <div className="flex max-h-[80vh] flex-col gap-5 overflow-y-auto p-5">
+          <div>
+            <DialogTitle>{person?.member_display_name || person?.member_email}</DialogTitle>
+            <p className="text-13 text-tertiary">{t("hr.people.modal_hint")}</p>
+          </div>
 
-        <section className="flex flex-col gap-3">
-          <h4 className="text-13 font-medium text-secondary">{t("hr.people.section_person")}</h4>
-          <div className="grid gap-3 sm:grid-cols-2">
-            <Field label={t("hr.people.hire_date")}>
+          <section className="flex flex-col gap-3">
+            <h4 className="text-13 font-medium text-secondary">{t("hr.people.section_person")}</h4>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <Field label={t("hr.people.hire_date")}>
+                <input
+                  type="date"
+                  value={hireDate}
+                  onChange={(e) => setHireDate(e.target.value)}
+                  className={inputClass}
+                />
+              </Field>
+              <Field label={t("hr.people.timezone")}>
+                <input value={timezone} onChange={(e) => setTimezone(e.target.value)} className={inputClass} />
+              </Field>
+            </div>
+            <Field label={t("hr.people.crm_staff_id")}>
               <input
-                type="date"
-                value={hireDate}
-                onChange={(e) => setHireDate(e.target.value)}
+                value={crmStaffId}
+                inputMode="numeric"
+                placeholder={t("hr.people.crm_staff_id_placeholder")}
+                onChange={(e) => setCrmStaffId(e.target.value)}
                 className={inputClass}
               />
+              <p className="mt-1 text-13 text-tertiary">
+                {person?.crm_link === "set"
+                  ? t("hr.people.crm_link.set")
+                  : person?.crm_link === "email"
+                    ? t("hr.people.crm_link.email")
+                    : t("hr.people.crm_link.none")}
+              </p>
             </Field>
-            <Field label={t("hr.people.timezone")}>
-              <input value={timezone} onChange={(e) => setTimezone(e.target.value)} className={inputClass} />
-            </Field>
-          </div>
-          <Field label={t("hr.people.crm_staff_id")}>
-            <input
-              value={crmStaffId}
-              inputMode="numeric"
-              placeholder={t("hr.people.crm_staff_id_placeholder")}
-              onChange={(e) => setCrmStaffId(e.target.value)}
-              className={inputClass}
-            />
-            <p className="mt-1 text-13 text-tertiary">
-              {person?.crm_link === "set"
-                ? t("hr.people.crm_link.set")
-                : person?.crm_link === "email"
-                  ? t("hr.people.crm_link.email")
-                  : t("hr.people.crm_link.none")}
-            </p>
-          </Field>
 
-          <label className="flex items-center gap-2 text-13 text-secondary">
-            <input type="checkbox" checked={isManager} onChange={(e) => setIsManager(e.target.checked)} />
-            {t("hr.people.is_manager")}
-          </label>
-        </section>
+            <label className="flex items-center gap-2 text-13 text-secondary">
+              <input type="checkbox" checked={isManager} onChange={(e) => setIsManager(e.target.checked)} />
+              {t("hr.people.is_manager")}
+            </label>
+          </section>
 
-        <section className="flex flex-col gap-3">
-          <h4 className="text-13 font-medium text-secondary">{t("hr.people.section_terms")}</h4>
-          <div className="grid gap-3 sm:grid-cols-2">
-            <Field label={t("hr.people.arrangement")}>
-              <select
-                value={arrangement}
-                onChange={(e) => {
-                  const next = e.target.value as EHrArrangement;
-                  setArrangement(next);
-                  // What the hint under the box says, done rather than said. The
-                  // box stays free afterwards, for the arrangement that is an
-                  // exception to its own rule.
-                  setRecordsTarget(owesHoursByTheDay(next));
-                }}
-                className={inputClass}
-              >
-                {ARRANGEMENTS.map((value) => (
-                  <option key={value} value={value}>
-                    {t(`hr.arrangement.${value}`)}
-                  </option>
-                ))}
-              </select>
-            </Field>
-            <Field label={t("hr.people.valid_from")}>
+          <section className="flex flex-col gap-3">
+            <h4 className="text-13 font-medium text-secondary">{t("hr.people.section_terms")}</h4>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <Field label={t("hr.people.arrangement")}>
+                <select
+                  value={arrangement}
+                  onChange={(e) => {
+                    const next = e.target.value as EHrArrangement;
+                    setArrangement(next);
+                    // What the hint under the box says, done rather than said. The
+                    // box stays free afterwards, for the arrangement that is an
+                    // exception to its own rule.
+                    setRecordsTarget(owesHoursByTheDay(next));
+                  }}
+                  className={inputClass}
+                >
+                  {ARRANGEMENTS.map((value) => (
+                    <option key={value} value={value}>
+                      {t(`hr.arrangement.${value}`)}
+                    </option>
+                  ))}
+                </select>
+              </Field>
+              <Field label={t("hr.people.valid_from")}>
+                <input
+                  type="date"
+                  value={validFrom}
+                  onChange={(e) => setValidFrom(e.target.value)}
+                  className={inputClass}
+                />
+              </Field>
+            </div>
+            <label className="flex items-start gap-2 text-13 text-secondary">
               <input
-                type="date"
-                value={validFrom}
-                onChange={(e) => setValidFrom(e.target.value)}
-                className={inputClass}
+                type="checkbox"
+                checked={recordsTarget}
+                onChange={(e) => setRecordsTarget(e.target.checked)}
+                className="mt-1"
               />
-            </Field>
-          </div>
-          <label className="flex items-start gap-2 text-13 text-secondary">
-            <input
-              type="checkbox"
-              checked={recordsTarget}
-              onChange={(e) => setRecordsTarget(e.target.checked)}
-              className="mt-1"
-            />
-            <span>
-              {t("hr.people.records_target")}
-              <span className="block text-13 text-tertiary">{t("hr.people.records_target_hint")}</span>
-            </span>
-          </label>
-        </section>
+              <span>
+                {t("hr.people.records_target")}
+                <span className="block text-13 text-tertiary">{t("hr.people.records_target_hint")}</span>
+              </span>
+            </label>
+          </section>
 
-        <section className="flex flex-col gap-3">
-          <div className="flex items-baseline justify-between">
-            <h4 className="text-13 font-medium text-secondary">{t("hr.people.section_schedule")}</h4>
-            <span className="text-13 text-tertiary">
-              {t("hr.people.week_total", { duration: formatMinutes(weekMinutes) })}
-            </span>
-          </div>
-          <p className="text-13 text-tertiary">{t("hr.people.schedule_hint")}</p>
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-7">
-            {WEEKDAYS.map(({ key, label }) => (
-              <WeekdayField
-                key={key}
-                label={t(label)}
-                value={days[key] ?? ""}
-                onChange={(value) => setDays((prev) => ({ ...prev, [key]: value }))}
-              />
-            ))}
-          </div>
-        </section>
+          <section className="flex flex-col gap-3">
+            <div className="flex items-baseline justify-between">
+              <h4 className="text-13 font-medium text-secondary">{t("hr.people.section_schedule")}</h4>
+              <span className="text-13 text-tertiary">
+                {t("hr.people.week_total", { duration: formatMinutes(weekMinutes) })}
+              </span>
+            </div>
+            <p className="text-13 text-tertiary">{t("hr.people.schedule_hint")}</p>
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-7">
+              {WEEKDAYS.map(({ key, label }) => (
+                <WeekdayField
+                  key={key}
+                  label={t(label)}
+                  value={days[key] ?? ""}
+                  onChange={(value) => setDays((prev) => ({ ...prev, [key]: value }))}
+                />
+              ))}
+            </div>
+          </section>
 
-        {/* Spoken as well as shown: this sits at the foot of a body that
+          {/* Spoken as well as shown: this sits at the foot of a body that
             scrolls, so somebody who pressed Save has no reason to think anything
             happened at all. */}
-        {problem ? (
-          <p role="alert" className="text-13 text-danger-primary">
-            {problem}
-          </p>
-        ) : null}
+          {problem ? (
+            <p role="alert" className="text-13 text-danger-primary">
+              {problem}
+            </p>
+          ) : null}
 
-        <div className="flex items-center justify-end gap-2">
-          <Button variant="secondary" size="lg" onClick={onClose}>
-            {t("hr.people.cancel")}
-          </Button>
-          <Button variant="primary" size="lg" loading={isBusy} onClick={handleSave}>
-            {t("hr.people.save")}
-          </Button>
+          <div className="flex items-center justify-end gap-2">
+            <Button variant="secondary" size="md" stretch="auto" label={t("hr.people.cancel")} onClick={onClose} />
+            <Button
+              variant="primary"
+              size="md"
+              stretch="auto"
+              label={t("hr.people.save")}
+              loading={isBusy}
+              onClick={handleSave}
+            />
+          </div>
         </div>
-      </div>
-    </ModalCore>
+      </DialogContent>
+    </Dialog>
   );
 };
 

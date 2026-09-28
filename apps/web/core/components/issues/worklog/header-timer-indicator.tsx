@@ -12,8 +12,9 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { Clock, Square } from "lucide-react";
 import { useTranslation } from "@plane/i18n";
-import { Button } from "@plane/propel/button";
-import { Tooltip } from "@plane/propel/tooltip";
+import { Button } from "@makeplane/propel/components/button";
+import { Icon } from "@makeplane/propel/components/icon";
+import { Tooltip } from "@makeplane/propel/components/tooltip";
 import { cn, renderFormattedDate, renderFormattedTime } from "@plane/utils";
 // components
 import { AppSidebarItem } from "@/components/sidebar/sidebar-item";
@@ -99,8 +100,8 @@ export const HeaderTimerIndicator = observer(function HeaderTimerIndicator() {
   return (
     <div ref={containerRef} className="relative">
       <Tooltip
-        tooltipContent={isRunning ? t("common.worklog_running") : t("common.worklog_timer_indicator_tooltip")}
-        position="bottom"
+        label={isRunning ? t("common.worklog_running") : t("common.worklog_timer_indicator_tooltip")}
+        side="bottom"
       >
         <div>
           <AppSidebarItem
@@ -160,16 +161,14 @@ export const HeaderTimerIndicator = observer(function HeaderTimerIndicator() {
               </div>
 
               <Button
-                variant="error-fill"
-                size="lg"
-                className="w-full"
+                variant="danger"
+                size="md"
+                stretch="full"
+                label={t("common.stop_timer")}
+                icon={<Icon icon={<Square className="fill-current" />} />}
                 onClick={handleStop}
                 loading={isStopping}
-                disabled={isStopping}
-              >
-                <Square className="size-3.5 shrink-0 fill-current" />
-                {t("common.stop_timer")}
-              </Button>
+              />
 
               {workItemHref && (
                 <Link

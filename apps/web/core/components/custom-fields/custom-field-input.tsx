@@ -7,10 +7,13 @@
 import { useId } from "react";
 import type { FC } from "react";
 // plane imports
-import { Switch } from "@plane/propel/switch";
+import { Switch } from "@makeplane/propel/components/switch";
 import { ECustomFieldType } from "@plane/types";
-import type { TCustomField, TCustomFieldRawValue, TCustomFieldUrlValue } from "@plane/types";
-import { CustomSelect, Input, TextArea } from "@plane/ui";
+import type { TCustomField, TCustomFieldOption, TCustomFieldRawValue, TCustomFieldUrlValue } from "@plane/types";
+import { Select } from "@plane/blocks/select";
+import { Field } from "@makeplane/propel/components/field";
+import { Input, InputGroup } from "@makeplane/propel/components/input";
+import { TextArea, TextAreaGroup } from "@makeplane/propel/components/text-area";
 import { cn } from "@plane/utils";
 // local imports
 import { resolveDateSetting } from "./relative-date";
@@ -42,14 +45,19 @@ function CustomFieldParagraphInput(props: Props) {
   const placeholder = field.settings?.placeholder ?? "";
 
   return (
-    <TextArea
-      value={(value as string) ?? ""}
-      onChange={(e) => onChange(e.target.value)}
-      placeholder={placeholder}
-      hasError={hasError}
-      disabled={disabled}
-      className="min-h-20 w-full resize-none text-body-sm-regular"
-    />
+    <Field invalid={hasError}>
+      <TextAreaGroup resize="none">
+        <TextArea
+          size="lg"
+          surface="field"
+          rows={3}
+          value={(value as string) ?? ""}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+          disabled={disabled}
+        />
+      </TextAreaGroup>
+    </Field>
   );
 }
 
@@ -59,18 +67,21 @@ function CustomFieldNumberInput(props: Props) {
   const placeholder = settings?.placeholder ?? "";
 
   return (
-    <Input
-      type="number"
-      value={value === null || value === undefined ? "" : (value as number)}
-      onChange={(e) => onChange(e.target.value === "" ? null : Number(e.target.value))}
-      min={settings?.min as number | undefined}
-      max={settings?.max as number | undefined}
-      step={settings?.step}
-      placeholder={placeholder}
-      hasError={hasError}
-      disabled={disabled}
-      className="w-full text-body-sm-regular"
-    />
+    <Field invalid={hasError}>
+      <InputGroup size="xl">
+        <Input
+          size="xl"
+          type="number"
+          value={value === null || value === undefined ? "" : (value as number)}
+          onChange={(e) => onChange(e.target.value === "" ? null : Number(e.target.value))}
+          min={settings?.min as number | undefined}
+          max={settings?.max as number | undefined}
+          step={settings?.step}
+          placeholder={placeholder}
+          disabled={disabled}
+        />
+      </InputGroup>
+    </Field>
   );
 }
 
@@ -80,7 +91,7 @@ function CustomFieldBooleanInput(props: Props) {
 
   return (
     <div className="flex items-center gap-2">
-      <Switch value={Boolean(value)} onChange={(val) => onChange(val)} disabled={disabled} size="sm" />
+      <Switch size="sm" checked={Boolean(value)} onCheckedChange={(val) => onChange(val)} disabled={disabled} />
       {settings?.label && <span className="text-body-sm-regular text-secondary">{settings.label}</span>}
     </div>
   );
@@ -93,28 +104,31 @@ function CustomFieldSingleSelectInput(props: Props) {
   const options = settings?.options ?? [];
 
   return (
-    <CustomSelect
-      value={value ?? null}
-      onChange={(val: string) => onChange(val)}
+    <Select<TCustomFieldOption>
+      getValues={() => options}
+      value={options.find((option) => option.id === value) ?? null}
+      onChange={(val) => onChange(val)}
       disabled={disabled}
-      label={
-        <span className={cn("truncate", { "text-placeholder": !value })}>
-          {options.find((o) => o.id === value)?.label ?? placeholder ?? "Select"}
-        </span>
+      getOptionValue={(option) => option.id}
+      getOptionLabel={(option) => option.label}
+      getOptionIcon={(option) =>
+        option.color ? <span className="size-2.5 rounded-full" style={{ backgroundColor: option.color }} /> : undefined
       }
-      className="w-full"
-      buttonClassName={cn("w-full justify-between", { "border-danger-strong": hasError })}
-      input
+      showSearch={options.length > 7}
+      pinSelected={false}
+      contentSizing="anchor"
     >
-      {options.map((option) => (
-        <CustomSelect.Option key={option.id} value={option.id}>
-          <span className="flex items-center gap-2">
-            {option.color && <span className="size-2.5 rounded-full" style={{ backgroundColor: option.color }} />}
-            {option.label}
+      <Select.Trigger<TCustomFieldOption>
+        variant="select-xl"
+        className={cn("w-full", { "border-danger-strong": hasError })}
+      >
+        {(selected) => (
+          <span className={cn("min-w-0 grow truncate text-left", { "text-placeholder": !selected[0] })}>
+            {selected[0]?.label ?? (placeholder || "Select")}
           </span>
-        </CustomSelect.Option>
-      ))}
-    </CustomSelect>
+        )}
+      </Select.Trigger>
+    </Select>
   );
 }
 
@@ -219,15 +233,20 @@ function CustomFieldColorInput(props: Props) {
         disabled={disabled}
         className="size-8 shrink-0 cursor-pointer rounded-md border border-strong bg-surface-1"
       />
-      <Input
-        type="text"
-        value={(value as string) ?? ""}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder="#3f76ff"
-        hasError={hasError}
-        disabled={disabled}
-        className="w-32 text-body-sm-regular"
-      />
+      <div className="w-32">
+        <Field invalid={hasError}>
+          <InputGroup size="xl">
+            <Input
+              size="xl"
+              type="text"
+              value={(value as string) ?? ""}
+              onChange={(e) => onChange(e.target.value)}
+              placeholder="#3f76ff"
+              disabled={disabled}
+            />
+          </InputGroup>
+        </Field>
+      </div>
     </div>
   );
 }
@@ -239,23 +258,28 @@ function CustomFieldUrlInput(props: Props) {
 
   return (
     <div className="w-full space-y-1.5">
-      <Input
-        type="url"
-        value={url}
-        onChange={(e) => onChange({ url: e.target.value, text })}
-        placeholder={placeholder || "https://example.com"}
-        hasError={hasError}
-        disabled={disabled}
-        className="w-full text-body-sm-regular"
-      />
-      <Input
-        type="text"
-        value={text}
-        onChange={(e) => onChange({ url, text: e.target.value })}
-        placeholder="Display text (optional)"
-        disabled={disabled}
-        className="w-full text-body-sm-regular"
-      />
+      <Field invalid={hasError}>
+        <InputGroup size="xl">
+          <Input
+            size="xl"
+            type="url"
+            value={url}
+            onChange={(e) => onChange({ url: e.target.value, text })}
+            placeholder={placeholder || "https://example.com"}
+            disabled={disabled}
+          />
+        </InputGroup>
+      </Field>
+      <InputGroup size="xl">
+        <Input
+          size="xl"
+          type="text"
+          value={text}
+          onChange={(e) => onChange({ url, text: e.target.value })}
+          placeholder="Display text (optional)"
+          disabled={disabled}
+        />
+      </InputGroup>
     </div>
   );
 }
@@ -266,15 +290,18 @@ function CustomFieldTextInput(props: Props) {
   const placeholder = settings?.placeholder ?? "";
 
   return (
-    <Input
-      type={field_type === ECustomFieldType.EMAIL ? "email" : "text"}
-      value={(value as string) ?? ""}
-      onChange={(e) => onChange(e.target.value)}
-      placeholder={placeholder}
-      hasError={hasError}
-      disabled={disabled}
-      className="w-full text-body-sm-regular"
-    />
+    <Field invalid={hasError}>
+      <InputGroup size="xl">
+        <Input
+          size="xl"
+          type={field_type === ECustomFieldType.EMAIL ? "email" : "text"}
+          value={(value as string) ?? ""}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+          disabled={disabled}
+        />
+      </InputGroup>
+    </Field>
   );
 }
 

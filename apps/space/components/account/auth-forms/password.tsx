@@ -9,9 +9,10 @@ import { observer } from "mobx-react";
 import { CloseCircleOutline, HideOutline, ShowOutline } from "@makeplane/propel/icons";
 // plane imports
 import { API_BASE_URL, E_PASSWORD_STRENGTH } from "@plane/constants";
-import { Button } from "@plane/propel/button";
+import { Button } from "@makeplane/propel/components/button";
+import { Input } from "@makeplane/propel/components/input";
 import { AuthService } from "@plane/services";
-import { Input, Spinner, PasswordStrengthIndicator } from "@plane/ui";
+import { PasswordStrengthIndicator } from "@plane/blocks/auth";
 import { getPasswordStrength } from "@plane/utils";
 // types
 import { EAuthModes, EAuthSteps } from "@/types/auth";
@@ -38,76 +39,6 @@ const defaultValues: TPasswordFormValues = {
 };
 
 const authService = new AuthService();
-
-const shouldShowPasswordStrengthIndicator = (password: string, mode: EAuthModes): boolean =>
-  password.length > 0 &&
-  mode === EAuthModes.SIGN_UP &&
-  getPasswordStrength(password) != E_PASSWORD_STRENGTH.STRENGTH_VALID;
-
-const shouldShowPasswordMismatchError = (
-  formData: TPasswordFormValues,
-  isConfirmPasswordInputFocused: boolean
-): boolean => {
-  const password = formData.password ?? "";
-  const confirmPassword = formData.confirm_password ?? "";
-  const renderPasswordMatchError = !isConfirmPasswordInputFocused || confirmPassword.length >= password.length;
-  return !!formData.confirm_password && formData.password !== formData.confirm_password && renderPasswordMatchError;
-};
-
-type TPasswordVisibilityToggleProps = {
-  isPasswordVisible: boolean;
-  onToggle: () => void;
-};
-
-function PasswordVisibilityToggle({ isPasswordVisible, onToggle }: TPasswordVisibilityToggleProps) {
-  return (
-    <button
-      type="button"
-      aria-label={isPasswordVisible ? "Hide password" : "Show password"}
-      className="absolute right-3 hover:cursor-pointer"
-      onClick={onToggle}
-    >
-      {isPasswordVisible ? (
-        <HideOutline className="h-5 w-5 text-placeholder" />
-      ) : (
-        <ShowOutline className="h-5 w-5 text-placeholder" />
-      )}
-    </button>
-  );
-}
-
-type TAuthPasswordFormActionsProps = {
-  mode: EAuthModes;
-  isSMTPConfigured: boolean;
-  isSubmitting: boolean;
-  isButtonDisabled: boolean;
-  onUniqueCodeSignIn: () => void;
-};
-
-function AuthPasswordFormActions(props: TAuthPasswordFormActionsProps) {
-  const { mode, isSMTPConfigured, isSubmitting, isButtonDisabled, onUniqueCodeSignIn } = props;
-
-  return (
-    <div className="space-y-2.5">
-      {mode === EAuthModes.SIGN_IN ? (
-        <>
-          <Button type="submit" variant="primary" className="w-full" size="xl" disabled={isButtonDisabled}>
-            {isSubmitting ? <Spinner height="20px" width="20px" /> : isSMTPConfigured ? "Continue" : "Go to workspace"}
-          </Button>
-          {isSMTPConfigured && (
-            <Button type="button" onClick={onUniqueCodeSignIn} variant="secondary" className="w-full" size="xl">
-              Sign in with unique code
-            </Button>
-          )}
-        </>
-      ) : (
-        <Button type="submit" variant="primary" className="w-full" size="xl" disabled={isButtonDisabled}>
-          {isSubmitting ? <Spinner height="20px" width="20px" /> : "Create account"}
-        </Button>
-      )}
-    </div>
-  );
-}
 
 export const AuthPasswordForm = observer(function AuthPasswordForm(props: Props) {
   const { email, nextPath, isSMTPConfigured, handleAuthStep, handleEmailClear, mode } = props;
@@ -141,9 +72,11 @@ export const AuthPasswordForm = observer(function AuthPasswordForm(props: Props)
     handleAuthStep(EAuthSteps.UNIQUE_CODE);
   };
 
-  const passwordSupport = shouldShowPasswordStrengthIndicator(passwordFormData.password, mode) && (
-    <PasswordStrengthIndicator password={passwordFormData.password} isFocused={isPasswordInputFocused} />
-  );
+  const passwordSupport = passwordFormData.password.length > 0 &&
+    mode === EAuthModes.SIGN_UP &&
+    getPasswordStrength(passwordFormData.password) != E_PASSWORD_STRENGTH.STRENGTH_VALID && (
+      <PasswordStrengthIndicator password={passwordFormData.password} isFocused={isPasswordInputFocused} />
+    );
 
   const isButtonDisabled = useMemo(
     () =>
@@ -158,7 +91,9 @@ export const AuthPasswordForm = observer(function AuthPasswordForm(props: Props)
     [isSubmitting, mode, passwordFormData.confirm_password, passwordFormData.password]
   );
 
-  const showPasswordMismatchError = shouldShowPasswordMismatchError(passwordFormData, isRetryPasswordInputFocused);
+  const password = passwordFormData.password ?? "";
+  const confirmPassword = passwordFormData.confirm_password ?? "";
+  const renderPasswordMatchError = !isRetryPasswordInputFocused || confirmPassword.length >= password.length;
 
   const handleCSRFToken = async () => {
     if (!formRef || !formRef.current) return;
@@ -191,15 +126,15 @@ export const AuthPasswordForm = observer(function AuthPasswordForm(props: Props)
         <label className="text-13 font-medium text-tertiary" htmlFor="email">
           Email
         </label>
-        <div className={`relative flex items-center rounded-md border border-subtle bg-surface-1`}>
+        <div className="relative flex h-10 items-center rounded-md border border-subtle bg-surface-1 px-3 [&_input]:disable-autofill-style">
           <Input
             id="email"
             name="email"
             type="email"
+            size="xl"
             value={passwordFormData.email}
             onChange={(e) => handleFormChange("email", e.target.value)}
             placeholder="name@company.com"
-            className={`h-10 w-full border-0 disable-autofill-style placeholder:text-placeholder`}
             disabled
           />
           {passwordFormData.email.length > 0 && (
@@ -220,23 +155,40 @@ export const AuthPasswordForm = observer(function AuthPasswordForm(props: Props)
         <label className="text-13 font-medium text-tertiary" htmlFor="password">
           {mode === EAuthModes.SIGN_IN ? "Password" : "Set a password"}
         </label>
-        <div className="relative flex items-center rounded-md bg-surface-1">
+        <div className="relative flex h-10 items-center rounded-md border border-subtle bg-surface-1 pr-12 pl-3 [&_input]:disable-autofill-style">
           <Input
+            id="password"
             type={showPassword?.password ? "text" : "password"}
             name="password"
+            size="xl"
             value={passwordFormData.password}
             onChange={(e) => handleFormChange("password", e.target.value)}
             placeholder="Enter password"
-            className="h-10 w-full border border-subtle !bg-surface-1 pr-12 disable-autofill-style placeholder:text-placeholder"
             onFocus={() => setIsPasswordInputFocused(true)}
             onBlur={() => setIsPasswordInputFocused(false)}
             autoComplete="off"
+            // oxlint-disable-next-line jsx-a11y/no-autofocus -- sole primary field of a dedicated auth step; matches standard sign-in flows
             autoFocus
           />
-          <PasswordVisibilityToggle
-            isPasswordVisible={showPassword?.password}
-            onToggle={() => handleShowPassword("password")}
-          />
+          {showPassword?.password ? (
+            <button
+              type="button"
+              aria-label="Hide password"
+              className="absolute right-3 hover:cursor-pointer"
+              onClick={() => handleShowPassword("password")}
+            >
+              <HideOutline className="h-5 w-5 text-placeholder" />
+            </button>
+          ) : (
+            <button
+              type="button"
+              aria-label="Show password"
+              className="absolute right-3 hover:cursor-pointer"
+              onClick={() => handleShowPassword("password")}
+            >
+              <ShowOutline className="h-5 w-5 text-placeholder" />
+            </button>
+          )}
         </div>
         {passwordSupport}
       </div>
@@ -246,34 +198,80 @@ export const AuthPasswordForm = observer(function AuthPasswordForm(props: Props)
           <label className="text-13 font-medium text-tertiary" htmlFor="confirm_password">
             Confirm password
           </label>
-          <div className="relative flex items-center rounded-md bg-surface-1">
+          <div className="relative flex h-10 items-center rounded-md border border-subtle bg-surface-1 pr-12 pl-3 [&_input]:disable-autofill-style">
             <Input
+              id="confirm_password"
               type={showPassword?.retypePassword ? "text" : "password"}
               name="confirm_password"
-              value={passwordFormData.confirm_password ?? ""}
+              size="xl"
+              value={passwordFormData.confirm_password}
               onChange={(e) => handleFormChange("confirm_password", e.target.value)}
               placeholder="Confirm password"
-              className="h-10 w-full border border-subtle !bg-surface-1 pr-12 disable-autofill-style placeholder:text-placeholder"
               onFocus={() => setIsRetryPasswordInputFocused(true)}
               onBlur={() => setIsRetryPasswordInputFocused(false)}
               autoComplete="off"
             />
-            <PasswordVisibilityToggle
-              isPasswordVisible={showPassword?.retypePassword}
-              onToggle={() => handleShowPassword("retypePassword")}
-            />
+            {showPassword?.retypePassword ? (
+              <button
+                type="button"
+                aria-label="Hide password"
+                className="absolute right-3 hover:cursor-pointer"
+                onClick={() => handleShowPassword("retypePassword")}
+              >
+                <HideOutline className="h-5 w-5 text-placeholder" />
+              </button>
+            ) : (
+              <button
+                type="button"
+                aria-label="Show password"
+                className="absolute right-3 hover:cursor-pointer"
+                onClick={() => handleShowPassword("retypePassword")}
+              >
+                <ShowOutline className="h-5 w-5 text-placeholder" />
+              </button>
+            )}
           </div>
-          {showPasswordMismatchError && <span className="text-13 text-danger-primary">Passwords don{"'"}t match</span>}
+          {!!passwordFormData.confirm_password &&
+            passwordFormData.password !== passwordFormData.confirm_password &&
+            renderPasswordMatchError && <span className="text-13 text-danger-primary">Passwords don{"'"}t match</span>}
         </div>
       )}
 
-      <AuthPasswordFormActions
-        mode={mode}
-        isSMTPConfigured={isSMTPConfigured}
-        isSubmitting={isSubmitting}
-        isButtonDisabled={isButtonDisabled}
-        onUniqueCodeSignIn={redirectToUniqueCodeSignIn}
-      />
+      <div className="space-y-2.5">
+        {mode === EAuthModes.SIGN_IN ? (
+          <>
+            <Button
+              type="submit"
+              variant="primary"
+              size="lg"
+              stretch="full"
+              disabled={isButtonDisabled}
+              loading={isSubmitting}
+              label={isSMTPConfigured ? "Continue" : "Go to workspace"}
+            />
+            {isSMTPConfigured && (
+              <Button
+                type="button"
+                variant="secondary"
+                size="lg"
+                stretch="full"
+                label="Sign in with unique code"
+                onClick={redirectToUniqueCodeSignIn}
+              />
+            )}
+          </>
+        ) : (
+          <Button
+            type="submit"
+            variant="primary"
+            size="lg"
+            stretch="full"
+            disabled={isButtonDisabled}
+            loading={isSubmitting}
+            label="Create account"
+          />
+        )}
+      </div>
     </form>
   );
 });

@@ -11,9 +11,9 @@ import useSWR from "swr";
 // plane imports
 import { Tooltip } from "@makeplane/propel/components/tooltip";
 import { useTranslation } from "@plane/i18n";
-import { EmptyStateCompact } from "@plane/propel/empty-state";
-import { Loader } from "@plane/ui";
 import { cn } from "@plane/utils";
+import { EmptyStateCompact } from "@plane/blocks/empty-state";
+import { Loader } from "@plane/blocks/skeleton";
 // services
 import {
   EHrPeriodState,
