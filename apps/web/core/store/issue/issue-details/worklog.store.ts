@@ -36,6 +36,7 @@ export interface IIssueWorkLogStoreActions {
   ) => Promise<TIssueWorkLog>;
   fetchActiveTimer: (workspaceSlug: string, projectId: string, issueId: string) => Promise<TIssueWorkLog | null>;
   fetchUserActiveTimer: (workspaceSlug: string, force?: boolean) => Promise<TIssueWorkLog | null>;
+  refreshUserActiveTimer: (workspaceSlug: string) => Promise<void>;
   fetchIssueActiveTimers: (workspaceSlug: string, projectId: string, issueId: string) => Promise<TIssueWorkLog[]>;
   adminStopTimer: (workspaceSlug: string, projectId: string, issueId: string, worklogId: string) => Promise<void>;
 }
@@ -89,6 +90,7 @@ export class IssueWorkLogStore implements IIssueWorkLogStore {
       stopTimer: action,
       fetchActiveTimer: action,
       fetchUserActiveTimer: action,
+      refreshUserActiveTimer: action,
       fetchIssueActiveTimers: action,
       adminStopTimer: action,
     });
@@ -279,6 +281,34 @@ export class IssueWorkLogStore implements IIssueWorkLogStore {
       }
     });
     return timer;
+  };
+
+  // Re-reads the user's running timer and brings every view of it up to date, for a timer started or
+  // stopped outside this tab: in another tab, or in the CRM, which mirrors its timers into Plane.
+  refreshUserActiveTimer = async (workspaceSlug: string): Promise<void> => {
+    const previous = this.userActiveTimer;
+    const timer = await this.issueWorkLogService.getUserActiveTimer(workspaceSlug);
+    if ((previous?.id ?? null) === (timer?.id ?? null)) return;
+
+    runInAction(() => {
+      this.userActiveTimerFetched = true;
+      this.userActiveTimer = timer ?? null;
+      if (previous?.issue) {
+        if (this.activeTimerMap[previous.issue]?.id === previous.id) set(this.activeTimerMap, previous.issue, null);
+        if (this.activeTimerIssueId === previous.issue) this.activeTimerIssueId = null;
+        this.removeIssueActiveTimer(previous.issue, previous.id);
+      }
+      if (timer?.id && timer.issue) {
+        set(this.activeTimerMap, timer.issue, timer);
+        this.activeTimerIssueId = timer.issue;
+        this.upsertIssueActiveTimer(timer.issue, timer);
+      }
+    });
+
+    // The stopped timer is a completed entry now, so the work item's list reloads if it is loaded.
+    if (previous?.issue && previous.project && this.worklogs[previous.issue]) {
+      await this.fetchWorklogs(workspaceSlug, previous.project, previous.issue).catch(() => undefined);
+    }
   };
 
   // Add/replace one running timer in the per-issue list. Must be called inside runInAction.

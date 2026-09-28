@@ -723,6 +723,50 @@ def delete_worklog_from_crm(workspace_id, crm_timer_id):
         logger.error("Could not delete CRM timer %s: %s", crm_timer_id, exc)
 
 
+# ─── CRM → Plane: stops the CRM makes without an event ─────────────────────
+
+
+@shared_task
+def reconcile_crm_timer_stops():
+    """Stop the Plane timers whose CRM timer has stopped without telling Plane.
+
+    The CRM reports its users' own start and stop straight away, but it also
+    stops timers where no hook fires — when a person is unassigned, when the task
+    is marked complete, when a timesheet entry is added — and a delivery can be
+    lost while Plane is down. Only timers still running on both sides are asked
+    about, so a quiet workspace costs no request at all. A CRM timer that no
+    longer exists is left alone: someone deleted it by hand, and stopping the
+    person's Plane timer for that would be a surprise, not a fix.
+    """
+    from plane.utils.crm_timer_inbound import TIMER_STOPPED, apply_crm_timer_event
+
+    running_links = CrmTimerLink.objects.filter(
+        worklog__duration__isnull=True, worklog__deleted_at__isnull=True
+    ).values_list("workspace_id", "crm_timer_id")
+
+    timer_ids_by_workspace = {}
+    for workspace_id, crm_timer_id in running_links:
+        timer_ids_by_workspace.setdefault(workspace_id, []).append(crm_timer_id)
+
+    for workspace_id, crm_timer_ids in timer_ids_by_workspace.items():
+        integration = _active_integration(workspace_id)
+        if integration is None:
+            continue
+        crm = _get_client(integration)
+        if crm is None:
+            continue
+        try:
+            timers = crm.get_timers(crm_timer_ids)
+        except CrmApiError as exc:
+            logger.error("Could not read CRM timers for workspace %s: %s", workspace_id, exc)
+            continue
+
+        for timer in timers:
+            if timer.get("end_time"):
+                result = apply_crm_timer_event(integration, TIMER_STOPPED, timer)
+                logger.info("CRM timer %s stopped without an event: %s", timer.get("id"), result)
+
+
 # ─── Backfill ──────────────────────────────────────────────────────────────
 
 
