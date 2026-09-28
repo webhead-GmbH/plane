@@ -122,6 +122,53 @@ function NavigationRow({ item, isSelected }: { item: BreadcrumbNavigationItem; i
   );
 }
 
+type TBreadcrumbNavigationControlProps = {
+  navigationHref: string | undefined;
+  icon: React.ReactNode;
+  label: string;
+  isLast: boolean;
+  canNavigate: boolean;
+  handleOnClick: (() => void) | undefined;
+};
+
+// The crumb's own label: a link when it only has a URL, a button otherwise, inert on the current page.
+function BreadcrumbNavigationControl(props: TBreadcrumbNavigationControlProps) {
+  const { navigationHref, icon, label, isLast, canNavigate, handleOnClick } = props;
+
+  const navigationContent = (
+    <>
+      {icon && <BreadcrumbIcon>{icon}</BreadcrumbIcon>}
+      <BreadcrumbLabel>{label}</BreadcrumbLabel>
+    </>
+  );
+
+  const isNavigable = canNavigate && (!!handleOnClick || !!navigationHref);
+  // The label's own control: a link when the crumb only has a URL, a button otherwise. `isLast`
+  // leaves it inert — you are already on this page.
+  return navigationHref ? (
+    <a href={navigationHref} className={cn(NAVIGATION_CLASSNAME, "text-tertiary hover:bg-layer-transparent-hover")}>
+      {navigationContent}
+    </a>
+  ) : (
+    // Enabled and focusable even when it has nowhere to go — the legacy crumb stayed a real button
+    // on the current page and simply did nothing, rather than dropping out of the tab order.
+    <button
+      type="button"
+      aria-current={isLast ? "page" : undefined}
+      onClick={() => {
+        if (canNavigate) handleOnClick?.();
+      }}
+      className={cn(
+        NAVIGATION_CLASSNAME,
+        isLast ? "text-primary" : "text-tertiary",
+        isNavigable ? "cursor-pointer hover:bg-layer-transparent-hover" : "cursor-default"
+      )}
+    >
+      {navigationContent}
+    </button>
+  );
+}
+
 /**
  * A breadcrumb crumb you can switch: the current destination plus a dropdown of its siblings, built
  * on `@plane/blocks/select`. Replaces the retired UI package's `BreadcrumbNavigationDropdown` and
@@ -177,37 +224,15 @@ export function BreadcrumbNavigationSelect(props: BreadcrumbNavigationSelectProp
     onChange?.(key);
   };
 
-  const navigationContent = (
-    <>
-      {triggerIcon && <BreadcrumbIcon>{triggerIcon}</BreadcrumbIcon>}
-      <BreadcrumbLabel>{triggerLabel}</BreadcrumbLabel>
-    </>
-  );
-
-  const isNavigable = canNavigate && (!!handleOnClick || !!navigationHref);
-  // The label's own control: a link when the crumb only has a URL, a button otherwise. `isLast`
-  // leaves it inert — you are already on this page.
-  const navigation = navigationHref ? (
-    <a href={navigationHref} className={cn(NAVIGATION_CLASSNAME, "text-tertiary hover:bg-layer-transparent-hover")}>
-      {navigationContent}
-    </a>
-  ) : (
-    // Enabled and focusable even when it has nowhere to go — the legacy crumb stayed a real button
-    // on the current page and simply did nothing, rather than dropping out of the tab order.
-    <button
-      type="button"
-      aria-current={isLast ? "page" : undefined}
-      onClick={() => {
-        if (canNavigate) handleOnClick?.();
-      }}
-      className={cn(
-        NAVIGATION_CLASSNAME,
-        isLast ? "text-primary" : "text-tertiary",
-        isNavigable ? "cursor-pointer hover:bg-layer-transparent-hover" : "cursor-default"
-      )}
-    >
-      {navigationContent}
-    </button>
+  const navigation = (
+    <BreadcrumbNavigationControl
+      navigationHref={navigationHref}
+      icon={triggerIcon}
+      label={triggerLabel}
+      isLast={isLast}
+      canNavigate={canNavigate}
+      handleOnClick={handleOnClick}
+    />
   );
 
   // The label clamps at 150px, so the full name lives in a tooltip on both forms.

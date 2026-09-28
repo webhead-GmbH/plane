@@ -5,11 +5,16 @@
  */
 
 import React from "react";
-import { Sector } from "recharts";
+import { useRecharts } from "../use-recharts";
 import type { PieSectorDataItem } from "recharts/types/polar/Pie";
 
 export const CustomActiveShape = React.memo(function CustomActiveShape(props: PieSectorDataItem) {
   const { cx, cy, cornerRadius, innerRadius, outerRadius, startAngle, endAngle, fill } = props;
+  // the pie chart renders only once recharts has loaded, so this has the module from the first render
+  const recharts = useRecharts();
+
+  if (!recharts) return null;
+  const { Sector } = recharts;
 
   return (
     <g>

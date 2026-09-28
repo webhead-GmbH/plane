@@ -20,6 +20,15 @@ export function CustomerVerticalStackIllustration({ className }: CustomerVertica
       xmlns="http://www.w3.org/2000/svg"
       className={className}
     >
+      <CustomerVerticalStackPartOne />
+      <CustomerVerticalStackPartTwo />
+    </svg>
+  );
+}
+
+function CustomerVerticalStackPartOne() {
+  return (
+    <>
       <g opacity="0.2">
         <path
           d="M15.6846 137.248C15.6846 139.175 17.1271 141.096 20.0069 142.569L57.0876 161.464C62.8523 164.4 72.1951 164.4 77.9598 161.464L155.878 121.763C158.758 120.295 160.2 118.374 160.2 116.447V122.599C160.2 124.526 158.758 126.448 155.878 127.916L77.9598 167.616C72.1951 170.552 62.8523 170.552 57.0876 167.616L20.0069 148.722C17.122 147.254 15.6846 145.327 15.6846 143.4V137.248Z"
@@ -202,6 +211,13 @@ export function CustomerVerticalStackIllustration({ className }: CustomerVertica
         strokeLinecap="round"
         strokeLinejoin="round"
       />
+    </>
+  );
+}
+
+function CustomerVerticalStackPartTwo() {
+  return (
+    <>
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -380,6 +396,6 @@ export function CustomerVerticalStackIllustration({ className }: CustomerVertica
         d="M39.248 14.2627C39.1562 14.3086 39.0645 14.3137 38.9931 14.2627C38.8504 14.1608 38.8504 13.8855 38.9931 13.6409L41.3378 9.599C41.4805 9.35434 41.7047 9.2422 41.8475 9.33905L43.3969 10.4349L46.2054 5.5876C46.3481 5.34294 46.5724 5.2308 46.7151 5.32764C46.8578 5.42958 46.8578 5.70481 46.7151 5.94946L43.6518 11.2402C43.5091 11.4849 43.2848 11.597 43.1421 11.5002L41.5926 10.4042L39.5028 14.0079C39.4315 14.1302 39.3397 14.2168 39.248 14.2678V14.2627Z"
         fill={ILLUSTRATION_COLOR_TOKEN_MAP.fill.quaternary}
       />
-    </svg>
+    </>
   );
 }

@@ -20,6 +20,15 @@ export function ViewVerticalStackIllustration({ className }: ViewVerticalStackIl
       xmlns="http://www.w3.org/2000/svg"
       className={className}
     >
+      <ViewVerticalStackPartOne />
+      <ViewVerticalStackPartTwo />
+    </svg>
+  );
+}
+
+function ViewVerticalStackPartOne() {
+  return (
+    <>
       <path
         d="M62.1863 125.972L61.8748 126.13C61.9412 126.094 62.0076 126.059 62.074 126.023C62.1097 126.003 62.1505 125.987 62.1863 125.972Z"
         fill={ILLUSTRATION_COLOR_TOKEN_MAP.fill.quaternary}
@@ -172,6 +181,13 @@ export function ViewVerticalStackIllustration({ className }: ViewVerticalStackIl
         d="M45.6737 16.552L40.6188 19.1253C40.0214 19.4317 39.5364 19.0845 39.5364 18.3595V12.2068C39.5364 11.4817 40.0214 10.6393 40.6188 10.338L45.6737 7.76462C46.2711 7.45827 46.7562 7.80547 46.7562 8.53051V14.6832C46.7562 15.4082 46.2711 16.2507 45.6737 16.552ZM40.6188 11.2162C40.4197 11.3184 40.2563 11.5992 40.2563 11.8392V17.9918C40.2563 18.2318 40.4197 18.3492 40.6188 18.2471L45.6737 15.6737C45.8729 15.5716 46.0362 15.2908 46.0362 15.0508V8.89814C46.0362 8.65816 45.8729 8.54073 45.6737 8.64284L40.6188 11.2162Z"
         fill={ILLUSTRATION_COLOR_TOKEN_MAP.fill.quaternary}
       />
+    </>
+  );
+}
+
+function ViewVerticalStackPartTwo() {
+  return (
+    <>
       <path
         d="M44.5913 11.39L42.0639 12.6767C41.8648 12.7788 41.7014 12.6665 41.7014 12.4214C41.7014 12.1763 41.8648 11.9006 42.0639 11.7985L44.5913 10.5118C44.7905 10.4097 44.9538 10.522 44.9538 10.7671C44.9538 11.0122 44.7905 11.2879 44.5913 11.39Z"
         fill={ILLUSTRATION_COLOR_TOKEN_MAP.fill.quaternary}
@@ -324,6 +340,6 @@ export function ViewVerticalStackIllustration({ className }: ViewVerticalStackIl
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-    </svg>
+    </>
   );
 }

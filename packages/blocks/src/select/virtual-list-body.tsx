@@ -102,9 +102,12 @@ function SelectOptionRow(props: SelectOptionRowProps) {
           // Propel takes no `style`, so the two-line height goes on the element it renders.
           render={
             href ? (
-              // base-ui supplies the anchor's content through `render`, which this rule cannot see.
-              // eslint-disable-next-line jsx-a11y/anchor-has-content
-              <a href={href} style={rowStyle} />
+              // base-ui hands the row's content in through `renderProps.children`.
+              (renderProps) => (
+                <a href={href} {...renderProps} style={{ ...renderProps.style, ...rowStyle }}>
+                  {renderProps.children}
+                </a>
+              )
             ) : rowStyle ? (
               <div style={rowStyle} />
             ) : undefined
@@ -315,8 +318,21 @@ export function VirtualListBody<T>(props: VirtualListBodyProps<T>) {
                     disabled={getOptionDisabled?.(item)}
                     aria-setsize={items.length}
                     aria-posinset={row.optionIndex + 1}
-                    // eslint-disable-next-line jsx-a11y/anchor-has-content
-                    render={<ComboboxItemRow variant="neutral" render={href ? <a href={href} /> : undefined} />}
+                    render={
+                      <ComboboxItemRow
+                        variant="neutral"
+                        // base-ui hands the row's content in through `renderProps.children`.
+                        render={
+                          href
+                            ? (renderProps) => (
+                                <a href={href} {...renderProps}>
+                                  {renderProps.children}
+                                </a>
+                              )
+                            : undefined
+                        }
+                      />
+                    }
                   >
                     {renderOption(item)}
                   </BaseCombobox.Item>

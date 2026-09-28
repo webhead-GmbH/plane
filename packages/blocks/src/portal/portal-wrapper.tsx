@@ -4,7 +4,7 @@
  * See the LICENSE file for details.
  */
 
-import React, { useLayoutEffect, useState, useMemo } from "react";
+import React, { useLayoutEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { DEFAULT_PORTAL_ID } from "./constants";
@@ -67,15 +67,15 @@ export function PortalWrapper({
     };
   }, [portalId, onMount, onUnmount]);
 
-  const content = useMemo(() => {
-    if (!children) return null;
-    return className ? <div className={className}>{children}</div> : children;
-  }, [children, className]);
-
   // SSR: render nothing on server
   if (!isMounted) {
     return null;
   }
+
+  // Built after the early return: memoising it on `children` saved nothing, since children are new
+  // on nearly every render, and it was built even when nothing was going to be rendered.
+  const wrappedChildren = className ? <div className={className}>{children}</div> : children;
+  const content = children ? wrappedChildren : null;
 
   // If portal container exists, render into it
   if (portalContainer) {

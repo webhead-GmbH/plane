@@ -5,6 +5,7 @@
  */
 
 import { useEffect, useState, useRef } from "react";
+import type { Dispatch, SetStateAction } from "react";
 import { Combobox, ComboboxItem, ComboboxList, ComboboxSearch } from "@makeplane/propel/components/combobox";
 import {
   Dialog,
@@ -50,6 +51,104 @@ type Props = {
 };
 
 const projectService = new ProjectService();
+
+type TSelectedIssueChipsProps = {
+  selectedIssues: ISearchIssueResponse[];
+  setSelectedIssues: Dispatch<SetStateAction<ISearchIssueResponse[]>>;
+};
+
+// The work items picked so far, each removable, or a note that none are.
+function SelectedIssueChips(props: TSelectedIssueChipsProps) {
+  const { selectedIssues, setSelectedIssues } = props;
+  const { t } = useTranslation();
+
+  return selectedIssues.length > 0 ? (
+    <div className="mt-1 flex flex-wrap items-center gap-2">
+      {selectedIssues.map((issue) => (
+        <div
+          key={issue.id}
+          className="flex items-center gap-1 rounded-md border border-subtle bg-layer-1 py-1 pl-2 text-11 whitespace-nowrap text-primary"
+        >
+          <IssueIdentifier
+            projectId={issue.project_id}
+            issueTypeId={issue.type_id}
+            projectIdentifier={issue.project__identifier}
+            issueSequenceId={issue.sequence_id}
+            size="xs"
+            variant="secondary"
+          />
+          <button
+            type="button"
+            className="group p-1"
+            aria-label={t("remove")}
+            onClick={() => setSelectedIssues((prevData) => prevData.filter((i) => i.id !== issue.id))}
+          >
+            <CloseOutline className="h-3 w-3 text-secondary group-hover:text-primary" />
+          </button>
+        </div>
+      ))}
+    </div>
+  ) : (
+    <div className="w-min rounded-md border border-subtle bg-layer-1 p-2 text-11 whitespace-nowrap">
+      {t("issue.select.empty")}
+    </div>
+  );
+}
+
+type TExistingIssueOptionProps = {
+  issue: ISearchIssueResponse;
+  workspaceSlug: string | undefined;
+};
+
+// One search result: the state dot and identifier, the name, and a link to open it in a new tab.
+function ExistingIssueOption(props: TExistingIssueOptionProps) {
+  const { issue, workspaceSlug } = props;
+  const { t } = useTranslation();
+
+  return (
+    <ComboboxItem
+      value={issue}
+      selection="checkbox"
+      label={issue.name}
+      icon={
+        <span className="flex flex-shrink-0 items-center gap-2">
+          <span
+            className="block h-1.5 w-1.5 flex-shrink-0 rounded-full"
+            style={{
+              backgroundColor: issue.state__color,
+            }}
+          />
+          <IssueIdentifier
+            projectId={issue.project_id}
+            issueTypeId={issue.type_id}
+            projectIdentifier={issue.project__identifier}
+            issueSequenceId={issue.sequence_id}
+            size="xs"
+            variant="secondary"
+          />
+        </span>
+      }
+      trailing={
+        <a
+          href={generateWorkItemLink({
+            workspaceSlug,
+            projectId: issue?.project_id,
+            issueId: issue?.id,
+            projectIdentifier: issue.project__identifier,
+            sequenceId: issue?.sequence_id,
+          })}
+          target="_blank"
+          className="relative z-1 hidden flex-shrink-0 text-secondary group-hover/item:block hover:text-primary"
+          rel="noopener noreferrer"
+          aria-label={t("common.actions.open_in_new_tab")}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <RocketOutline className="h-4 w-4" />
+        </a>
+      }
+    />
+  );
+}
 
 export function ExistingIssuesListModal(props: Props) {
   const { t } = useTranslation();
@@ -186,36 +285,7 @@ export function ExistingIssuesListModal(props: Props) {
           />
           <DialogMain>
             <div className="flex flex-shrink-0 flex-col-reverse gap-4 text-13 text-secondary sm:flex-row sm:items-center sm:justify-between">
-              {selectedIssues.length > 0 ? (
-                <div className="mt-1 flex flex-wrap items-center gap-2">
-                  {selectedIssues.map((issue) => (
-                    <div
-                      key={issue.id}
-                      className="flex items-center gap-1 rounded-md border border-subtle bg-layer-1 py-1 pl-2 text-11 whitespace-nowrap text-primary"
-                    >
-                      <IssueIdentifier
-                        projectId={issue.project_id}
-                        issueTypeId={issue.type_id}
-                        projectIdentifier={issue.project__identifier}
-                        issueSequenceId={issue.sequence_id}
-                        size="xs"
-                        variant="secondary"
-                      />
-                      <button
-                        type="button"
-                        className="group p-1"
-                        onClick={() => setSelectedIssues((prevData) => prevData.filter((i) => i.id !== issue.id))}
-                      >
-                        <CloseOutline className="h-3 w-3 text-secondary group-hover:text-primary" />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="w-min rounded-md border border-subtle bg-layer-1 p-2 text-11 whitespace-nowrap">
-                  {t("issue.select.empty")}
-                </div>
-              )}
+              <SelectedIssueChips selectedIssues={selectedIssues} setSelectedIssues={setSelectedIssues} />
               {workspaceLevelToggle && (
                 <Tooltip label="Toggle workspace level search" disabled={isMobile}>
                   <div
@@ -276,48 +346,7 @@ export function ExistingIssuesListModal(props: Props) {
                       {filteredIssues.map((issue) => (
                         // `selection="checkbox"` replaces the hand-placed checkbox and the
                         // `as="label"` wrapper the old row needed to make it clickable.
-                        <ComboboxItem
-                          key={issue.id}
-                          value={issue}
-                          selection="checkbox"
-                          label={issue.name}
-                          icon={
-                            <span className="flex flex-shrink-0 items-center gap-2">
-                              <span
-                                className="block h-1.5 w-1.5 flex-shrink-0 rounded-full"
-                                style={{
-                                  backgroundColor: issue.state__color,
-                                }}
-                              />
-                              <IssueIdentifier
-                                projectId={issue.project_id}
-                                issueTypeId={issue.type_id}
-                                projectIdentifier={issue.project__identifier}
-                                issueSequenceId={issue.sequence_id}
-                                size="xs"
-                                variant="secondary"
-                              />
-                            </span>
-                          }
-                          trailing={
-                            <a
-                              href={generateWorkItemLink({
-                                workspaceSlug,
-                                projectId: issue?.project_id,
-                                issueId: issue?.id,
-                                projectIdentifier: issue.project__identifier,
-                                sequenceId: issue?.sequence_id,
-                              })}
-                              target="_blank"
-                              className="relative z-1 hidden flex-shrink-0 text-secondary group-hover/item:block hover:text-primary"
-                              rel="noopener noreferrer"
-                              aria-label={t("common.actions.open_in_new_tab")}
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              <RocketOutline className="h-4 w-4" />
-                            </a>
-                          }
-                        />
+                        <ExistingIssueOption key={issue.id} issue={issue} workspaceSlug={workspaceSlug} />
                       ))}
                     </ComboboxList>
                   )}

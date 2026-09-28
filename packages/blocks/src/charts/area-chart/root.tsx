@@ -5,7 +5,8 @@
  */
 
 import React, { useMemo, useState } from "react";
-import { Area, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis, Line, ComposedChart, CartesianGrid } from "recharts";
+import type { TRecharts } from "../use-recharts";
+import { useRecharts } from "../use-recharts";
 // plane imports
 import { AXIS_LABEL_CLASSNAME } from "@plane/constants";
 import type { TAreaChartProps } from "@plane/types";
@@ -14,9 +15,11 @@ import { getLegendProps } from "../components/legend";
 import { CustomXAxisTick, CustomYAxisTick } from "../components/tick";
 import { CustomTooltip } from "../components/tooltip";
 
-export const AreaChart = React.memo(function AreaChart<K extends string, T extends string>(
-  props: TAreaChartProps<K, T>
+const AreaChartContent = React.memo(function AreaChartContent<K extends string, T extends string>(
+  props: TAreaChartProps<K, T> & { recharts: TRecharts }
 ) {
+  const { Area, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis, Line, ComposedChart, CartesianGrid } =
+    props.recharts;
   const {
     data,
     areas,
@@ -83,7 +86,7 @@ export const AreaChart = React.memo(function AreaChart<K extends string, T exten
           className="[&_path]:transition-opacity [&_path]:duration-200"
         />
       )),
-    [activeLegend, areas]
+    [activeLegend, areas, Area]
   );
 
   // create comparison line data for straight line from origin to last point
@@ -208,4 +211,15 @@ export const AreaChart = React.memo(function AreaChart<K extends string, T exten
     </div>
   );
 });
+AreaChartContent.displayName = "AreaChartContent";
+
+export const AreaChart = React.memo(function AreaChart<K extends string, T extends string>(
+  props: TAreaChartProps<K, T>
+) {
+  const recharts = useRecharts();
+  // until recharts has loaded, hold the chart's place so the layout does not jump
+  if (!recharts) return <div className={props.className} />;
+  return <AreaChartContent {...props} recharts={recharts} />;
+});
+
 AreaChart.displayName = "AreaChart";

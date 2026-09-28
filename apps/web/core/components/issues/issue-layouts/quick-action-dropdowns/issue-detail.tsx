@@ -16,17 +16,8 @@ import { EIssuesStoreType } from "@plane/types";
 import { useTranslation } from "@plane/i18n";
 import { Icon } from "@makeplane/propel/components/icon";
 import { IconButton } from "@makeplane/propel/components/icon-button";
-import {
-  Menu,
-  MenuContent,
-  MenuItem,
-  MenuSubmenu,
-  MenuSubmenuContent,
-  MenuSubmenuTrigger,
-  MenuTrigger,
-} from "@makeplane/propel/components/menu";
-import { toSideAndAlign } from "@plane/blocks/common";
-import { ContextMenu, getRenderableItems, resolveItemVariant } from "@plane/blocks/context-menu";
+import { Menu, MenuTrigger } from "@makeplane/propel/components/menu";
+import { ContextMenu } from "@plane/blocks/context-menu";
 // hooks
 import { useIssues } from "@/hooks/store/use-issues";
 import { useProject } from "@/hooks/store/use-project";
@@ -38,7 +29,8 @@ import { DeleteIssueModal } from "../../delete-issue-modal";
 import { CreateUpdateIssueModal } from "../../issue-modal/modal";
 import type { IQuickActionProps } from "../list/list-view-types";
 import type { MenuItemFactoryProps } from "./helper";
-import { useWorkItemDetailMenuItems, quickActionTriggerGuard, stopQuickActionPropagation } from "./helper";
+import { QuickActionMenuContent } from "./quick-action-menu";
+import { quickActionTriggerGuard, useWorkItemDetailMenuItems } from "./helper";
 
 type TWorkItemDetailQuickActionProps = IQuickActionProps & {
   toggleEditIssueModal?: (value: boolean) => void;
@@ -248,51 +240,7 @@ export const WorkItemDetailQuickActions = observer(function WorkItemDetailQuickA
             />
           }
         />
-        <MenuContent {...toSideAndAlign(placements)} onClick={stopQuickActionPropagation}>
-          {getRenderableItems(MENU_ITEMS).map((item) => {
-            const nestedItems = getRenderableItems(item.nestedMenuItems);
-            if (nestedItems.length > 0) {
-              return (
-                <MenuSubmenu key={item.key}>
-                  <MenuSubmenuTrigger
-                    variant={resolveItemVariant(item)}
-                    icon={item.icon ? <Icon icon={item.icon} /> : undefined}
-                    label={item.title ?? ""}
-                    disabled={item.disabled}
-                  />
-                  <MenuSubmenuContent sizing="auto">
-                    {nestedItems.map((nestedItem) => (
-                      <MenuItem
-                        key={nestedItem.key}
-                        variant={resolveItemVariant(nestedItem)}
-                        icon={nestedItem.icon ? <Icon icon={nestedItem.icon} /> : undefined}
-                        label={nestedItem.title ?? ""}
-                        description={nestedItem.description}
-                        onClick={() => {
-                          nestedItem.action();
-                        }}
-                        disabled={nestedItem.disabled}
-                      />
-                    ))}
-                  </MenuSubmenuContent>
-                </MenuSubmenu>
-              );
-            }
-            return (
-              <MenuItem
-                key={item.key}
-                variant={resolveItemVariant(item)}
-                icon={item.icon ? <Icon icon={item.icon} /> : undefined}
-                label={item.title ?? ""}
-                description={item.description}
-                onClick={() => {
-                  item.action();
-                }}
-                disabled={item.disabled}
-              />
-            );
-          })}
-        </MenuContent>
+        <QuickActionMenuContent items={MENU_ITEMS} placements={placements} />
       </Menu>
     </>
   );

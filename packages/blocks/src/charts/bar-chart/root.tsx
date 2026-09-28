@@ -6,16 +6,8 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useCallback, useMemo, useState } from "react";
-import {
-  BarChart as CoreBarChart,
-  Bar,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-  Legend,
-  CartesianGrid,
-} from "recharts";
+import type { TRecharts } from "../use-recharts";
+import { useRecharts } from "../use-recharts";
 // plane imports
 import { AXIS_LABEL_CLASSNAME } from "@plane/constants";
 import type { TBarChartProps } from "@plane/types";
@@ -25,7 +17,19 @@ import { CustomXAxisTick, CustomYAxisTick } from "../components/tick";
 import { CustomTooltip } from "../components/tooltip";
 import { barShapeVariants, DEFAULT_BAR_FILL_COLOR } from "./bar";
 
-export const BarChart = React.memo(function BarChart<K extends string, T extends string>(props: TBarChartProps<K, T>) {
+const BarChartContent = React.memo(function BarChartContent<K extends string, T extends string>(
+  props: TBarChartProps<K, T> & { recharts: TRecharts }
+) {
+  const {
+    BarChart: CoreBarChart,
+    Bar,
+    ResponsiveContainer,
+    Tooltip,
+    XAxis,
+    YAxis,
+    Legend,
+    CartesianGrid,
+  } = props.recharts;
   const {
     data,
     bars,
@@ -116,7 +120,7 @@ export const BarChart = React.memo(function BarChart<K extends string, T extends
           fill={getBarColor(data, bar.key)}
         />
       )),
-    [activeLegend, stackKeys, bars, getBarColor, data]
+    [activeLegend, stackKeys, bars, getBarColor, data, Bar]
   );
 
   return (
@@ -208,4 +212,13 @@ export const BarChart = React.memo(function BarChart<K extends string, T extends
     </div>
   );
 });
+BarChartContent.displayName = "BarChartContent";
+
+export const BarChart = React.memo(function BarChart<K extends string, T extends string>(props: TBarChartProps<K, T>) {
+  const recharts = useRecharts();
+  // until recharts has loaded, hold the chart's place so the layout does not jump
+  if (!recharts) return <div className={props.className} />;
+  return <BarChartContent {...props} recharts={recharts} />;
+});
+
 BarChart.displayName = "BarChart";

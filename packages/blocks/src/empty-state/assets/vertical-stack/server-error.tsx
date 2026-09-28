@@ -20,6 +20,15 @@ export function ServerErrorVerticalStackIllustration({ className }: ServerErrorV
       xmlns="http://www.w3.org/2000/svg"
       className={className}
     >
+      <ServerErrorVerticalStackPartOne />
+      <ServerErrorVerticalStackPartTwo />
+    </svg>
+  );
+}
+
+function ServerErrorVerticalStackPartOne() {
+  return (
+    <>
       <g opacity="0.2">
         <path
           d="M0.25 147.382C0.25 149.515 1.847 151.642 5.03537 153.273L46.0892 174.192C52.4716 177.443 62.8156 177.443 69.1979 174.192L155.465 130.238C158.653 128.613 160.25 126.485 160.25 124.352V131.163C160.25 133.296 158.653 135.424 155.465 137.049L69.1979 181.004C62.8156 184.254 52.4716 184.254 46.0892 181.004L5.03537 160.084C1.84135 158.459 0.25 156.326 0.25 154.193V147.382Z"
@@ -180,6 +189,13 @@ export function ServerErrorVerticalStackIllustration({ className }: ServerErrorV
         d="M92.0188 81.7578C92.0188 82.6607 91.415 83.699 90.6758 84.0771C89.9365 84.4552 89.3328 84.032 89.3328 83.1291C89.3328 82.2262 89.9365 81.1878 90.6758 80.8097C91.415 80.4316 92.0188 80.8549 92.0188 81.7578Z"
         fill={ILLUSTRATION_COLOR_TOKEN_MAP.fill.quaternary}
       />
+    </>
+  );
+}
+
+function ServerErrorVerticalStackPartTwo() {
+  return (
+    <>
       <path
         d="M96.1948 79.6303C96.1948 80.5332 95.591 81.5716 94.8518 81.9497C94.1125 82.3278 93.5088 81.9045 93.5088 81.0016C93.5088 80.0987 94.1125 79.0604 94.8518 78.6823C95.591 78.3042 96.1948 78.7274 96.1948 79.6303Z"
         fill={ILLUSTRATION_COLOR_TOKEN_MAP.fill.quaternary}
@@ -336,6 +352,6 @@ export function ServerErrorVerticalStackIllustration({ className }: ServerErrorV
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-    </svg>
+    </>
   );
 }

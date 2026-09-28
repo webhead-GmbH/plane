@@ -92,7 +92,9 @@ export function useInfiniteOptions<T>(
       }
     } finally {
       if (inFlightRef.current === generation) inFlightRef.current = null;
-      if (generation === generationRef.current) setIsLoading(false);
+      // Always settle the flag here; a superseded request leaves it to the newer one.
+      const isCurrent = generation === generationRef.current;
+      setIsLoading((wasLoading) => (isCurrent ? false : wasLoading));
     }
   }, []);
 

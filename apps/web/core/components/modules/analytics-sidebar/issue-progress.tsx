@@ -4,7 +4,7 @@
  * See the LICENSE file for details.
  */
 
-import { Fragment, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { observer } from "mobx-react";
 import { useSearchParams } from "next/navigation";
 import { Collapsible } from "@makeplane/propel/components/collapsible";
@@ -67,39 +67,54 @@ const getModuleDateDetails = (moduleDetails: IModule | null) => {
   return { moduleStartDate, moduleEndDate, isModuleDateValid };
 };
 
-export const ModuleAnalyticsProgress = observer(function ModuleAnalyticsProgress(props: TModuleAnalyticsProgress) {
-  // props
-  const { workspaceSlug, projectId, moduleId } = props;
-  // router
-  const searchParams = useSearchParams();
-  const peekModule = searchParams.get("peekModule") || undefined;
-  // plane hooks
-  const { t } = useTranslation();
-  // hooks
-  const { areEstimateEnabledByProjectId, currentActiveEstimateId, estimateById } = useProjectEstimates();
-  const { getPlotTypeByModuleId, setPlotType, getModuleById, fetchModuleDetails, fetchArchivedModuleDetails } =
-    useModule();
+type TModuleProgressChartProps = {
+  moduleDetails: IModule;
+  plotType: TModulePlotType;
+  moduleStartDate: Date | undefined;
+  moduleEndDate: Date | undefined;
+};
+
+// The burn-down chart, in points or work items as the plot type says.
+function ModuleProgressChart(props: TModuleProgressChartProps) {
+  const { moduleDetails, plotType, moduleStartDate, moduleEndDate } = props;
+  const { totalIssues, totalEstimatePoints } = getModuleProgressTotals(moduleDetails, plotType);
+  const chartDistributionData =
+    plotType === "points" ? moduleDetails?.estimate_distribution : moduleDetails?.distribution || undefined;
+  const completionChartDistributionData = chartDistributionData?.completion_chart || undefined;
+
+  if (!moduleStartDate || !moduleEndDate || !completionChartDistributionData) return null;
+
+  return plotType === "points" ? (
+    <ProgressChart
+      distribution={completionChartDistributionData}
+      totalIssues={totalEstimatePoints}
+      plotTitle={"points"}
+    />
+  ) : (
+    <ProgressChart distribution={completionChartDistributionData} totalIssues={totalIssues} plotTitle={"work items"} />
+  );
+}
+
+type TModuleProgressDetailsProps = {
+  moduleId: string;
+  moduleDetails: IModule;
+  plotType: TModulePlotType;
+  isEditable: boolean;
+};
+
+// The per-state figures (work items or estimate points) and the filters they drive.
+const ModuleProgressDetails = observer(function ModuleProgressDetails(props: TModuleProgressDetailsProps) {
+  const { moduleId, moduleDetails, plotType, isEditable } = props;
+  // store hooks
   const { getFilter, updateFilterValueFromSidebar } = useWorkItemFilters();
-  // state
-  const [loader, setLoader] = useState(false);
   // derived values
   const moduleFilter = getFilter(EIssuesStoreType.MODULE, moduleId);
   const selectedAssignees = moduleFilter?.findFirstConditionByPropertyAndOperator("assignee_id", "in");
   const selectedLabels = moduleFilter?.findFirstConditionByPropertyAndOperator("label_id", "in");
   const selectedStateGroups = moduleFilter?.findFirstConditionByPropertyAndOperator("state_group", "in");
-  const moduleDetails = getModuleById(moduleId);
-  const plotType: TModulePlotType = getPlotTypeByModuleId(moduleId);
-  const isCurrentProjectEstimateEnabled = projectId && areEstimateEnabledByProjectId(projectId) ? true : false;
-  const estimateDetails =
-    isCurrentProjectEstimateEnabled && currentActiveEstimateId && estimateById(currentActiveEstimateId);
-  const isCurrentEstimateTypeIsPoints = estimateDetails && estimateDetails?.type === EEstimateSystem.POINTS;
-  const { totalIssues, totalEstimatePoints, progressHeaderPercentage } = getModuleProgressTotals(
-    moduleDetails,
-    plotType
-  );
+  const { totalIssues, totalEstimatePoints } = getModuleProgressTotals(moduleDetails, plotType);
   const chartDistributionData =
     plotType === "points" ? moduleDetails?.estimate_distribution : moduleDetails?.distribution || undefined;
-  const completionChartDistributionData = chartDistributionData?.completion_chart || undefined;
   const groupedIssues = useMemo(
     () => ({
       backlog: plotType === "points" ? moduleDetails?.backlog_estimate_points || 0 : moduleDetails?.backlog_issues || 0,
@@ -113,10 +128,56 @@ export const ModuleAnalyticsProgress = observer(function ModuleAnalyticsProgress
     }),
     [plotType, moduleDetails]
   );
-  const { moduleStartDate, moduleEndDate, isModuleDateValid } = getModuleDateDetails(moduleDetails);
-  const isArchived = !!moduleDetails?.archived_at;
+
+  if (!chartDistributionData) return null;
+
+  return (
+    <div className="w-full border-t border-subtle pt-5">
+      <ModuleProgressStats
+        distribution={chartDistributionData}
+        groupedIssues={groupedIssues}
+        handleFiltersUpdate={updateFilterValueFromSidebar.bind(
+          updateFilterValueFromSidebar,
+          EIssuesStoreType.MODULE,
+          moduleId
+        )}
+        isEditable={isEditable && moduleFilter !== undefined}
+        moduleId={moduleId}
+        plotType={plotType}
+        selectedFilters={{
+          assignees: selectedAssignees,
+          labels: selectedLabels,
+          stateGroups: selectedStateGroups,
+        }}
+        totalIssuesCount={plotType === "points" ? totalEstimatePoints || 0 : totalIssues || 0}
+      />
+    </div>
+  );
+});
+
+type TModulePlotTypeSelectProps = {
+  workspaceSlug: string;
+  projectId: string;
+  moduleId: string;
+  plotType: TModulePlotType;
+  isArchived: boolean;
+};
+
+// Points or work items, offered only when the project estimates in points. Switching refetches the module.
+const ModulePlotTypeSelect = observer(function ModulePlotTypeSelect(props: TModulePlotTypeSelectProps) {
+  const { workspaceSlug, projectId, moduleId, plotType, isArchived } = props;
+  // plane hooks
+  const { t } = useTranslation();
+  // store hooks
+  const { areEstimateEnabledByProjectId, currentActiveEstimateId, estimateById } = useProjectEstimates();
+  const { setPlotType, fetchModuleDetails, fetchArchivedModuleDetails } = useModule();
   // state
-  const [isOpen, setIsOpen] = useState(!!isModuleDateValid);
+  const [loader, setLoader] = useState(false);
+  // derived values
+  const isCurrentProjectEstimateEnabled = projectId && areEstimateEnabledByProjectId(projectId) ? true : false;
+  const estimateDetails =
+    isCurrentProjectEstimateEnabled && currentActiveEstimateId && estimateById(currentActiveEstimateId);
+  const isCurrentEstimateTypeIsPoints = estimateDetails && estimateDetails?.type === EEstimateSystem.POINTS;
 
   // handlers
   const onChange = async (value: TModulePlotType) => {
@@ -136,54 +197,68 @@ export const ModuleAnalyticsProgress = observer(function ModuleAnalyticsProgress
     }
   };
 
+  if (!isCurrentEstimateTypeIsPoints) return null;
+
+  return (
+    <div className="flex items-center gap-2">
+      <Select<PlotTypeOption>
+        getValues={() => moduleBurnDownChartOptions}
+        value={moduleBurnDownChartOptions.find((v) => v.value === plotType) ?? null}
+        onChange={(val) => void onChange(val as TModulePlotType)}
+        getOptionValue={(option) => option.value}
+        getOptionLabel={(option) => t(option.i18n_label)}
+        showSearch={false}
+        pinSelected={false}
+      >
+        <Select.Trigger variant="select-md" className="w-auto">
+          <span>{t(moduleBurnDownChartOptions.find((v) => v.value === plotType)?.i18n_label || "none")}</span>
+        </Select.Trigger>
+      </Select>
+      {loader && <Spinner className="h-3 w-3" />}
+    </div>
+  );
+});
+
+export const ModuleAnalyticsProgress = observer(function ModuleAnalyticsProgress(props: TModuleAnalyticsProgress) {
+  // props
+  const { workspaceSlug, projectId, moduleId } = props;
+  // router
+  const searchParams = useSearchParams();
+  const peekModule = searchParams.get("peekModule") || undefined;
+  // plane hooks
+  const { t } = useTranslation();
+  // hooks
+  const { getPlotTypeByModuleId, getModuleById } = useModule();
+  // derived values
+  const moduleDetails = getModuleById(moduleId);
+  const plotType: TModulePlotType = getPlotTypeByModuleId(moduleId);
+  const { progressHeaderPercentage } = getModuleProgressTotals(moduleDetails, plotType);
+  const { moduleStartDate, moduleEndDate, isModuleDateValid } = getModuleDateDetails(moduleDetails);
+  const isArchived = !!moduleDetails?.archived_at;
+  // state
+  const [isOpen, setIsOpen] = useState(!!isModuleDateValid);
+
   if (!moduleDetails) return <></>;
 
   const progressBody = (
     <div className="space-y-4">
       {/* progress burndown chart */}
       <div>
-        {moduleStartDate && moduleEndDate && completionChartDistributionData && (
-          <Fragment>
-            {plotType === "points" ? (
-              <ProgressChart
-                distribution={completionChartDistributionData}
-                totalIssues={totalEstimatePoints}
-                plotTitle={"points"}
-              />
-            ) : (
-              <ProgressChart
-                distribution={completionChartDistributionData}
-                totalIssues={totalIssues}
-                plotTitle={"work items"}
-              />
-            )}
-          </Fragment>
-        )}
+        <ModuleProgressChart
+          moduleDetails={moduleDetails}
+          plotType={plotType}
+          moduleStartDate={moduleStartDate}
+          moduleEndDate={moduleEndDate}
+        />
       </div>
 
       {/* progress detailed view */}
-      {chartDistributionData && (
-        <div className="w-full border-t border-subtle pt-5">
-          <ModuleProgressStats
-            distribution={chartDistributionData}
-            groupedIssues={groupedIssues}
-            handleFiltersUpdate={updateFilterValueFromSidebar.bind(
-              updateFilterValueFromSidebar,
-              EIssuesStoreType.MODULE,
-              moduleId
-            )}
-            isEditable={Boolean(!peekModule) && moduleFilter !== undefined}
-            moduleId={moduleId}
-            plotType={plotType}
-            selectedFilters={{
-              assignees: selectedAssignees,
-              labels: selectedLabels,
-              stateGroups: selectedStateGroups,
-            }}
-            totalIssuesCount={plotType === "points" ? totalEstimatePoints || 0 : totalIssues || 0}
-          />
-        </div>
-      )}
+      <ModuleProgressDetails
+        moduleId={moduleId}
+        moduleDetails={moduleDetails}
+        plotType={plotType}
+        isEditable={!peekModule}
+      />
     </div>
   );
 
@@ -203,24 +278,13 @@ export const ModuleAnalyticsProgress = observer(function ModuleAnalyticsProgress
             </span>
           }
           trailing={
-            isCurrentEstimateTypeIsPoints ? (
-              <div className="flex items-center gap-2">
-                <Select<PlotTypeOption>
-                  getValues={() => moduleBurnDownChartOptions}
-                  value={moduleBurnDownChartOptions.find((v) => v.value === plotType) ?? null}
-                  onChange={(val) => void onChange(val as TModulePlotType)}
-                  getOptionValue={(option) => option.value}
-                  getOptionLabel={(option) => t(option.i18n_label)}
-                  showSearch={false}
-                  pinSelected={false}
-                >
-                  <Select.Trigger variant="select-md" className="w-auto">
-                    <span>{t(moduleBurnDownChartOptions.find((v) => v.value === plotType)?.i18n_label || "none")}</span>
-                  </Select.Trigger>
-                </Select>
-                {loader && <Spinner className="h-3 w-3" />}
-              </div>
-            ) : undefined
+            <ModulePlotTypeSelect
+              workspaceSlug={workspaceSlug}
+              projectId={projectId}
+              moduleId={moduleId}
+              plotType={plotType}
+              isArchived={isArchived}
+            />
           }
         >
           {progressBody}

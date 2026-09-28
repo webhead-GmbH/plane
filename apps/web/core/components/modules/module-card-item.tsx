@@ -5,7 +5,7 @@
  */
 
 import type { SyntheticEvent } from "react";
-import React, { useRef } from "react";
+import React, { useCallback, useRef } from "react";
 import { observer } from "mobx-react";
 import Link from "next/link";
 import { useParams, usePathname, useSearchParams } from "next/navigation";
@@ -44,6 +44,56 @@ const getModuleIssueCountLabel = (moduleTotalIssues: number, moduleCompletedIssu
   return `${moduleCompletedIssues}/${moduleTotalIssues} Work items`;
 };
 
+const handleEventPropagation = (e: SyntheticEvent<HTMLDivElement>) => {
+  e.stopPropagation();
+  e.preventDefault();
+};
+
+type TModuleCardDatesProps = {
+  moduleDetails: IModule;
+  isDisabled: boolean;
+  onChange: (payload: Partial<IModule>) => Promise<void>;
+};
+
+const ModuleCardDates = observer(function ModuleCardDates(props: TModuleCardDatesProps) {
+  const { moduleDetails, isDisabled, onChange } = props;
+  // store hooks
+  const { data: userProfile } = useUserProfile();
+  // derived values
+  const renderIcon = Boolean(moduleDetails.start_date) || Boolean(moduleDetails.target_date);
+
+  // Ruling 38: the whole card is a `Link`, so the trigger's click and keyboard activation must not reach it.
+  return (
+    <div
+      className="flex items-center justify-between py-0.5"
+      role="presentation"
+      onClick={handleEventPropagation}
+      onKeyDown={handleTriggerKeyDown}
+    >
+      <DateRangeSelect
+        variant="select-ghost-md"
+        className={`h-6 w-full gap-1.5 rounded-sm border-[0.5px] border-strong text-11 text-tertiary ${
+          isDisabled ? "cursor-not-allowed" : "cursor-pointer"
+        }`}
+        value={{
+          from: getDate(moduleDetails.start_date) ?? null,
+          to: getDate(moduleDetails.target_date) ?? null,
+        }}
+        onChange={(range) => {
+          void onChange({
+            start_date: range.from ? renderFormattedPayloadDate(range.from) : null,
+            target_date: range.to ? renderFormattedPayloadDate(range.to) : null,
+          });
+        }}
+        placeholder="Start date - End date"
+        weekStartsOn={userProfile?.start_of_the_week}
+        disabled={isDisabled}
+        icon={renderIcon ? undefined : <CalendarOutline aria-hidden="true" />}
+      />
+    </div>
+  );
+});
+
 export const ModuleCardItem = observer(function ModuleCardItem(props: Props) {
   const { moduleId } = props;
   // refs
@@ -57,7 +107,6 @@ export const ModuleCardItem = observer(function ModuleCardItem(props: Props) {
   const { allowPermissions } = useUserPermissions();
   const { getModuleById, addModuleToFavorites, removeModuleFromFavorites, updateModuleDetails } = useModule();
   const { getUserDetails } = useMember();
-  const { data: userProfile } = useUserProfile();
   // local storage
   const { setValue: toggleFavoriteMenu, storedValue } = useLocalStorage<boolean>(IS_FAVORITE_MENU_OPEN, false);
   // derived values
@@ -67,7 +116,6 @@ export const ModuleCardItem = observer(function ModuleCardItem(props: Props) {
     EUserPermissionsLevel.PROJECT
   );
   const isDisabled = !isEditingAllowed || !!moduleDetails?.archived_at;
-  const renderIcon = Boolean(moduleDetails?.start_date) || Boolean(moduleDetails?.target_date);
 
   const { isMobile } = usePlatformOS();
   const handleAddToFavorites = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -118,30 +166,28 @@ export const ModuleCardItem = observer(function ModuleCardItem(props: Props) {
     });
   };
 
-  const handleEventPropagation = (e: SyntheticEvent<HTMLDivElement>) => {
-    e.stopPropagation();
-    e.preventDefault();
-  };
+  const handleModuleDetailsChange = useCallback(
+    async (payload: Partial<IModule>) => {
+      if (!workspaceSlug || !projectId) return;
 
-  const handleModuleDetailsChange = async (payload: Partial<IModule>) => {
-    if (!workspaceSlug || !projectId) return;
-
-    await updateModuleDetails(workspaceSlug.toString(), projectId.toString(), moduleId, payload)
-      .then(() => {
-        setToast({
-          type: "success",
-          title: "Success!",
-          message: "Module updated successfully.",
+      await updateModuleDetails(workspaceSlug.toString(), projectId.toString(), moduleId, payload)
+        .then(() => {
+          setToast({
+            type: "success",
+            title: "Success!",
+            message: "Module updated successfully.",
+          });
+        })
+        .catch((err) => {
+          setToast({
+            type: "error",
+            title: "Error!",
+            message: err?.detail ?? "Module could not be updated. Please try again.",
+          });
         });
-      })
-      .catch((err) => {
-        setToast({
-          type: "error",
-          title: "Error!",
-          message: err?.detail ?? "Module could not be updated. Please try again.",
-        });
-      });
-  };
+    },
+    [workspaceSlug, projectId, moduleId, updateModuleDetails]
+  );
 
   const openModuleOverview = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
@@ -227,35 +273,11 @@ export const ModuleCardItem = observer(function ModuleCardItem(props: Props) {
               showValue={false}
               aria-label="Module progress"
             />
-            {/* Ruling 38: the whole card is a `Link`, so the trigger's click and keyboard
-                activation must not reach it. */}
-            <div
-              className="flex items-center justify-between py-0.5"
-              role="presentation"
-              onClick={handleEventPropagation}
-              onKeyDown={handleTriggerKeyDown}
-            >
-              <DateRangeSelect
-                variant="select-ghost-md"
-                className={`h-6 w-full gap-1.5 rounded-sm border-[0.5px] border-strong text-11 text-tertiary ${
-                  isDisabled ? "cursor-not-allowed" : "cursor-pointer"
-                }`}
-                value={{
-                  from: getDate(moduleDetails.start_date) ?? null,
-                  to: getDate(moduleDetails.target_date) ?? null,
-                }}
-                onChange={(range) => {
-                  void handleModuleDetailsChange({
-                    start_date: range.from ? renderFormattedPayloadDate(range.from) : null,
-                    target_date: range.to ? renderFormattedPayloadDate(range.to) : null,
-                  });
-                }}
-                placeholder="Start date - End date"
-                weekStartsOn={userProfile?.start_of_the_week}
-                disabled={isDisabled}
-                icon={renderIcon ? undefined : <CalendarOutline aria-hidden="true" />}
-              />
-            </div>
+            <ModuleCardDates
+              moduleDetails={moduleDetails}
+              isDisabled={isDisabled}
+              onChange={handleModuleDetailsChange}
+            />
           </div>
         </Card>
       </Link>

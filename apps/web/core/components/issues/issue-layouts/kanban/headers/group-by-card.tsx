@@ -37,6 +37,62 @@ interface IHeaderGroupByCard {
   isEpic?: boolean;
 }
 
+type THeaderGroupByCardAddIssueProps = {
+  showExistingIssueOption: boolean;
+  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setOpenExistingIssueListModal: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
+function HeaderGroupByCardAddIssue(props: THeaderGroupByCardAddIssueProps) {
+  const { showExistingIssueOption, setIsOpen, setOpenExistingIssueListModal } = props;
+  // plane hooks
+  const { t } = useTranslation();
+
+  if (showExistingIssueOption)
+    return (
+      <Menu>
+        <MenuTrigger
+          render={
+            <button
+              type="button"
+              aria-label={t("common.add")}
+              className="flex h-[20px] w-[20px] flex-shrink-0 cursor-pointer items-center justify-center overflow-hidden rounded-sm bg-layer-transparent transition-all hover:bg-layer-transparent-hover"
+            >
+              <AddOutline height={14} width={14} />
+            </button>
+          }
+        />
+        <MenuContent side="bottom" align="end">
+          <MenuItem
+            label="Create work item"
+            onClick={() => {
+              setIsOpen(true);
+            }}
+          />
+          <MenuItem
+            label="Add an existing work item"
+            onClick={() => {
+              setOpenExistingIssueListModal(true);
+            }}
+          />
+        </MenuContent>
+      </Menu>
+    );
+
+  return (
+    <button
+      type="button"
+      aria-label={t("common.add")}
+      className="flex h-[20px] w-[20px] flex-shrink-0 cursor-pointer items-center justify-center overflow-hidden rounded-sm bg-layer-transparent transition-all hover:bg-layer-transparent-hover"
+      onClick={() => {
+        setIsOpen(true);
+      }}
+    >
+      <AddOutline width={14} />
+    </button>
+  );
+}
+
 export const HeaderGroupByCard = observer(function HeaderGroupByCard(props: IHeaderGroupByCard) {
   const {
     sub_group_by,
@@ -51,8 +107,6 @@ export const HeaderGroupByCard = observer(function HeaderGroupByCard(props: IHea
     addIssuesToView,
     isEpic = false,
   } = props;
-  // plane hooks
-  const { t } = useTranslation();
   const verticalAlignPosition = sub_group_by ? false : collapsedGroups?.group_by.includes(column_id);
   // states
   const [isOpen, setIsOpen] = React.useState(false);
@@ -147,47 +201,13 @@ export const HeaderGroupByCard = observer(function HeaderGroupByCard(props: IHea
           </button>
         )}
 
-        {!disableIssueCreation &&
-          (renderExistingIssueModal ? (
-            <Menu>
-              <MenuTrigger
-                render={
-                  <button
-                    type="button"
-                    aria-label={t("common.add")}
-                    className="flex h-[20px] w-[20px] flex-shrink-0 cursor-pointer items-center justify-center overflow-hidden rounded-sm bg-layer-transparent transition-all hover:bg-layer-transparent-hover"
-                  >
-                    <AddOutline height={14} width={14} />
-                  </button>
-                }
-              />
-              <MenuContent side="bottom" align="end">
-                <MenuItem
-                  label="Create work item"
-                  onClick={() => {
-                    setIsOpen(true);
-                  }}
-                />
-                <MenuItem
-                  label="Add an existing work item"
-                  onClick={() => {
-                    setOpenExistingIssueListModal(true);
-                  }}
-                />
-              </MenuContent>
-            </Menu>
-          ) : (
-            <button
-              type="button"
-              aria-label={t("common.add")}
-              className="flex h-[20px] w-[20px] flex-shrink-0 cursor-pointer items-center justify-center overflow-hidden rounded-sm bg-layer-transparent transition-all hover:bg-layer-transparent-hover"
-              onClick={() => {
-                setIsOpen(true);
-              }}
-            >
-              <AddOutline width={14} />
-            </button>
-          ))}
+        {!disableIssueCreation && (
+          <HeaderGroupByCardAddIssue
+            showExistingIssueOption={!!renderExistingIssueModal}
+            setIsOpen={setIsOpen}
+            setOpenExistingIssueListModal={setOpenExistingIssueListModal}
+          />
+        )}
       </div>
     </>
   );

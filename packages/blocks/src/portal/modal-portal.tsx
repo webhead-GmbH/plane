@@ -27,6 +27,8 @@ export type ModalPortalProps = {
   closeOnEscape?: boolean;
   /** Called on outside click; omit to keep the modal open. */
   onOutsideClick?: () => void;
+  /** The dialog's accessible name. */
+  "aria-label"?: string;
 };
 
 /**
@@ -58,6 +60,7 @@ export function ModalPortal({
   showOverlay = true,
   closeOnEscape = true,
   onOutsideClick,
+  "aria-label": ariaLabel,
 }: ModalPortalProps) {
   const contentRef = useRef<HTMLDivElement>(null);
 
@@ -84,10 +87,16 @@ export function ModalPortal({
   if (!isOpen) return null;
 
   const content = (
-    <div
-      className={cn("absolute inset-0 h-full w-full overflow-y-auto", className)}
+    // A non-modal <dialog>, as the role="dialog" div it replaces was: same semantics, native element.
+    // The resets undo the user-agent box so the classes below position it as before.
+    <dialog
+      open
+      aria-label={ariaLabel}
+      className={cn(
+        "absolute inset-0 m-0 h-full max-h-none w-full max-w-none overflow-y-auto border-0 bg-transparent p-0 text-inherit",
+        className
+      )}
       style={{ zIndex: MODAL_Z_INDEX }}
-      role="dialog"
     >
       <div
         className={cn(
@@ -103,7 +112,7 @@ export function ModalPortal({
       <div ref={contentRef} className={cn(modalClasses)} style={{ zIndex: MODAL_Z_INDEX + 1 }} role="document">
         {children}
       </div>
-    </div>
+    </dialog>
   );
 
   return <PortalWrapper portalId={portalId}>{content}</PortalWrapper>;

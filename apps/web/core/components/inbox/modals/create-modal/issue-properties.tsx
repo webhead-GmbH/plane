@@ -35,17 +35,111 @@ type TInboxIssueProperties = {
   isVisible?: boolean;
 };
 
+type TInboxIssueEstimateProperty = {
+  projectId: string;
+  value: string | null | undefined;
+  handleData: TInboxIssueProperties["handleData"];
+  isVisible: boolean;
+  tabIndex: number | undefined;
+};
+
+type TInboxIssueParentProperty = {
+  projectId: string;
+  handleData: TInboxIssueProperties["handleData"];
+  isVisible: boolean;
+  tabIndex: number | undefined;
+};
+
+const InboxIssueEstimateProperty = observer(function InboxIssueEstimateProperty(props: TInboxIssueEstimateProperty) {
+  const { projectId, value, handleData, isVisible, tabIndex } = props;
+  // hooks
+  const { areEstimateEnabledByProjectId } = useProjectEstimates();
+
+  if (!isVisible || !projectId || !areEstimateEnabledByProjectId(projectId)) return null;
+
+  return (
+    <EstimateSelect
+      value={value || undefined}
+      onChange={(estimatePoint) => handleData("estimate_point", estimatePoint)}
+      projectId={projectId}
+      variant="pill-md"
+      placeholder="Estimate"
+      tabIndex={tabIndex}
+    />
+  );
+});
+
+function InboxIssueParentProperty(props: TInboxIssueParentProperty) {
+  const { projectId, handleData, isVisible, tabIndex } = props;
+  // states
+  const [parentIssueModalOpen, setParentIssueModalOpen] = useState(false);
+  const [selectedParentIssue, setSelectedParentIssue] = useState<ISearchIssueResponse | undefined>(undefined);
+
+  if (!isVisible) return null;
+
+  return (
+    <div className="h-7">
+      {selectedParentIssue ? (
+        <div className="h-full w-full">
+          <Menu>
+            <MenuTrigger
+              render={
+                <button
+                  type="button"
+                  tabIndex={tabIndex}
+                  className="flex h-full cursor-pointer items-center justify-between gap-1 rounded-sm border-[0.5px] border-strong px-2 py-0.5 text-11 hover:bg-layer-1"
+                >
+                  <ParentOutline className="h-3 w-3 flex-shrink-0" />
+                  <span className="whitespace-nowrap">
+                    {`${selectedParentIssue.project__identifier}-${selectedParentIssue.sequence_id}`}
+                  </span>
+                </button>
+              }
+            />
+            <MenuContent side="bottom" align="start">
+              <MenuItem label="Change parent work item" onClick={() => setParentIssueModalOpen(true)} />
+              <MenuItem
+                label="Remove parent work item"
+                onClick={() => {
+                  handleData("parent_id", "");
+                  setSelectedParentIssue(undefined);
+                }}
+              />
+            </MenuContent>
+          </Menu>
+        </div>
+      ) : (
+        <button
+          type="button"
+          className="flex h-full cursor-pointer items-center justify-between gap-1 rounded-sm border-[0.5px] border-strong px-2 py-0.5 text-11 hover:bg-layer-1"
+          onClick={() => setParentIssueModalOpen(true)}
+        >
+          <ParentOutline className="h-3 w-3 flex-shrink-0" />
+          <span className="whitespace-nowrap">Add parent</span>
+        </button>
+      )}
+
+      <ParentIssuesListModal
+        isOpen={parentIssueModalOpen}
+        handleClose={() => setParentIssueModalOpen(false)}
+        onChange={(issue) => {
+          handleData("parent_id", issue?.id);
+          setSelectedParentIssue(issue);
+        }}
+        projectId={projectId}
+        issueId={undefined}
+      />
+    </div>
+  );
+}
+
 export const InboxIssueProperties = observer(function InboxIssueProperties(props: TInboxIssueProperties) {
   const { workspaceSlug, projectId, data, handleData, isVisible = false } = props;
   // translation
   const { t } = useTranslation();
   // hooks
-  const { areEstimateEnabledByProjectId } = useProjectEstimates();
   const { data: userProfile } = useUserProfile();
   const { isMobile } = usePlatformOS();
-  // states
-  const [parentIssueModalOpen, setParentIssueModalOpen] = useState(false);
-  const [selectedParentIssue, setSelectedParentIssue] = useState<ISearchIssueResponse | undefined>(undefined);
 
   const { getIndex } = getTabIndex(ETabIndices.INTAKE_ISSUE_FORM, isMobile);
 
@@ -155,72 +249,21 @@ export const InboxIssueProperties = observer(function InboxIssueProperties(props
       )}
 
       {/* estimate */}
-      {isVisible && projectId && areEstimateEnabledByProjectId(projectId) && (
-        <EstimateSelect
-          value={data?.estimate_point || undefined}
-          onChange={(estimatePoint) => handleData("estimate_point", estimatePoint)}
-          projectId={projectId}
-          variant="pill-md"
-          placeholder="Estimate"
-          tabIndex={getIndex("estimate_point")}
-        />
-      )}
+      <InboxIssueEstimateProperty
+        projectId={projectId}
+        value={data?.estimate_point}
+        handleData={handleData}
+        isVisible={isVisible}
+        tabIndex={getIndex("estimate_point")}
+      />
 
       {/* add parent */}
-      {isVisible && (
-        <div className="h-7">
-          {selectedParentIssue ? (
-            <div className="h-full w-full">
-              <Menu>
-                <MenuTrigger
-                  render={
-                    <button
-                      type="button"
-                      tabIndex={getIndex("parent_id")}
-                      className="flex h-full cursor-pointer items-center justify-between gap-1 rounded-sm border-[0.5px] border-strong px-2 py-0.5 text-11 hover:bg-layer-1"
-                    >
-                      <ParentOutline className="h-3 w-3 flex-shrink-0" />
-                      <span className="whitespace-nowrap">
-                        {`${selectedParentIssue.project__identifier}-${selectedParentIssue.sequence_id}`}
-                      </span>
-                    </button>
-                  }
-                />
-                <MenuContent side="bottom" align="start">
-                  <MenuItem label="Change parent work item" onClick={() => setParentIssueModalOpen(true)} />
-                  <MenuItem
-                    label="Remove parent work item"
-                    onClick={() => {
-                      handleData("parent_id", "");
-                      setSelectedParentIssue(undefined);
-                    }}
-                  />
-                </MenuContent>
-              </Menu>
-            </div>
-          ) : (
-            <button
-              type="button"
-              className="flex h-full cursor-pointer items-center justify-between gap-1 rounded-sm border-[0.5px] border-strong px-2 py-0.5 text-11 hover:bg-layer-1"
-              onClick={() => setParentIssueModalOpen(true)}
-            >
-              <ParentOutline className="h-3 w-3 flex-shrink-0" />
-              <span className="whitespace-nowrap">Add parent</span>
-            </button>
-          )}
-
-          <ParentIssuesListModal
-            isOpen={parentIssueModalOpen}
-            handleClose={() => setParentIssueModalOpen(false)}
-            onChange={(issue) => {
-              handleData("parent_id", issue?.id);
-              setSelectedParentIssue(issue);
-            }}
-            projectId={projectId}
-            issueId={undefined}
-          />
-        </div>
-      )}
+      <InboxIssueParentProperty
+        projectId={projectId}
+        handleData={handleData}
+        isVisible={isVisible}
+        tabIndex={getIndex("parent_id")}
+      />
     </div>
   );
 });

@@ -22,14 +22,15 @@ import {
   DialogMain,
   DialogTitle,
 } from "@makeplane/propel/components/dialog";
-import { UserOutline } from "@makeplane/propel/icons";
 import { setToast } from "@plane/blocks/toast";
 import { EFileAssetType } from "@plane/types";
-import { getAssetIdFromUrl, getFileURL, checkURLValidity } from "@plane/utils";
+import { getAssetIdFromUrl, checkURLValidity } from "@plane/utils";
 // hooks
 import { useWorkspace } from "@/hooks/store/use-workspace";
 // services
 import { FileService } from "@/services/file.service";
+// local components
+import { ImageUploadDropzone } from "./image-upload-dropzone";
 
 type Props = {
   handleRemove: () => Promise<void>;
@@ -53,9 +54,13 @@ export const WorkspaceImageUploadModal = observer(function WorkspaceImageUploadM
   // store hooks
   const { currentWorkspace, updateWorkspaceLogo } = useWorkspace();
 
-  const onDrop = (acceptedFiles: File[]) => setImage(acceptedFiles[0]);
+  const onDrop = (acceptedFiles: File[]) => {
+    // A rejected drop passes no accepted file, so keep the image that was picked before it.
+    const [acceptedFile] = acceptedFiles;
+    if (acceptedFile) setImage(acceptedFile);
+  };
 
-  const { getRootProps, getInputProps, isDragActive, fileRejections } = useDropzone({
+  const dropzone = useDropzone({
     onDrop,
     accept: ACCEPTED_AVATAR_IMAGE_MIME_TYPES_FOR_REACT_DROPZONE,
     maxSize: MAX_FILE_SIZE,
@@ -132,50 +137,7 @@ export const WorkspaceImageUploadModal = observer(function WorkspaceImageUploadM
           </DialogHeader>
           <DialogBody tabIndex={0}>
             <div className="space-y-5">
-              <div className="space-y-3">
-                <div className="flex items-center justify-center gap-3">
-                  <div
-                    {...getRootProps()}
-                    className={`relative grid h-80 w-80 cursor-pointer place-items-center rounded-lg p-12 text-center focus:ring-2 focus:ring-accent-strong focus:ring-offset-2 focus:outline-none ${
-                      (image === null && isDragActive) || !value
-                        ? "border-2 border-dashed border-subtle hover:bg-surface-2"
-                        : ""
-                    }`}
-                  >
-                    {image !== null || (value && value !== "") ? (
-                      <>
-                        <button
-                          type="button"
-                          className="absolute top-0 right-0 z-40 translate-x-1/2 -translate-y-1/2 rounded-sm bg-surface-2 px-2 py-0.5 text-11 font-medium text-secondary"
-                        >
-                          Edit
-                        </button>
-                        <img
-                          src={image ? URL.createObjectURL(image) : value ? getFileURL(value) : ""}
-                          alt="image"
-                          className="absolute top-0 left-0 h-full w-full rounded-md object-cover"
-                        />
-                      </>
-                    ) : (
-                      <div>
-                        <UserOutline className="mx-auto h-16 w-16 text-secondary" />
-                        <span className="mt-2 block text-13 font-medium text-secondary">
-                          {isDragActive ? "Drop image here to upload" : "Drag & drop image here"}
-                        </span>
-                      </div>
-                    )}
-
-                    <input {...getInputProps()} />
-                  </div>
-                </div>
-                {fileRejections.length > 0 && (
-                  <p className="text-13 text-danger-primary">
-                    {fileRejections[0].errors[0].code === "file-too-large"
-                      ? "The image size cannot exceed 5 MB."
-                      : "Please upload a file in a valid format."}
-                  </p>
-                )}
-              </div>
+              <ImageUploadDropzone dropzone={dropzone} image={image} previewAlt="Workspace logo" value={value} />
               <p className="text-13 text-secondary">File formats supported- .jpeg, .jpg, .png, .webp</p>
             </div>
           </DialogBody>

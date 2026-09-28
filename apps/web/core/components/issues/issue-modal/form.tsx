@@ -11,6 +11,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { observer } from "mobx-react";
 import { useParams } from "next/navigation";
 import { FormProvider, useForm } from "react-hook-form";
+import type { UseFormWatch } from "react-hook-form";
 // editor
 import { ETabIndices, DEFAULT_WORK_ITEM_FORM_VALUES } from "@plane/constants";
 import type { EditorRefApi } from "@plane/editor";
@@ -76,6 +77,107 @@ export interface IssueFormProps {
   isProjectSelectionDisabled?: boolean;
   showActionButtons?: boolean;
   dataResetProperties?: any[];
+}
+
+// the form has content once a title or a non-empty description has been entered
+const getHasIssueFormContent = (watch: UseFormWatch<TIssue>) =>
+  (watch("name") && watch("name") !== "") || (watch("description_html") && watch("description_html") !== "<p></p>");
+
+type TIssueFormActionButtonsProps = {
+  data: Partial<TIssue> | undefined;
+  isCreateMoreToggleEnabled: boolean;
+  onCreateMoreToggleChange: (value: boolean) => void;
+  onClose: () => void;
+  isDraft: boolean;
+  moveToIssue: boolean;
+  primaryButtonText: NonNullable<IssueFormProps["primaryButtonText"]>;
+  getIndex: ReturnType<typeof getTabIndex>["getIndex"];
+  editorRef: React.RefObject<EditorRefApi | null>;
+  submitBtnRef: React.RefObject<HTMLButtonElement | null>;
+  isSubmitting: boolean;
+  isDisabled: boolean;
+  isMoving: boolean;
+  handleMoveToProjects: () => Promise<void>;
+};
+
+function IssueFormActionButtons(props: TIssueFormActionButtonsProps) {
+  const {
+    data,
+    isCreateMoreToggleEnabled,
+    onCreateMoreToggleChange,
+    onClose,
+    isDraft,
+    moveToIssue,
+    primaryButtonText,
+    getIndex,
+    editorRef,
+    submitBtnRef,
+    isSubmitting,
+    isDisabled,
+    isMoving,
+    handleMoveToProjects,
+  } = props;
+  // plane hooks
+  const { t } = useTranslation();
+
+  return (
+    <DialogActions>
+      {!data?.id && (
+        <label className="inline-flex cursor-pointer items-center gap-1.5" tabIndex={getIndex("create_more")}>
+          <Switch
+            size="sm"
+            checked={isCreateMoreToggleEnabled}
+            onCheckedChange={(checked) => onCreateMoreToggleChange(checked)}
+            aria-label={t("create_more")}
+          />
+          <span className="text-caption-sm-regular">{t("create_more")}</span>
+        </label>
+      )}
+      <div tabIndex={getIndex("discard_button")}>
+        <Button
+          variant="secondary"
+          size="md"
+          stretch="auto"
+          onClick={() => {
+            if (editorRef.current?.isEditorReadyToDiscard()) {
+              onClose();
+            } else {
+              setToast({
+                type: "error",
+                title: "Error!",
+                message: "Editor is still processing changes. Please wait before proceeding.",
+              });
+            }
+          }}
+          label={t("discard")}
+        />
+      </div>
+      <div tabIndex={isDraft ? getIndex("submit_button") : getIndex("draft_button")}>
+        <Button
+          variant={moveToIssue ? "secondary" : "primary"}
+          size="md"
+          stretch="auto"
+          type="submit"
+          ref={submitBtnRef}
+          loading={isSubmitting}
+          disabled={isDisabled}
+          label={isSubmitting ? primaryButtonText.loading : primaryButtonText.default}
+        />
+      </div>
+      {moveToIssue && (
+        <Button
+          variant="primary"
+          type="button"
+          loading={isMoving}
+          onClick={handleMoveToProjects}
+          disabled={isMoving}
+          size="md"
+          stretch="auto"
+          label={t("add_to_project")}
+        />
+      )}
+    </DialogActions>
+  );
 }
 
 export const IssueFormRoot = observer(function IssueFormRoot(props: IssueFormProps) {
@@ -295,8 +397,7 @@ export const IssueFormRoot = observer(function IssueFormRoot(props: IssueFormPro
     }
   };
 
-  const condition =
-    (watch("name") && watch("name") !== "") || (watch("description_html") && watch("description_html") !== "<p></p>");
+  const condition = getHasIssueFormContent(watch);
 
   const handleFormChange = () => {
     if (!onChange) return;
@@ -429,62 +530,22 @@ export const IssueFormRoot = observer(function IssueFormRoot(props: IssueFormPro
             </div>
           </DialogMain>
           {showActionButtons && (
-            <DialogActions>
-              {!data?.id && (
-                <label className="inline-flex cursor-pointer items-center gap-1.5" tabIndex={getIndex("create_more")}>
-                  <Switch
-                    size="sm"
-                    checked={isCreateMoreToggleEnabled}
-                    onCheckedChange={(checked) => onCreateMoreToggleChange(checked)}
-                    aria-label={t("create_more")}
-                  />
-                  <span className="text-caption-sm-regular">{t("create_more")}</span>
-                </label>
-              )}
-              <div tabIndex={getIndex("discard_button")}>
-                <Button
-                  variant="secondary"
-                  size="md"
-                  stretch="auto"
-                  onClick={() => {
-                    if (editorRef.current?.isEditorReadyToDiscard()) {
-                      onClose();
-                    } else {
-                      setToast({
-                        type: "error",
-                        title: "Error!",
-                        message: "Editor is still processing changes. Please wait before proceeding.",
-                      });
-                    }
-                  }}
-                  label={t("discard")}
-                />
-              </div>
-              <div tabIndex={isDraft ? getIndex("submit_button") : getIndex("draft_button")}>
-                <Button
-                  variant={moveToIssue ? "secondary" : "primary"}
-                  size="md"
-                  stretch="auto"
-                  type="submit"
-                  ref={submitBtnRef}
-                  loading={isSubmitting}
-                  disabled={isDisabled}
-                  label={isSubmitting ? primaryButtonText.loading : primaryButtonText.default}
-                />
-              </div>
-              {moveToIssue && (
-                <Button
-                  variant="primary"
-                  type="button"
-                  loading={isMoving}
-                  onClick={handleMoveToProjects}
-                  disabled={isMoving}
-                  size="md"
-                  stretch="auto"
-                  label={t("add_to_project")}
-                />
-              )}
-            </DialogActions>
+            <IssueFormActionButtons
+              data={data}
+              isCreateMoreToggleEnabled={isCreateMoreToggleEnabled}
+              onCreateMoreToggleChange={onCreateMoreToggleChange}
+              onClose={onClose}
+              isDraft={isDraft}
+              moveToIssue={moveToIssue}
+              primaryButtonText={primaryButtonText}
+              getIndex={getIndex}
+              editorRef={editorRef}
+              submitBtnRef={submitBtnRef}
+              isSubmitting={isSubmitting}
+              isDisabled={isDisabled}
+              isMoving={isMoving}
+              handleMoveToProjects={handleMoveToProjects}
+            />
           )}
         </form>
       </div>

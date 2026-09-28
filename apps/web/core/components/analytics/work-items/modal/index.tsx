@@ -8,6 +8,7 @@ import React, { useEffect, useState } from "react";
 import { observer } from "mobx-react";
 // plane package imports
 import { ModalPortal } from "@plane/blocks/portal";
+import { useTranslation } from "@plane/i18n";
 import type { ICycle, IModule, IProject } from "@plane/types";
 import { useAnalytics } from "@/hooks/store/use-analytics";
 // plane web components
@@ -26,6 +27,7 @@ type Props = {
 export const WorkItemsModal = observer(function WorkItemsModal(props: Props) {
   const { isOpen, onClose, projectDetails, moduleDetails, cycleDetails, isEpic } = props;
   const { updateIsEpic, isPeekView } = useAnalytics();
+  const { t } = useTranslation();
   const [fullScreen, setFullScreen] = useState(false);
 
   const handleClose = () => {
@@ -46,6 +48,7 @@ export const WorkItemsModal = observer(function WorkItemsModal(props: Props) {
       fullScreen={fullScreen}
       showOverlay={false}
       onOutsideClick={handleClose}
+      aria-label={projectDetails?.name ?? t("work_items")}
     >
       <div
         className={`flex h-full flex-col overflow-hidden border-subtle bg-surface-1 text-left ${

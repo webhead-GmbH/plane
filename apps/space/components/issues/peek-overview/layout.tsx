@@ -5,12 +5,15 @@
  */
 
 import { useCallback, useEffect, useEffectEvent, useRef } from "react";
+import type { ReactNode, RefObject } from "react";
 import { observer } from "mobx-react";
 import { useRouter, useSearchParams } from "next/navigation";
 // plane imports
 import { useTranslation } from "@plane/i18n";
+import { cn } from "@plane/utils";
 // hooks
 import { useIssueDetails } from "@/hooks/store/use-issue-details";
+import type { IIssue, IPeekMode } from "@/types/issue";
 // local imports
 import { FullScreenPeekView } from "./full-screen-peek-view";
 import { SidePeekView } from "./side-peek-view";
@@ -20,6 +23,63 @@ type TIssuePeekOverview = {
   peekId: string;
   handlePeekClose?: () => void;
 };
+
+type TPeekDialogProps = {
+  panelRef: RefObject<HTMLDialogElement | null>;
+  label: string;
+  className: string;
+  children: ReactNode;
+};
+
+// The peek's panel. An open <dialog> that is not modal: the peek traps Tab and handles Escape itself,
+// and a modal dialog would make the menus and pickers it portals to <body> inert. The resets undo the
+// dialog's own box so the classes place it.
+function PeekDialog(props: TPeekDialogProps) {
+  const { panelRef, label, className, children } = props;
+
+  return (
+    <dialog
+      open
+      ref={panelRef}
+      aria-modal="true"
+      aria-label={label}
+      tabIndex={-1}
+      className={cn("m-0 max-h-none max-w-none border-0 p-0 text-inherit outline-none", className)}
+    >
+      {children}
+    </dialog>
+  );
+}
+
+type TPeekModalProps = Omit<TPeekDialogProps, "className" | "children"> & {
+  peekMode: IPeekMode;
+  anchor: string;
+  handleClose: () => void;
+  issueDetails: IIssue | undefined;
+};
+
+// The centred modal or full-screen peek, over a backdrop.
+function PeekModal(props: TPeekModalProps) {
+  const { panelRef, label, peekMode, anchor, handleClose, issueDetails } = props;
+
+  return (
+    <>
+      <div aria-hidden="true" className="fixed inset-0 z-20 animate-fade-in bg-backdrop motion-reduce:animate-none" />
+      <PeekDialog
+        panelRef={panelRef}
+        label={label}
+        className={`fixed top-1/2 right-auto left-1/2 z-20 -translate-x-1/2 -translate-y-1/2 animate-fade-in rounded-lg bg-surface-1 transition-all duration-300 motion-reduce:animate-none ${
+          peekMode === "modal" ? "h-[70%] w-3/5" : "size-[95%]"
+        }`}
+      >
+        {peekMode === "modal" && <SidePeekView anchor={anchor} handleClose={handleClose} issueDetails={issueDetails} />}
+        {peekMode === "full" && (
+          <FullScreenPeekView anchor={anchor} handleClose={handleClose} issueDetails={issueDetails} />
+        )}
+      </PeekDialog>
+    </>
+  );
+}
 
 export const IssuePeekOverview = observer(function IssuePeekOverview(props: TIssuePeekOverview) {
   const { anchor, peekId, handlePeekClose } = props;
@@ -41,7 +101,7 @@ export const IssuePeekOverview = observer(function IssuePeekOverview(props: TIss
   const isModalPeekOpen = !!peekId && (peekMode === "modal" || peekMode === "full");
   // exactly one of the two panels is ever mounted, so both share the panel ref
   const isPeekOpen = isSidePeekOpen || isModalPeekOpen;
-  const panelRef = useRef<HTMLDivElement>(null);
+  const panelRef = useRef<HTMLDialogElement>(null);
   const previouslyFocusedElementRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
@@ -164,41 +224,23 @@ export const IssuePeekOverview = observer(function IssuePeekOverview(props: TIss
   return (
     <>
       {isSidePeekOpen && (
-        <div
-          ref={panelRef}
-          role="dialog"
-          aria-modal="true"
-          aria-label={panelLabel}
-          tabIndex={-1}
-          className="fixed top-0 right-0 z-20 h-full w-1/2 border-l border-subtle-1 bg-surface-1 shadow-raised-200 outline-none"
+        <PeekDialog
+          panelRef={panelRef}
+          label={panelLabel}
+          className="fixed top-0 right-0 left-auto z-20 h-full w-1/2 border-l border-subtle-1 bg-surface-1 shadow-raised-200"
         >
           <SidePeekView anchor={anchor} handleClose={handleClose} issueDetails={issueDetails} />
-        </div>
+        </PeekDialog>
       )}
       {isModalPeekOpen && (
-        <>
-          <div
-            aria-hidden="true"
-            className="fixed inset-0 z-20 animate-fade-in bg-backdrop motion-reduce:animate-none"
-          />
-          <div
-            ref={panelRef}
-            role="dialog"
-            aria-modal="true"
-            aria-label={panelLabel}
-            tabIndex={-1}
-            className={`fixed top-1/2 left-1/2 z-20 -translate-x-1/2 -translate-y-1/2 animate-fade-in rounded-lg bg-surface-1 transition-all duration-300 outline-none motion-reduce:animate-none ${
-              peekMode === "modal" ? "h-[70%] w-3/5" : "size-[95%]"
-            }`}
-          >
-            {peekMode === "modal" && (
-              <SidePeekView anchor={anchor} handleClose={handleClose} issueDetails={issueDetails} />
-            )}
-            {peekMode === "full" && (
-              <FullScreenPeekView anchor={anchor} handleClose={handleClose} issueDetails={issueDetails} />
-            )}
-          </div>
-        </>
+        <PeekModal
+          panelRef={panelRef}
+          label={panelLabel}
+          peekMode={peekMode}
+          anchor={anchor}
+          handleClose={handleClose}
+          issueDetails={issueDetails}
+        />
       )}
     </>
   );

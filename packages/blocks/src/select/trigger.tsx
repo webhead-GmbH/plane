@@ -16,7 +16,7 @@ import { cn } from "@plane/utils";
 import { useSelectContext } from "./context";
 import { useSelectEngine } from "./engine-context";
 import { SelectTriggerChrome } from "./trigger-chrome";
-import type { SelectTriggerProps } from "./types";
+import type { SelectTooltipOverride, SelectTriggerProps } from "./types";
 import { splitSelectVariant } from "./utils";
 
 /**
@@ -28,6 +28,150 @@ const CHIPS_FRAME_CLASSNAME =
 
 const CHIP_CLASSNAME =
   "flex h-6 min-w-0 max-w-37.5 shrink-0 items-center gap-1 rounded-md bg-layer-3 px-2 py-1 text-body-xs-regular text-secondary outline-none hover:bg-layer-3-hover focus-visible:ring-2 focus-visible:ring-accent-strong [&_svg]:size-3.5";
+
+type TDataAttributes = Record<string, string | number | boolean | undefined>;
+
+// `data-*` passthrough: tour anchors and test ids belong on the element the user actually
+// interacts with, whichever form the variant renders it in.
+const pickDataAttributes = (rest: Record<string, unknown>): TDataAttributes => {
+  const dataAttributes: TDataAttributes = {};
+  for (const [key, value] of Object.entries(rest)) {
+    if (key.startsWith("data-")) dataAttributes[key] = value as TDataAttributes[string];
+  }
+  return dataAttributes;
+};
+
+// Icons, label and content may each be given as a function of the current selection.
+const resolveTriggerParts = <T,>(
+  parts: Pick<SelectTriggerProps<T>, "prependIcon" | "appendIcon" | "label" | "children">,
+  selected: T[]
+) => {
+  const { prependIcon, appendIcon, label, children } = parts;
+  return {
+    prepend: typeof prependIcon === "function" ? prependIcon(selected) : prependIcon,
+    append: typeof appendIcon === "function" ? appendIcon(selected) : appendIcon,
+    resolvedLabel: typeof label === "function" ? label(selected) : label,
+    resolvedChildren: typeof children === "function" ? children(selected) : children,
+  };
+};
+
+const getTriggerAccessibleName = (
+  ctx: ReturnType<typeof useSelectContext>,
+  tooltipOverride: SelectTooltipOverride | undefined
+) => {
+  // `combobox` is not a name-from-content role, so once base-ui mounts, the trigger stops being
+  // named by the value it renders. Naming it explicitly — property first, then the selection —
+  // gives both states the same announcement instead of "Option 150" before mount and "State" after.
+  // These pickers have no visible label element to point `aria-labelledby` at.
+  const selectionText = ctx.selected
+    .map((option) => ctx.getOptionLabel(option))
+    .filter(Boolean)
+    .join(", ");
+  const propertyName = tooltipOverride?.heading ?? ctx.placeholder;
+  const accessibleName = [propertyName, selectionText].filter(Boolean).join(", ") || undefined;
+  return accessibleName;
+};
+
+type TSelectSearchInputFieldProps = {
+  className: string | undefined;
+  isDisabled: boolean;
+  dataAttributes: TDataAttributes;
+  id: string | undefined;
+  tabIndex: number | undefined;
+};
+
+// `search-input`: the chips field is the trigger, and its input is the list's filter.
+function SelectSearchInputField(props: TSelectSearchInputFieldProps) {
+  const { className, isDisabled, dataAttributes, id, tabIndex } = props;
+  const ctx = useSelectContext();
+  // translation
+  const { t } = useTranslation();
+  const selected = ctx.selected;
+  const renderChip = ctx.renderChip;
+
+  return (
+    // The field IS the filter input here, so the query is the root's controlled `inputValue`.
+    <BaseCombobox.Chips
+      className={cn(CHIPS_FRAME_CLASSNAME, isDisabled && "cursor-not-allowed opacity-60", className)}
+      data-disabled={isDisabled ? "" : undefined}
+      {...dataAttributes}
+    >
+      <BaseCombobox.Value>
+        {(selection: string | string[] | null) => {
+          // Base UI hands this render prop the root's `value` as-is: an array of ids for a
+          // multi-select, the id itself (or `null`) for a single one. Normalising keeps the chips
+          // field usable on a single-select root, which otherwise crashed on `.map`.
+          const values = Array.isArray(selection) ? selection : selection ? [selection] : [];
+          return (
+            <>
+              {values.map((value) => {
+                const match = selected.find((option) => ctx.getOptionValue(option) === value);
+                const chipLabel = match ? ctx.getOptionLabel(match) : value;
+                return (
+                  <BaseCombobox.Chip key={value} aria-label={chipLabel} className={CHIP_CLASSNAME}>
+                    {match && renderChip ? renderChip(match) : chipLabel}
+                    {/* Base UI only disables chip removal off the root store, so a trigger-level
+                          `disabled` has to reach the control itself — otherwise chips stay removable
+                          from a field that renders disabled. */}
+                    <BaseCombobox.ChipRemove
+                      disabled={isDisabled}
+                      render={
+                        <IconButton
+                          variant="ghost"
+                          size="xs"
+                          disabled={isDisabled}
+                          aria-label={`${t("common.remove")} ${chipLabel}`}
+                          icon={<PropelIcon icon={<CloseOutline aria-hidden="true" />} />}
+                        />
+                      }
+                    />
+                  </BaseCombobox.Chip>
+                );
+              })}
+              {/* `id` goes on the field, not on the chips frame around it: the frame is a div,
+                    and a `<label htmlFor>` pointing at a div focuses nothing. `data-*` stay on the
+                    frame, which is the box a tour anchor wants to point at. */}
+              <BaseCombobox.Input
+                id={id}
+                disabled={isDisabled}
+                tabIndex={tabIndex}
+                // The field IS the search input on this variant, so `onSearchSubmit`'s Enter
+                // handling belongs here rather than on the popup's `ComboboxSearch`.
+                onKeyDown={ctx.search?.onKeyDown}
+                placeholder={ctx.search?.placeholder}
+                className="h-6 min-w-[10ch] flex-1 bg-transparent text-body-xs-regular outline-none placeholder:text-placeholder"
+              />
+            </>
+          );
+        }}
+      </BaseCombobox.Value>
+    </BaseCombobox.Chips>
+  );
+}
+
+type TSelectTriggerTooltipProps = {
+  override: SelectTooltipOverride | undefined;
+  isSelectKind: boolean;
+  children: ReactNode;
+};
+
+function SelectTriggerTooltip(props: TSelectTriggerTooltipProps) {
+  const { override: tooltipOverride, isSelectKind, children: button } = props;
+  const ctx = useSelectContext();
+
+  // Reflect the full selected value (comma-joined) even when the trigger summarises it (e.g. "3 members").
+  // Empty selection falls back to the caller's empty label, then the placeholder. The trigger can't be the
+  // tooltip trigger directly (base-ui would fight over the same element's props), so wrap it in a <span>.
+  // Propel's Tooltip takes one `label` string, so the property-name heading is folded into it.
+  const selectedLabels = ctx.selected.map((option) => ctx.getOptionLabel(option)).filter(Boolean);
+  const content =
+    selectedLabels.length > 0 ? selectedLabels.join(", ") : (tooltipOverride?.emptyContent ?? ctx.placeholder ?? "");
+  return (
+    <Tooltip label={tooltipOverride?.heading ? `${tooltipOverride.heading}: ${content}` : content} layout="stacked">
+      <span className={cn("flex h-full max-w-full min-w-0 items-center", isSelectKind && "w-full")}>{button}</span>
+    </Tooltip>
+  );
+}
 
 export function SelectTrigger<T>(props: SelectTriggerProps<T>) {
   const {
@@ -46,19 +190,12 @@ export function SelectTrigger<T>(props: SelectTriggerProps<T>) {
   } = props;
   // `tooltip` is a boolean shorthand or an override object; the object form carries the copy.
   const tooltipOverride = typeof tooltip === "object" ? tooltip : undefined;
-  // `data-*` passthrough: tour anchors and test ids belong on the element the user actually
-  // interacts with, whichever form the variant renders it in.
-  const dataAttributes: Record<string, string | number | boolean | undefined> = {};
-  for (const [key, value] of Object.entries(rest)) {
-    if (key.startsWith("data-")) dataAttributes[key] = value;
-  }
+  const dataAttributes = pickDataAttributes(rest);
   const ctx = useSelectContext();
   // Every host publishes this — `SelectRoot`, and the hand-rolled `SelectContext.Provider` in
   // `release-select`. `null` would mean a `SelectContext` without a base-ui Root behind it, which
   // has no dropdown to open: the trigger then stays in the resting (unmounted) form below.
   const engine = useSelectEngine();
-  // translation
-  const { t } = useTranslation();
   const selected = ctx.selected as T[];
   // Caller-supplied `isActive` (e.g. a focused table cell) wins; otherwise reflect the dropdown's own open state.
   const active = isActive ?? ctx.isOpen;
@@ -77,82 +214,23 @@ export function SelectTrigger<T>(props: SelectTriggerProps<T>) {
 
   if (split.variant === "search-input") {
     if (engine && !engine.mounted) return null;
-    const renderChip = ctx.renderChip;
     return (
-      // The field IS the filter input here, so the query is the root's controlled `inputValue`.
-      <BaseCombobox.Chips
-        className={cn(CHIPS_FRAME_CLASSNAME, isDisabled && "cursor-not-allowed opacity-60", className)}
-        data-disabled={isDisabled ? "" : undefined}
-        {...dataAttributes}
-      >
-        <BaseCombobox.Value>
-          {(selection: string | string[] | null) => {
-            // Base UI hands this render prop the root's `value` as-is: an array of ids for a
-            // multi-select, the id itself (or `null`) for a single one. Normalising keeps the chips
-            // field usable on a single-select root, which otherwise crashed on `.map`.
-            const values = Array.isArray(selection) ? selection : selection ? [selection] : [];
-            return (
-              <>
-                {values.map((value) => {
-                  const match = selected.find((option) => ctx.getOptionValue(option) === value);
-                  const chipLabel = match ? ctx.getOptionLabel(match) : value;
-                  return (
-                    <BaseCombobox.Chip key={value} aria-label={chipLabel} className={CHIP_CLASSNAME}>
-                      {match && renderChip ? renderChip(match) : chipLabel}
-                      {/* Base UI only disables chip removal off the root store, so a trigger-level
-                          `disabled` has to reach the control itself — otherwise chips stay removable
-                          from a field that renders disabled. */}
-                      <BaseCombobox.ChipRemove
-                        disabled={isDisabled}
-                        render={
-                          <IconButton
-                            variant="ghost"
-                            size="xs"
-                            disabled={isDisabled}
-                            aria-label={`${t("common.remove")} ${chipLabel}`}
-                            icon={<PropelIcon icon={<CloseOutline aria-hidden="true" />} />}
-                          />
-                        }
-                      />
-                    </BaseCombobox.Chip>
-                  );
-                })}
-                {/* `id` goes on the field, not on the chips frame around it: the frame is a div,
-                    and a `<label htmlFor>` pointing at a div focuses nothing. `data-*` stay on the
-                    frame, which is the box a tour anchor wants to point at. */}
-                <BaseCombobox.Input
-                  id={id}
-                  disabled={isDisabled}
-                  tabIndex={tabIndex}
-                  // The field IS the search input on this variant, so `onSearchSubmit`'s Enter
-                  // handling belongs here rather than on the popup's `ComboboxSearch`.
-                  onKeyDown={ctx.search?.onKeyDown}
-                  placeholder={ctx.search?.placeholder}
-                  className="h-6 min-w-[10ch] flex-1 bg-transparent text-body-xs-regular outline-none placeholder:text-placeholder"
-                />
-              </>
-            );
-          }}
-        </BaseCombobox.Value>
-      </BaseCombobox.Chips>
+      <SelectSearchInputField
+        className={className}
+        isDisabled={isDisabled}
+        dataAttributes={dataAttributes}
+        id={id}
+        tabIndex={tabIndex}
+      />
     );
   }
 
-  const prepend = typeof prependIcon === "function" ? prependIcon(selected) : prependIcon;
-  const append = typeof appendIcon === "function" ? appendIcon(selected) : appendIcon;
-  const resolvedLabel = typeof label === "function" ? label(selected) : label;
-  const resolvedChildren = typeof children === "function" ? children(selected) : children;
+  const { prepend, append, resolvedLabel, resolvedChildren } = resolveTriggerParts(
+    { prependIcon, appendIcon, label, children },
+    selected
+  );
 
-  // `combobox` is not a name-from-content role, so once base-ui mounts, the trigger stops being
-  // named by the value it renders. Naming it explicitly — property first, then the selection —
-  // gives both states the same announcement instead of "Option 150" before mount and "State" after.
-  // These pickers have no visible label element to point `aria-labelledby` at.
-  const selectionText = ctx.selected
-    .map((option) => ctx.getOptionLabel(option))
-    .filter(Boolean)
-    .join(", ");
-  const propertyName = tooltipOverride?.heading ?? ctx.placeholder;
-  const accessibleName = [propertyName, selectionText].filter(Boolean).join(", ") || undefined;
+  const accessibleName = getTriggerAccessibleName(ctx, tooltipOverride);
 
   const chrome = (
     <SelectTriggerChrome
@@ -205,19 +283,10 @@ export function SelectTrigger<T>(props: SelectTriggerProps<T>) {
   }
 
   if (!tooltip) return <>{button}</>;
-  // Reflect the full selected value (comma-joined) even when the trigger summarises it (e.g. "3 members").
-  // Empty selection falls back to the caller's empty label, then the placeholder. The trigger can't be the
-  // tooltip trigger directly (base-ui would fight over the same element's props), so wrap it in a <span>.
-  // Propel's Tooltip takes one `label` string, so the property-name heading is folded into it.
-  const selectedLabels = ctx.selected.map((option) => ctx.getOptionLabel(option)).filter(Boolean);
-  const content =
-    selectedLabels.length > 0 ? selectedLabels.join(", ") : (tooltipOverride?.emptyContent ?? ctx.placeholder ?? "");
   return (
-    <Tooltip label={tooltipOverride?.heading ? `${tooltipOverride.heading}: ${content}` : content} layout="stacked">
-      <span className={cn("flex h-full max-w-full min-w-0 items-center", split.isSelectKind && "w-full")}>
-        {button}
-      </span>
-    </Tooltip>
+    <SelectTriggerTooltip override={tooltipOverride} isSelectKind={split.isSelectKind}>
+      {button}
+    </SelectTriggerTooltip>
   );
 }
 

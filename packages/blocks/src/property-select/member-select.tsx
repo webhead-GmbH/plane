@@ -145,6 +145,54 @@ function triggerLabel(selected: MemberOption[], showCountOnMultiple: boolean, pl
   return remaining > 0 ? `${names} +${remaining}` : names;
 }
 
+// How a member select variant lays out: its size and kind, whether it is the avatar group, the avatar
+// size of its faces, and the Select trigger variant it renders with.
+const getMemberSelectLayout = (variant: MemberSelectVariant) => {
+  // `size` drives avatar sizing; `kind` (variant minus its size suffix) drives the member-specific
+  // display logic. `splitSelectVariant` doesn't recognise `avatar-group` (a member-only kind) and would
+  const isAvatarGroup = isAvatarGroupVariant(variant);
+  // fall back to a hardcoded `sm` — swap in the same-shaped `pill` kind just for size parsing.
+  const { size } = splitSelectVariant(isAvatarGroup ? variant.replace("avatar-group", "pill") : variant);
+  const kind = isAvatarGroup ? "avatar-group" : variant.replace(`-${size}`, "");
+  const isPill = kind === "pill";
+  const isSearchInput = kind === "search-input";
+
+  // Only `avatar-group-*` maps its size onto the face — every other variant keeps the `xs` trigger face it
+  // always had, so this fix doesn't reflow `pill-lg`/`select-lg`'s existing chrome. It's also not a Select
+  // trigger kind on its own, so forward the same-size `pill-*` so height stays put when a form flips empty
+  // pill → faces; chrome is cancelled via `AVATAR_GROUP_TRIGGER_CLASSNAME`. Testing the type guard directly
+  // (rather than the `isAvatarGroup` alias, or a ternary) is what narrows `variant` per-branch below —
+  // TS only carries a saved alias's narrowing onto a `readonly` property, and `variant` isn't one.
+  let avatarSize: AvatarGroupSize = "xs";
+  let triggerVariant: SelectVariant;
+  if (isAvatarGroupVariant(variant)) {
+    const triggerSize = avatarGroupTriggerSize(variant);
+    avatarSize = TRIGGER_AVATAR_SIZE[triggerSize];
+    triggerVariant = TRIGGER_SIZE_VARIANT[triggerSize];
+  } else {
+    triggerVariant = variant;
+  }
+
+  return { size, kind, isAvatarGroup, isPill, isSearchInput, avatarSize, triggerVariant };
+};
+
+// The picker's own copy: the search field's placeholder and the "clear" row's label.
+const getMemberSelectCopy = (props: MemberSelectProps, isSearchInput: boolean) => {
+  const placeholder = props.placeholder ?? "";
+  return {
+    // `search-input`'s box IS the trigger (no separate label), so `placeholder` doubles as its empty
+    // text unless the caller sets a distinct `searchPlaceholder`.
+    searchPlaceholder: props.searchPlaceholder ?? (isSearchInput ? placeholder : undefined) ?? "Search members...",
+    clearLabel: !props.multiple ? (props.clearLabel ?? (placeholder || "No assignee")) : "No assignee",
+  };
+};
+
+// The selection as a list, whether the picker is single or multi.
+const toMemberList = (props: MemberSelectProps): MemberOption[] => {
+  if (props.multiple) return props.value;
+  return props.value ? [props.value] : [];
+};
+
 /**
  * Presentational, data-source-agnostic member picker built on the generic infinite `Select` (single or
  * multi). The client supplies `getValues` (bound to the paginated members-lite service), the selected
@@ -158,7 +206,6 @@ export function MemberSelect(props: MemberSelectProps) {
     getValues,
     disabled = false,
     placeholder = "",
-    searchPlaceholder: searchPlaceholderProp,
     showLabel: showLabelProp,
     onClose,
     className,
@@ -170,43 +217,17 @@ export function MemberSelect(props: MemberSelectProps) {
   } = props;
   const clearable = !props.multiple && !!props.clearable;
 
-  // `size` drives avatar sizing; `kind` (variant minus its size suffix) drives the member-specific
-  // display logic. `splitSelectVariant` doesn't recognise `avatar-group` (a member-only kind) and would
-  const isAvatarGroup = isAvatarGroupVariant(props.variant);
-  // fall back to a hardcoded `sm` — swap in the same-shaped `pill` kind just for size parsing.
-  const { size } = splitSelectVariant(isAvatarGroup ? props.variant.replace("avatar-group", "pill") : props.variant);
-  const kind = isAvatarGroup ? "avatar-group" : props.variant.replace(`-${size}`, "");
-  const isPill = kind === "pill";
-  const isSearchInput = kind === "search-input";
-  // `search-input`'s box IS the trigger (no separate label), so `placeholder` doubles as its empty
-  // text unless the caller sets a distinct `searchPlaceholder`.
-  const searchPlaceholder = searchPlaceholderProp ?? (isSearchInput ? placeholder : undefined) ?? "Search members...";
-
-  // Only `avatar-group-*` maps its size onto the face — every other variant keeps the `xs` trigger face it
-  // always had, so this fix doesn't reflow `pill-lg`/`select-lg`'s existing chrome. It's also not a Select
-  // trigger kind on its own, so forward the same-size `pill-*` so height stays put when a form flips empty
-  // pill → faces; chrome is cancelled via `AVATAR_GROUP_TRIGGER_CLASSNAME`. Testing the type guard directly
-  // (rather than the `isAvatarGroup` alias, or a ternary) is what narrows `props.variant` per-branch below —
-  // TS only carries a saved alias's narrowing onto a `readonly` property, and `variant` isn't one.
-  let avatarSize: AvatarGroupSize = "xs";
-  let triggerVariant: SelectVariant;
-  if (isAvatarGroupVariant(props.variant)) {
-    const triggerSize = avatarGroupTriggerSize(props.variant);
-    avatarSize = TRIGGER_AVATAR_SIZE[triggerSize];
-    triggerVariant = TRIGGER_SIZE_VARIANT[triggerSize];
-  } else {
-    triggerVariant = props.variant;
-  }
-
+  const { kind, isAvatarGroup, isPill, isSearchInput, avatarSize, triggerVariant } = getMemberSelectLayout(
+    props.variant
+  );
+  const { searchPlaceholder, clearLabel } = getMemberSelectCopy(props, isSearchInput);
   const showCountOnMultiple = kind === "table-cell" || isPill;
   const defaultShowLabel = !isAvatarGroup;
   // A call-site can override the variant's default label visibility (e.g. avatars-only subscriber rows).
   const showLabel = showLabelProp ?? defaultShowLabel;
 
-  const selectedList = props.multiple ? props.value : props.value ? [props.value] : [];
-  const selectedIds = new Set(selectedList.map((member) => member.id));
+  const selectedIds = new Set(toMemberList(props).map((member) => member.id));
 
-  const clearLabel = !props.multiple ? (props.clearLabel ?? (placeholder || "No assignee")) : "No assignee";
   const clearOption = useMemo<MemberOption>(
     () => ({ id: CLEAR_OPTION_ID, display_name: clearLabel, avatar_url: null }),
     [clearLabel]
@@ -215,6 +236,10 @@ export function MemberSelect(props: MemberSelectProps) {
   // Chips are the only way to deselect for `search-input` (no click-to-toggle row), so an already-picked member shouldn't also appear in the list.
   const excludeSelected = (member: MemberOption) => !selectedIds.has(member.id);
   const combinedFilterOption = (member: MemberOption) => excludeSelected(member) && (filterOption?.(member) ?? true);
+  // `Combobox.Chips` can't survive the lazy-mount resting state, and the chips field is the search.
+  const searchInputProps = isSearchInput
+    ? { lazyMount: false, showSearch: false, filterOption: combinedFilterOption }
+    : { lazyMount: undefined, showSearch: undefined, filterOption };
 
   const sharedProps = {
     infinite: true as const,
@@ -223,10 +248,7 @@ export function MemberSelect(props: MemberSelectProps) {
     placeholder,
     searchPlaceholder,
     onClose,
-    // `Combobox.Chips` can't survive the lazy-mount resting state.
-    lazyMount: isSearchInput ? false : undefined,
-    showSearch: isSearchInput ? false : undefined,
-    filterOption: isSearchInput ? combinedFilterOption : filterOption,
+    ...searchInputProps,
     getOptionValue: (member: MemberOption) => member.id,
     getOptionLabel: (member: MemberOption) => member.display_name,
     getOptionIcon: (member: MemberOption) =>

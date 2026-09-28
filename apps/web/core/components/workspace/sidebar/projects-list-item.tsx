@@ -31,6 +31,7 @@ import { Logo } from "@plane/blocks/emoji-icon-picker";
 import { IconButton } from "@makeplane/propel/components/icon-button";
 import { Icon } from "@makeplane/propel/components/icon";
 import { Tooltip } from "@makeplane/propel/components/tooltip";
+import type { TPartialProject } from "@plane/types";
 import { ControlLink } from "@plane/blocks/layout";
 import { Menu, MenuContent, MenuItem, MenuTrigger } from "@makeplane/propel/components/menu";
 import { DropIndicator, DragHandle } from "@plane/blocks/common";
@@ -66,6 +67,133 @@ type Props = {
   isLastChild: boolean;
   renderInExtendedSidebar?: boolean;
 };
+
+type TSidebarProjectsListItemTitleProps = {
+  project: TPartialProject;
+  isAccordionMode: boolean;
+  isProjectListOpen: boolean;
+};
+
+const SidebarProjectsListItemTitle = observer(function SidebarProjectsListItemTitle(
+  props: TSidebarProjectsListItemTitleProps
+) {
+  const { project, isAccordionMode, isProjectListOpen } = props;
+  // translation
+  const { t } = useTranslation();
+
+  return isAccordionMode ? (
+    <button
+      type="button"
+      className="flex w-full flex-grow items-center gap-1.5 text-left select-none"
+      aria-expanded={isProjectListOpen}
+      aria-label={
+        isProjectListOpen
+          ? t("aria_labels.projects_sidebar.close_project_menu")
+          : t("aria_labels.projects_sidebar.open_project_menu")
+      }
+    >
+      <div className="grid size-4 flex-shrink-0 place-items-center">
+        <Logo logo={project.logo_props} size={16} />
+      </div>
+      <p className="truncate text-13 font-medium text-secondary">{project.name}</p>
+    </button>
+  ) : (
+    <div className="flex w-full flex-grow items-center gap-1.5 text-left select-none">
+      <div className="grid size-4 flex-shrink-0 place-items-center">
+        <Logo logo={project.logo_props} size={16} />
+      </div>
+      <p className="truncate text-13 font-medium text-secondary">{project.name}</p>
+    </div>
+  );
+});
+
+type TSidebarProjectsListItemMenuProps = {
+  project: TPartialProject;
+  isAdmin: boolean;
+  isAuthorized: boolean;
+  isMenuActive: boolean;
+  setIsMenuActive: (value: boolean) => void;
+  handleCopyText: () => void;
+  handleLeaveProject: () => void;
+  setPublishModal: (value: boolean) => void;
+};
+
+const SidebarProjectsListItemMenu = observer(function SidebarProjectsListItemMenu(
+  props: TSidebarProjectsListItemMenuProps
+) {
+  const {
+    project,
+    isAdmin,
+    isAuthorized,
+    isMenuActive,
+    setIsMenuActive,
+    handleCopyText,
+    handleLeaveProject,
+    setPublishModal,
+  } = props;
+  // router
+  const { workspaceSlug } = useParams();
+  const router = useRouter();
+  // translation
+  const { t } = useTranslation();
+
+  return (
+    <div
+      className={cn(
+        "pointer-events-none flex-shrink-0 opacity-0 group-hover/project-item:pointer-events-auto group-hover/project-item:opacity-100",
+        {
+          "pointer-events-auto opacity-100": isMenuActive,
+        }
+      )}
+    >
+      <Menu onOpenChange={setIsMenuActive}>
+        <MenuTrigger
+          render={
+            <IconButton
+              variant="ghost"
+              size="xs"
+              icon={<Icon icon={MoreHorizontalOutline} />}
+              aria-label={t("aria_labels.projects_sidebar.toggle_quick_actions_menu")}
+              render={<button type="button" className="text-placeholder" />}
+            />
+          }
+        />
+        <MenuContent side="bottom" align="start">
+          {/* TODO: Removed is_favorite logic due to the optimization in projects API */}
+          {/* publish project settings */}
+          {isAdmin && (
+            <MenuItem
+              icon={<Icon icon={ShareAltOutline} />}
+              label={t("publish_project")}
+              onClick={() => setPublishModal(true)}
+            />
+          )}
+          <MenuItem icon={<Icon icon={LinkOutline} />} label={t("copy_link")} onClick={handleCopyText} />
+          {isAuthorized && (
+            <MenuItem
+              icon={<Icon icon={ArchiveOutline} />}
+              label={t("archives")}
+              onClick={() => {
+                router.push(`/${workspaceSlug}/projects/${project?.id}/archives/issues`);
+              }}
+            />
+          )}
+          <MenuItem
+            icon={<Icon icon={SettingsOutline} />}
+            label={t("settings")}
+            onClick={() => {
+              router.push(`/${workspaceSlug}/settings/projects/${project?.id}`);
+            }}
+          />
+          {/* leave project */}
+          {!isAuthorized && (
+            <MenuItem icon={<Icon icon={LogOutOutline} />} label={t("leave_project")} onClick={handleLeaveProject} />
+          )}
+        </MenuContent>
+      </Menu>
+    </div>
+  );
+});
 
 export const SidebarProjectsListItem = observer(function SidebarProjectsListItem(props: Props) {
   const {
@@ -313,7 +441,6 @@ export const SidebarProjectsListItem = observer(function SidebarProjectsListItem
                 align="end"
                 disabled={isDragging || isMobile}
               >
-                {/* a div, not a button: the handle inside is the button, and a button cannot contain one */}
                 <div
                   className={cn(
                     "absolute top-1/2 -left-3 hidden -translate-y-1/2 cursor-grab items-center justify-center rounded-sm text-placeholder group-hover/project-item:flex",
@@ -331,90 +458,23 @@ export const SidebarProjectsListItem = observer(function SidebarProjectsListItem
             )}
             <>
               <ControlLink href={defaultTabUrl} className="flex flex-grow truncate" onClick={handleItemClick}>
-                {isAccordionMode ? (
-                  <button
-                    type="button"
-                    className="flex w-full flex-grow items-center gap-1.5 text-left select-none"
-                    aria-expanded={isProjectListOpen}
-                    aria-label={
-                      isProjectListOpen
-                        ? t("aria_labels.projects_sidebar.close_project_menu")
-                        : t("aria_labels.projects_sidebar.open_project_menu")
-                    }
-                  >
-                    <div className="grid size-4 flex-shrink-0 place-items-center">
-                      <Logo logo={project.logo_props} size={16} />
-                    </div>
-                    <p className="truncate text-13 font-medium text-secondary">{project.name}</p>
-                  </button>
-                ) : (
-                  <div className="flex w-full flex-grow items-center gap-1.5 text-left select-none">
-                    <div className="grid size-4 flex-shrink-0 place-items-center">
-                      <Logo logo={project.logo_props} size={16} />
-                    </div>
-                    <p className="truncate text-13 font-medium text-secondary">{project.name}</p>
-                  </div>
-                )}
+                <SidebarProjectsListItemTitle
+                  project={project}
+                  isAccordionMode={isAccordionMode}
+                  isProjectListOpen={isProjectListOpen}
+                />
               </ControlLink>
               <div className="flex items-center gap-1">
-                <div
-                  className={cn(
-                    "pointer-events-none flex-shrink-0 opacity-0 group-hover/project-item:pointer-events-auto group-hover/project-item:opacity-100",
-                    {
-                      "pointer-events-auto opacity-100": isMenuActive,
-                    }
-                  )}
-                >
-                  <Menu onOpenChange={setIsMenuActive}>
-                    <MenuTrigger
-                      render={
-                        <IconButton
-                          variant="ghost"
-                          size="xs"
-                          icon={<Icon icon={MoreHorizontalOutline} />}
-                          aria-label={t("aria_labels.projects_sidebar.toggle_quick_actions_menu")}
-                          render={<button type="button" className="text-placeholder" />}
-                        />
-                      }
-                    />
-                    <MenuContent side="bottom" align="start">
-                      {/* TODO: Removed is_favorite logic due to the optimization in projects API */}
-                      {/* publish project settings */}
-                      {isAdmin && (
-                        <MenuItem
-                          icon={<Icon icon={ShareAltOutline} />}
-                          label={t("publish_project")}
-                          onClick={() => setPublishModal(true)}
-                        />
-                      )}
-                      <MenuItem icon={<Icon icon={LinkOutline} />} label={t("copy_link")} onClick={handleCopyText} />
-                      {isAuthorized && (
-                        <MenuItem
-                          icon={<Icon icon={ArchiveOutline} />}
-                          label={t("archives")}
-                          onClick={() => {
-                            router.push(`/${workspaceSlug}/projects/${project?.id}/archives/issues`);
-                          }}
-                        />
-                      )}
-                      <MenuItem
-                        icon={<Icon icon={SettingsOutline} />}
-                        label={t("settings")}
-                        onClick={() => {
-                          router.push(`/${workspaceSlug}/settings/projects/${project?.id}`);
-                        }}
-                      />
-                      {/* leave project */}
-                      {!isAuthorized && (
-                        <MenuItem
-                          icon={<Icon icon={LogOutOutline} />}
-                          label={t("leave_project")}
-                          onClick={handleLeaveProject}
-                        />
-                      )}
-                    </MenuContent>
-                  </Menu>
-                </div>
+                <SidebarProjectsListItemMenu
+                  project={project}
+                  isAdmin={isAdmin}
+                  isAuthorized={isAuthorized}
+                  isMenuActive={isMenuActive}
+                  setIsMenuActive={setIsMenuActive}
+                  handleCopyText={handleCopyText}
+                  handleLeaveProject={handleLeaveProject}
+                  setPublishModal={setPublishModal}
+                />
                 {isAccordionMode && (
                   <span
                     className={cn("hidden text-placeholder group-hover/project-item:inline-flex", {

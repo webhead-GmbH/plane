@@ -20,6 +20,15 @@ export function TeamspaceVerticalStackIllustration({ className }: TeamspaceVerti
       xmlns="http://www.w3.org/2000/svg"
       className={className}
     >
+      <TeamspaceVerticalStackPartOne />
+      <TeamspaceVerticalStackPartTwo />
+    </svg>
+  );
+}
+
+function TeamspaceVerticalStackPartOne() {
+  return (
+    <>
       <g opacity="0.2">
         <path
           d="M12.5344 152.778C12.5344 154.741 14.0035 156.698 16.9366 158.198L54.703 177.442C60.5744 180.432 70.09 180.432 75.9613 177.442L155.32 137.007C158.253 135.512 159.722 133.555 159.722 131.593V137.859C159.722 139.821 158.253 141.778 155.32 143.273L75.9613 183.708C70.09 186.698 60.5744 186.698 54.703 183.708L16.9366 164.464C13.9983 162.969 12.5344 161.006 12.5344 159.044V152.778Z"
@@ -192,6 +201,13 @@ export function TeamspaceVerticalStackIllustration({ className }: TeamspaceVerti
         strokeLinecap="round"
         strokeLinejoin="round"
       />
+    </>
+  );
+}
+
+function TeamspaceVerticalStackPartTwo() {
+  return (
+    <>
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -358,6 +374,6 @@ export function TeamspaceVerticalStackIllustration({ className }: TeamspaceVerti
         d="M139.871 31.4999C140.489 31.8166 141.081 31.8166 141.522 31.5103C141.963 31.204 142.207 30.607 142.207 29.8543C142.207 29.1016 141.963 28.2554 141.522 27.5026C141.086 26.7499 140.494 26.1477 139.871 25.8311V31.5051V31.4999Z"
         fill={ILLUSTRATION_COLOR_TOKEN_MAP.fill.quaternary}
       />
-    </svg>
+    </>
   );
 }

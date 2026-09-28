@@ -20,6 +20,15 @@ export function ArchivedCycleVerticalStackIllustration({ className }: ArchivedCy
       xmlns="http://www.w3.org/2000/svg"
       className={className}
     >
+      <ArchivedCycleVerticalStackPartOne />
+      <ArchivedCycleVerticalStackPartTwo />
+    </svg>
+  );
+}
+
+function ArchivedCycleVerticalStackPartOne() {
+  return (
+    <>
       <g opacity="0.2">
         <path
           d="M0.25 139.223C0.25 141.24 1.75994 143.252 4.77448 144.793L43.59 164.572C49.6244 167.645 59.4043 167.645 65.4388 164.572L147.002 123.014C150.017 121.477 151.527 119.466 151.527 117.449V123.889C151.527 125.906 150.017 127.917 147.002 129.454L65.4388 171.012C59.4043 174.085 49.6244 174.085 43.59 171.012L4.77448 151.233C1.7546 149.697 0.25 147.68 0.25 145.663V139.223Z"
@@ -196,6 +205,13 @@ export function ArchivedCycleVerticalStackIllustration({ className }: ArchivedCy
         strokeLinecap="round"
         strokeLinejoin="round"
       />
+    </>
+  );
+}
+
+function ArchivedCycleVerticalStackPartTwo() {
+  return (
+    <>
       <path
         d="M132.449 16.9121C132.469 16.898 132.553 16.8494 132.758 16.9541L132.759 16.9551L140.612 20.9561L140.614 20.957C140.827 21.0642 141.056 21.2905 141.233 21.5977C141.41 21.9022 141.508 22.2394 141.508 22.5273C141.508 22.8188 141.413 22.9254 141.377 22.9512C141.358 22.965 141.273 23.0155 141.067 22.9102L141.066 22.9092L133.213 18.9072L133.211 18.9062L133.131 18.8613C132.942 18.7422 132.748 18.5354 132.593 18.2666C132.416 17.9619 132.317 17.624 132.317 17.3359C132.317 17.0435 132.414 16.9372 132.449 16.9121Z"
         fill={ILLUSTRATION_COLOR_TOKEN_MAP.fill.quaternary}
@@ -363,6 +379,6 @@ export function ArchivedCycleVerticalStackIllustration({ className }: ArchivedCy
         fill={ILLUSTRATION_COLOR_TOKEN_MAP.fill.quaternary}
         stroke={ILLUSTRATION_COLOR_TOKEN_MAP.stroke.primary}
       />
-    </svg>
+    </>
   );
 }

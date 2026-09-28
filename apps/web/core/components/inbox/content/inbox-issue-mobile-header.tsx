@@ -62,6 +62,138 @@ type Props = {
   handleActionWithPermission: (isAdmin: boolean, action: () => void, errorMessage: string) => void;
 };
 
+type TInboxIssueMobileActionsMenu = Pick<
+  Props,
+  | "canMarkAsAccepted"
+  | "canMarkAsDeclined"
+  | "isAcceptedOrDeclined"
+  | "canMarkAsDuplicate"
+  | "canDelete"
+  | "setAcceptIssueModal"
+  | "setDeclineIssueModal"
+  | "setDeleteIssueModal"
+  | "handleIssueSnoozeAction"
+  | "setSelectDuplicateIssue"
+  | "handleCopyIssueLink"
+  | "isProjectAdmin"
+  | "handleActionWithPermission"
+> & {
+  inboxIssue: IInboxIssueStore;
+  numberOfDaysLeft: number | undefined;
+  workItemLink: string;
+};
+
+const InboxIssueMobileActionsMenu = observer(function InboxIssueMobileActionsMenu(props: TInboxIssueMobileActionsMenu) {
+  const {
+    inboxIssue,
+    numberOfDaysLeft,
+    workItemLink,
+    canMarkAsAccepted,
+    canMarkAsDeclined,
+    canDelete,
+    canMarkAsDuplicate,
+    isAcceptedOrDeclined,
+    setAcceptIssueModal,
+    setDeclineIssueModal,
+    setDeleteIssueModal,
+    handleIssueSnoozeAction,
+    setSelectDuplicateIssue,
+    handleCopyIssueLink,
+    isProjectAdmin,
+    handleActionWithPermission,
+  } = props;
+  const router = useAppRouter();
+  const { t } = useTranslation();
+
+  return (
+    <Menu>
+      <MenuTrigger
+        render={
+          <IconButton
+            variant="secondary"
+            size="md"
+            icon={<Icon icon={MoreHorizontalOutline} />}
+            aria-label={t("aria_labels.common.more_actions")}
+          />
+        }
+      />
+      <MenuContent side="bottom" align="start">
+        {isAcceptedOrDeclined && (
+          <MenuItem icon={<Icon icon={LinkOutline} />} label="Copy work item link" onClick={handleCopyIssueLink} />
+        )}
+        {isAcceptedOrDeclined && (
+          <MenuItem
+            icon={<Icon icon={NewTabOutline} />}
+            label="Open work item"
+            onClick={() => router.push(workItemLink)}
+          />
+        )}
+        {canMarkAsAccepted && !isAcceptedOrDeclined && (
+          <MenuItem
+            icon={<Icon icon={ClockOutline} />}
+            label={inboxIssue.snoozed_till && numberOfDaysLeft && numberOfDaysLeft > 0 ? "Un-snooze" : "Snooze"}
+            onClick={() =>
+              handleActionWithPermission(
+                isProjectAdmin,
+                handleIssueSnoozeAction,
+                "Only project admins can snooze/Un-snooze work items"
+              )
+            }
+          />
+        )}
+        {canMarkAsDuplicate && !isAcceptedOrDeclined && (
+          <MenuItem
+            icon={<Icon icon={DuplicateOfOutline} />}
+            label="Mark as duplicate"
+            onClick={() =>
+              handleActionWithPermission(
+                isProjectAdmin,
+                () => setSelectDuplicateIssue(true),
+                "Only project admins can mark work items as duplicate"
+              )
+            }
+          />
+        )}
+        {canMarkAsAccepted && (
+          // Propel menu rows are neutral/accent/danger only, so the accept/decline tint lives on the glyph.
+          <MenuItem
+            icon={<Icon icon={<TickCircleFilled className="text-success-secondary" />} />}
+            label="Accept"
+            onClick={() =>
+              handleActionWithPermission(
+                isProjectAdmin,
+                () => setAcceptIssueModal(true),
+                "Only project admins can accept work items"
+              )
+            }
+          />
+        )}
+        {canMarkAsDeclined && (
+          <MenuItem
+            icon={<Icon icon={<CloseCircleFilled className="text-danger-secondary" />} />}
+            label="Decline"
+            onClick={() =>
+              handleActionWithPermission(
+                isProjectAdmin,
+                () => setDeclineIssueModal(true),
+                "Only project admins can deny work items"
+              )
+            }
+          />
+        )}
+        {canDelete && !isAcceptedOrDeclined && (
+          <MenuItem
+            variant="danger"
+            icon={<Icon icon={DeleteOutline} />}
+            label="Delete"
+            onClick={() => setDeleteIssueModal(true)}
+          />
+        )}
+      </MenuContent>
+    </Menu>
+  );
+});
+
 export const InboxIssueActionsMobileHeader = observer(function InboxIssueActionsMobileHeader(props: Props) {
   const {
     inboxIssue,
@@ -86,8 +218,6 @@ export const InboxIssueActionsMobileHeader = observer(function InboxIssueActions
     isProjectAdmin,
     handleActionWithPermission,
   } = props;
-  const router = useAppRouter();
-  const { t } = useTranslation();
   const { getProjectIdentifierById } = useProject();
 
   const issue = inboxIssue?.issue;
@@ -142,95 +272,24 @@ export const InboxIssueActionsMobileHeader = observer(function InboxIssueActions
           </div>
         </div>
         <div className="ml-auto">
-          <Menu>
-            <MenuTrigger
-              render={
-                <IconButton
-                  variant="secondary"
-                  size="md"
-                  icon={<Icon icon={MoreHorizontalOutline} />}
-                  aria-label={t("aria_labels.common.more_actions")}
-                />
-              }
-            />
-            <MenuContent side="bottom" align="start">
-              {isAcceptedOrDeclined && (
-                <MenuItem
-                  icon={<Icon icon={LinkOutline} />}
-                  label="Copy work item link"
-                  onClick={handleCopyIssueLink}
-                />
-              )}
-              {isAcceptedOrDeclined && (
-                <MenuItem
-                  icon={<Icon icon={NewTabOutline} />}
-                  label="Open work item"
-                  onClick={() => router.push(workItemLink)}
-                />
-              )}
-              {canMarkAsAccepted && !isAcceptedOrDeclined && (
-                <MenuItem
-                  icon={<Icon icon={ClockOutline} />}
-                  label={inboxIssue?.snoozed_till && numberOfDaysLeft && numberOfDaysLeft > 0 ? "Un-snooze" : "Snooze"}
-                  onClick={() =>
-                    handleActionWithPermission(
-                      isProjectAdmin,
-                      handleIssueSnoozeAction,
-                      "Only project admins can snooze/Un-snooze work items"
-                    )
-                  }
-                />
-              )}
-              {canMarkAsDuplicate && !isAcceptedOrDeclined && (
-                <MenuItem
-                  icon={<Icon icon={DuplicateOfOutline} />}
-                  label="Mark as duplicate"
-                  onClick={() =>
-                    handleActionWithPermission(
-                      isProjectAdmin,
-                      () => setSelectDuplicateIssue(true),
-                      "Only project admins can mark work items as duplicate"
-                    )
-                  }
-                />
-              )}
-              {canMarkAsAccepted && (
-                // Propel menu rows are neutral/accent/danger only, so the accept/decline tint lives on the glyph.
-                <MenuItem
-                  icon={<Icon icon={<TickCircleFilled className="text-success-secondary" />} />}
-                  label="Accept"
-                  onClick={() =>
-                    handleActionWithPermission(
-                      isProjectAdmin,
-                      () => setAcceptIssueModal(true),
-                      "Only project admins can accept work items"
-                    )
-                  }
-                />
-              )}
-              {canMarkAsDeclined && (
-                <MenuItem
-                  icon={<Icon icon={<CloseCircleFilled className="text-danger-secondary" />} />}
-                  label="Decline"
-                  onClick={() =>
-                    handleActionWithPermission(
-                      isProjectAdmin,
-                      () => setDeclineIssueModal(true),
-                      "Only project admins can deny work items"
-                    )
-                  }
-                />
-              )}
-              {canDelete && !isAcceptedOrDeclined && (
-                <MenuItem
-                  variant="danger"
-                  icon={<Icon icon={DeleteOutline} />}
-                  label="Delete"
-                  onClick={() => setDeleteIssueModal(true)}
-                />
-              )}
-            </MenuContent>
-          </Menu>
+          <InboxIssueMobileActionsMenu
+            inboxIssue={inboxIssue}
+            numberOfDaysLeft={numberOfDaysLeft}
+            workItemLink={workItemLink}
+            canMarkAsAccepted={canMarkAsAccepted}
+            canMarkAsDeclined={canMarkAsDeclined}
+            canDelete={canDelete}
+            canMarkAsDuplicate={canMarkAsDuplicate}
+            isAcceptedOrDeclined={isAcceptedOrDeclined}
+            setAcceptIssueModal={setAcceptIssueModal}
+            setDeclineIssueModal={setDeclineIssueModal}
+            setDeleteIssueModal={setDeleteIssueModal}
+            handleIssueSnoozeAction={handleIssueSnoozeAction}
+            setSelectDuplicateIssue={setSelectDuplicateIssue}
+            handleCopyIssueLink={handleCopyIssueLink}
+            isProjectAdmin={isProjectAdmin}
+            handleActionWithPermission={handleActionWithPermission}
+          />
         </div>
       </div>
     </Header>

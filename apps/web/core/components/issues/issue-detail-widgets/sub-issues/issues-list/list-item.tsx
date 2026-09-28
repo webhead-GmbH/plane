@@ -55,6 +55,88 @@ type Props = {
   storeType?: EIssuesStoreType;
 };
 
+type TSubIssuesListItemMenuProps = {
+  workspaceSlug: string;
+  parentIssueId: string;
+  issue: TIssue;
+  canEdit: boolean;
+  workItemLink: string;
+  handleIssueCrudState: Props["handleIssueCrudState"];
+  subIssueOperations: TSubIssueOperations;
+  issueServiceType: TIssueServiceType;
+};
+
+const SubIssuesListItemMenu = observer(function SubIssuesListItemMenu(props: TSubIssuesListItemMenuProps) {
+  const {
+    workspaceSlug,
+    parentIssueId,
+    issue,
+    canEdit,
+    workItemLink,
+    handleIssueCrudState,
+    subIssueOperations,
+    issueServiceType,
+  } = props;
+  const { t } = useTranslation();
+  const { toggleCreateIssueModal, toggleDeleteIssueModal } = useIssueDetail(issueServiceType);
+
+  return (
+    <Menu>
+      <MenuTrigger
+        render={
+          <IconButton
+            variant="ghost"
+            size="sm"
+            aria-label={t("aria_labels.common.more_actions")}
+            icon={<Icon icon={MoreHorizontalOutline} />}
+          />
+        }
+      />
+      <MenuContent side="bottom" align="end">
+        {canEdit && (
+          <MenuItem
+            icon={<Icon icon={EditOutline} />}
+            label={t("issue.edit")}
+            onClick={() => {
+              handleIssueCrudState("update", parentIssueId, { ...issue });
+              toggleCreateIssueModal(true);
+            }}
+          />
+        )}
+        <MenuItem
+          icon={<Icon icon={LinkOutline} />}
+          label={t("issue.copy_link")}
+          onClick={() => {
+            subIssueOperations.copyLink(workItemLink);
+          }}
+        />
+        {canEdit && (
+          <MenuItem
+            icon={<Icon icon={CloseOutline} />}
+            label={
+              issueServiceType === EIssueServiceType.ISSUES ? t("issue.remove.parent.label") : t("issue.remove.label")
+            }
+            onClick={() => {
+              if (issue.project_id)
+                subIssueOperations.removeSubIssue(workspaceSlug, issue.project_id, parentIssueId, issue.id);
+            }}
+          />
+        )}
+        {canEdit && (
+          <MenuItem
+            icon={<Icon icon={DeleteOutline} />}
+            label={t("issue.delete.label")}
+            onClick={() => {
+              handleIssueCrudState("delete", parentIssueId, issue);
+              toggleDeleteIssueModal(issue.id);
+            }}
+          />
+        )}
+      </MenuContent>
+    </Menu>
+  );
+});
+
 export const SubIssuesListItem = observer(function SubIssuesListItem(props: Props) {
   const {
     workspaceSlug,
@@ -69,7 +151,6 @@ export const SubIssuesListItem = observer(function SubIssuesListItem(props: Prop
     issueServiceType = EIssueServiceType.ISSUES,
     storeType = EIssuesStoreType.PROJECT,
   } = props;
-  const { t } = useTranslation();
   const {
     issue: { getIssueById },
     subIssues: {
@@ -80,14 +161,13 @@ export const SubIssuesListItem = observer(function SubIssuesListItem(props: Prop
     subIssues: { subIssueHelpersByIssueId, setSubIssueHelpers },
   } = useIssueDetail();
   const { fetchSubIssues } = useSubIssueOperations(EIssueServiceType.ISSUES);
-  const { toggleCreateIssueModal, toggleDeleteIssueModal } = useIssueDetail(issueServiceType);
   const project = useProject();
   const { handleRedirection } = useIssuePeekOverviewRedirection();
   const { isMobile } = usePlatformOS();
   const issue = getIssueById(issueId);
 
   // derived values
-  const projectDetail = (issue && issue.project_id && project.getProjectById(issue.project_id)) || undefined;
+  const projectDetail = issue?.project_id ? project.getProjectById(issue.project_id) : undefined;
 
   const subIssueHelpers = subIssueHelpersByIssueId(parentIssueId);
   const subIssueCount = issue?.sub_issues_count ?? 0;
@@ -159,7 +239,7 @@ export const SubIssuesListItem = observer(function SubIssuesListItem(props: Prop
             </div>
 
             <div className="flex w-full cursor-pointer items-center gap-3 truncate">
-              <WithDisplayPropertiesHOC displayProperties={displayProperties || {}} displayPropertyKey="key">
+              <WithDisplayPropertiesHOC displayProperties={displayProperties} displayPropertyKey="key">
                 <div className="flex-shrink-0">
                   {projectDetail && (
                     <IssueIdentifier
@@ -209,61 +289,16 @@ export const SubIssuesListItem = observer(function SubIssuesListItem(props: Prop
                 if (e.key === "Enter" || e.key === " ") e.stopPropagation();
               }}
             >
-              <Menu>
-                <MenuTrigger
-                  render={
-                    <IconButton
-                      variant="ghost"
-                      size="sm"
-                      aria-label={t("aria_labels.common.more_actions")}
-                      icon={<Icon icon={MoreHorizontalOutline} />}
-                    />
-                  }
-                />
-                <MenuContent side="bottom" align="end">
-                  {canEdit && (
-                    <MenuItem
-                      icon={<Icon icon={EditOutline} />}
-                      label={t("issue.edit")}
-                      onClick={() => {
-                        handleIssueCrudState("update", parentIssueId, { ...issue });
-                        toggleCreateIssueModal(true);
-                      }}
-                    />
-                  )}
-                  <MenuItem
-                    icon={<Icon icon={LinkOutline} />}
-                    label={t("issue.copy_link")}
-                    onClick={() => {
-                      subIssueOperations.copyLink(workItemLink);
-                    }}
-                  />
-                  {canEdit && (
-                    <MenuItem
-                      icon={<Icon icon={CloseOutline} />}
-                      label={
-                        issueServiceType === EIssueServiceType.ISSUES
-                          ? t("issue.remove.parent.label")
-                          : t("issue.remove.label")
-                      }
-                      onClick={() => {
-                        if (issue.project_id)
-                          subIssueOperations.removeSubIssue(workspaceSlug, issue.project_id, parentIssueId, issue.id);
-                      }}
-                    />
-                  )}
-                  {canEdit && (
-                    <MenuItem
-                      icon={<Icon icon={DeleteOutline} />}
-                      label={t("issue.delete.label")}
-                      onClick={() => {
-                        handleIssueCrudState("delete", parentIssueId, issue);
-                        toggleDeleteIssueModal(issue.id);
-                      }}
-                    />
-                  )}
-                </MenuContent>
-              </Menu>
+              <SubIssuesListItemMenu
+                workspaceSlug={workspaceSlug}
+                parentIssueId={parentIssueId}
+                issue={issue}
+                canEdit={canEdit}
+                workItemLink={workItemLink}
+                handleIssueCrudState={handleIssueCrudState}
+                subIssueOperations={subIssueOperations}
+                issueServiceType={issueServiceType}
+              />
             </div>
           </div>
         )}

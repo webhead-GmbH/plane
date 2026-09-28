@@ -39,12 +39,15 @@ export type EmojiReactionGroupProps = React.ComponentPropsWithRef<"div"> & {
 
 export type EmojiReactionButtonProps = React.ComponentPropsWithRef<"span">;
 
+// one shared empty list, so a reaction without users does not hand its memo a new array each render
+const NO_USERS: string[] = [];
+
 const EmojiReaction = React.forwardRef(function EmojiReaction(
   {
     emoji,
     count,
     reacted = false,
-    users = [],
+    users = NO_USERS,
     onReactionClick,
     className,
     showCount = true,
@@ -136,9 +139,9 @@ const EmojiReactionGroup = React.forwardRef(function EmojiReactionGroup(
 ) {
   return (
     <div ref={ref} className={cn("flex flex-wrap items-center gap-2", className)} {...props}>
-      {reactions.map((reaction, index) => (
+      {reactions.map((reaction) => (
         <EmojiReaction
-          key={`${reaction.emoji}-${index}`}
+          key={reaction.emoji}
           emoji={reaction.emoji}
           count={reaction.count}
           reacted={reaction.reacted}

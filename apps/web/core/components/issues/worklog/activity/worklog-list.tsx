@@ -35,31 +35,14 @@ type TPersonSummary = {
   activeTimer: TIssueWorkLog | null;
 };
 
-export const IssueWorklogList = observer(function IssueWorklogList(props: TIssueWorklogList) {
-  const { workspaceSlug, projectId, issueId } = props;
-  const { t } = useTranslation();
-  const { worklog } = useIssueDetail();
-  const { getProjectRoleByWorkspaceSlugAndProjectId } = useUserPermissions();
-  const [selectedUser, setSelectedUser] = useState<string | null>(null);
-  const [stoppingId, setStoppingId] = useState<string | null>(null);
-  const [, setNow] = useState(Date.now());
+type TWorklogStore = ReturnType<typeof useIssueDetail>["worklog"];
 
-  const isAdmin = getProjectRoleByWorkspaceSlugAndProjectId(workspaceSlug, projectId) === EUserPermissions.ADMIN;
-
-  // running timers for this issue (any user) — for the overview's live indicator + admin stop
-  useEffect(() => {
-    if (workspaceSlug && projectId && issueId) worklog.fetchIssueActiveTimers(workspaceSlug, projectId, issueId);
-  }, [workspaceSlug, projectId, issueId, worklog]);
-
-  const activeTimers = worklog.getActiveTimersForIssue(issueId);
-
-  // tick every second while any timer is running so the live elapsed updates
-  useEffect(() => {
-    if (activeTimers.length === 0) return;
-    const id = window.setInterval(() => setNow(Date.now()), 1000);
-    return () => window.clearInterval(id);
-  }, [activeTimers.length]);
-
+// Per-person totals of the completed worklogs, each person's running timer folded in, most time first.
+const buildWorklogSummaries = (
+  worklog: TWorklogStore,
+  issueId: string,
+  activeTimers: ReturnType<TWorklogStore["getActiveTimersForIssue"]>
+) => {
   // only completed worklogs (the running timer lives separately)
   const allIds = (worklog.getWorklogsByIssueId(issueId) ?? []).filter((id) => {
     const wl = worklog.getWorklogById(id);
@@ -105,6 +88,36 @@ export const IssueWorklogList = observer(function IssueWorklogList(props: TIssue
   // sorting a freshly-created array, so the in-place sort is safe
   // eslint-disable-next-line unicorn/no-array-sort
   const summaries = [...summaryMap.values()].sort((a, b) => b.total - a.total);
+
+  return { allIds, summaries, grandTotal };
+};
+
+export const IssueWorklogList = observer(function IssueWorklogList(props: TIssueWorklogList) {
+  const { workspaceSlug, projectId, issueId } = props;
+  const { t } = useTranslation();
+  const { worklog } = useIssueDetail();
+  const { getProjectRoleByWorkspaceSlugAndProjectId } = useUserPermissions();
+  const [selectedUser, setSelectedUser] = useState<string | null>(null);
+  const [stoppingId, setStoppingId] = useState<string | null>(null);
+  const [, setNow] = useState(Date.now());
+
+  const isAdmin = getProjectRoleByWorkspaceSlugAndProjectId(workspaceSlug, projectId) === EUserPermissions.ADMIN;
+
+  // running timers for this issue (any user) — for the overview's live indicator + admin stop
+  useEffect(() => {
+    if (workspaceSlug && projectId && issueId) worklog.fetchIssueActiveTimers(workspaceSlug, projectId, issueId);
+  }, [workspaceSlug, projectId, issueId, worklog]);
+
+  const activeTimers = worklog.getActiveTimersForIssue(issueId);
+
+  // tick every second while any timer is running so the live elapsed updates
+  useEffect(() => {
+    if (activeTimers.length === 0) return;
+    const id = window.setInterval(() => setNow(Date.now()), 1000);
+    return () => window.clearInterval(id);
+  }, [activeTimers.length]);
+
+  const { allIds, summaries, grandTotal } = buildWorklogSummaries(worklog, issueId, activeTimers);
 
   const handleAdminStop = async (timerId: string) => {
     setStoppingId(timerId);

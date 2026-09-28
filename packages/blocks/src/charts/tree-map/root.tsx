@@ -5,7 +5,8 @@
  */
 
 import React from "react";
-import { Treemap, ResponsiveContainer, Tooltip } from "recharts";
+import type { TRecharts } from "../use-recharts";
+import { useRecharts } from "../use-recharts";
 // plane imports
 import type { TreeMapChartProps } from "@plane/types";
 import { cn } from "@plane/utils";
@@ -13,7 +14,10 @@ import { cn } from "@plane/utils";
 import { CustomTreeMapContent } from "./map-content";
 import { TreeMapTooltip } from "./tooltip";
 
-export const TreeMapChart = React.memo(function TreeMapChart(props: TreeMapChartProps) {
+const TreeMapChartContent = React.memo(function TreeMapChartContent(
+  props: TreeMapChartProps & { recharts: TRecharts }
+) {
+  const { Treemap, ResponsiveContainer, Tooltip } = props.recharts;
   const { data, className = "w-full h-96", isAnimationActive = false, showTooltip = true } = props;
   return (
     <div className={cn(className)}>
@@ -47,4 +51,13 @@ export const TreeMapChart = React.memo(function TreeMapChart(props: TreeMapChart
     </div>
   );
 });
+TreeMapChartContent.displayName = "TreeMapChartContent";
+
+export const TreeMapChart = React.memo(function TreeMapChart(props: TreeMapChartProps) {
+  const recharts = useRecharts();
+  // until recharts has loaded, hold the chart's place so the layout does not jump
+  if (!recharts) return <div className={props.className} />;
+  return <TreeMapChartContent {...props} recharts={recharts} />;
+});
+
 TreeMapChart.displayName = "TreeMapChart";

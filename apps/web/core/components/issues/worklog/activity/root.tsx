@@ -30,6 +30,94 @@ type TIssueActivityWorklog = {
   ends?: "top" | "bottom";
 };
 
+type TWorklogEditFormProps = {
+  editStart: string;
+  setEditStart: (value: string) => void;
+  editEnd: string;
+  setEditEnd: (value: string) => void;
+  editDescription: string;
+  setEditDescription: (value: string) => void;
+  editError: string | null;
+  onSave: () => Promise<void>;
+  onCancel: () => void;
+};
+
+// Start, end and description of a worklog being corrected.
+function WorklogEditForm(props: TWorklogEditFormProps) {
+  const {
+    editStart,
+    setEditStart,
+    editEnd,
+    setEditEnd,
+    editDescription,
+    setEditDescription,
+    editError,
+    onSave,
+    onCancel,
+  } = props;
+  const { t } = useTranslation();
+
+  return (
+    <div className="mt-2 space-y-2">
+      <div className="flex flex-col gap-1">
+        <label className="text-xs text-tertiary">{t("common.worklog_start")}</label>
+        <input
+          type="datetime-local"
+          value={editStart}
+          max={editEnd || undefined}
+          onChange={(e) => setEditStart(e.target.value)}
+          className={editInputClassName}
+        />
+      </div>
+      <div className="flex flex-col gap-1">
+        <label className="text-xs text-tertiary">{t("common.worklog_end")}</label>
+        <input
+          type="datetime-local"
+          value={editEnd}
+          min={editStart || undefined}
+          onChange={(e) => setEditEnd(e.target.value)}
+          className={editInputClassName}
+        />
+      </div>
+      <textarea
+        value={editDescription}
+        onChange={(e) => setEditDescription(e.target.value)}
+        rows={2}
+        placeholder={t("common.worklog_description_placeholder")}
+        className={`resize-none ${editInputClassName}`}
+      />
+      {editError && <p className="text-xs text-danger-primary">{editError}</p>}
+      <div className="mt-1 flex gap-2">
+        <Button variant="primary" size="xs" stretch="auto" label={t("common.save")} onClick={onSave} />
+        <Button variant="secondary" size="xs" stretch="auto" label={t("common.cancel")} onClick={onCancel} />
+      </div>
+    </div>
+  );
+}
+
+type TWorklogEntrySummaryProps = {
+  startISO: string | null | undefined;
+  endISO: string | null | undefined;
+  description: string | null | undefined;
+};
+
+// When the logged time ran, and what it was for.
+function WorklogEntrySummary(props: TWorklogEntrySummaryProps) {
+  const { startISO, endISO, description } = props;
+
+  return (
+    <>
+      {startISO && (
+        <p className="text-xs mt-0.5 text-tertiary">
+          {renderFormattedDate(startISO)} {renderFormattedTime(startISO)}
+          {endISO && ` → ${renderFormattedDate(endISO)} ${renderFormattedTime(endISO)}`}
+        </p>
+      )}
+      {description && <p className="text-sm mt-0.5 text-secondary">{description}</p>}
+    </>
+  );
+}
+
 export const IssueActivityWorklog = observer(function IssueActivityWorklog(props: TIssueActivityWorklog) {
   const { workspaceSlug, projectId, issueId, activityComment, ends } = props;
   const { t } = useTranslation();
@@ -121,65 +209,32 @@ export const IssueActivityWorklog = observer(function IssueActivityWorklog(props
 
         {/* description display / edit */}
         {isEditing ? (
-          <div className="mt-2 space-y-2">
-            <div className="flex flex-col gap-1">
-              <label className="text-xs text-tertiary">{t("common.worklog_start")}</label>
-              <input
-                type="datetime-local"
-                value={editStart}
-                max={editEnd || undefined}
-                onChange={(e) => setEditStart(e.target.value)}
-                className={editInputClassName}
-              />
-            </div>
-            <div className="flex flex-col gap-1">
-              <label className="text-xs text-tertiary">{t("common.worklog_end")}</label>
-              <input
-                type="datetime-local"
-                value={editEnd}
-                min={editStart || undefined}
-                onChange={(e) => setEditEnd(e.target.value)}
-                className={editInputClassName}
-              />
-            </div>
-            <textarea
-              value={editDescription}
-              onChange={(e) => setEditDescription(e.target.value)}
-              rows={2}
-              placeholder={t("common.worklog_description_placeholder")}
-              className={`resize-none ${editInputClassName}`}
-            />
-            {editError && <p className="text-xs text-danger-primary">{editError}</p>}
-            <div className="mt-1 flex gap-2">
-              <Button variant="primary" size="xs" stretch="auto" label={t("common.save")} onClick={handleSaveEdit} />
-              <Button
-                variant="secondary"
-                size="xs"
-                stretch="auto"
-                label={t("common.cancel")}
-                onClick={() => setIsEditing(false)}
-              />
-            </div>
-          </div>
+          <WorklogEditForm
+            editStart={editStart}
+            setEditStart={setEditStart}
+            editEnd={editEnd}
+            setEditEnd={setEditEnd}
+            editDescription={editDescription}
+            setEditDescription={setEditDescription}
+            editError={editError}
+            onSave={handleSaveEdit}
+            onCancel={() => setIsEditing(false)}
+          />
         ) : (
-          <>
-            {startISO && (
-              <p className="text-xs mt-0.5 text-tertiary">
-                {renderFormattedDate(startISO)} {renderFormattedTime(startISO)}
-                {endISO && ` → ${renderFormattedDate(endISO)} ${renderFormattedTime(endISO)}`}
-              </p>
-            )}
-            {entry.description && <p className="text-sm mt-0.5 text-secondary">{entry.description}</p>}
-          </>
+          <WorklogEntrySummary startISO={startISO} endISO={endISO} description={entry.description} />
         )}
 
         {/* owner actions (admins can edit/delete anyone's) */}
         {canModify && !isEditing && (
           <div className="mt-1 flex gap-3">
-            <button className="text-xs text-tertiary hover:text-secondary" onClick={handleEdit}>
+            <button type="button" className="text-xs text-tertiary hover:text-secondary" onClick={handleEdit}>
               {t("common.edit")}
             </button>
-            <button className="text-xs text-danger-primary hover:opacity-80" onClick={() => setShowDeleteModal(true)}>
+            <button
+              type="button"
+              className="text-xs text-danger-primary hover:opacity-80"
+              onClick={() => setShowDeleteModal(true)}
+            >
               {t("common.delete")}
             </button>
           </div>

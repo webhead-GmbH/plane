@@ -54,30 +54,50 @@ const CustomLegend = React.forwardRef(function CustomLegend(
         "max-h-full flex-col items-start py-4": layout === "vertical",
       })}
     >
-      {payload.map((item, index) => (
-        <div
-          key={item.value}
-          className={cn("flex items-center gap-1.5 text-13 font-medium whitespace-nowrap text-tertiary", {
-            "px-2": layout === "horizontal",
-            "py-2": layout === "vertical",
-            "pt-0 pl-0": index === 0,
-            "pr-0 pb-0": index === payload.length - 1,
-            "cursor-pointer": !!props.onClick,
-          })}
-          onClick={(e) => onClick?.(item, index, e)}
-          onMouseEnter={(e) => onMouseEnter?.(item, index, e)}
-          onMouseLeave={(e) => onMouseLeave?.(item, index, e)}
-        >
+      {payload.map((item, index) => {
+        const itemClassName = cn("flex items-center gap-1.5 text-13 font-medium whitespace-nowrap text-tertiary", {
+          "px-2": layout === "horizontal",
+          "py-2": layout === "vertical",
+          "pt-0 pl-0": index === 0,
+          "pr-0 pb-0": index === payload.length - 1,
+          "cursor-pointer": !!onClick,
+        });
+        const itemContent = (
+          <>
+            <span
+              className="size-2 flex-shrink-0 rounded-xs"
+              style={{
+                backgroundColor: item.color,
+              }}
+            />
+            {/* @ts-expect-error recharts types are not up to date */}
+            {formatter?.(item.value, { value: item.value }, index) ?? item.payload?.name}
+          </>
+        );
+
+        // an entry is a button only when the chart makes entries clickable; otherwise it only reacts to hover
+        return onClick ? (
+          <button
+            type="button"
+            key={item.value}
+            className={itemClassName}
+            onClick={(e) => onClick(item, index, e)}
+            onMouseEnter={(e) => onMouseEnter?.(item, index, e)}
+            onMouseLeave={(e) => onMouseLeave?.(item, index, e)}
+          >
+            {itemContent}
+          </button>
+        ) : (
           <div
-            className="size-2 flex-shrink-0 rounded-xs"
-            style={{
-              backgroundColor: item.color,
-            }}
-          />
-          {/* @ts-expect-error recharts types are not up to date */}
-          {formatter?.(item.value, { value: item.value }, index) ?? item.payload?.name}
-        </div>
-      ))}
+            key={item.value}
+            className={itemClassName}
+            onMouseEnter={(e) => onMouseEnter?.(item, index, e)}
+            onMouseLeave={(e) => onMouseLeave?.(item, index, e)}
+          >
+            {itemContent}
+          </div>
+        );
+      })}
     </div>
   );
 });

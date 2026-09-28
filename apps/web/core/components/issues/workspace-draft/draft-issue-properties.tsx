@@ -13,7 +13,7 @@ import { DueDateOutline, StartDateOutline } from "@makeplane/propel/icons";
 import { DateSelect } from "@plane/blocks/property-select";
 import { useTranslation } from "@plane/i18n";
 // types
-import type { TIssuePriorities, TWorkspaceDraftIssue } from "@plane/types";
+import type { IState, TIssuePriorities, TWorkspaceDraftIssue } from "@plane/types";
 import { cn, getDate, renderFormattedPayloadDate, shouldHighlightIssueDueDate } from "@plane/utils";
 // components
 import { CycleSelect } from "@/components/dropdowns/cycle/cycle-select";
@@ -41,6 +41,71 @@ export interface IIssueProperties {
   className: string;
 }
 
+const handleEventPropagation = (e: React.MouseEvent) => {
+  e.stopPropagation();
+  e.preventDefault();
+};
+
+type TDraftIssueDatePropertiesProps = {
+  issue: TWorkspaceDraftIssue;
+  stateDetails: IState | undefined;
+  handleStartDate: (date: Date | null) => void;
+  handleTargetDate: (date: Date | null) => void;
+};
+
+const DraftIssueDateProperties = observer(function DraftIssueDateProperties(props: TDraftIssueDatePropertiesProps) {
+  const { issue, stateDetails, handleStartDate, handleTargetDate } = props;
+  // plane hooks
+  const { t } = useTranslation();
+  // store hooks
+  const { data: userProfile } = useUserProfile();
+
+  const minDate = getDate(issue.start_date);
+  minDate?.setDate(minDate.getDate());
+
+  const maxDate = getDate(issue.target_date);
+  maxDate?.setDate(maxDate.getDate());
+
+  return (
+    <>
+      {/* start date */}
+      <div role="presentation" onClick={handleEventPropagation}>
+        <DateSelect
+          value={getDate(issue.start_date) ?? null}
+          onChange={handleStartDate}
+          maxDate={maxDate}
+          placeholder={t("common.order_by.start_date")}
+          icon={<StartDateOutline />}
+          clearable
+          showTooltip
+          tooltipHeading={t("common.order_by.start_date")}
+          weekStartsOn={userProfile?.start_of_the_week}
+          variant="pill-sm"
+        />
+      </div>
+
+      {/* target/due date */}
+      <div role="presentation" onClick={handleEventPropagation}>
+        <DateSelect
+          value={getDate(issue?.target_date) ?? null}
+          onChange={handleTargetDate}
+          minDate={minDate}
+          placeholder={t("common.order_by.due_date")}
+          icon={<DueDateOutline />}
+          className={cn({
+            "text-danger-primary": shouldHighlightIssueDueDate(issue?.target_date || null, stateDetails?.group),
+          })}
+          clearable
+          showTooltip
+          tooltipHeading={t("common.order_by.due_date")}
+          weekStartsOn={userProfile?.start_of_the_week}
+          variant="pill-sm"
+        />
+      </div>
+    </>
+  );
+});
+
 export const DraftIssueProperties = observer(function DraftIssueProperties(props: IIssueProperties) {
   const { issue, updateIssue, className } = props;
   const { t } = useTranslation();
@@ -50,7 +115,6 @@ export const DraftIssueProperties = observer(function DraftIssueProperties(props
   const { addCycleToIssue, addModulesToIssue } = useWorkspaceDraftIssues();
   const { areEstimateEnabledByProjectId } = useProjectEstimates();
   const { getStateById } = useProjectState();
-  const { data: userProfile } = useUserProfile();
   const { isMobile } = usePlatformOS();
   const projectDetails = getProjectById(issue.project_id);
 
@@ -132,17 +196,6 @@ export const DraftIssueProperties = observer(function DraftIssueProperties(props
       return label ? [label] : [];
     }) || [];
 
-  const minDate = getDate(issue.start_date);
-  minDate?.setDate(minDate.getDate());
-
-  const maxDate = getDate(issue.target_date);
-  maxDate?.setDate(maxDate.getDate());
-
-  const handleEventPropagation = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    e.preventDefault();
-  };
-
   return (
     <div className={className}>
       {/* basic properties */}
@@ -173,40 +226,12 @@ export const DraftIssueProperties = observer(function DraftIssueProperties(props
         hideDropdownArrow
       />
 
-      {/* start date */}
-      <div role="presentation" onClick={handleEventPropagation}>
-        <DateSelect
-          value={getDate(issue.start_date) ?? null}
-          onChange={handleStartDate}
-          maxDate={maxDate}
-          placeholder={t("common.order_by.start_date")}
-          icon={<StartDateOutline />}
-          clearable
-          showTooltip
-          tooltipHeading={t("common.order_by.start_date")}
-          weekStartsOn={userProfile?.start_of_the_week}
-          variant="pill-sm"
-        />
-      </div>
-
-      {/* target/due date */}
-      <div role="presentation" onClick={handleEventPropagation}>
-        <DateSelect
-          value={getDate(issue?.target_date) ?? null}
-          onChange={handleTargetDate}
-          minDate={minDate}
-          placeholder={t("common.order_by.due_date")}
-          icon={<DueDateOutline />}
-          className={cn({
-            "text-danger-primary": shouldHighlightIssueDueDate(issue?.target_date || null, stateDetails?.group),
-          })}
-          clearable
-          showTooltip
-          tooltipHeading={t("common.order_by.due_date")}
-          weekStartsOn={userProfile?.start_of_the_week}
-          variant="pill-sm"
-        />
-      </div>
+      <DraftIssueDateProperties
+        issue={issue}
+        stateDetails={stateDetails}
+        handleStartDate={handleStartDate}
+        handleTargetDate={handleTargetDate}
+      />
 
       {/* assignee */}
       <div role="presentation" onClick={handleEventPropagation}>

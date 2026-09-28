@@ -5,16 +5,8 @@
  */
 
 import React, { useMemo, useState } from "react";
-import {
-  CartesianGrid,
-  LineChart as CoreLineChart,
-  Legend,
-  Line,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
+import type { TRecharts } from "../use-recharts";
+import { useRecharts } from "../use-recharts";
 // plane imports
 import { AXIS_LABEL_CLASSNAME } from "@plane/constants";
 import type { TLineChartProps } from "@plane/types";
@@ -23,9 +15,19 @@ import { getLegendProps } from "../components/legend";
 import { CustomXAxisTick, CustomYAxisTick } from "../components/tick";
 import { CustomTooltip } from "../components/tooltip";
 
-export const LineChart = React.memo(function LineChart<K extends string, T extends string>(
-  props: TLineChartProps<K, T>
+const LineChartContent = React.memo(function LineChartContent<K extends string, T extends string>(
+  props: TLineChartProps<K, T> & { recharts: TRecharts }
 ) {
+  const {
+    CartesianGrid,
+    LineChart: CoreLineChart,
+    Legend,
+    Line,
+    ResponsiveContainer,
+    Tooltip,
+    XAxis,
+    YAxis,
+  } = props.recharts;
   const {
     data,
     lines,
@@ -89,7 +91,7 @@ export const LineChart = React.memo(function LineChart<K extends string, T exten
           onMouseLeave={() => setActiveLine(null)}
         />
       )),
-    [activeLegend, lines]
+    [activeLegend, lines, Line]
   );
 
   return (
@@ -183,4 +185,15 @@ export const LineChart = React.memo(function LineChart<K extends string, T exten
     </div>
   );
 });
+LineChartContent.displayName = "LineChartContent";
+
+export const LineChart = React.memo(function LineChart<K extends string, T extends string>(
+  props: TLineChartProps<K, T>
+) {
+  const recharts = useRecharts();
+  // until recharts has loaded, hold the chart's place so the layout does not jump
+  if (!recharts) return <div className={props.className} />;
+  return <LineChartContent {...props} recharts={recharts} />;
+});
+
 LineChart.displayName = "LineChart";

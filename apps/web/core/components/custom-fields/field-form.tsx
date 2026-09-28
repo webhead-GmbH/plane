@@ -45,6 +45,175 @@ const getDefaultValues = (data?: TCustomField | null): TFieldFormValues => ({
   width: data?.width ?? CUSTOM_FIELD_DEFAULT_WIDTH,
 });
 
+type TFieldTypeSettingsProps = {
+  fieldType: ECustomFieldType;
+  supports: (typeof CUSTOM_FIELD_TYPE_CONFIG_MAP)[ECustomFieldType]["supports"] | undefined;
+  settings: NonNullable<TFieldFormValues["settings"]>;
+  dateVariant: "date" | "datetime";
+  updateSetting: (key: string, value: unknown) => void;
+  optionsError: boolean;
+  setOptionsError: (value: boolean) => void;
+};
+
+// The settings only some field types have: options, placeholder, length, range, dates, checkbox label.
+function FieldTypeSettings(props: TFieldTypeSettingsProps) {
+  const { fieldType, supports, settings, dateVariant, updateSetting, optionsError, setOptionsError } = props;
+  const { t } = useTranslation();
+
+  return (
+    <>
+      {supports?.options && (
+        <OptionsEditor
+          options={settings.options ?? []}
+          onChange={(options) => {
+            updateSetting("options", options);
+            if (optionsError) setOptionsError(false);
+          }}
+          hasError={optionsError}
+        />
+      )}
+
+      {supports?.placeholder && (
+        <div className="space-y-1">
+          <label className="text-body-sm-medium text-secondary">
+            {t("workspace_settings.settings.custom_fields.form.placeholder")}
+          </label>
+          <InputGroup size="xl">
+            <Input
+              size="xl"
+              type="text"
+              value={settings.placeholder ?? ""}
+              onChange={(e) => updateSetting("placeholder", e.target.value)}
+            />
+          </InputGroup>
+        </div>
+      )}
+
+      {supports?.length && (
+        <div className="grid grid-cols-2 gap-3">
+          <div className="space-y-1">
+            <label className="text-body-sm-medium text-secondary">
+              {t("workspace_settings.settings.custom_fields.form.min_length")}
+            </label>
+            <InputGroup size="xl">
+              <Input
+                size="xl"
+                type="number"
+                min={0}
+                value={settings.min_length ?? ""}
+                onChange={(e) =>
+                  updateSetting("min_length", e.target.value === "" ? undefined : Number(e.target.value))
+                }
+              />
+            </InputGroup>
+          </div>
+          <div className="space-y-1">
+            <label className="text-body-sm-medium text-secondary">
+              {t("workspace_settings.settings.custom_fields.form.max_length")}
+            </label>
+            <InputGroup size="xl">
+              <Input
+                size="xl"
+                type="number"
+                min={0}
+                value={settings.max_length ?? ""}
+                onChange={(e) =>
+                  updateSetting("max_length", e.target.value === "" ? undefined : Number(e.target.value))
+                }
+              />
+            </InputGroup>
+          </div>
+        </div>
+      )}
+
+      {supports?.numericRange && (
+        <div className="grid grid-cols-3 gap-3">
+          <div className="space-y-1">
+            <label className="text-body-sm-medium text-secondary">
+              {t("workspace_settings.settings.custom_fields.form.min")}
+            </label>
+            <InputGroup size="xl">
+              <Input
+                size="xl"
+                type="number"
+                value={settings.min ?? ""}
+                onChange={(e) => updateSetting("min", e.target.value === "" ? undefined : Number(e.target.value))}
+              />
+            </InputGroup>
+          </div>
+          <div className="space-y-1">
+            <label className="text-body-sm-medium text-secondary">
+              {t("workspace_settings.settings.custom_fields.form.max")}
+            </label>
+            <InputGroup size="xl">
+              <Input
+                size="xl"
+                type="number"
+                value={settings.max ?? ""}
+                onChange={(e) => updateSetting("max", e.target.value === "" ? undefined : Number(e.target.value))}
+              />
+            </InputGroup>
+          </div>
+          <div className="space-y-1">
+            <label className="text-body-sm-medium text-secondary">
+              {t("workspace_settings.settings.custom_fields.form.step")}
+            </label>
+            <InputGroup size="xl">
+              <Input
+                size="xl"
+                type="number"
+                value={settings.step ?? ""}
+                onChange={(e) => updateSetting("step", e.target.value === "" ? undefined : Number(e.target.value))}
+              />
+            </InputGroup>
+          </div>
+        </div>
+      )}
+
+      {supports?.dateRange && (
+        <div className="grid grid-cols-2 gap-3">
+          <div className="space-y-1">
+            <label className="text-body-sm-medium text-secondary">
+              {t("workspace_settings.settings.custom_fields.form.min_date")}
+            </label>
+            <DateSettingInput
+              value={settings.min as string | undefined}
+              onChange={(next) => updateSetting("min", next)}
+              variant={dateVariant}
+            />
+          </div>
+          <div className="space-y-1">
+            <label className="text-body-sm-medium text-secondary">
+              {t("workspace_settings.settings.custom_fields.form.max_date")}
+            </label>
+            <DateSettingInput
+              value={settings.max as string | undefined}
+              onChange={(next) => updateSetting("max", next)}
+              variant={dateVariant}
+            />
+          </div>
+        </div>
+      )}
+
+      {fieldType === ECustomFieldType.BOOLEAN && (
+        <div className="space-y-1">
+          <label className="text-body-sm-medium text-secondary">
+            {t("workspace_settings.settings.custom_fields.form.checkbox_label")}
+          </label>
+          <InputGroup size="xl">
+            <Input
+              size="xl"
+              type="text"
+              value={settings.label ?? ""}
+              onChange={(e) => updateSetting("label", e.target.value)}
+            />
+          </InputGroup>
+        </div>
+      )}
+    </>
+  );
+}
+
 export function FieldForm(props: Props) {
   const { data, isSubmitting, onSubmit, handleClose } = props;
   const { t } = useTranslation();
@@ -198,154 +367,15 @@ export function FieldForm(props: Props) {
         </div>
 
         {/* Type-specific settings */}
-        {supports?.options && (
-          <OptionsEditor
-            options={settings.options ?? []}
-            onChange={(options) => {
-              updateSetting("options", options);
-              if (optionsError) setOptionsError(false);
-            }}
-            hasError={optionsError}
-          />
-        )}
-
-        {supports?.placeholder && (
-          <div className="space-y-1">
-            <label className="text-body-sm-medium text-secondary">
-              {t("workspace_settings.settings.custom_fields.form.placeholder")}
-            </label>
-            <InputGroup size="xl">
-              <Input
-                size="xl"
-                type="text"
-                value={settings.placeholder ?? ""}
-                onChange={(e) => updateSetting("placeholder", e.target.value)}
-              />
-            </InputGroup>
-          </div>
-        )}
-
-        {supports?.length && (
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1">
-              <label className="text-body-sm-medium text-secondary">
-                {t("workspace_settings.settings.custom_fields.form.min_length")}
-              </label>
-              <InputGroup size="xl">
-                <Input
-                  size="xl"
-                  type="number"
-                  min={0}
-                  value={settings.min_length ?? ""}
-                  onChange={(e) =>
-                    updateSetting("min_length", e.target.value === "" ? undefined : Number(e.target.value))
-                  }
-                />
-              </InputGroup>
-            </div>
-            <div className="space-y-1">
-              <label className="text-body-sm-medium text-secondary">
-                {t("workspace_settings.settings.custom_fields.form.max_length")}
-              </label>
-              <InputGroup size="xl">
-                <Input
-                  size="xl"
-                  type="number"
-                  min={0}
-                  value={settings.max_length ?? ""}
-                  onChange={(e) =>
-                    updateSetting("max_length", e.target.value === "" ? undefined : Number(e.target.value))
-                  }
-                />
-              </InputGroup>
-            </div>
-          </div>
-        )}
-
-        {supports?.numericRange && (
-          <div className="grid grid-cols-3 gap-3">
-            <div className="space-y-1">
-              <label className="text-body-sm-medium text-secondary">
-                {t("workspace_settings.settings.custom_fields.form.min")}
-              </label>
-              <InputGroup size="xl">
-                <Input
-                  size="xl"
-                  type="number"
-                  value={settings.min ?? ""}
-                  onChange={(e) => updateSetting("min", e.target.value === "" ? undefined : Number(e.target.value))}
-                />
-              </InputGroup>
-            </div>
-            <div className="space-y-1">
-              <label className="text-body-sm-medium text-secondary">
-                {t("workspace_settings.settings.custom_fields.form.max")}
-              </label>
-              <InputGroup size="xl">
-                <Input
-                  size="xl"
-                  type="number"
-                  value={settings.max ?? ""}
-                  onChange={(e) => updateSetting("max", e.target.value === "" ? undefined : Number(e.target.value))}
-                />
-              </InputGroup>
-            </div>
-            <div className="space-y-1">
-              <label className="text-body-sm-medium text-secondary">
-                {t("workspace_settings.settings.custom_fields.form.step")}
-              </label>
-              <InputGroup size="xl">
-                <Input
-                  size="xl"
-                  type="number"
-                  value={settings.step ?? ""}
-                  onChange={(e) => updateSetting("step", e.target.value === "" ? undefined : Number(e.target.value))}
-                />
-              </InputGroup>
-            </div>
-          </div>
-        )}
-
-        {supports?.dateRange && (
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1">
-              <label className="text-body-sm-medium text-secondary">
-                {t("workspace_settings.settings.custom_fields.form.min_date")}
-              </label>
-              <DateSettingInput
-                value={settings.min as string | undefined}
-                onChange={(next) => updateSetting("min", next)}
-                variant={dateVariant}
-              />
-            </div>
-            <div className="space-y-1">
-              <label className="text-body-sm-medium text-secondary">
-                {t("workspace_settings.settings.custom_fields.form.max_date")}
-              </label>
-              <DateSettingInput
-                value={settings.max as string | undefined}
-                onChange={(next) => updateSetting("max", next)}
-                variant={dateVariant}
-              />
-            </div>
-          </div>
-        )}
-
-        {fieldType === ECustomFieldType.BOOLEAN && (
-          <div className="space-y-1">
-            <label className="text-body-sm-medium text-secondary">
-              {t("workspace_settings.settings.custom_fields.form.checkbox_label")}
-            </label>
-            <InputGroup size="xl">
-              <Input
-                size="xl"
-                type="text"
-                value={settings.label ?? ""}
-                onChange={(e) => updateSetting("label", e.target.value)}
-              />
-            </InputGroup>
-          </div>
-        )}
+        <FieldTypeSettings
+          fieldType={fieldType}
+          supports={supports}
+          settings={settings}
+          dateVariant={dateVariant}
+          updateSetting={updateSetting}
+          optionsError={optionsError}
+          setOptionsError={setOptionsError}
+        />
 
         {/* Default value */}
         <div className="space-y-1">

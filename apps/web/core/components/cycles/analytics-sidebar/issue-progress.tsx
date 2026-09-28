@@ -57,25 +57,24 @@ export const validateCycleSnapshot = (cycleDetails: ICycle | null): ICycle | nul
   return updatedCycleDetails;
 };
 
-export const CycleAnalyticsProgress = observer(function CycleAnalyticsProgress(props: TCycleAnalyticsProgress) {
-  // props
-  const { workspaceSlug, projectId, cycleId } = props;
-  // router
-  const searchParams = useSearchParams();
-  const peekCycle = searchParams.get("peekCycle") || undefined;
-  // plane hooks
-  const { t } = useTranslation();
+type TCycleProgressDetailsProps = {
+  cycleId: string;
+  cycleDetails: ICycle;
+  plotType: TCyclePlotType;
+  estimateType: ReturnType<ReturnType<typeof useCycle>["getEstimateTypeByCycleId"]>;
+  isEditable: boolean;
+};
+
+// The per-state figures (work items or estimate points) and the filters they drive.
+const CycleProgressDetails = observer(function CycleProgressDetails(props: TCycleProgressDetailsProps) {
+  const { cycleId, cycleDetails, plotType, estimateType, isEditable } = props;
   // store hooks
-  const { getPlotTypeByCycleId, getEstimateTypeByCycleId, getCycleById } = useCycle();
   const { getFilter, updateFilterValueFromSidebar } = useWorkItemFilters();
   // derived values
   const cycleFilter = getFilter(EIssuesStoreType.CYCLE, cycleId);
   const selectedAssignees = cycleFilter?.findFirstConditionByPropertyAndOperator("assignee_id", "in");
   const selectedLabels = cycleFilter?.findFirstConditionByPropertyAndOperator("label_id", "in");
   const selectedStateGroups = cycleFilter?.findFirstConditionByPropertyAndOperator("state_group", "in");
-  const cycleDetails = validateCycleSnapshot(getCycleById(cycleId));
-  const plotType: TCyclePlotType = getPlotTypeByCycleId(cycleId);
-  const estimateType = getEstimateTypeByCycleId(cycleId);
   const totalIssues = cycleDetails?.total_issues || 0;
   const totalEstimatePoints = cycleDetails?.total_estimate_points || 0;
   const chartDistributionData =
@@ -95,6 +94,47 @@ export const CycleAnalyticsProgress = observer(function CycleAnalyticsProgress(p
     }),
     [estimateType, cycleDetails]
   );
+
+  if (!chartDistributionData) return null;
+
+  return (
+    <div className="w-full py-4">
+      <CycleProgressStats
+        cycleId={cycleId}
+        distribution={chartDistributionData}
+        groupedIssues={groupedIssues}
+        handleFiltersUpdate={updateFilterValueFromSidebar.bind(
+          updateFilterValueFromSidebar,
+          EIssuesStoreType.CYCLE,
+          cycleId
+        )}
+        isEditable={isEditable && cycleFilter !== undefined}
+        plotType={plotType}
+        selectedFilters={{
+          assignees: selectedAssignees,
+          labels: selectedLabels,
+          stateGroups: selectedStateGroups,
+        }}
+        totalIssuesCount={estimateType === "points" ? totalEstimatePoints || 0 : totalIssues || 0}
+      />
+    </div>
+  );
+});
+
+export const CycleAnalyticsProgress = observer(function CycleAnalyticsProgress(props: TCycleAnalyticsProgress) {
+  // props
+  const { workspaceSlug, projectId, cycleId } = props;
+  // router
+  const searchParams = useSearchParams();
+  const peekCycle = searchParams.get("peekCycle") || undefined;
+  // plane hooks
+  const { t } = useTranslation();
+  // store hooks
+  const { getPlotTypeByCycleId, getEstimateTypeByCycleId, getCycleById } = useCycle();
+  // derived values
+  const cycleDetails = validateCycleSnapshot(getCycleById(cycleId));
+  const plotType: TCyclePlotType = getPlotTypeByCycleId(cycleId);
+  const estimateType = getEstimateTypeByCycleId(cycleId);
   const cycleStartDate = getDate(cycleDetails?.start_date);
   const cycleEndDate = getDate(cycleDetails?.end_date);
   const isCycleStartDateValid = cycleStartDate && cycleStartDate <= new Date();
@@ -113,28 +153,13 @@ export const CycleAnalyticsProgress = observer(function CycleAnalyticsProgress(p
         <>
           {isCycleDateValid && <SidebarChart workspaceSlug={workspaceSlug} projectId={projectId} cycleId={cycleId} />}
           {/* progress detailed view */}
-          {chartDistributionData && (
-            <div className="w-full py-4">
-              <CycleProgressStats
-                cycleId={cycleId}
-                distribution={chartDistributionData}
-                groupedIssues={groupedIssues}
-                handleFiltersUpdate={updateFilterValueFromSidebar.bind(
-                  updateFilterValueFromSidebar,
-                  EIssuesStoreType.CYCLE,
-                  cycleId
-                )}
-                isEditable={Boolean(!peekCycle) && cycleFilter !== undefined}
-                plotType={plotType}
-                selectedFilters={{
-                  assignees: selectedAssignees,
-                  labels: selectedLabels,
-                  stateGroups: selectedStateGroups,
-                }}
-                totalIssuesCount={estimateType === "points" ? totalEstimatePoints || 0 : totalIssues || 0}
-              />
-            </div>
-          )}
+          <CycleProgressDetails
+            cycleId={cycleId}
+            cycleDetails={cycleDetails}
+            plotType={plotType}
+            estimateType={estimateType}
+            isEditable={!peekCycle}
+          />
         </>
       ) : (
         <div className="my-2 w-full rounded-md bg-surface-2 px-2 py-2 text-13 text-tertiary">{t("no_data_yet")}</div>

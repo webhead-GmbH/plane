@@ -50,6 +50,26 @@ import { usePlatformOS } from "@/hooks/use-platform-os";
 import { CommonProjectBreadcrumbs } from "@/components/breadcrumbs/common";
 import { useProjectCrumbProps } from "@/components/breadcrumbs/use-project-crumb-props";
 
+// The module's work item count beside the breadcrumbs, when it has any.
+function ModuleWorkItemsCount(props: { count: number | undefined; isMobile: boolean }) {
+  const { count, isMobile } = props;
+
+  if (!count || count <= 0) return null;
+
+  return (
+    <Tooltip
+      label={`There are ${count} ${count > 1 ? "work items" : "work item"} in this module`}
+      layout="stacked"
+      side="bottom"
+      disabled={isMobile}
+    >
+      <span className="flex flex-shrink-0 cursor-default items-center justify-center rounded-xl bg-accent-primary/20 px-2 text-center text-11 font-semibold text-accent-primary">
+        {count}
+      </span>
+    </Tooltip>
+  );
+}
+
 export const ModuleIssuesHeader = observer(function ModuleIssuesHeader() {
   // refs
   const parentRef = useRef<HTMLDivElement>(null);
@@ -155,18 +175,7 @@ export const ModuleIssuesHeader = observer(function ModuleIssuesHeader() {
                 isLast
               />
             </Breadcrumbs>
-            {workItemsCount && workItemsCount > 0 ? (
-              <Tooltip
-                label={`There are ${workItemsCount} ${workItemsCount > 1 ? "work items" : "work item"} in this module`}
-                layout="stacked"
-                side="bottom"
-                disabled={isMobile}
-              >
-                <span className="flex flex-shrink-0 cursor-default items-center justify-center rounded-xl bg-accent-primary/20 px-2 text-center text-11 font-semibold text-accent-primary">
-                  {workItemsCount}
-                </span>
-              </Tooltip>
-            ) : null}
+            <ModuleWorkItemsCount count={workItemsCount} isMobile={isMobile} />
           </div>
         </Header.LeftItem>
         <Header.RightItem className="items-center">

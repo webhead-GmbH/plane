@@ -5,21 +5,25 @@
  */
 
 import { useMemo, useState } from "react";
-import {
-  PolarGrid,
-  Radar,
-  RadarChart as CoreRadarChart,
-  ResponsiveContainer,
-  PolarAngleAxis,
-  Tooltip,
-  Legend,
-} from "recharts";
+import type { TRecharts } from "../use-recharts";
+import { useRecharts } from "../use-recharts";
 import type { TRadarChartProps } from "@plane/types";
 import { getLegendProps } from "../components/legend";
 import { CustomRadarAxisTick } from "../components/tick";
 import { CustomTooltip } from "../components/tooltip";
 
-function RadarChart<T extends string, K extends string>(props: TRadarChartProps<T, K>) {
+function RadarChartContent<T extends string, K extends string>(
+  props: TRadarChartProps<T, K> & { recharts: TRecharts }
+) {
+  const {
+    PolarGrid,
+    Radar,
+    RadarChart: CoreRadarChart,
+    ResponsiveContainer,
+    PolarAngleAxis,
+    Tooltip,
+    Legend,
+  } = props.recharts;
   const { data, radars, margin, showTooltip, legend, className, angleAxis } = props;
 
   // states
@@ -96,6 +100,13 @@ function RadarChart<T extends string, K extends string>(props: TRadarChartProps<
       </ResponsiveContainer>
     </div>
   );
+}
+
+function RadarChart<T extends string, K extends string>(props: TRadarChartProps<T, K>) {
+  const recharts = useRecharts();
+  // until recharts has loaded, hold the chart's place so the layout does not jump
+  if (!recharts) return <div className={props.className} />;
+  return <RadarChartContent {...props} recharts={recharts} />;
 }
 
 export { RadarChart };

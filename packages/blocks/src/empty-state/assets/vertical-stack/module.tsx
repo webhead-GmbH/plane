@@ -20,6 +20,15 @@ export function ModuleVerticalStackIllustration({ className }: ModuleVerticalSta
       xmlns="http://www.w3.org/2000/svg"
       className={className}
     >
+      <ModuleVerticalStackPartOne />
+      <ModuleVerticalStackPartTwo />
+    </svg>
+  );
+}
+
+function ModuleVerticalStackPartOne() {
+  return (
+    <>
       <g opacity="0.2">
         <path
           d="M12.7461 135.993C12.7461 137.824 14.1171 139.651 16.8542 141.051L52.0981 159.009C57.5773 161.8 66.4573 161.8 71.9364 159.009L145.995 121.275C148.732 119.88 150.103 118.054 150.103 116.223V122.07C150.103 123.901 148.732 125.728 145.995 127.123L71.9364 164.857C66.4573 167.647 57.5773 167.647 52.0981 164.857L16.8542 146.898C14.1122 145.503 12.7461 143.672 12.7461 141.84V135.993Z"
@@ -200,6 +209,13 @@ export function ModuleVerticalStackIllustration({ className }: ModuleVerticalSta
         strokeLinecap="round"
         strokeLinejoin="round"
       />
+    </>
+  );
+}
+
+function ModuleVerticalStackPartTwo() {
+  return (
+    <>
       <path
         d="M83.0112 49.2182C82.8901 49.1552 82.7399 49.1601 82.5704 49.2473L76.7036 52.2363C76.3258 52.4301 76.0206 52.9581 76.0206 53.4183V60.5591C76.0206 60.8159 76.1126 60.9952 76.2628 61.0727L71.9463 58.8733C71.7961 58.7957 71.7041 58.6165 71.7041 58.3597V51.2189C71.7041 50.7587 72.0093 50.2306 72.3872 50.0369L78.2539 47.0478C78.4234 46.9606 78.5736 46.9557 78.6947 47.0187L83.0112 49.2182Z"
         fill={ILLUSTRATION_COLOR_TOKEN_MAP.fill.tertiary}
@@ -380,6 +396,6 @@ export function ModuleVerticalStackIllustration({ className }: ModuleVerticalSta
         d="M131.307 12.143C131.219 12.0219 131.113 11.9492 131.016 11.9492L128.957 11.8911C128.836 11.8911 128.753 11.9977 128.753 12.1527V14.9286C128.753 15.0594 128.802 15.2048 128.889 15.321C128.981 15.4421 129.088 15.5148 129.185 15.5148L131.239 15.573C131.365 15.5826 131.447 15.476 131.447 15.3113V12.5354C131.447 12.4046 131.399 12.2593 131.307 12.143ZM130.812 14.7203L129.388 14.6767V12.7534L130.812 12.797V14.7203Z"
         fill={ILLUSTRATION_COLOR_TOKEN_MAP.fill.quaternary}
       />
-    </svg>
+    </>
   );
 }

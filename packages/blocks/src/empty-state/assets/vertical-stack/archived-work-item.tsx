@@ -22,6 +22,15 @@ export function ArchivedWorkItemVerticalStackIllustration({
       xmlns="http://www.w3.org/2000/svg"
       className={className}
     >
+      <ArchivedWorkItemVerticalStackPartOne />
+      <ArchivedWorkItemVerticalStackPartTwo />
+    </svg>
+  );
+}
+
+function ArchivedWorkItemVerticalStackPartOne() {
+  return (
+    <>
       <g opacity="0.2">
         <path
           d="M0.25 141.667C0.25 143.636 1.72405 145.599 4.66695 147.105L42.56 166.413C48.4511 169.413 57.9986 169.413 63.8896 166.413L143.515 125.843C146.457 124.343 147.931 122.379 147.931 120.41V126.697C147.931 128.666 146.457 130.63 143.515 132.13L63.8896 172.7C57.9986 175.7 48.4511 175.7 42.56 172.7L4.66695 153.391C1.71885 151.891 0.25 149.922 0.25 147.954V141.667Z"
@@ -188,6 +197,13 @@ export function ArchivedWorkItemVerticalStackIllustration({
         strokeLinecap="round"
         strokeLinejoin="round"
       />
+    </>
+  );
+}
+
+function ArchivedWorkItemVerticalStackPartTwo() {
+  return (
+    <>
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -337,6 +353,6 @@ export function ArchivedWorkItemVerticalStackIllustration({
         d="M32.0127 30.5806C32.0127 30.7525 31.9294 30.9608 31.7992 31.1015L29.648 33.5131C29.5438 33.6277 29.4292 33.685 29.3407 33.6641C29.2521 33.6433 29.1948 33.5495 29.1948 33.4141V30.5129C29.1948 30.341 29.2782 30.1326 29.4084 29.992L31.5648 27.5752C31.6689 27.4606 31.7835 27.4033 31.8721 27.4241C31.9606 27.445 32.0179 27.5387 32.0179 27.6742V30.5806H32.0127ZM31.3512 28.7055L29.8615 30.3775V32.3932L31.3512 30.7212V28.7055Z"
         fill={ILLUSTRATION_COLOR_TOKEN_MAP.fill.quaternary}
       />
-    </svg>
+    </>
   );
 }

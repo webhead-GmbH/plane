@@ -49,6 +49,58 @@ const integrationDetails: { [key: string]: any } = {
 // services
 const integrationService = new IntegrationService();
 
+type TIntegrationCardActionProps = {
+  isInstalled: boolean;
+  isUserAdmin: boolean;
+  isMobile: boolean;
+  deletingIntegration: boolean;
+  isInstalling: boolean;
+  handleRemoveIntegration: () => void;
+  startAuth: () => void;
+};
+
+function IntegrationCardAction(props: TIntegrationCardActionProps) {
+  const { isInstalled, isUserAdmin, isMobile, deletingIntegration, isInstalling, handleRemoveIntegration, startAuth } =
+    props;
+  // derived values
+  const permissionTooltipLabel = !isUserAdmin ? "You don't have permission to perform this" : "";
+  const isPermissionTooltipDisabled = isUserAdmin || isMobile;
+  const buttonClassName = `${!isUserAdmin ? "hover:cursor-not-allowed" : ""}`;
+
+  return isInstalled ? (
+    <Tooltip label={permissionTooltipLabel} layout="stacked" disabled={isPermissionTooltipDisabled}>
+      <Button
+        render={<button className={buttonClassName} />}
+        variant="danger"
+        size="sm"
+        stretch="auto"
+        onClick={() => {
+          if (!isUserAdmin) return;
+          handleRemoveIntegration();
+        }}
+        disabled={!isUserAdmin}
+        loading={deletingIntegration}
+        label={deletingIntegration ? "Uninstalling..." : "Uninstall"}
+      />
+    </Tooltip>
+  ) : (
+    <Tooltip label={permissionTooltipLabel} layout="stacked" disabled={isPermissionTooltipDisabled}>
+      <Button
+        render={<button className={buttonClassName} />}
+        variant="primary"
+        size="sm"
+        stretch="auto"
+        onClick={() => {
+          if (!isUserAdmin) return;
+          startAuth();
+        }}
+        loading={isInstalling}
+        label={isInstalling ? "Installing..." : "Install"}
+      />
+    </Tooltip>
+  );
+}
+
 export const SingleIntegrationCard = observer(function SingleIntegrationCard({ integration }: Props) {
   // states
   const [deletingIntegration, setDeletingIntegration] = useState(false);
@@ -138,46 +190,15 @@ export const SingleIntegrationCard = observer(function SingleIntegrationCard({ i
       </div>
 
       {workspaceIntegrations ? (
-        isInstalled ? (
-          <Tooltip
-            label={!isUserAdmin ? "You don't have permission to perform this" : ""}
-            layout="stacked"
-            disabled={isUserAdmin || isMobile}
-          >
-            <Button
-              render={<button className={!isUserAdmin ? "hover:cursor-not-allowed" : ""} />}
-              variant="danger"
-              size="sm"
-              stretch="auto"
-              onClick={() => {
-                if (!isUserAdmin) return;
-                handleRemoveIntegration();
-              }}
-              disabled={!isUserAdmin}
-              loading={deletingIntegration}
-              label={deletingIntegration ? "Uninstalling..." : "Uninstall"}
-            />
-          </Tooltip>
-        ) : (
-          <Tooltip
-            label={!isUserAdmin ? "You don't have permission to perform this" : ""}
-            layout="stacked"
-            disabled={isUserAdmin || isMobile}
-          >
-            <Button
-              render={<button className={!isUserAdmin ? "hover:cursor-not-allowed" : ""} />}
-              variant="primary"
-              size="sm"
-              stretch="auto"
-              onClick={() => {
-                if (!isUserAdmin) return;
-                startAuth();
-              }}
-              loading={isInstalling}
-              label={isInstalling ? "Installing..." : "Install"}
-            />
-          </Tooltip>
-        )
+        <IntegrationCardAction
+          isInstalled={!!isInstalled}
+          isUserAdmin={isUserAdmin}
+          isMobile={isMobile}
+          deletingIntegration={deletingIntegration}
+          isInstalling={isInstalling}
+          handleRemoveIntegration={handleRemoveIntegration}
+          startAuth={startAuth}
+        />
       ) : (
         <Loader>
           <Loader.Item height="32px" width="64px" />

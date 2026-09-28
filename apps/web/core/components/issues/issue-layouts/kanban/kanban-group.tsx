@@ -72,6 +72,161 @@ interface IKanbanGroup {
   isEpic?: boolean;
 }
 
+const prePopulateQuickAddData = (
+  defaultStateId: string | undefined,
+  groupByKey: string | undefined,
+  subGroupByKey: string | undefined | null,
+  groupValue: string,
+  subGroupValue: string
+) => {
+  let preloadedData: object = { state_id: defaultStateId };
+
+  if (groupByKey) {
+    if (groupByKey === "state") {
+      preloadedData = { ...preloadedData, state_id: groupValue };
+    } else if (groupByKey === "priority") {
+      preloadedData = { ...preloadedData, priority: groupValue };
+    } else if (groupByKey === "cycle") {
+      preloadedData = { ...preloadedData, cycle_id: groupValue };
+    } else if (groupByKey === "module") {
+      preloadedData = { ...preloadedData, module_ids: [groupValue] };
+    } else if (groupByKey === "labels" && groupValue != "None") {
+      preloadedData = { ...preloadedData, label_ids: [groupValue] };
+    } else if (groupByKey === "assignees" && groupValue != "None") {
+      preloadedData = { ...preloadedData, assignee_ids: [groupValue] };
+    } else if (groupByKey === "created_by") {
+      preloadedData = { ...preloadedData };
+    } else {
+      preloadedData = { ...preloadedData, [groupByKey]: groupValue };
+    }
+  }
+
+  if (subGroupByKey) {
+    if (subGroupByKey === "state") {
+      preloadedData = { ...preloadedData, state_id: subGroupValue };
+    } else if (subGroupByKey === "priority") {
+      preloadedData = { ...preloadedData, priority: subGroupValue };
+    } else if (subGroupByKey === "cycle") {
+      preloadedData = { ...preloadedData, cycle_id: subGroupValue };
+    } else if (subGroupByKey === "module") {
+      preloadedData = { ...preloadedData, module_ids: [subGroupValue] };
+    } else if (subGroupByKey === "labels" && subGroupValue != "None") {
+      preloadedData = { ...preloadedData, label_ids: [subGroupValue] };
+    } else if (subGroupByKey === "assignees" && subGroupValue != "None") {
+      preloadedData = { ...preloadedData, assignee_ids: [subGroupValue] };
+    } else if (subGroupByKey === "created_by") {
+      preloadedData = { ...preloadedData };
+    } else {
+      preloadedData = { ...preloadedData, [subGroupByKey]: subGroupValue };
+    }
+  }
+
+  return preloadedData;
+};
+
+type TKanbanGroupIssuesArgs = Pick<IKanbanGroup, "groupId" | "sub_group_id" | "groupedIssueIds"> &
+  Pick<ReturnType<typeof useIssuesStore>["issues"], "getGroupIssueCount" | "getPaginationData">;
+
+// Which work items the column shows, and whether more of them are still to be fetched.
+const useKanbanGroupIssues = (args: TKanbanGroupIssuesArgs) => {
+  const { groupId, sub_group_id, groupedIssueIds, getGroupIssueCount, getPaginationData } = args;
+
+  const isSubGroup = !!sub_group_id && sub_group_id !== "null";
+
+  const issueIds = isSubGroup
+    ? ((groupedIssueIds as TSubGroupedIssues)?.[groupId]?.[sub_group_id] ?? [])
+    : ((groupedIssueIds as TGroupedIssues)?.[groupId] ?? []);
+
+  const groupIssueCount = getGroupIssueCount(groupId, sub_group_id, false) ?? 0;
+
+  const nextPageResults = getPaginationData(groupId, sub_group_id)?.nextPageResults;
+
+  const shouldLoadMore = nextPageResults === undefined ? issueIds?.length < groupIssueCount : !!nextPageResults;
+
+  return { isSubGroup, issueIds, shouldLoadMore };
+};
+
+type TKanbanGroupLoadMoreProps = {
+  isSubGroup: boolean;
+  isPaginating: boolean;
+  onLoadMore: () => void;
+  setIntersectionElement: (element: HTMLSpanElement | null) => void;
+};
+
+// A sub-group asks before loading more; a column loads the next page when its loaders come into view.
+function KanbanGroupLoadMore(props: TKanbanGroupLoadMoreProps) {
+  const { isSubGroup, isPaginating, onLoadMore, setIntersectionElement } = props;
+  const { t } = useTranslation();
+
+  if (!isSubGroup)
+    return (
+      <div className="flex flex-col gap-2">
+        {Array.from({ length: 2 }).map((_, index) => (
+          // oxlint-disable-next-line react/no-array-index-key
+          <KanbanIssueBlockLoader key={index} />
+        ))}
+        <KanbanIssueBlockLoader ref={setIntersectionElement} />
+      </div>
+    );
+
+  if (isPaginating) return <KanbanIssueBlockLoader />;
+
+  return (
+    <button
+      type="button"
+      className="sticky bottom-0 w-full cursor-pointer p-3 text-left text-13 font-medium text-accent-primary hover:text-accent-secondary hover:underline"
+      onClick={onLoadMore}
+    >
+      {t("common.load_more")} &darr;
+    </button>
+  );
+}
+
+type TKanbanGroupQuickAddProps = Pick<
+  IKanbanGroup,
+  "groupId" | "sub_group_id" | "group_by" | "sub_group_by" | "quickAddCallback" | "isEpic"
+>;
+
+const KanbanGroupQuickAdd = observer(function KanbanGroupQuickAdd(props: TKanbanGroupQuickAddProps) {
+  const { groupId, sub_group_id, group_by, sub_group_by, quickAddCallback, isEpic = false } = props;
+  // hooks
+  const projectState = useProjectState();
+  // derived values
+  const defaultStateId = projectState.projectStates?.find((state) => state.default)?.id;
+
+  return (
+    <div className="sticky bottom-0 w-full bg-surface-2 py-0.5">
+      <QuickAddIssueRoot
+        layout={EIssueLayoutTypes.KANBAN}
+        QuickAddButton={KanbanQuickAddIssueButton}
+        prePopulatedData={{
+          ...(group_by && prePopulateQuickAddData(defaultStateId, group_by, sub_group_by, groupId, sub_group_id)),
+        }}
+        quickAddCallback={quickAddCallback}
+        isEpic={isEpic}
+      />
+    </div>
+  );
+});
+
+type TKanbanGroupDragStateArgs = Pick<IKanbanGroup, "group_by" | "sub_group_by" | "orderBy" | "isDropDisabled"> & {
+  isWorkflowDropDisabled: boolean;
+  isDraggingOverColumn: boolean;
+};
+
+// Whether a drop here would be refused (and the overlay should say so), and whether cards can be dragged at all
+// in the current grouping.
+const getKanbanGroupDragState = (args: TKanbanGroupDragStateArgs) => {
+  const { group_by, sub_group_by, orderBy, isDropDisabled, isWorkflowDropDisabled, isDraggingOverColumn } = args;
+  const canOverlayBeVisible = isWorkflowDropDisabled || orderBy !== "sort_order" || isDropDisabled;
+  const shouldOverlayBeVisible = isDraggingOverColumn && canOverlayBeVisible;
+  const canDragIssuesInCurrentGrouping =
+    !!group_by &&
+    DRAG_ALLOWED_GROUPS.includes(group_by) &&
+    (sub_group_by ? DRAG_ALLOWED_GROUPS.includes(sub_group_by) : true);
+  return { canOverlayBeVisible, shouldOverlayBeVisible, canDragIssuesInCurrentGrouping };
+};
+
 export const KanbanGroup = observer(function KanbanGroup(props: IKanbanGroup) {
   const {
     groupId,
@@ -97,9 +252,6 @@ export const KanbanGroup = observer(function KanbanGroup(props: IKanbanGroup) {
   } = props;
   // i18n
   const { t } = useTranslation();
-  // hooks
-  const projectState = useProjectState();
-
   const {
     issues: { getGroupIssueCount, getPaginationData, getIssueLoader },
   } = useIssuesStore();
@@ -114,6 +266,13 @@ export const KanbanGroup = observer(function KanbanGroup(props: IKanbanGroup) {
   }, [loadMoreIssues, groupId, sub_group_id]);
 
   const isPaginating = !!getIssueLoader(groupId, sub_group_id);
+  const { isSubGroup, issueIds, shouldLoadMore } = useKanbanGroupIssues({
+    groupId,
+    sub_group_id,
+    groupedIssueIds,
+    getGroupIssueCount,
+    getPaginationData,
+  });
 
   useIntersectionObserver(
     containerRef,
@@ -196,87 +355,14 @@ export const KanbanGroup = observer(function KanbanGroup(props: IKanbanGroup) {
     handleOnDrop,
   ]);
 
-  const prePopulateQuickAddData = (
-    groupByKey: string | undefined,
-    subGroupByKey: string | undefined | null,
-    groupValue: string,
-    subGroupValue: string
-  ) => {
-    const defaultState = projectState.projectStates?.find((state) => state.default);
-    let preloadedData: object = { state_id: defaultState?.id };
-
-    if (groupByKey) {
-      if (groupByKey === "state") {
-        preloadedData = { ...preloadedData, state_id: groupValue };
-      } else if (groupByKey === "priority") {
-        preloadedData = { ...preloadedData, priority: groupValue };
-      } else if (groupByKey === "cycle") {
-        preloadedData = { ...preloadedData, cycle_id: groupValue };
-      } else if (groupByKey === "module") {
-        preloadedData = { ...preloadedData, module_ids: [groupValue] };
-      } else if (groupByKey === "labels" && groupValue != "None") {
-        preloadedData = { ...preloadedData, label_ids: [groupValue] };
-      } else if (groupByKey === "assignees" && groupValue != "None") {
-        preloadedData = { ...preloadedData, assignee_ids: [groupValue] };
-      } else if (groupByKey === "created_by") {
-        preloadedData = { ...preloadedData };
-      } else {
-        preloadedData = { ...preloadedData, [groupByKey]: groupValue };
-      }
-    }
-
-    if (subGroupByKey) {
-      if (subGroupByKey === "state") {
-        preloadedData = { ...preloadedData, state_id: subGroupValue };
-      } else if (subGroupByKey === "priority") {
-        preloadedData = { ...preloadedData, priority: subGroupValue };
-      } else if (subGroupByKey === "cycle") {
-        preloadedData = { ...preloadedData, cycle_id: subGroupValue };
-      } else if (subGroupByKey === "module") {
-        preloadedData = { ...preloadedData, module_ids: [subGroupValue] };
-      } else if (subGroupByKey === "labels" && subGroupValue != "None") {
-        preloadedData = { ...preloadedData, label_ids: [subGroupValue] };
-      } else if (subGroupByKey === "assignees" && subGroupValue != "None") {
-        preloadedData = { ...preloadedData, assignee_ids: [subGroupValue] };
-      } else if (subGroupByKey === "created_by") {
-        preloadedData = { ...preloadedData };
-      } else {
-        preloadedData = { ...preloadedData, [subGroupByKey]: subGroupValue };
-      }
-    }
-
-    return preloadedData;
-  };
-
-  const isSubGroup = !!sub_group_id && sub_group_id !== "null";
-
-  const issueIds = isSubGroup
-    ? ((groupedIssueIds as TSubGroupedIssues)?.[groupId]?.[sub_group_id] ?? [])
-    : ((groupedIssueIds as TGroupedIssues)?.[groupId] ?? []);
-
-  const groupIssueCount = getGroupIssueCount(groupId, sub_group_id, false) ?? 0;
-
-  const nextPageResults = getPaginationData(groupId, sub_group_id)?.nextPageResults;
-
-  const loadMore = isPaginating ? (
-    <KanbanIssueBlockLoader />
-  ) : (
-    // oxlint-disable-next-line jsx_a11y/click-events-have-key-events oxlint-disable-next-line jsx_a11y/no-static-element-interactions
-    <div
-      className="sticky bottom-0 w-full cursor-pointer p-3 text-13 font-medium text-accent-primary hover:text-accent-secondary hover:underline"
-      onClick={loadMoreIssuesInThisGroup}
-    >
-      {t("common.load_more")} &darr;
-    </div>
-  );
-
-  const shouldLoadMore = nextPageResults === undefined ? issueIds?.length < groupIssueCount : !!nextPageResults;
-  const canOverlayBeVisible = isWorkflowDropDisabled || orderBy !== "sort_order" || isDropDisabled;
-  const shouldOverlayBeVisible = isDraggingOverColumn && canOverlayBeVisible;
-  const canDragIssuesInCurrentGrouping =
-    !!group_by &&
-    DRAG_ALLOWED_GROUPS.includes(group_by) &&
-    (sub_group_by ? DRAG_ALLOWED_GROUPS.includes(sub_group_by) : true);
+  const { canOverlayBeVisible, shouldOverlayBeVisible, canDragIssuesInCurrentGrouping } = getKanbanGroupDragState({
+    group_by,
+    sub_group_by,
+    orderBy,
+    isDropDisabled,
+    isWorkflowDropDisabled,
+    isDraggingOverColumn,
+  });
 
   return (
     <div
@@ -313,33 +399,26 @@ export const KanbanGroup = observer(function KanbanGroup(props: IKanbanGroup) {
         isEpic={isEpic}
       />
 
-      {shouldLoadMore &&
-        (isSubGroup ? (
-          <>{loadMore}</>
-        ) : (
-          <div className="flex flex-col gap-2">
-            {Array.from({ length: 2 }).map((_, index) => (
-              // oxlint-disable-next-line react/no-array-index-key
-              <KanbanIssueBlockLoader key={index} />
-            ))}
-            <KanbanIssueBlockLoader ref={setIntersectionElement} />
-          </div>
-        ))}
+      {shouldLoadMore && (
+        <KanbanGroupLoadMore
+          isSubGroup={isSubGroup}
+          isPaginating={isPaginating}
+          onLoadMore={loadMoreIssuesInThisGroup}
+          setIntersectionElement={setIntersectionElement}
+        />
+      )}
 
       {enableQuickIssueCreate &&
         !disableIssueCreation &&
         !getIsWorkflowWorkItemCreationDisabled(groupId, sub_group_id) && (
-          <div className="sticky bottom-0 w-full bg-surface-2 py-0.5">
-            <QuickAddIssueRoot
-              layout={EIssueLayoutTypes.KANBAN}
-              QuickAddButton={KanbanQuickAddIssueButton}
-              prePopulatedData={{
-                ...(group_by && prePopulateQuickAddData(group_by, sub_group_by, groupId, sub_group_id)),
-              }}
-              quickAddCallback={quickAddCallback}
-              isEpic={isEpic}
-            />
-          </div>
+          <KanbanGroupQuickAdd
+            groupId={groupId}
+            sub_group_id={sub_group_id}
+            group_by={group_by}
+            sub_group_by={sub_group_by}
+            quickAddCallback={quickAddCallback}
+            isEpic={isEpic}
+          />
         )}
     </div>
   );

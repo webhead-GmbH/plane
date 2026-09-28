@@ -83,6 +83,25 @@ function mergeRangeLabel(range: DateRangeValue, from: string, to: string, format
   return `${format(range.from, pair.from)} - ${format(range.to, pair.to)}`;
 }
 
+// The trigger's label (the caller's format, the merged form, or "from - to") and the plain joined
+// form the tooltip falls back to.
+const getRangeLabels = (
+  value: DateRangeValue,
+  formatToken: string,
+  formatLabel: DateRangeSelectProps["formatLabel"],
+  mergeDates: DateRangeSelectProps["mergeDates"]
+) => {
+  const from = value.from ? format(value.from, formatToken) : "";
+  const to = value.to ? format(value.to, formatToken) : "";
+  const joined = from && to ? `${from} - ${to}` : from || to;
+  const formatted = formatLabel
+    ? formatLabel(value, { from, to })
+    : mergeDates
+      ? mergeRangeLabel(value, from, to, formatToken)
+      : joined;
+  return { joined, formatted };
+};
+
 /**
  * Presentational, data-source-agnostic range picker: the `Select` trigger chrome over a propel
  * `Calendar` in range mode. Propel's `Calendar` drops react-day-picker's `numberOfMonths` (its
@@ -110,14 +129,7 @@ export function DateRangeSelect(props: DateRangeSelectProps) {
   // sees a range it did not ask for.
   const [draft, setDraft] = useState<DateRangeValue | null>(null);
   // derived values
-  const from = value.from ? format(value.from, formatToken) : "";
-  const to = value.to ? format(value.to, formatToken) : "";
-  const joined = from && to ? `${from} - ${to}` : from || to;
-  const formatted = props.formatLabel
-    ? props.formatLabel(value, { from, to })
-    : props.mergeDates
-      ? mergeRangeLabel(value, from, to, formatToken)
-      : joined;
+  const { joined, formatted } = getRangeLabels(value, formatToken, props.formatLabel, props.mergeDates);
   const isEmpty = !value.from && !value.to;
   const disabledMatchers = buildDisabledMatchers(minDate, maxDate);
   // The calendar shows the in-progress pick; the trigger keeps showing the committed value.
