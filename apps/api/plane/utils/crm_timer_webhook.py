@@ -38,19 +38,21 @@ def timer_webhook_url(workspace_slug, request=None):
 def register_timer_webhook(integration, request=None):
     """Register this workspace's timer webhook with the CRM.
 
-    Returns ``(True, None)`` or ``(False, reason)``. A failure is logged and
-    reported but never raised: saving the integration must not fail because the
-    CRM could not be told where to send its timers, and the next save retries.
+    Returns ``(True, None)`` or ``(False, reason)``, where the reason is one of a
+    few fixed codes — never the CRM's own error text, which goes to the log. A
+    failure is reported but never raised: saving the integration must not fail
+    because the CRM could not be told where to send its timers, and the next save
+    retries.
     """
     if not integration.is_active:
-        return False, "The integration is inactive."
+        return False, "integration_inactive"
     api_key = integration.get_api_key()
     if not integration.crm_api_url or not api_key:
-        return False, "The CRM URL and API key are required."
+        return False, "credentials_missing"
 
     url = timer_webhook_url(integration.workspace.slug, request)
     if url is None:
-        return False, "Plane's own address is unknown; set CRM_WEBHOOK_BASE_URL."
+        return False, "plane_address_unknown"
 
     client = CrmApiClient(
         base_url=integration.crm_api_url,
@@ -62,5 +64,5 @@ def register_timer_webhook(integration, request=None):
         client.register_timer_webhook(url=url, secret=integration.ensure_timer_webhook_secret())
     except CrmApiError as exc:
         logger.warning("Could not register the CRM timer webhook for %s: %s", integration.workspace.slug, exc)
-        return False, str(exc)
+        return False, "crm_request_failed"
     return True, None
