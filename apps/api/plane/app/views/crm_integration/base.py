@@ -14,6 +14,7 @@ from plane.db.models import CrmIntegration, Workspace
 from plane.app.permissions import allow_permission, ROLE
 from plane.app.serializers import CrmIntegrationSerializer
 from plane.utils.crm_client import CrmApiClient, CrmApiError
+from plane.utils.crm_timer_webhook import register_timer_webhook
 from ..base import BaseAPIView
 
 # Interactive endpoints (test / fetch) run inside the request/response cycle, so
@@ -24,6 +25,16 @@ INTERACTIVE_CRM_TIMEOUT = 15
 def _is_valid_crm_url(url):
     """Only http(s) URLs may be contacted (defence-in-depth for admin-supplied URLs)."""
     return isinstance(url, str) and url.lower().startswith(("http://", "https://"))
+
+
+def _with_timer_webhook(data, integration, request):
+    """Register the CRM's timer webhook and report the outcome alongside ``data``.
+
+    Saving always succeeds; whether the CRM can now report its timers to Plane is
+    told separately, so a CRM that is unreachable right now does not block a save.
+    """
+    registered, error = register_timer_webhook(integration, request)
+    return {**data, "timer_webhook_registered": registered, "timer_webhook_error": error}
 
 
 class CrmIntegrationEndpoint(BaseAPIView):
@@ -62,8 +73,10 @@ class CrmIntegrationEndpoint(BaseAPIView):
             data=request.data, context={"workspace": workspace}
         )
         if serializer.is_valid():
-            serializer.save(workspace=workspace)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            integration = serializer.save(workspace=workspace)
+            return Response(
+                _with_timer_webhook(serializer.data, integration, request), status=status.HTTP_201_CREATED
+            )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     @allow_permission(allowed_roles=[ROLE.ADMIN], level="WORKSPACE")
@@ -81,8 +94,8 @@ class CrmIntegrationEndpoint(BaseAPIView):
             context={"workspace": integration.workspace},
         )
         if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            integration = serializer.save()
+            return Response(_with_timer_webhook(serializer.data, integration, request), status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     @allow_permission(allowed_roles=[ROLE.ADMIN], level="WORKSPACE")
@@ -140,10 +153,13 @@ class CrmIntegrationTestEndpoint(BaseAPIView):
                 status=status.HTTP_502_BAD_GATEWAY,
             )
 
-        return Response(
-            {"success": True, "projects_count": len(projects)},
-            status=status.HTTP_200_OK,
-        )
+        data = {"success": True, "projects_count": len(projects)}
+        # Only the saved configuration can receive the CRM's timers: credentials that
+        # are merely being tried out have nowhere to register the webhook against.
+        testing_saved_config = integration is not None and not request.data.get("crm_api_key")
+        if testing_saved_config:
+            data = _with_timer_webhook(data, integration, request)
+        return Response(data, status=status.HTTP_200_OK)
 
 
 class CrmIntegrationSyncEndpoint(BaseAPIView):

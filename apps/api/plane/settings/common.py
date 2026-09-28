@@ -372,6 +372,12 @@ ANALYTICS_BASE_API = os.environ.get("ANALYTICS_BASE_API", False)
 # serves a self-signed certificate (e.g. a Laragon/XAMPP vhost).
 CRM_VERIFY_SSL = int(os.environ.get("CRM_VERIFY_SSL", "1")) == 1
 
+# CRM integration: the address the CRM reaches Plane's API at, for the timer
+# events it sends back. Empty means the address the admin's browser used when the
+# integration was saved, which is right whenever the CRM and the admin see Plane
+# under the same name. Set it when they do not (e.g. the CRM on an internal network).
+CRM_WEBHOOK_BASE_URL = os.environ.get("CRM_WEBHOOK_BASE_URL", "").strip()
+
 # Skip environment variable configuration
 SKIP_ENV_VAR = os.environ.get("SKIP_ENV_VAR", "1") == "1"
 

@@ -8,6 +8,7 @@ from plane.app.views import (
     CrmIntegrationEndpoint,
     CrmIntegrationTestEndpoint,
     CrmIntegrationSyncEndpoint,
+    CrmTimerWebhookEndpoint,
 )
 
 
@@ -27,5 +28,11 @@ urlpatterns = [
         "workspaces/<str:slug>/crm-integration/sync/",
         CrmIntegrationSyncEndpoint.as_view(),
         name="crm-integration-backfill",
+    ),
+    # Called by the CRM, not by a Plane user: authenticated by the body's signature.
+    path(
+        "workspaces/<str:slug>/crm-integration/timer-webhook/",
+        CrmTimerWebhookEndpoint.as_view(),
+        name="crm-integration-timer-webhook",
     ),
 ]

@@ -99,6 +99,11 @@ def issue_assignee_changed(sender, instance, **kwargs):
 @receiver(post_save, sender=IssueWorkLog)
 def worklog_saved(sender, instance, created, **kwargs):
     """Mirror a started, stopped, logged or edited worklog onto the CRM timer."""
+    # Written from a CRM timer event: the CRM already holds exactly this, and
+    # sending it back would only repeat the CRM's own values to it.
+    if getattr(instance, "_crm_origin", False):
+        return
+
     from plane.bgtasks.crm_sync_task import sync_worklog_to_crm
 
     _enqueue(sync_worklog_to_crm, str(instance.id))

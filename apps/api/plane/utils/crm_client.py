@@ -192,6 +192,28 @@ class CrmApiClient:
         """Delete a CRM timer."""
         return self._request("DELETE", "timers", json={"timer_id": int(timer_id)}).get("data", {})
 
+    def get_timers(self, timer_ids):
+        """Return the current state of the given CRM timers.
+
+        A timer that no longer exists in the CRM is simply absent from the list.
+        """
+        ids = [int(timer_id) for timer_id in timer_ids]
+        if not ids:
+            return []
+        return self._request(
+            "GET", "timers", params={"ids": ",".join(str(timer_id) for timer_id in ids)}
+        ).get("data", [])
+
+    def register_timer_webhook(self, url, secret):
+        """Tell the CRM where to report the timers its own users start and stop.
+
+        The CRM signs every event with ``secret`` (HMAC-SHA256 of the body), and
+        keeps one webhook per API key, so registering again replaces it.
+        """
+        return self._request(
+            "POST", "timer_webhook", json={"url": url, "secret": secret}
+        ).get("data", {})
+
     def set_custom_field(self, task_id, field_id, value):
         """Set a single custom-field value on a CRM task."""
         return self._request(
