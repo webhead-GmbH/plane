@@ -177,7 +177,9 @@
           "required": "Diperlukan",
           "admin_only": "Hanya admin",
           "inactive": "Tidak aktif",
-          "width": "Lebar {width}/12"
+          "width": "Lebar {width}/12",
+          "move_up": "Pindahkan ke atas",
+          "move_down": "Pindahkan ke bawah"
         },
         "empty": {
           "title": "Belum ada bidang kustom",

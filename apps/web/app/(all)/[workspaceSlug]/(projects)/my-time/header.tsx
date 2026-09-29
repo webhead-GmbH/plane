@@ -5,10 +5,11 @@
  */
 
 import { useTranslation } from "@plane/i18n";
+import { Breadcrumbs } from "@plane/blocks/breadcrumb";
+import { Header } from "@plane/blocks/layout";
 import { observer } from "mobx-react";
 import { Clock } from "lucide-react";
 // plane imports
-import { Breadcrumbs, Header } from "@plane/ui";
 // components
 import { BreadcrumbLink } from "@/components/common/breadcrumb-link";
 

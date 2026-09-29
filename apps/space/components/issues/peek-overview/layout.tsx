@@ -4,12 +4,16 @@
  * See the LICENSE file for details.
  */
 
-import { Fragment, useEffect } from "react";
+import { useCallback, useEffect, useEffectEvent, useRef } from "react";
+import type { ReactNode, RefObject } from "react";
 import { observer } from "mobx-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Dialog, Transition } from "@headlessui/react";
+// plane imports
+import { useTranslation } from "@plane/i18n";
+import { cn } from "@plane/utils";
 // hooks
 import { useIssueDetails } from "@/hooks/store/use-issue-details";
+import type { IIssue, IPeekMode } from "@/types/issue";
 // local imports
 import { FullScreenPeekView } from "./full-screen-peek-view";
 import { SidePeekView } from "./side-peek-view";
@@ -19,6 +23,63 @@ type TIssuePeekOverview = {
   peekId: string;
   handlePeekClose?: () => void;
 };
+
+type TPeekDialogProps = {
+  panelRef: RefObject<HTMLDialogElement | null>;
+  label: string;
+  className: string;
+  children: ReactNode;
+};
+
+// The peek's panel. An open <dialog> that is not modal: the peek traps Tab and handles Escape itself,
+// and a modal dialog would make the menus and pickers it portals to <body> inert. The resets undo the
+// dialog's own box so the classes place it.
+function PeekDialog(props: TPeekDialogProps) {
+  const { panelRef, label, className, children } = props;
+
+  return (
+    <dialog
+      open
+      ref={panelRef}
+      aria-modal="true"
+      aria-label={label}
+      tabIndex={-1}
+      className={cn("m-0 max-h-none max-w-none border-0 p-0 text-inherit outline-none", className)}
+    >
+      {children}
+    </dialog>
+  );
+}
+
+type TPeekModalProps = Omit<TPeekDialogProps, "className" | "children"> & {
+  peekMode: IPeekMode;
+  anchor: string;
+  handleClose: () => void;
+  issueDetails: IIssue | undefined;
+};
+
+// The centred modal or full-screen peek, over a backdrop.
+function PeekModal(props: TPeekModalProps) {
+  const { panelRef, label, peekMode, anchor, handleClose, issueDetails } = props;
+
+  return (
+    <>
+      <div aria-hidden="true" className="fixed inset-0 z-20 animate-fade-in bg-backdrop motion-reduce:animate-none" />
+      <PeekDialog
+        panelRef={panelRef}
+        label={label}
+        className={`fixed top-1/2 right-auto left-1/2 z-20 -translate-x-1/2 -translate-y-1/2 animate-fade-in rounded-lg bg-surface-1 transition-all duration-300 motion-reduce:animate-none ${
+          peekMode === "modal" ? "h-[70%] w-3/5" : "size-[95%]"
+        }`}
+      >
+        {peekMode === "modal" && <SidePeekView anchor={anchor} handleClose={handleClose} issueDetails={issueDetails} />}
+        {peekMode === "full" && (
+          <FullScreenPeekView anchor={anchor} handleClose={handleClose} issueDetails={issueDetails} />
+        )}
+      </PeekDialog>
+    </>
+  );
+}
 
 export const IssuePeekOverview = observer(function IssuePeekOverview(props: TIssuePeekOverview) {
   const { anchor, peekId, handlePeekClose } = props;
@@ -31,11 +92,17 @@ export const IssuePeekOverview = observer(function IssuePeekOverview(props: TIss
   const labels = searchParams.get("labels") || undefined;
   // store
   const { peekMode, setPeekId, getIssueById, fetchIssueDetails } = useIssueDetails();
+  // translation
+  const { t } = useTranslation();
   // derived values
   const issueDetails = peekId ? getIssueById(peekId.toString()) : undefined;
   // state
   const isSidePeekOpen = !!peekId && peekMode === "side";
   const isModalPeekOpen = !!peekId && (peekMode === "modal" || peekMode === "full");
+  // exactly one of the two panels is ever mounted, so both share the panel ref
+  const isPeekOpen = isSidePeekOpen || isModalPeekOpen;
+  const panelRef = useRef<HTMLDialogElement>(null);
+  const previouslyFocusedElementRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     if (anchor && peekId) {
@@ -43,7 +110,7 @@ export const IssuePeekOverview = observer(function IssuePeekOverview(props: TIss
     }
   }, [anchor, fetchIssueDetails, peekId]);
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     // if close logic is passed down, call that instead of the below logic
     if (handlePeekClose) {
       handlePeekClose();
@@ -59,66 +126,122 @@ export const IssuePeekOverview = observer(function IssuePeekOverview(props: TIss
     if (labels && labels.length > 0) queryParams = { ...queryParams, labels: labels };
     queryParams = new URLSearchParams(queryParams).toString();
     router.push(`/issues/${anchor}?${queryParams}`);
-  };
+  }, [anchor, board, handlePeekClose, labels, priority, router, setPeekId, state]);
+
+  // Called from the document listeners below: always sees the latest `handleClose` without
+  // re-subscribing those listeners every time the query params or router change.
+  const onDismiss = useEffectEvent(() => handleClose());
+
+  // propel (ruling 36): the peek was a Headless UI `Dialog` + `Transition`. Propel's `DialogContent`
+  // ladder cannot express the `w-1/2` side sheet or the `h-[70%] w-3/5` / `size-[95%]` modal/full
+  // geometry, so (as in EE) both panels are hand-rolled: Escape and outside-press close, Tab is
+  // trapped inside the panel, and focus moves in on open and back to the trigger on close.
+  // A click on another work item's card (`peekId=` link) switches the peek instead of closing it.
+  useEffect(() => {
+    if (!isPeekOpen) return;
+
+    // Portalled popups opened from inside the panel (peek-mode select, comment actions menu,
+    // reaction pickers) live outside it in the DOM; interacting with them must not close the peek.
+    const isInsideNestedPopup = (target: EventTarget | null) =>
+      target instanceof Element &&
+      !panelRef.current?.contains(target) &&
+      !!target.closest('[data-prevent-outside-click], [role="menu"], [role="listbox"], [role="dialog"]');
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        if (event.defaultPrevented || isInsideNestedPopup(event.target)) return;
+        onDismiss();
+        return;
+      }
+      if (event.key !== "Tab" || !panelRef.current) return;
+      // Portalled popups opened from the panel manage their own focus.
+      if (isInsideNestedPopup(document.activeElement)) return;
+
+      // Keep Tab/Shift+Tab confined to the panel, as the legacy modal Dialog did.
+      const focusableElements = panelRef.current.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      );
+      if (focusableElements.length === 0) {
+        event.preventDefault();
+        return;
+      }
+
+      const firstElement = focusableElements[0];
+      const lastElement = focusableElements[focusableElements.length - 1];
+      // Focus starts on the panel itself (tabIndex={-1}), outside the tab order — treat it as a boundary too,
+      // as well as focus that has escaped the panel (e.g. dropped to <body> when a focused child unmounted).
+      const isAtBoundary =
+        document.activeElement === panelRef.current || !panelRef.current.contains(document.activeElement);
+
+      if (event.shiftKey && (document.activeElement === firstElement || isAtBoundary)) {
+        event.preventDefault();
+        lastElement.focus();
+      } else if (!event.shiftKey && (document.activeElement === lastElement || isAtBoundary)) {
+        event.preventDefault();
+        firstElement.focus();
+      }
+    };
+
+    const handleOutsideClick = (event: MouseEvent) => {
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+      if (panelRef.current?.contains(target)) return;
+      if (isInsideNestedPopup(target)) return;
+      if (target.closest('a[href*="peekId="]')) return;
+      onDismiss();
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, [isPeekOpen]);
+
+  // Remember what had focus when the peek first opened and restore it when the peek closes. This is
+  // keyed on `isPeekOpen` only, so switching peek modes does not re-capture the (unmounting) mode select.
+  useEffect(() => {
+    if (!isPeekOpen) return;
+
+    previouslyFocusedElementRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+
+    return () => {
+      previouslyFocusedElementRef.current?.focus();
+      previouslyFocusedElementRef.current = null;
+    };
+  }, [isPeekOpen]);
+
+  // Move focus into the panel on open and whenever the mounted panel changes (side <-> modal/full),
+  // as mounting each legacy Headless UI Dialog did; otherwise focus falls to <body> and escapes the trap.
+  useEffect(() => {
+    if (!isPeekOpen) return;
+    panelRef.current?.focus();
+  }, [isPeekOpen, isSidePeekOpen, peekMode]);
+
+  const panelLabel = issueDetails?.name || t("common.work_item");
 
   return (
     <>
-      <Transition.Root appear show={isSidePeekOpen} as={Fragment}>
-        <Dialog as="div" onClose={handleClose}>
-          <Transition.Child
-            as={Fragment}
-            enter="transition-transform duration-300"
-            enterFrom="translate-x-full"
-            enterTo="translate-x-0"
-            leave="transition-transform duration-200"
-            leaveFrom="translate-x-0"
-            leaveTo="translate-x-full"
-          >
-            <Dialog.Panel className="fixed top-0 right-0 z-20 h-full w-1/2 border-l border-subtle-1 bg-surface-1 shadow-raised-200">
-              <SidePeekView anchor={anchor} handleClose={handleClose} issueDetails={issueDetails} />
-            </Dialog.Panel>
-          </Transition.Child>
-        </Dialog>
-      </Transition.Root>
-      <Transition.Root appear show={isModalPeekOpen} as={Fragment}>
-        <Dialog as="div" onClose={handleClose}>
-          <Transition.Child
-            as={Fragment}
-            enter="ease-out duration-300"
-            enterFrom="opacity-0"
-            enterTo="opacity-100"
-            leave="ease-in duration-200"
-            leaveFrom="opacity-100"
-            leaveTo="opacity-0"
-          >
-            <div className="fixed inset-0 z-20 bg-backdrop transition-opacity" />
-          </Transition.Child>
-          <Transition.Child
-            as={Fragment}
-            enter="ease-out duration-300"
-            enterFrom="opacity-0"
-            enterTo="opacity-100"
-            leave="ease-in duration-200"
-            leaveFrom="opacity-100"
-            leaveTo="opacity-0"
-          >
-            <Dialog.Panel>
-              <div
-                className={`fixed top-1/2 left-1/2 z-20 -translate-x-1/2 -translate-y-1/2 rounded-lg bg-surface-1 transition-all duration-300 ${
-                  peekMode === "modal" ? "h-[70%] w-3/5" : "size-[95%]"
-                }`}
-              >
-                {peekMode === "modal" && (
-                  <SidePeekView anchor={anchor} handleClose={handleClose} issueDetails={issueDetails} />
-                )}
-                {peekMode === "full" && (
-                  <FullScreenPeekView anchor={anchor} handleClose={handleClose} issueDetails={issueDetails} />
-                )}
-              </div>
-            </Dialog.Panel>
-          </Transition.Child>
-        </Dialog>
-      </Transition.Root>
+      {isSidePeekOpen && (
+        <PeekDialog
+          panelRef={panelRef}
+          label={panelLabel}
+          className="fixed top-0 right-0 left-auto z-20 h-full w-1/2 border-l border-subtle-1 bg-surface-1 shadow-raised-200"
+        >
+          <SidePeekView anchor={anchor} handleClose={handleClose} issueDetails={issueDetails} />
+        </PeekDialog>
+      )}
+      {isModalPeekOpen && (
+        <PeekModal
+          panelRef={panelRef}
+          label={panelLabel}
+          peekMode={peekMode}
+          anchor={anchor}
+          handleClose={handleClose}
+          issueDetails={issueDetails}
+        />
+      )}
     </>
   );
 });

@@ -177,7 +177,9 @@
           "required": "必填",
           "admin_only": "僅限管理員",
           "inactive": "已停用",
-          "width": "寬度 {width}/12"
+          "width": "寬度 {width}/12",
+          "move_up": "上移",
+          "move_down": "下移"
         },
         "empty": {
           "title": "尚無自訂欄位",

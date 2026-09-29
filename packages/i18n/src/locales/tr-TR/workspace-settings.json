@@ -177,7 +177,9 @@
           "required": "Gerekli",
           "admin_only": "Yalnızca yönetici",
           "inactive": "Pasif",
-          "width": "Genişlik {width}/12"
+          "width": "Genişlik {width}/12",
+          "move_up": "Yukarı taşı",
+          "move_down": "Aşağı taşı"
         },
         "empty": {
           "title": "Henüz özel alan yok",

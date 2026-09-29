@@ -177,7 +177,9 @@
           "required": "필수",
           "admin_only": "관리자 전용",
           "inactive": "비활성",
-          "width": "너비 {width}/12"
+          "width": "너비 {width}/12",
+          "move_up": "위로 이동",
+          "move_down": "아래로 이동"
         },
         "empty": {
           "title": "아직 사용자 정의 필드가 없습니다",

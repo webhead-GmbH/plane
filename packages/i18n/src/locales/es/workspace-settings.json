@@ -177,7 +177,9 @@
           "required": "Requerido",
           "admin_only": "Solo administradores",
           "inactive": "Inactivo",
-          "width": "Ancho {width}/12"
+          "width": "Ancho {width}/12",
+          "move_up": "Mover hacia arriba",
+          "move_down": "Mover hacia abajo"
         },
         "empty": {
           "title": "Todavía no hay campos personalizados",

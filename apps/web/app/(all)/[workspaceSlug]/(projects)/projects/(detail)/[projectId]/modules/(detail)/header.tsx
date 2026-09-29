@@ -16,16 +16,18 @@ import {
   EUserPermissions,
   EUserPermissionsLevel,
 } from "@plane/constants";
-import { Button } from "@plane/propel/button";
+import { Button } from "@makeplane/propel/components/button";
+import { Icon } from "@makeplane/propel/components/icon";
+import { IconButton } from "@makeplane/propel/components/icon-button";
 import { Tooltip } from "@makeplane/propel/components/tooltip";
-import type { ICustomSearchSelectOption, IIssueDisplayFilterOptions, IIssueDisplayProperties } from "@plane/types";
+import type { IIssueDisplayFilterOptions, IIssueDisplayProperties } from "@plane/types";
 import { EIssuesStoreType, EIssueLayoutTypes } from "@plane/types";
-import { Breadcrumbs, Header, BreadcrumbNavigationSearchDropdown } from "@plane/ui";
-import { cn } from "@plane/utils";
+import { Breadcrumbs } from "@plane/blocks/breadcrumb";
+import { Header } from "@plane/blocks/layout";
 // components
 import { WorkItemsModal } from "@/components/analytics/work-items/modal";
 import { BreadcrumbLink } from "@/components/common/breadcrumb-link";
-import { SwitcherLabel } from "@/components/common/switcher-label";
+import { ModuleSelect } from "@/components/dropdowns/module/module-select";
 import {
   DisplayFiltersSelection,
   FiltersDropdown,
@@ -46,7 +48,27 @@ import useLocalStorage from "@/hooks/use-local-storage";
 import { usePlatformOS } from "@/hooks/use-platform-os";
 // plane web imports
 import { CommonProjectBreadcrumbs } from "@/components/breadcrumbs/common";
-import { IconButton } from "@plane/propel/icon-button";
+import { useProjectCrumbProps } from "@/components/breadcrumbs/use-project-crumb-props";
+
+// The module's work item count beside the breadcrumbs, when it has any.
+function ModuleWorkItemsCount(props: { count: number | undefined; isMobile: boolean }) {
+  const { count, isMobile } = props;
+
+  if (!count || count <= 0) return null;
+
+  return (
+    <Tooltip
+      label={`There are ${count} ${count > 1 ? "work items" : "work item"} in this module`}
+      layout="stacked"
+      side="bottom"
+      disabled={isMobile}
+    >
+      <span className="flex flex-shrink-0 cursor-default items-center justify-center rounded-xl bg-accent-primary/20 px-2 text-center text-11 font-semibold text-accent-primary">
+        {count}
+      </span>
+    </Tooltip>
+  );
+}
 
 export const ModuleIssuesHeader = observer(function ModuleIssuesHeader() {
   // refs
@@ -56,6 +78,7 @@ export const ModuleIssuesHeader = observer(function ModuleIssuesHeader() {
   // router
   const router = useAppRouter();
   const { workspaceSlug, projectId, moduleId: routerModuleId } = useParams();
+  const projectCrumb = useProjectCrumbProps(workspaceSlug?.toString(), projectId?.toString());
   const moduleId = routerModuleId ? routerModuleId.toString() : undefined;
   // hooks
   const { isMobile } = usePlatformOS();
@@ -65,7 +88,7 @@ export const ModuleIssuesHeader = observer(function ModuleIssuesHeader() {
     issues: { getGroupIssueCount },
   } = useIssues(EIssuesStoreType.MODULE);
   const { updateFilters } = useIssuesActions(EIssuesStoreType.MODULE);
-  const { projectModuleIds, getModuleById } = useModule();
+  const { getModuleById } = useModule();
   const { toggleCreateIssueModal } = useCommandPalette();
   const { allowPermissions } = useUserPermissions();
   const { currentProjectDetails, loader } = useProject();
@@ -109,18 +132,6 @@ export const ModuleIssuesHeader = observer(function ModuleIssuesHeader() {
     [projectId, updateFilters]
   );
 
-  const switcherOptions = projectModuleIds
-    ?.map((id) => {
-      const _module = id === moduleId ? moduleDetails : getModuleById(id);
-      if (!_module) return;
-      return {
-        value: _module.id,
-        query: _module.name,
-        content: <SwitcherLabel name={_module.name} LabelIcon={ModuleOutline} />,
-      };
-    })
-    .filter((option) => option !== undefined) as ICustomSearchSelectOption[];
-
   return (
     <>
       <WorkItemsModal
@@ -132,8 +143,12 @@ export const ModuleIssuesHeader = observer(function ModuleIssuesHeader() {
       <Header>
         <Header.LeftItem>
           <div className="flex items-center gap-2">
-            <Breadcrumbs onBack={router.back} isLoading={loader === "init-loader"}>
-              <CommonProjectBreadcrumbs workspaceSlug={workspaceSlug?.toString()} projectId={projectId?.toString()} />
+            <Breadcrumbs isLoading={loader === "init-loader"}>
+              <CommonProjectBreadcrumbs
+                workspaceSlug={workspaceSlug?.toString()}
+                projectId={projectId?.toString()}
+                {...projectCrumb}
+              />
               <Breadcrumbs.Item
                 component={
                   <BreadcrumbLink
@@ -147,31 +162,20 @@ export const ModuleIssuesHeader = observer(function ModuleIssuesHeader() {
               />
               <Breadcrumbs.Item
                 component={
-                  <BreadcrumbNavigationSearchDropdown
-                    selectedItem={moduleId?.toString() ?? ""}
-                    navigationItems={switcherOptions}
-                    onChange={(value: string) => {
-                      router.push(`/${workspaceSlug}/projects/${projectId}/modules/${value}`);
+                  <ModuleSelect
+                    projectId={projectId?.toString()}
+                    value={moduleId ?? null}
+                    onChange={(id) => {
+                      if (id) router.push(`/${workspaceSlug}/projects/${projectId}/modules/${id}`);
                     }}
-                    title={moduleDetails?.name}
-                    icon={<ModuleOutline className="size-3.5 flex-shrink-0 text-tertiary" />}
-                    isLast
+                    variant="breadcrumb"
+                    placeholder={moduleDetails?.name}
                   />
                 }
+                isLast
               />
             </Breadcrumbs>
-            {workItemsCount && workItemsCount > 0 ? (
-              <Tooltip
-                label={`There are ${workItemsCount} ${workItemsCount > 1 ? "work items" : "work item"} in this module`}
-                layout="stacked"
-                side="bottom"
-                disabled={isMobile}
-              >
-                <span className="flex flex-shrink-0 cursor-default items-center justify-center rounded-xl bg-accent-primary/20 px-2 text-center text-11 font-semibold text-accent-primary">
-                  {workItemsCount}
-                </span>
-              </Tooltip>
-            ) : null}
+            <ModuleWorkItemsCount count={workItemsCount} isMobile={isMobile} />
           </div>
         </Header.LeftItem>
         <Header.RightItem className="items-center">
@@ -225,34 +229,49 @@ export const ModuleIssuesHeader = observer(function ModuleIssuesHeader() {
 
           {canUserCreateIssue ? (
             <>
-              <Button className="hidden md:block" onClick={() => setAnalyticsModal(true)} variant="secondary" size="lg">
-                <span className="hidden @4xl:flex">Analytics</span>
-                <span className="@4xl:hidden">
-                  <BarOutline className="size-3.5" />
+              <div className="hidden md:block">
+                <span className="hidden @4xl:flex">
+                  <Button
+                    variant="secondary"
+                    size="md"
+                    stretch="auto"
+                    label="Analytics"
+                    onClick={() => setAnalyticsModal(true)}
+                  />
                 </span>
-              </Button>
-              <Button
-                variant="primary"
-                size="lg"
-                className="hidden sm:flex"
-                onClick={() => {
-                  toggleCreateIssueModal(true, EIssuesStoreType.MODULE);
-                }}
-              >
-                Add work item
-              </Button>
+                <span className="@4xl:hidden">
+                  <IconButton
+                    variant="secondary"
+                    size="md"
+                    icon={<Icon icon={BarOutline} />}
+                    aria-label="Analytics"
+                    onClick={() => setAnalyticsModal(true)}
+                  />
+                </span>
+              </div>
+              <div className="hidden sm:flex">
+                <Button
+                  variant="primary"
+                  size="md"
+                  stretch="auto"
+                  label="Add work item"
+                  onClick={() => {
+                    toggleCreateIssueModal(true, EIssuesStoreType.MODULE);
+                  }}
+                />
+              </div>
             </>
           ) : (
             <></>
           )}
           <IconButton
-            variant="tertiary"
-            size="lg"
-            icon={RightSidePaneOutline}
+            // the open state was a bespoke accent class; it maps to the tertiary fill
+            variant={isSidebarCollapsed ? "ghost" : "tertiary"}
+            size="md"
+            icon={<Icon icon={RightSidePaneOutline} />}
+            aria-label="Toggle sidebar"
+            aria-pressed={!isSidebarCollapsed}
             onClick={toggleSidebar}
-            className={cn({
-              "bg-accent-subtle text-accent-primary": !isSidebarCollapsed,
-            })}
           />
           {moduleId && (
             <ModuleQuickActions

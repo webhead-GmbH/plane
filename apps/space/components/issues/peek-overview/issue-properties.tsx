@@ -8,9 +8,9 @@ import { observer } from "mobx-react";
 import { useParams } from "next/navigation";
 // plane imports
 import { useTranslation } from "@plane/i18n";
-import { StateGroupIcon, PriorityIcon } from "@plane/propel/icons";
+import { StateGroupIcon, PriorityIcon } from "@plane/blocks/icons";
 import { DueDateOutline, LinkOutline, PriorityOutline, StateOutline } from "@makeplane/propel/icons";
-import { TOAST_TYPE, setToast } from "@plane/propel/toast";
+import { setToast } from "@plane/blocks/toast";
 import type { TIssuePriorities, TStateGroups } from "@plane/types";
 import { cn, getIssuePriorityFilters } from "@plane/utils";
 // helpers
@@ -82,7 +82,7 @@ export const PeekOverviewIssueProperties = observer(function PeekOverviewIssuePr
 
     copyTextToClipboard(urlToCopy).then(() => {
       setToast({
-        type: TOAST_TYPE.INFO,
+        type: "info",
         title: "Link copied!",
         message: "Work item link copied to clipboard",
       });
@@ -124,7 +124,7 @@ export const PeekOverviewIssueProperties = observer(function PeekOverviewIssuePr
             <div
               className={`inline-flex items-center gap-1.5 rounded-sm bg-layer-2 px-2.5 py-0.5 text-left text-13 capitalize ${priorityClassName}`}
             >
-              {priority && <PriorityIcon priority={priority?.key} size={12} className="flex-shrink-0" />}
+              {priority && <PriorityIcon priority={priority?.key} className="size-3" />}
               <span>{t(priority?.titleTranslationKey || "common.none")}</span>
             </div>
           </div>

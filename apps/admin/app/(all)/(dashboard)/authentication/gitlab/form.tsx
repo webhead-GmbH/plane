@@ -8,7 +8,7 @@ import { isEmpty } from "lodash-es";
 import { useForm } from "react-hook-form";
 // plane internal packages
 import { API_BASE_URL } from "@plane/constants";
-import { TOAST_TYPE, setToast } from "@/providers/toast";
+import { setToast } from "@plane/blocks/toast";
 import type { IFormattedInstanceConfiguration, TInstanceGitlabAuthenticationConfigurationKeys } from "@plane/types";
 // components
 import { AuthenticationProviderConfigForm } from "@/app/(all)/(dashboard)/authentication/provider-config-form";
@@ -140,7 +140,7 @@ export function InstanceGitlabConfigForm(props: Props) {
     try {
       const response = await updateInstanceConfigurations(payload);
       setToast({
-        type: TOAST_TYPE.SUCCESS,
+        type: "success",
         title: "Done!",
         message: "Your GitLab authentication is configured. You should test it now.",
       });

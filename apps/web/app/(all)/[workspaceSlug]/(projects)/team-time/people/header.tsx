@@ -9,7 +9,8 @@ import { Link } from "react-router";
 import { UserCog, Users } from "lucide-react";
 // plane imports
 import { useTranslation } from "@plane/i18n";
-import { Breadcrumbs, Header } from "@plane/ui";
+import { Breadcrumbs } from "@plane/blocks/breadcrumb";
+import { Header } from "@plane/blocks/layout";
 // components
 import { BreadcrumbLink } from "@/components/common/breadcrumb-link";
 

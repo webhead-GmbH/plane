@@ -9,14 +9,14 @@ import { observer } from "mobx-react";
 import { useTheme } from "next-themes";
 import useSWR from "swr";
 // plane internal packages
+import { Switch } from "@makeplane/propel/components/switch";
 import type { TInstanceConfigurationKeys, TInstanceAuthenticationModes } from "@plane/types";
-import { resolveGeneralTheme } from "@plane/utils";
+import { cn, resolveGeneralTheme } from "@plane/utils";
 // components
-import { InstanceConfigToggle } from "@/app/(all)/(dashboard)/instance-config-toggle";
 import { PageWrapper } from "@/components/common/page-wrapper";
 import { AuthenticationMethodCard } from "@/components/authentication/authentication-method-card";
 import { Skeleton } from "@/components/common/skeleton";
-import { setPromiseToast, setToast, TOAST_TYPE } from "@/providers/toast";
+import { setPromiseToast, setToast } from "@plane/blocks/toast";
 // helpers
 import { canDisableAuthMethod } from "@/helpers/authentication";
 // hooks
@@ -55,7 +55,7 @@ const InstanceAuthenticationPage = observer(function InstanceAuthenticationPage(
 
           if (!canDisable) {
             setToast({
-              type: TOAST_TYPE.ERROR,
+              type: "error",
               title: "Cannot disable authentication",
               message:
                 "At least one authentication method must remain enabled. Please enable another method before disabling this one.",
@@ -120,19 +120,33 @@ const InstanceAuthenticationPage = observer(function InstanceAuthenticationPage(
     >
       {formattedConfig ? (
         <div className="space-y-3">
-          <InstanceConfigToggle
-            title="Allow anyone to sign up even without an invite"
-            description="Toggling this off will only let users sign up when they are invited."
-            checked={Boolean(parseInt(enableSignUpConfig))}
-            onCheckedChange={() => {
-              if (Boolean(parseInt(enableSignUpConfig)) === true) {
-                updateConfig("ENABLE_SIGNUP", "0");
-              } else {
-                updateConfig("ENABLE_SIGNUP", "1");
-              }
-            }}
-            isSubmitting={isSubmitting}
-          />
+          <div className={cn("flex w-full items-center gap-14 rounded-sm")}>
+            <div className="flex grow items-center gap-4">
+              <div className="grow">
+                <div className="pb-1 text-16 font-medium">Allow anyone to sign up even without an invite</div>
+                <div className={cn("text-11 leading-5 font-regular text-tertiary")}>
+                  Toggling this off will only let users sign up when they are invited.
+                </div>
+              </div>
+            </div>
+            <div className={`shrink-0 pr-4 ${isSubmitting && "opacity-70"}`}>
+              <div className="flex items-center gap-4">
+                <Switch
+                  aria-label="Allow anyone to sign up even without an invite"
+                  checked={Boolean(parseInt(enableSignUpConfig))}
+                  onCheckedChange={() => {
+                    if (Boolean(parseInt(enableSignUpConfig)) === true) {
+                      updateConfig("ENABLE_SIGNUP", "0");
+                    } else {
+                      updateConfig("ENABLE_SIGNUP", "1");
+                    }
+                  }}
+                  size="sm"
+                  disabled={isSubmitting}
+                />
+              </div>
+            </div>
+          </div>
           <div className="text-lg pt-6 font-medium">Available authentication modes</div>
           {authenticationModes.map((method) => (
             <AuthenticationMethodCard

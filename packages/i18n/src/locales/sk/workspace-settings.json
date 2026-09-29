@@ -177,7 +177,9 @@
           "required": "Povinné",
           "admin_only": "Iba pre administrátorov",
           "inactive": "Neaktívne",
-          "width": "Šírka {width}/12"
+          "width": "Šírka {width}/12",
+          "move_up": "Posunúť nahor",
+          "move_down": "Posunúť nadol"
         },
         "empty": {
           "title": "Zatiaľ žiadne vlastné polia",

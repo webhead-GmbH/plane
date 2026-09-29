@@ -177,7 +177,9 @@
           "required": "Requis",
           "admin_only": "Administrateurs uniquement",
           "inactive": "Inactif",
-          "width": "Largeur {width}/12"
+          "width": "Largeur {width}/12",
+          "move_up": "Déplacer vers le haut",
+          "move_down": "Déplacer vers le bas"
         },
         "empty": {
           "title": "Aucun champ personnalisé pour l’instant",
