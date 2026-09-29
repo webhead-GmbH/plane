@@ -297,7 +297,8 @@ export const ActiveCycleStats = observer(function ActiveCycleStats(props: Active
       <Tabs
         variant="contained"
         stretch="full"
-        defaultValue={tab ?? "Priority-Issues"}
+        // The chosen tab lives in local storage, so the tabs follow it rather than seeding from it.
+        value={tab ?? "Priority-Issues"}
         onValueChange={(value: string) => setTab(value)}
       >
         <TabsList>

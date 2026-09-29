@@ -117,7 +117,8 @@ export const CycleProgressStats = observer(function CycleProgressStats(props: TC
       <Tabs
         variant="contained"
         stretch="full"
-        defaultValue={currentTab ?? "stat-assignees"}
+        // The chosen tab lives in local storage, so the tabs follow it rather than seeding from it.
+        value={currentTab ?? "stat-assignees"}
         onValueChange={(value: string) => setCycleTab(value)}
       >
         <TabsList>

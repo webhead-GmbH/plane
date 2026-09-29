@@ -116,6 +116,8 @@ const ProjectCardFooterActions = observer(function ProjectCardFooterActions(prop
     setDeleteProjectModal,
     setJoinProjectModal,
   } = props;
+  // router
+  const router = useAppRouter();
 
   return isArchived ? (
     hasAdminRole ? (
@@ -149,15 +151,18 @@ const ProjectCardFooterActions = observer(function ProjectCardFooterActions(prop
     <>
       {isMemberOfProject &&
         (hasAdminRole || hasMemberRole ? (
-          <Link
-            className="flex items-center justify-center rounded-sm p-1 text-placeholder hover:bg-layer-1 hover:text-secondary"
+          // The whole card is a link already, so a nested one would be invalid HTML.
+          <IconButton
+            variant="ghost"
+            size="xs"
+            aria-label="Settings"
+            icon={<Icon icon={SettingsOutline} />}
             onClick={(e) => {
+              e.preventDefault();
               e.stopPropagation();
+              router.push(`/${workspaceSlug}/settings/projects/${project.id}`);
             }}
-            href={`/${workspaceSlug}/settings/projects/${project.id}`}
-          >
-            <SettingsOutline className="h-3.5 w-3.5" />
-          </Link>
+          />
         ) : (
           <span className="flex items-center gap-1 text-13 text-placeholder">
             <TickOutline className="h-3.5 w-3.5" />
@@ -265,7 +270,7 @@ export const ProjectCard = observer(function ProjectCard(props: Props) {
         message: "Project link copied to clipboard.",
       })
     );
-  const handleOpenInNewTab = () => window.open(`/${projectLink}`, "_blank");
+  const handleOpenInNewTab = () => window.open(`/${projectLink}`, "_blank", "noopener,noreferrer");
 
   const MENU_ITEMS: TContextMenuItem[] = [
     {
