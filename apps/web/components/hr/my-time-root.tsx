@@ -51,6 +51,18 @@ const refusalOrRetry = (failure: unknown, t: TTranslate, locale: string) =>
  */
 const dayWithinMonth = (day: string | null, viewedMonth: string) => (day && day.startsWith(viewedMonth) ? day : null);
 
+const statusOf = (failure: unknown) => (failure as { status?: number } | undefined)?.status;
+
+/**
+ * Only a failure that might go away is worth asking again. A refusal is an
+ * answer: asking again gets the same one, and every retry used to put the page
+ * back to its skeleton for a moment — which reads as a page that keeps reloading.
+ */
+const isWorthRetrying = (failure: unknown) => {
+  const status = statusOf(failure);
+  return status === undefined || status >= 500;
+};
+
 export const MyTimeRoot = observer(function MyTimeRoot() {
   const now = new Date();
   // Recording time is about today, so the button opens today rather than asking.
@@ -61,9 +73,19 @@ export const MyTimeRoot = observer(function MyTimeRoot() {
   const [showOpening, setShowOpening] = useState(false);
 
   const { t, currentLocale } = useTranslation();
-  const { data, isLoading, error, mutate } = useSWR(`HR_ME_${year}_${month}`, () => hrService.me(year, month));
+  const { data, isLoading, error, mutate } = useSWR(`HR_ME_${year}_${month}`, () => hrService.me(year, month), {
+    shouldRetryOnError: isWorthRetrying,
+  });
+  // The server refuses somebody who has no employment record here, rather than
+  // sending them an empty month: only whoever looks after the team may open a
+  // record that is not their own. For the person asking, that refusal means
+  // exactly what an empty record means — nobody has set them up yet — and it is
+  // the normal state of everybody on the day the module is switched on.
+  const isNotEmployed = statusOf(error) === 403;
 
-  if (isLoading)
+  // Checking again after a failure (a retry, or the window coming back into
+  // focus) keeps what is on screen instead of flashing the skeleton over it.
+  if (isLoading && !error)
     return (
       <Loader className="flex w-full flex-col gap-3">
         <Loader.Item height="96px" />
@@ -78,7 +100,7 @@ export const MyTimeRoot = observer(function MyTimeRoot() {
   // else to show, though: the month refetches itself whenever the window comes
   // back into focus, and a laptop waking must not replace a month somebody is
   // reading — nor take the day form open over it, and whatever is typed in it.
-  if (error && !data)
+  if (error && !data && !isNotEmployed)
     return (
       <div className="w-full">
         <EmptyStateCompact
@@ -95,7 +117,7 @@ export const MyTimeRoot = observer(function MyTimeRoot() {
   // Somebody can be a member of the workspace without being employed through it —
   // an administrator, or a guest on one project. There is nothing to show them,
   // and saying so is better than an empty table.
-  if (!data?.profile)
+  if (isNotEmployed || !data?.profile)
     return (
       <div className="w-full">
         <EmptyStateCompact
