@@ -305,9 +305,12 @@ export class IssueWorkLogStore implements IIssueWorkLogStore {
       }
     });
 
-    // The stopped timer is a completed entry now, so the work item's list reloads if it is loaded.
+    // The stopped timer is a completed entry now, so the work item's list reloads if it is loaded —
+    // through the timer's own workspace, which need not be the one open.
     if (previous?.issue && previous.project && this.worklogs[previous.issue]) {
-      await this.fetchWorklogs(workspaceSlug, previous.project, previous.issue).catch(() => undefined);
+      await this.fetchWorklogs(previous.workspace_slug ?? workspaceSlug, previous.project, previous.issue).catch(
+        () => undefined
+      );
     }
   };
 

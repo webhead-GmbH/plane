@@ -34,6 +34,12 @@ export type TIssueWorkLog = {
   updated_by?: string;
   /** Present only on the user-active-timer response. */
   issue_detail?: TIssueWorkLogIssueDetail;
+  /**
+   * The slug of the workspace the timer runs in. Present only on the user-active-timer response,
+   * which reports the caller's timer from whichever workspace is open: it is linked to and
+   * stopped through its own workspace.
+   */
+  workspace_slug?: string;
 };
 
 export type TIssueWorkLogMap = {
