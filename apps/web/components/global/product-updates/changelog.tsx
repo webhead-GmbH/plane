@@ -82,11 +82,14 @@ export const ProductUpdatesChangelog = observer(function ProductUpdatesChangelog
           <Loader.Item height="95%" width="95%" />
         </Loader>
       )}
-      {/* The changelog is someone else's page: it may run its scripts and open its links in new tabs,
-          but gets no origin to share storage with and cannot navigate this page. */}
+      {/* The changelog is a page on another site (the images point INSTANCE_CHANGELOG_URL at
+          sites.plane.so) that renders itself in the browser, so it needs its scripts and its own
+          origin for storage and its own requests. Scripts plus same-origin only lets a page lift its
+          sandbox when it shares this page's origin; this one does not, so what remains holds: it
+          cannot navigate the app, submit forms or open dialogs, and its links open in new tabs. */}
       <iframe
         src={changeLogUrl}
-        sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox"
+        sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"
         className={`h-full w-full ${isLoading ? "opacity-0" : "opacity-100"} transition-opacity duration-200`}
         title={t("whats_new")}
         onLoad={handleIframeLoad}
