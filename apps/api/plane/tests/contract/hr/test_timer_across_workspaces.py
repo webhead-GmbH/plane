@@ -9,9 +9,10 @@ things at the same moment, so a timer started anywhere ends whatever was already
 running — and the hour that was running still has to land in the month, not be
 thrown away when the person moves to a different workspace and starts again.
 
-Worth a test of its own because the rule is enforced in exactly one place, by the
-absence of a workspace filter. A well-meaning "scope this query properly" change
-would look like a correction and would silently break it.
+Worth a test of its own because the rule is enforced by the absence of a workspace
+filter — when a timer starts, and when the running one is looked up. A well-meaning
+"scope this query properly" change would look like a correction and would silently
+break it.
 """
 
 # Python imports
@@ -82,6 +83,10 @@ def timer_url(workspace, project, issue):
     )
 
 
+def active_timer_url(workspace):
+    return f"/api/workspaces/{workspace.slug}/me/active-timer/"
+
+
 def client_for(user):
     client = APIClient()
     client.force_authenticate(user=user)
@@ -147,3 +152,47 @@ class TestOneTimerPerPerson:
         today = hr_local_date(timezone.now(), "Europe/Vienna")
         period = rebuild_period(profile, today.year, today.month)
         assert period_totals(period)["actual_minutes"] == 120
+
+
+class TestTheRunningTimerIsFoundFromAnywhere:
+    def test_a_timer_started_elsewhere_is_reported_here(self, person):
+        # The header asks from whichever workspace is open. Answering "none" there hid a
+        # timer that was still running, and the next start stopped it without a word.
+        here = a_workspace_with_work_for(person)
+        there = a_workspace_with_work_for(person)
+        client = client_for(person)
+        started = client.post(timer_url(*there))
+
+        response = client.get(active_timer_url(here[0]))
+
+        assert response.status_code == 200
+        body = response.json()
+        assert body["id"] == started.json()["id"]
+        # Linked to and stopped through its own workspace, not the one asking.
+        assert body["workspace_slug"] == there[0].slug
+
+    def test_it_is_stopped_through_its_own_workspace(self, person):
+        here = a_workspace_with_work_for(person)
+        there = a_workspace_with_work_for(person)
+        client = client_for(person)
+        client.post(timer_url(*there))
+        running = client.get(active_timer_url(here[0])).json()
+
+        stopped = client.patch(
+            f"/api/workspaces/{running['workspace_slug']}/projects/{running['project']}"
+            f"/issues/{running['issue']}/timer/",
+            {},
+            format="json",
+        )
+
+        assert stopped.status_code == 200
+        # DRF sends None as an empty body, so read what the view returned.
+        assert client.get(active_timer_url(here[0])).data is None
+
+    def test_nothing_running_is_reported_as_nothing(self, person):
+        here = a_workspace_with_work_for(person)
+
+        response = client_for(person).get(active_timer_url(here[0]))
+
+        assert response.status_code == 200
+        assert response.data is None

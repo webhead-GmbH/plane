@@ -183,8 +183,9 @@ function RunningTimerPanel(props: TRunningTimerPanelProps) {
 
 /**
  * Header widget mirroring the CRM's running-timer indicator: a clock in the top nav that
- * turns active when the user has a timer running anywhere in the workspace, and opens a
- * popover naming the work item, its elapsed time, and a Stop control.
+ * turns active when the user has a timer running in any workspace (one person runs one timer
+ * wherever they work), and opens a popover naming the work item, its elapsed time, and a Stop
+ * control.
  */
 export const HeaderTimerIndicator = observer(function HeaderTimerIndicator() {
   const { workspaceSlug } = useParams();
@@ -214,13 +215,15 @@ export const HeaderTimerIndicator = observer(function HeaderTimerIndicator() {
   useCloseOnOutsideClick(containerRef, isOpen, closePopover);
 
   const handleStop = async () => {
-    if (!slug || !activeTimer) return;
+    // The timer may run in another workspace than the one open; it is stopped through its own.
+    const timerSlug = activeTimer?.workspace_slug ?? slug;
+    if (!timerSlug || !activeTimer) return;
     // Prefer the embedded work-item ids; fall back to the raw ids the worklog always carries.
     const projectId = activeTimer.issue_detail?.project_id ?? activeTimer.project;
     const issueId = activeTimer.issue_detail?.id ?? activeTimer.issue;
     setIsStopping(true);
     try {
-      await worklog.stopTimer(slug, projectId, issueId, {});
+      await worklog.stopTimer(timerSlug, projectId, issueId, {});
       setIsOpen(false);
     } finally {
       setIsStopping(false);
@@ -257,7 +260,8 @@ export const HeaderTimerIndicator = observer(function HeaderTimerIndicator() {
           {runningTimer ? (
             <RunningTimerPanel
               timer={runningTimer}
-              slug={slug}
+              // A timer started in another workspace links into that workspace.
+              slug={runningTimer.workspace_slug ?? slug}
               elapsed={elapsed}
               isStopping={isStopping}
               onStop={handleStop}

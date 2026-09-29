@@ -375,22 +375,30 @@ class IssueActiveTimersEndpoint(BaseAPIView):
 
 class UserActiveTimerEndpoint(BaseAPIView):
     """
-    GET — Returns the caller's single running timer anywhere in the workspace, or null.
-    Used by the list/board views to render a Start/Stop timer button per row.
+    GET — Returns the caller's running timer, or null. Used by the header timer, the tab title
+    and the list/board rows' Start/Stop buttons.
+
+    Not scoped to the workspace in the URL. One person runs one timer wherever they are working:
+    starting a timer ends the one already running in any workspace (see IssueTimerEndpoint.post),
+    so a timer started in one workspace is still the one running after a move to another, and
+    answering "none" there hid it. Its own workspace's slug comes with it, because that is where
+    it is linked to and stopped.
     """
 
     def get(self, request, slug):
-        try:
-            worklog = IssueWorkLog.objects.select_related("issue", "issue__project").get(
-                workspace__slug=slug,
-                logged_by=request.user,
-                duration__isnull=True,
-            )
-        except IssueWorkLog.DoesNotExist:
+        worklog = (
+            IssueWorkLog.objects.select_related("issue", "project", "workspace")
+            .filter(logged_by=request.user, duration__isnull=True)
+            .order_by("-started_at")
+            .first()
+        )
+        if worklog is None:
             return Response(None, status=status.HTTP_200_OK)
 
         # issue_detail (work item name + identifier) is emitted by the serializer.
-        return Response(IssueWorkLogSerializer(worklog).data, status=status.HTTP_200_OK)
+        data = IssueWorkLogSerializer(worklog).data
+        data["workspace_slug"] = worklog.workspace.slug
+        return Response(data, status=status.HTTP_200_OK)
 
 
 class IssueWorkLogSummaryEndpoint(BaseAPIView):
