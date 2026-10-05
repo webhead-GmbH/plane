@@ -127,6 +127,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "plane.authentication.middleware.session_renewal.SessionRenewalMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "crum.CurrentRequestUserMiddleware",
     "django.middleware.gzip.GZipMiddleware",
@@ -387,10 +388,16 @@ DATA_UPLOAD_MAX_MEMORY_SIZE = int(os.environ.get("FILE_SIZE_LIMIT", 5242880))
 SESSION_COOKIE_SECURE = secure_origins
 SESSION_COOKIE_HTTPONLY = True
 SESSION_ENGINE = "plane.db.models.session"
-SESSION_COOKIE_AGE = int(os.environ.get("SESSION_COOKIE_AGE", 604800))
+SESSION_COOKIE_AGE = int(os.environ.get("SESSION_COOKIE_AGE", 2592000))
 SESSION_COOKIE_NAME = os.environ.get("SESSION_COOKIE_NAME", "session-id")
 SESSION_COOKIE_DOMAIN = os.environ.get("COOKIE_DOMAIN", None)
 SESSION_SAVE_EVERY_REQUEST = os.environ.get("SESSION_SAVE_EVERY_REQUEST", "0") == "1"
+# A session that is still in use is renewed (given a full SESSION_COOKIE_AGE again)
+# once this long has passed since its last renewal: see SessionRenewalMiddleware.
+# It therefore ends SESSION_COOKIE_AGE after it was last used, not after sign-in.
+# At SESSION_COOKIE_AGE or above nothing is ever renewed, and sessions end a fixed
+# time after sign-in.
+SESSION_RENEWAL_INTERVAL = int(os.environ.get("SESSION_RENEWAL_INTERVAL", 86400))
 
 # Admin Cookie
 ADMIN_SESSION_COOKIE_NAME = "admin-session-id"
