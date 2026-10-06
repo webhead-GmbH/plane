@@ -79,6 +79,7 @@ from plane.db.models import (
     Workspace,
 )
 from plane.settings.storage import S3Storage
+from plane.utils.attachment_type import attachment_type
 from plane.utils.path_validator import sanitize_filename
 from plane.utils.order_queryset import (
     ACTIVITY_ORDER_BY_ALLOWLIST,
@@ -1905,7 +1906,7 @@ class IssueAttachmentListCreateAPIEndpoint(BaseAPIView):
             )
 
         name = sanitize_filename(request.data.get("name"))
-        type = request.data.get("type", False)
+        type = attachment_type(name, request.data.get("type"))
         # Clients may send size as a numeric string ("53314").
         # 1e400 parses as inf (OverflowError). Non-positive values must not
         # reach the S3 content-length-range, which is [1, size].
