@@ -79,6 +79,13 @@ services:
     # (e.g. Laragon's https://crm.test). Harmless in other setups.
     extra_hosts:
       - "crm.test:host-gateway"
+      # And MinIO under a name the browser can use too. With
+      # AWS_S3_ENDPOINT_URL=http://minio.localhost:9000 in apps/api/.env, the links the
+      # API signs open in the browser, which treats *.localhost as this machine, and the
+      # API's own calls reach the published port. The default, localhost:9000, only works
+      # from the browser: inside a container it is the container itself, so exports and
+      # every other upload the API makes on its own fail.
+      - "minio.localhost:host-gateway"
     depends_on:
       - plane-db
       - plane-redis
@@ -100,9 +107,10 @@ services:
     command: ./bin/docker-entrypoint-worker.sh
     env_file:
       - ./apps/api/.env
-    # Local-dev only: reach a CRM vhost served on the host (see api service).
+    # Local-dev only: reach a CRM vhost and MinIO served on the host (see api service).
     extra_hosts:
       - "crm.test:host-gateway"
+      - "minio.localhost:host-gateway"
     depends_on:
       - api
       - plane-db
@@ -122,9 +130,10 @@ services:
     command: ./bin/docker-entrypoint-beat.sh
     env_file:
       - ./apps/api/.env
-    # Local-dev only: reach a CRM vhost served on the host (see api service).
+    # Local-dev only: reach a CRM vhost and MinIO served on the host (see api service).
     extra_hosts:
       - "crm.test:host-gateway"
+      - "minio.localhost:host-gateway"
     depends_on:
       - api
       - plane-db
