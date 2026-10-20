@@ -7,7 +7,7 @@
 import { useState } from "react";
 import { observer } from "mobx-react";
 import { useNavigate, useParams } from "react-router";
-import { Download, ListTree, MoreHorizontal, Plus, RefreshCw, Scale, Send, Users } from "lucide-react";
+import { Download, ListTree, MoreHorizontal, Plus, RefreshCw, Scale, Send, TriangleAlert, Users } from "lucide-react";
 import useSWR from "swr";
 // plane imports
 import { Tooltip } from "@makeplane/propel/components/tooltip";
@@ -28,7 +28,14 @@ import { HrOpeningBalanceModal } from "./opening-balance-modal";
 import { HrMonthSummary } from "./month-summary";
 import { HrPeriodStepper } from "./period-stepper";
 import { HrStatementPanel } from "./statement-panel";
-import { formatMonthLabel, isPeriodEditable, nextMonth, previousMonth, refusalMessage } from "./utils";
+import {
+  formatDayWithYear,
+  formatMonthLabel,
+  isPeriodEditable,
+  nextMonth,
+  previousMonth,
+  refusalMessage,
+} from "./utils";
 
 const hrService = new HrService();
 
@@ -117,18 +124,7 @@ export const MyTimeRoot = observer(function MyTimeRoot() {
   // Somebody can be a member of the workspace without being employed through it —
   // an administrator, or a guest on one project. There is nothing to show them,
   // and saying so is better than an empty table.
-  if (isNotEmployed || !data?.profile)
-    return (
-      <div className="w-full">
-        <EmptyStateCompact
-          title={t("hr.my_time.no_record")}
-          description={t("hr.my_time.no_record_detail")}
-          assetKey="unknown"
-          assetClassName="size-20"
-          rootClassName="py-16"
-        />
-      </div>
-    );
+  if (isNotEmployed || !data?.profile) return <NoRecord runsHr={!isNotEmployed && Boolean(data?.is_hr_manager)} />;
 
   const viewedMonth = `${year}-${String(month).padStart(2, "0")}`;
   const monthLabel = formatMonthLabel(`${viewedMonth}-01`, currentLocale);
@@ -162,7 +158,7 @@ export const MyTimeRoot = observer(function MyTimeRoot() {
         />
       </div>
 
-      <MonthFigures me={data} onPickDay={setOpenDay} />
+      <MonthBody me={data} viewedMonth={viewedMonth} onPickDay={setOpenDay} onShowMonth={setMonth} />
 
       <MonthDialogs
         me={data}
@@ -176,6 +172,96 @@ export const MyTimeRoot = observer(function MyTimeRoot() {
     </div>
   );
 });
+
+/**
+ * Somebody with no employment record here. Whoever runs HR without a record of
+ * their own — the instance admin on the day the module goes live — is shown the
+ * way to set everybody up instead, since this page has no menu to offer.
+ */
+const NoRecord = ({ runsHr }: { runsHr: boolean }) => {
+  const { t } = useTranslation();
+  const { workspaceSlug } = useParams();
+  const navigate = useNavigate();
+
+  return (
+    <div className="w-full">
+      <EmptyStateCompact
+        title={t("hr.my_time.no_record")}
+        description={t(runsHr ? "hr.my_time.no_record_manager_detail" : "hr.my_time.no_record_detail")}
+        assetKey="unknown"
+        assetClassName="size-20"
+        rootClassName="py-16"
+        actions={
+          runsHr
+            ? [
+                {
+                  label: t("hr.people.title"),
+                  variant: "primary",
+                  onClick: () => void navigate(`/${workspaceSlug}/team-time/people`),
+                },
+                {
+                  label: t("hr.team_time.title"),
+                  variant: "secondary",
+                  onClick: () => void navigate(`/${workspaceSlug}/team-time`),
+                },
+              ]
+            : undefined
+        }
+      />
+    </div>
+  );
+};
+
+type TMonthBodyProps = {
+  me: THrMe;
+  viewedMonth: string;
+  onPickDay: (workDate: string) => void;
+  onShowMonth: (month: [number, number]) => void;
+};
+
+/** The month itself, or why there is nothing in it to count. */
+const MonthBody = ({ me, viewedMonth, onPickDay, onShowMonth }: TMonthBodyProps) => {
+  const { t, currentLocale } = useTranslation();
+  const hireDate = me.profile?.hire_date ?? "";
+  const hireMonth = hireDate.slice(0, 7);
+
+  // A month before the record starts has nothing in it to count.
+  if (hireMonth !== "" && hireMonth > viewedMonth)
+    return (
+      <EmptyStateCompact
+        title={t("hr.my_time.starts_later", { date: formatDayWithYear(hireDate, currentLocale) })}
+        description={t("hr.my_time.starts_later_detail")}
+        assetKey="unknown"
+        assetClassName="size-20"
+        rootClassName="py-16"
+        actions={[
+          {
+            label: t("hr.my_time.show_first_month"),
+            variant: "secondary",
+            onClick: () => onShowMonth([Number(hireMonth.slice(0, 4)), Number(hireMonth.slice(5, 7))]),
+          },
+        ]}
+      />
+    );
+
+  // Somebody added without their week filled in: their terms expect hours, but no
+  // day says how many, so the month reads as nothing but zeros — which looks like a
+  // broken page rather than a missing setting.
+  const noWorkingWeek =
+    (!me.schedule || me.schedule.weekly_minutes === 0) && me.contract?.records_target_hours !== false;
+
+  return (
+    <>
+      {noWorkingWeek ? (
+        <p className="flex items-center gap-1.5 rounded-md border border-subtle px-4 py-3 text-13 text-warning-primary">
+          <TriangleAlert className="size-4 shrink-0" aria-hidden />
+          {t(me.is_hr_manager ? "hr.my_time.no_working_week_manager" : "hr.my_time.no_working_week")}
+        </p>
+      ) : null}
+      <MonthFigures me={me} onPickDay={onPickDay} />
+    </>
+  );
+};
 
 /** Everything somebody can do about the month they are looking at. */
 const MonthActions = ({

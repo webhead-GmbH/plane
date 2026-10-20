@@ -25,6 +25,12 @@
       "opening": "Saldo inicial",
       "record_time": "Registrar tiempo de hoy",
       "no_record_detail": "Sus horas todavía no se registran. Si deberían registrarse, pida a quien lleva el equipo que le dé de alta.",
+      "no_record_manager_detail": "Usted gestiona aquí el tiempo del equipo, pero no tiene un registro propio. Dé de alta en Personas a quienes deban registrar sus horas, también a usted si sus horas cuentan.",
+      "starts_later": "Su registro empieza el {date}",
+      "starts_later_detail": "Antes de esa fecha no hay nada que contar.",
+      "show_first_month": "Mostrar ese mes",
+      "no_working_week": "Todavía no tiene una semana laboral definida, así que no se esperan horas ningún día. Pida a quien lleva el equipo que la complete.",
+      "no_working_week_manager": "Todavía no tiene una semana laboral definida, así que no se esperan horas ningún día. Complétela en su registro, en Personas.",
       "confirm_hand_in": "Una vez entregado {month}, ya no podrá cambiar por su cuenta sus horas, ausencias ni presencias. Hable con quien lleva el equipo si hay que corregir algo."
     },
     "team_time": {
@@ -609,6 +615,7 @@
       "next_year": "Año siguiente",
       "none_this_year": "Todavía no hay días para este año. Hasta que se añadan, todos sus festivos cuentan como un día laborable normal.",
       "not_permitted_detail": "Todavía no está dado de alta en los registros de tiempo, así que no se le muestra esta lista. Pregunte a quien lleva el equipo.",
+      "manager_only_detail": "Solo quien lleva el equipo puede cambiar los festivos. Ya están contados en su mes, en Mi tiempo.",
       "column_date": "Fecha",
       "column_name": "Nombre",
       "column_kind": "Tipo",

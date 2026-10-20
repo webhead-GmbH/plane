@@ -36,6 +36,7 @@ from plane.hr.permissions import (
     can_approve,
     hr_permission,
     readable_profile_or_none,
+    resolve_hr_context,
     visible_profiles,
 )
 from plane.hr.services.attendance import telework_days_in_year
@@ -120,6 +121,19 @@ def _period_payload(period, include_days=False):
         days = HrPeriodDay.objects.filter(period_id=period.id).order_by("work_date")
         data["days"] = HrPeriodDaySerializer(days, many=True).data
     return data
+
+
+class HrAccessEndpoint(BaseAPIView):
+    """Whether the module has anything for the person asking, and whether they run it.
+
+    Answered for everybody, never refused: the sidebar asks on every page to decide
+    whether to offer Team time, and the first person to set the module up has no
+    employment record yet, so the views that need one cannot tell them.
+    """
+
+    def get(self, request):
+        profile, is_manager = resolve_hr_context(request)
+        return Response({"is_employed": profile is not None, "is_hr_manager": is_manager}, status=status.HTTP_200_OK)
 
 
 class HrMeEndpoint(BaseAPIView):

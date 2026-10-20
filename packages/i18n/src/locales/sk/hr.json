@@ -25,6 +25,12 @@
       "export_excel": "Stiahnuť ako Excel",
       "record_time": "Zaznamenať čas na dnes",
       "no_record_detail": "Vaše hodiny sa zatiaľ neevidujú. Ak by sa mali, ozvite sa tomu, kto vedie tím, nech vás zaeviduje.",
+      "no_record_manager_detail": "Spravujete tu čas tímu, ale nemáte vlastný pracovný záznam. Ľudí, ktorých hodiny sa majú evidovať, pridajte v časti Ľudia – aj seba, ak sa majú počítať aj vaše hodiny.",
+      "starts_later": "Váš záznam začína {date}",
+      "starts_later_detail": "Pred týmto dátumom nie je čo počítať.",
+      "show_first_month": "Zobraziť ten mesiac",
+      "no_working_week": "Zatiaľ nemáte nastavený pracovný týždeň, takže sa v žiadny deň neočakávajú hodiny. Požiadajte toho, kto vedie tím, aby ho vyplnil.",
+      "no_working_week_manager": "Zatiaľ nemáte nastavený pracovný týždeň, takže sa v žiadny deň neočakávajú hodiny. Vyplňte ho vo svojom zázname v časti Ľudia.",
       "confirm_hand_in": "Po odovzdaní mesiaca {month} už jeho hodiny, neprítomnosti ani dochádzku nezmeníte sami. Ak treba niečo opraviť, ozvite sa tomu, kto vedie tím."
     },
     "team_time": {
@@ -609,6 +615,7 @@
       "next_year": "Nasledujúci rok",
       "none_this_year": "Na tento rok zatiaľ nie sú žiadne dni. Kým sa nepridajú, každý sviatok v ňom sa počíta ako bežný pracovný deň.",
       "not_permitted_detail": "V evidencii času zatiaľ nie ste zavedení, preto sa vám tento zoznam nezobrazuje. Ozvite sa tomu, kto vedie tím.",
+      "manager_only_detail": "Sviatky môže meniť len ten, kto vedie tím. Vo vašom mesiaci na stránke Môj čas sú už započítané.",
       "column_date": "Dátum",
       "column_name": "Názov",
       "column_kind": "Druh",

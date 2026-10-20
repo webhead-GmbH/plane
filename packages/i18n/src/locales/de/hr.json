@@ -25,6 +25,12 @@
       "export_excel": "Als Excel herunterladen",
       "record_time": "Zeit für heute erfassen",
       "no_record_detail": "Ihre Stunden werden noch nicht erfasst. Wenn sie erfasst werden sollen, bitten Sie die Teamleitung, ein Dienstverhältnis für Sie anzulegen.",
+      "no_record_manager_detail": "Sie verwalten hier die Teamzeit, haben aber selbst kein Dienstverhältnis. Legen Sie unter „Personen“ alle an, deren Stunden erfasst werden – auch sich selbst, wenn Ihre Stunden zählen.",
+      "starts_later": "Ihr Dienstverhältnis beginnt am {date}",
+      "starts_later_detail": "Davor gibt es nichts zu zählen.",
+      "show_first_month": "Diesen Monat anzeigen",
+      "no_working_week": "Für Sie ist noch keine Arbeitswoche hinterlegt, daher werden an keinem Tag Stunden erwartet. Bitten Sie die Teamleitung, sie einzutragen.",
+      "no_working_week_manager": "Für Sie ist noch keine Arbeitswoche hinterlegt, daher werden an keinem Tag Stunden erwartet. Tragen Sie sie unter „Personen“ in Ihrem Datensatz ein.",
       "confirm_hand_in": "Wenn {month} eingereicht ist, können Sie die Stunden, Abwesenheiten und Anwesenheiten dieses Monats nicht mehr selbst ändern. Wenden Sie sich an die Teamleitung, wenn etwas korrigiert werden muss."
     },
     "team_time": {
@@ -609,6 +615,7 @@
       "next_year": "Folgejahr",
       "none_this_year": "Für dieses Jahr sind noch keine Tage hinterlegt. Solange keine hinterlegt sind, zählt jeder Feiertag darin als gewöhnlicher Arbeitstag.",
       "not_permitted_detail": "Sie sind in der Zeiterfassung noch nicht angelegt, deshalb wird Ihnen diese Liste nicht angezeigt. Wenden Sie sich an die Teamleitung.",
+      "manager_only_detail": "Nur die Teamleitung kann die Feiertage ändern. In Ihrem Monat unter „Meine Zeit“ sind sie bereits berücksichtigt.",
       "column_date": "Datum",
       "column_name": "Name",
       "column_kind": "Art",

@@ -20,6 +20,7 @@ import { useAppTheme } from "@/hooks/store/use-app-theme";
 import { useUser, useUserPermissions } from "@/hooks/store/user";
 import { useWorkspaceNavigationPreferences } from "@/hooks/use-navigation-preferences";
 // plane web imports
+import { HrManagerOnly } from "@/components/hr/hr-manager-only";
 import { getSidebarNavigationItemIcon } from "@/components/workspace/sidebar/helper";
 
 type Props = {
@@ -55,6 +56,7 @@ export const SidebarItemBase = observer(function SidebarItemBase({
     "stickies",
     "drafts",
     "my_time",
+    "team_time",
     ...(additionalStaticItems || []),
   ];
   const slug = workspaceSlug?.toString() || "";
@@ -68,7 +70,7 @@ export const SidebarItemBase = observer(function SidebarItemBase({
     item.key === "your_work" && data?.id ? joinUrlPath(slug, item.href, data?.id) : joinUrlPath(slug, item.href);
   const icon = getSidebarNavigationItemIcon(item.key);
 
-  return (
+  const link = (
     <Link href={itemHref} onClick={handleLinkClick}>
       <SidebarNavItem isActive={item.highlight(pathname, itemHref)}>
         <div className="flex items-center gap-1.5 py-[1px]">
@@ -79,4 +81,8 @@ export const SidebarItemBase = observer(function SidebarItemBase({
       </SidebarNavItem>
     </Link>
   );
+
+  // Team time is the way in for whoever runs HR, including on the first day, when
+  // nobody has an employment record yet and My time has nothing to show them.
+  return item.key === "team_time" ? <HrManagerOnly>{link}</HrManagerOnly> : link;
 });

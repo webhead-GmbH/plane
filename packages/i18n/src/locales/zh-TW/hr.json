@@ -25,6 +25,12 @@
       "export_excel": "下載 Excel",
       "record_time": "記錄今天的工時",
       "no_record_detail": "目前尚未開始記錄您的工時。如果應當記錄，請聯繫團隊負責人為您設定。",
+      "no_record_manager_detail": "您在這裡負責團隊工時，但您本人尚無雇用記錄。請在「人員」中新增需要記錄工時的人員；如果您的工時也要記錄，請把自己也加上。",
+      "starts_later": "您的記錄從 {date} 開始",
+      "starts_later_detail": "在此之前沒有可統計的內容。",
+      "show_first_month": "顯示該月",
+      "no_working_week": "尚未為您設定工作週，因此任何一天都沒有預期工時。請聯繫團隊負責人填寫。",
+      "no_working_week_manager": "尚未為您設定工作週，因此任何一天都沒有預期工時。請在「人員」中為自己的記錄填寫。",
       "confirm_hand_in": "{month} 送出後，您就不能自行更改這個月的工時、請假和出勤。如需更正，請聯繫團隊負責人。"
     },
     "team_time": {
@@ -297,6 +303,7 @@
       "next_year": "下一年",
       "none_this_year": "這一年還沒有任何日子。在新增之前，這一年的國定假日都會當成一般工作日。",
       "not_permitted_detail": "您尚未被加入工時記錄，因此看不到這份清單。請聯繫團隊負責人。",
+      "manager_only_detail": "只有團隊負責人可以修改國定假日。它們已計入您在「我的工時」中的月份。",
       "column_date": "日期",
       "column_name": "名稱",
       "column_kind": "類型",

@@ -25,6 +25,12 @@
       "export_excel": "Descărcați ca Excel",
       "record_time": "Înregistrați timp pentru astăzi",
       "no_record_detail": "Orele dumneavoastră nu sunt urmărite încă. Dacă ar trebui să fie, cereți-i celui care se ocupă de echipă să vă adauge.",
+      "no_record_manager_detail": "Gestionați aici timpul echipei, dar nu aveți o înregistrare proprie. Adăugați în Persoane pe cei ale căror ore trebuie urmărite — inclusiv pe dumneavoastră, dacă orele dumneavoastră contează.",
+      "starts_later": "Înregistrarea dumneavoastră începe pe {date}",
+      "starts_later_detail": "Înainte de această dată nu este nimic de numărat.",
+      "show_first_month": "Afișați luna respectivă",
+      "no_working_week": "Nu aveți încă o săptămână de lucru stabilită, așa că nu se așteaptă ore în nicio zi. Cereți-i celui care se ocupă de echipă să o completeze.",
+      "no_working_week_manager": "Nu aveți încă o săptămână de lucru stabilită, așa că nu se așteaptă ore în nicio zi. Completați-o în înregistrarea dumneavoastră, la Persoane.",
       "confirm_hand_in": "După ce predați luna {month}, nu îi mai puteți modifica orele, absențele sau prezența. Adresați-vă celui care se ocupă de echipă dacă e nevoie de o corecție."
     },
     "team_time": {
@@ -609,6 +615,7 @@
       "next_year": "Anul următor",
       "none_this_year": "Nicio zi pentru anul acesta încă. Până când sunt adăugate, fiecare sărbătoare legală din el contează ca zi lucrătoare obișnuită.",
       "not_permitted_detail": "Nu sunteți încă înregistrat în evidența timpului, așa că această listă nu vă este afișată. Adresați-vă celui care se ocupă de echipă.",
+      "manager_only_detail": "Doar cel care se ocupă de echipă poate modifica sărbătorile legale. Ele sunt deja luate în calcul în luna dumneavoastră, la Timpul meu.",
       "column_date": "Data",
       "column_name": "Nume",
       "column_kind": "Tip",

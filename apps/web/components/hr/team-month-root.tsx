@@ -26,6 +26,7 @@ import { HrPeriodStepper } from "./period-stepper";
 import { HrOverviewTable } from "./overview-table";
 import { HrReviewDaysModal } from "./review-days-modal";
 import { HrReasonModal } from "./reason-modal";
+import { useHrAccess } from "./hr-manager-only";
 import {
   balanceTone,
   figuresToShow,
@@ -212,6 +213,10 @@ type TToolbarProps = {
  */
 const TeamMonthToolbar = ({ year, month, monthLabel, workspaceSlug, onPrevious, onNext }: TToolbarProps) => {
   const { t } = useTranslation();
+  // Somebody who does not run HR reaches this page only by its address; the pages
+  // that are not theirs either are left out rather than offered and refused.
+  const { data: access } = useHrAccess();
+  const runsHr = access?.is_hr_manager === true;
   return (
     <div className="flex flex-wrap items-center justify-between gap-3">
       <HrPeriodStepper label={monthLabel} onPrevious={onPrevious} onNext={onNext} />
@@ -221,18 +226,24 @@ const TeamMonthToolbar = ({ year, month, monthLabel, workspaceSlug, onPrevious, 
           <HrNavLink to={`/${workspaceSlug}/team-time/detail`} icon={<ListTree className="size-4" />}>
             {t("hr.detail.title")}
           </HrNavLink>
-          <HrNavLink to={`/${workspaceSlug}/team-time/people`} icon={<UserCog className="size-4" />}>
-            {t("hr.people.title")}
-          </HrNavLink>
+          {runsHr ? (
+            <HrNavLink to={`/${workspaceSlug}/team-time/people`} icon={<UserCog className="size-4" />}>
+              {t("hr.people.title")}
+            </HrNavLink>
+          ) : null}
           <HrNavLink to={`/${workspaceSlug}/team-time/absences`} icon={<CalendarOff className="size-4" />}>
             {t("hr.absences.title")}
           </HrNavLink>
-          <HrNavLink to={`/${workspaceSlug}/team-time/holidays`} icon={<CalendarDays className="size-4" />}>
-            {t("hr.holidays.title")}
-          </HrNavLink>
-          <HrNavLink to={`/${workspaceSlug}/team-time/import`} icon={<Upload className="size-4" />}>
-            {t("hr.imports.title")}
-          </HrNavLink>
+          {runsHr ? (
+            <>
+              <HrNavLink to={`/${workspaceSlug}/team-time/holidays`} icon={<CalendarDays className="size-4" />}>
+                {t("hr.holidays.title")}
+              </HrNavLink>
+              <HrNavLink to={`/${workspaceSlug}/team-time/import`} icon={<Upload className="size-4" />}>
+                {t("hr.imports.title")}
+              </HrNavLink>
+            </>
+          ) : null}
         </nav>
 
         <span className="mx-1 h-4 w-px bg-layer-3" aria-hidden />

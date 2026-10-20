@@ -22,6 +22,7 @@ from .master_data import (
     HrSetupEndpoint,
 )
 from .period import (
+    HrAccessEndpoint,
     HrMeEndpoint,
     HrOverviewEndpoint,
     HrPeriodApproveEndpoint,
@@ -69,6 +70,7 @@ __all__ = [
     "HrInvoiceEndpoint",
     "HrInvoiceReconcileEndpoint",
     "HrLeaveEntitlementEndpoint",
+    "HrAccessEndpoint",
     "HrMeEndpoint",
     "HrMonthExportEndpoint",
     "HrOpeningBalanceAcknowledgeEndpoint",

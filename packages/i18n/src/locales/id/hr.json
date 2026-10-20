@@ -25,6 +25,12 @@
       "export_excel": "Unduh sebagai Excel",
       "record_time": "Catat waktu hari ini",
       "no_record_detail": "Jam kerja Anda belum dicatat. Jika seharusnya dicatat, minta penanggung jawab tim untuk menyiapkannya.",
+      "no_record_manager_detail": "Anda mengelola waktu tim di sini, tetapi belum memiliki catatan kepegawaian sendiri. Tambahkan orang yang jam kerjanya dicatat di Orang, termasuk diri Anda jika jam Anda juga dihitung.",
+      "starts_later": "Catatan Anda dimulai pada {date}",
+      "starts_later_detail": "Sebelum tanggal itu tidak ada yang dihitung.",
+      "show_first_month": "Tampilkan bulan itu",
+      "no_working_week": "Minggu kerja Anda belum diatur, jadi tidak ada jam yang diharapkan pada hari mana pun. Minta penanggung jawab tim untuk mengisinya.",
+      "no_working_week_manager": "Minggu kerja Anda belum diatur, jadi tidak ada jam yang diharapkan pada hari mana pun. Isi di catatan Anda pada bagian Orang.",
       "confirm_hand_in": "Setelah {month} diserahkan, Anda tidak bisa lagi mengubah sendiri jam, ketidakhadiran, atau kehadiran bulan itu. Hubungi penanggung jawab tim jika ada yang perlu diperbaiki."
     },
     "team_time": {
@@ -597,6 +603,7 @@
       "next_year": "Tahun berikutnya",
       "none_this_year": "Belum ada hari untuk tahun ini. Sampai ditambahkan, setiap hari libur nasional di tahun itu dihitung sebagai hari kerja biasa.",
       "not_permitted_detail": "Anda belum terdaftar di catatan waktu, jadi daftar ini tidak ditampilkan untuk Anda. Hubungi penanggung jawab tim.",
+      "manager_only_detail": "Hanya penanggung jawab tim yang dapat mengubah hari libur nasional. Hari libur itu sudah dihitung dalam bulan Anda di Waktu saya.",
       "column_date": "Tanggal",
       "column_name": "Nama",
       "column_kind": "Jenis",

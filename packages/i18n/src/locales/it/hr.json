@@ -25,6 +25,12 @@
       "opening": "Saldo iniziale",
       "record_time": "Registra il tempo di oggi",
       "no_record_detail": "Le Sue ore non vengono ancora registrate. Se dovrebbero esserlo, chieda a chi segue il team di aggiungerLa.",
+      "no_record_manager_detail": "Lei gestisce qui il tempo del team, ma non ha un rapporto di lavoro registrato. Aggiunga in Persone chi deve avere le ore registrate, inclusa la Sua persona se le Sue ore contano.",
+      "starts_later": "Il Suo rapporto inizia il {date}",
+      "starts_later_detail": "Prima di quella data non c’è nulla da contare.",
+      "show_first_month": "Mostra quel mese",
+      "no_working_week": "Non è ancora impostata una settimana lavorativa per Lei, quindi non sono previste ore in nessun giorno. Chieda a chi segue il team di compilarla.",
+      "no_working_week_manager": "Non è ancora impostata una settimana lavorativa per Lei, quindi non sono previste ore in nessun giorno. La compili nel Suo rapporto, in Persone.",
       "confirm_hand_in": "Una volta consegnato {month}, non potrà più modificarne le ore, le assenze o le presenze. Si rivolga a chi segue il team se qualcosa va corretto."
     },
     "team_time": {
@@ -609,6 +615,7 @@
       "next_year": "Anno successivo",
       "none_this_year": "Nessun giorno per quest’anno. Finché non vengono aggiunti, ogni festività dell’anno conta come un normale giorno lavorativo.",
       "not_permitted_detail": "Non è ancora presente nei registri delle ore, perciò questo elenco non Le viene mostrato. Si rivolga a chi segue il team.",
+      "manager_only_detail": "Solo chi segue il team può modificare le festività. Sono già conteggiate nel Suo mese, in Il mio tempo.",
       "column_date": "Data",
       "column_name": "Nome",
       "column_kind": "Tipo",

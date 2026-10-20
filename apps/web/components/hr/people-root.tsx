@@ -35,6 +35,7 @@ import { HrLeaveModal } from "./leave-modal";
 import { HrRateCardModal } from "./rate-card-modal";
 import { HrPersonModal, type TPersonDraft } from "./person-modal";
 import { formatDayWithYear, formatMinutes, refusalMessage } from "./utils";
+import { HrManagerPage } from "./hr-manager-only";
 
 const hrService = new HrService();
 
@@ -46,7 +47,19 @@ const hrService = new HrService();
  * thing as administering a workspace — filing this under workspace settings
  * would have let an administrator in and kept the actual manager out.
  */
-export const HrPeopleRoot = observer(function HrPeopleRoot() {
+/**
+ * Who the company employs and on what terms. Everybody can read their own record,
+ * so the list request alone would open this page to every employee.
+ */
+export function HrPeopleRoot() {
+  return (
+    <HrManagerPage refused={<PeopleLoadFailure notAllowed onRetry={() => undefined} />}>
+      <PeopleManagement />
+    </HrManagerPage>
+  );
+}
+
+const PeopleManagement = observer(function PeopleManagement() {
   const { t, currentLocale } = useTranslation();
   const [adding, setAdding] = useState(false);
   const [editing, setEditing] = useState<THrEmploymentProfile | null>(null);

@@ -4,7 +4,7 @@
  * See the LICENSE file for details.
  */
 
-import { Clock } from "lucide-react";
+import { Clock, Users } from "lucide-react";
 import {
   AnalyticsOutline,
   ArchiveOutline,
@@ -43,5 +43,7 @@ export const getSidebarNavigationItemIcon = (key: string, className: string = ""
       return <MultipleStickyOutline className={cn("size-4 flex-shrink-0", className)} />;
     case "my_time":
       return <Clock className={cn("size-4 flex-shrink-0", className)} />;
+    case "team_time":
+      return <Users className={cn("size-4 flex-shrink-0", className)} />;
   }
 };

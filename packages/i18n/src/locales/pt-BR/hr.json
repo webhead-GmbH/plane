@@ -25,6 +25,12 @@
       "export_excel": "Baixar em Excel",
       "record_time": "Registrar tempo de hoje",
       "no_record_detail": "Suas horas ainda não são registradas. Se deveriam ser, peça a quem cuida da equipe para cadastrar você.",
+      "no_record_manager_detail": "Você administra o tempo da equipe aqui, mas não tem um cadastro próprio. Cadastre em Pessoas quem deve ter as horas registradas — inclusive você, se as suas horas contam.",
+      "starts_later": "Seu cadastro começa em {date}",
+      "starts_later_detail": "Antes disso não há nada a contar.",
+      "show_first_month": "Mostrar esse mês",
+      "no_working_week": "Ainda não há uma semana de trabalho definida para você, então nenhuma hora é esperada em nenhum dia. Peça a quem cuida da equipe para preenchê-la.",
+      "no_working_week_manager": "Ainda não há uma semana de trabalho definida para você, então nenhuma hora é esperada em nenhum dia. Preencha-a no seu cadastro, em Pessoas.",
       "confirm_hand_in": "Depois que {month} for enviado, você não pode mais alterar as horas, as ausências e as presenças dele. Fale com quem cuida da equipe se algo precisar de correção."
     },
     "team_time": {
@@ -297,6 +303,7 @@
       "next_year": "Próximo ano",
       "none_this_year": "Nenhum dia para este ano ainda. Enquanto não forem adicionados, todo feriado do ano conta como dia normal de trabalho.",
       "not_permitted_detail": "Você ainda não está cadastrado no registro de horas, então esta lista não é mostrada. Fale com quem cuida da equipe.",
+      "manager_only_detail": "Somente quem cuida da equipe pode alterar os feriados. Eles já estão contados no seu mês, em Meu tempo.",
       "column_date": "Data",
       "column_name": "Nome",
       "column_kind": "Tipo",

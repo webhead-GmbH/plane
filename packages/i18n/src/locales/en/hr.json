@@ -25,6 +25,12 @@
       "export_excel": "Download as Excel",
       "record_time": "Record time for today",
       "no_record_detail": "Your hours are not being tracked yet. If they should be, ask whoever looks after the team to set you up.",
+      "no_record_manager_detail": "You run HR here but have no employment record of your own. Add the people whose hours are tracked under People — yourself too, if your hours count.",
+      "starts_later": "Your record starts on {date}",
+      "starts_later_detail": "There is nothing to count before then.",
+      "show_first_month": "Show that month",
+      "no_working_week": "No working week has been set for you yet, so no hours are expected on any day. Ask whoever looks after the team to fill it in.",
+      "no_working_week_manager": "No working week has been set for you yet, so no hours are expected on any day. Fill it in on your record under People.",
       "confirm_hand_in": "Once {month} is handed in, you cannot change its hours, time off or attendance yourself. Ask whoever looks after the team if something needs correcting."
     },
     "team_time": {
@@ -609,6 +615,7 @@
       "next_year": "Next year",
       "none_this_year": "No days for this year yet. Until they are added, every public holiday in it counts as an ordinary working day.",
       "not_permitted_detail": "You are not set up in the time records yet, so this list is not shown to you. Ask whoever looks after the team.",
+      "manager_only_detail": "Only whoever looks after the team can change the public holidays. They are already counted in your month on My time.",
       "column_date": "Date",
       "column_name": "Name",
       "column_kind": "Kind",

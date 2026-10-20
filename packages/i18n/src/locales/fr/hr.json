@@ -25,6 +25,12 @@
       "export_excel": "Télécharger en Excel",
       "record_time": "Saisir du temps pour aujourd’hui",
       "no_record_detail": "Vos heures ne sont pas encore suivies. Si elles devraient l’être, demandez à la personne qui gère l’équipe de vous ajouter.",
+      "no_record_manager_detail": "Vous gérez ici le temps de l’équipe, mais vous n’avez pas de dossier vous-même. Ajoutez dans Personnes celles et ceux dont les heures doivent être suivies, vous y compris si vos heures comptent.",
+      "starts_later": "Votre dossier commence le {date}",
+      "starts_later_detail": "Il n’y a rien à compter avant cette date.",
+      "show_first_month": "Afficher ce mois",
+      "no_working_week": "Aucune semaine de travail n’est encore définie pour vous, donc aucune heure n’est attendue. Demandez à la personne qui gère l’équipe de la renseigner.",
+      "no_working_week_manager": "Aucune semaine de travail n’est encore définie pour vous, donc aucune heure n’est attendue. Renseignez-la dans votre dossier, sous Personnes.",
       "confirm_hand_in": "Une fois {month} soumis, vous ne pouvez plus modifier vous-même ses heures, ses absences ni ses présences. Adressez-vous à la personne qui gère l’équipe si une correction est nécessaire."
     },
     "team_time": {
@@ -297,6 +303,7 @@
       "next_year": "Année suivante",
       "none_this_year": "Aucun jour pour cette année pour l’instant. Tant qu’ils ne sont pas ajoutés, chaque jour férié de l’année compte comme un jour ouvré ordinaire.",
       "not_permitted_detail": "Vous n’êtes pas encore enregistré dans le suivi du temps, cette liste ne vous est donc pas montrée. Adressez-vous à la personne qui gère l’équipe.",
+      "manager_only_detail": "Seule la personne qui gère l’équipe peut modifier les jours fériés. Ils sont déjà pris en compte dans votre mois, sous Mon temps.",
       "column_date": "Date",
       "column_name": "Nom",
       "column_kind": "Type",
