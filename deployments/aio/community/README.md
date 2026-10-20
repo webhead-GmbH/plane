@@ -59,6 +59,8 @@ docker run --name plane-aio --rm -it \
     -e AWS_ACCESS_KEY_ID=your-access-key \
     -e AWS_SECRET_ACCESS_KEY=your-secret-key \
     -e AWS_S3_BUCKET_NAME=your-bucket \
+    -e SECRET_KEY=your-unique-secret-key \
+    -e LIVE_SERVER_SECRET_KEY=your-unique-live-server-secret \
     makeplane/plane-aio-community:latest
 ```
 
@@ -91,8 +93,12 @@ docker run --name myaio --rm -it \
 
 #### Security & Secrets
 
-- `SECRET_KEY`: Django secret key (default provided)
-- `LIVE_SERVER_SECRET_KEY`: Live server secret (default provided)
+- `SECRET_KEY` (required): Django secret key. It also encrypts saved instance settings, so keep the same value across restarts and container recreation. No default is provided and none is generated.
+- `LIVE_SERVER_SECRET_KEY` (required): Live server secret. No default is provided and none is generated.
+
+Set both to unique, private values, either in `plane.env` (`variables.env`) or as environment variables. The container exits at startup if either is empty or still set to a default/placeholder value.
+
+In v1.4.0 to v1.4.2 a container started without `SECRET_KEY` received a generated key that changed on every recreation. When upgrading such a container, read the current key from the running container's `/app/plane.env` and pass it as `SECRET_KEY`.
 
 #### File Handling
 
