@@ -25,6 +25,12 @@
       "export_excel": "下载为 Excel",
       "record_time": "记录今天的工时",
       "no_record_detail": "目前尚未统计您的工时。如果应当统计，请联系团队负责人为您设置。",
+      "no_record_manager_detail": "您在这里负责团队工时，但您本人还没有雇佣记录。请在「成员」中添加需要统计工时的人员；如果您的工时也需要统计，请把自己也加上。",
+      "starts_later": "您的记录从 {date} 开始",
+      "starts_later_detail": "在此之前没有可统计的内容。",
+      "show_first_month": "显示该月",
+      "no_working_week": "尚未为您设置工作周，因此任何一天都没有预期工时。请联系团队负责人填写。",
+      "no_working_week_manager": "尚未为您设置工作周，因此任何一天都没有预期工时。请在「成员」中为自己的记录填写。",
       "confirm_hand_in": "{month}提交后，您将无法自行更改该月的工时、缺勤和考勤。如需更正，请联系团队负责人。"
     },
     "team_time": {
@@ -609,6 +615,7 @@
       "next_year": "下一年",
       "none_this_year": "本年度还没有任何日期。在添加之前，这一年的每个法定节假日都按普通工作日计算。",
       "not_permitted_detail": "您尚未在工时记录中建立档案，因此这份列表不会向您显示。请联系团队负责人。",
+      "manager_only_detail": "只有团队负责人可以修改法定节假日。它们已计入您在「我的工时」中的月份。",
       "column_date": "日期",
       "column_name": "名称",
       "column_kind": "类型",

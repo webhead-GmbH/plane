@@ -25,6 +25,12 @@
       "export_excel": "Downloaden als Excel",
       "record_time": "Tijd voor vandaag vastleggen",
       "no_record_detail": "Je uren worden nog niet bijgehouden. Als dat wel zou moeten, vraag dan degene die het team beheert om je in te stellen.",
+      "no_record_manager_detail": "Je beheert hier de teamtijd, maar hebt zelf geen dienstverband. Voeg onder Mensen iedereen toe van wie de uren worden bijgehouden – ook jezelf als jouw uren meetellen.",
+      "starts_later": "Je dienstverband begint op {date}",
+      "starts_later_detail": "Daarvoor valt er niets te tellen.",
+      "show_first_month": "Die maand tonen",
+      "no_working_week": "Er is nog geen werkweek voor je ingesteld, dus op geen enkele dag worden uren verwacht. Vraag degene die het team beheert om die in te vullen.",
+      "no_working_week_manager": "Er is nog geen werkweek voor je ingesteld, dus op geen enkele dag worden uren verwacht. Vul die in bij je eigen gegevens onder Mensen.",
       "confirm_hand_in": "Zodra {month} is ingeleverd, kun je de uren, afwezigheid en aanwezigheid ervan niet meer zelf wijzigen. Vraag degene die het team beheert als er iets gecorrigeerd moet worden."
     },
     "team_time": {
@@ -609,6 +615,7 @@
       "next_year": "Volgend jaar",
       "none_this_year": "Nog geen dagen voor dit jaar. Totdat ze zijn toegevoegd, telt elke feestdag in dit jaar als een gewone werkdag.",
       "not_permitted_detail": "Je bent nog niet ingesteld in de tijdregistratie, dus deze lijst wordt niet aan je getoond. Vraag het aan degene die het team beheert.",
+      "manager_only_detail": "Alleen degene die het team beheert kan de feestdagen wijzigen. Ze tellen al mee in je maand onder Mijn tijd.",
       "column_date": "Datum",
       "column_name": "Naam",
       "column_kind": "Soort",

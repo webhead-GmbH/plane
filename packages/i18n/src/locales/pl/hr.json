@@ -25,6 +25,12 @@
       "export_excel": "Pobierz jako Excel",
       "record_time": "Zapisz czas na dziś",
       "no_record_detail": "Twoje godziny nie są jeszcze rejestrowane. Jeśli powinny być, poproś osobę prowadzącą zespół, aby Cię dodała.",
+      "no_record_manager_detail": "Zarządzasz tu czasem zespołu, ale nie masz własnego wpisu o zatrudnieniu. Dodaj w sekcji Osoby wszystkich, których godziny mają być rejestrowane – także siebie, jeśli Twoje godziny się liczą.",
+      "starts_later": "Twój wpis zaczyna się {date}",
+      "starts_later_detail": "Wcześniej nie ma czego liczyć.",
+      "show_first_month": "Pokaż ten miesiąc",
+      "no_working_week": "Nie masz jeszcze ustawionego tygodnia pracy, więc w żaden dzień nie są oczekiwane godziny. Poproś osobę prowadzącą zespół o jego uzupełnienie.",
+      "no_working_week_manager": "Nie masz jeszcze ustawionego tygodnia pracy, więc w żaden dzień nie są oczekiwane godziny. Uzupełnij go w swoim wpisie w sekcji Osoby.",
       "confirm_hand_in": "Po przekazaniu miesiąca {month} nie zmienisz już samodzielnie jego godzin, nieobecności ani zapisów obecności. Jeśli coś wymaga poprawki, zgłoś się do osoby prowadzącej zespół."
     },
     "team_time": {
@@ -609,6 +615,7 @@
       "next_year": "Następny rok",
       "none_this_year": "Brak dni na ten rok. Dopóki nie zostaną dodane, każde święto w tym roku liczy się jak zwykły dzień pracy.",
       "not_permitted_detail": "Nie masz jeszcze wpisu w ewidencji czasu pracy, więc ta lista nie jest Ci pokazywana. Zgłoś się do osoby prowadzącej zespół.",
+      "manager_only_detail": "Święta może zmieniać tylko osoba prowadząca zespół. Są już uwzględnione w Twoim miesiącu w sekcji Mój czas.",
       "column_date": "Data",
       "column_name": "Nazwa",
       "column_kind": "Rodzaj",

@@ -23,6 +23,7 @@ import { HrService, type THrHoliday, type THrHolidayCalendar } from "@/services/
 // local imports
 import { HrRowAction } from "./row-action";
 import { formatDayWithYear, localName, refusalMessage } from "./utils";
+import { HrManagerPage } from "./hr-manager-only";
 
 const hrService = new HrService();
 
@@ -71,7 +72,20 @@ const defaultCalendar = (calendars: THrHolidayCalendar[]) => calendars.find((row
  * half a day of target, and getting it wrong moves somebody's balance by four
  * hours without anything on the screen looking unusual.
  */
-export const HrHolidaysRoot = observer(function HrHolidaysRoot() {
+/**
+ * The public holidays, for whoever runs HR to change. Everybody may read the
+ * calendar, since their month is measured against it, so the server cannot be what
+ * keeps this page to them.
+ */
+export function HrHolidaysRoot() {
+  return (
+    <HrManagerPage refused={<HolidaysUnavailable notAllowed managerOnly onRetry={() => undefined} />}>
+      <HolidaysManagement />
+    </HrManagerPage>
+  );
+}
+
+const HolidaysManagement = observer(function HolidaysManagement() {
   const { t, currentLocale } = useTranslation();
   const now = new Date();
   const [year, setYear] = useState(now.getFullYear());
@@ -282,16 +296,24 @@ export const HrHolidaysRoot = observer(function HrHolidaysRoot() {
 type TUnavailableProps = {
   /** Refused rather than broken, which is worth saying differently. */
   notAllowed: boolean;
+  /** Set up, but not the one who runs HR: refused for a different reason. */
+  managerOnly?: boolean;
   onRetry: () => void;
 };
 
-const HolidaysUnavailable = ({ notAllowed, onRetry }: TUnavailableProps) => {
+const HolidaysUnavailable = ({ notAllowed, managerOnly = false, onRetry }: TUnavailableProps) => {
   const { t } = useTranslation();
   return (
     <div className="w-full">
       <EmptyStateCompact
         title={notAllowed ? t("hr.team_time.not_permitted") : t("hr.shared.load_failed")}
-        description={notAllowed ? t("hr.holidays.not_permitted_detail") : t("hr.shared.load_failed_detail")}
+        description={
+          managerOnly
+            ? t("hr.holidays.manager_only_detail")
+            : notAllowed
+              ? t("hr.holidays.not_permitted_detail")
+              : t("hr.shared.load_failed_detail")
+        }
         assetKey={notAllowed ? "members" : "unknown"}
         assetClassName="size-20"
         rootClassName="py-16"

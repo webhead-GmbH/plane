@@ -25,6 +25,12 @@
       "opening": "Số dư đầu kỳ",
       "record_time": "Ghi giờ cho hôm nay",
       "no_record_detail": "Giờ làm của bạn chưa được theo dõi. Nếu cần theo dõi, hãy nhờ người phụ trách nhóm thiết lập cho bạn.",
+      "no_record_manager_detail": "Bạn quản lý thời gian của nhóm tại đây nhưng chưa có hồ sơ của riêng mình. Hãy thêm những người cần theo dõi giờ làm trong mục Nhân sự, kể cả bạn nếu giờ của bạn cũng được tính.",
+      "starts_later": "Hồ sơ của bạn bắt đầu từ {date}",
+      "starts_later_detail": "Trước ngày đó không có gì để tính.",
+      "show_first_month": "Hiển thị tháng đó",
+      "no_working_week": "Bạn chưa được thiết lập tuần làm việc, nên không ngày nào có giờ làm dự kiến. Hãy nhờ người phụ trách nhóm điền vào.",
+      "no_working_week_manager": "Bạn chưa được thiết lập tuần làm việc, nên không ngày nào có giờ làm dự kiến. Hãy điền vào hồ sơ của bạn trong mục Nhân sự.",
       "confirm_hand_in": "Sau khi gửi duyệt {month}, bạn không tự sửa được giờ làm, ngày nghỉ hay chấm công của tháng đó. Hãy nhờ người phụ trách nhóm nếu có gì cần sửa."
     },
     "team_time": {
@@ -297,6 +303,7 @@
       "next_year": "Năm sau",
       "none_this_year": "Chưa có ngày nào cho năm này. Chừng nào chưa thêm, mọi ngày lễ trong năm đều được tính là ngày làm việc bình thường.",
       "not_permitted_detail": "Bạn chưa được thiết lập trong hồ sơ chấm công, nên danh sách này không hiện với bạn. Hãy hỏi người phụ trách nhóm.",
+      "manager_only_detail": "Chỉ người phụ trách nhóm mới có thể thay đổi ngày lễ. Các ngày này đã được tính trong tháng của bạn ở mục Thời gian của tôi.",
       "column_date": "Ngày",
       "column_name": "Tên",
       "column_kind": "Loại",

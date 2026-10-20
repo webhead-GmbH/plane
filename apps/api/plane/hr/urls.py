@@ -31,6 +31,7 @@ from plane.hr.api.views import (
     HrInvoiceEndpoint,
     HrInvoiceReconcileEndpoint,
     HrLeaveEntitlementEndpoint,
+    HrAccessEndpoint,
     HrMeEndpoint,
     HrMonthExportEndpoint,
     HrOpeningBalanceAcknowledgeEndpoint,
@@ -56,6 +57,7 @@ from plane.hr.api.views import (
 
 urlpatterns = [
     # The person's own view, and the manager's month
+    path("access/", HrAccessEndpoint.as_view(), name="hr-access"),
     path("me/", HrMeEndpoint.as_view(), name="hr-me"),
     path("overview/", HrOverviewEndpoint.as_view(), name="hr-overview"),
     path("setup/", HrSetupEndpoint.as_view(), name="hr-setup"),

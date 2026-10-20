@@ -25,6 +25,12 @@
       "export_excel": "Excel olarak indir",
       "record_time": "Bugün için süre kaydet",
       "no_record_detail": "Saatleriniz henüz takip edilmiyor. Edilmesi gerekiyorsa ekipten sorumlu kişiden sizi tanımlamasını isteyin.",
+      "no_record_manager_detail": "Burada ekip zamanını siz yönetiyorsunuz ancak kendinize ait bir çalışma kaydınız yok. Saatleri takip edilecek kişileri Kişiler bölümünden ekleyin; saatleriniz sayılacaksa kendinizi de ekleyin.",
+      "starts_later": "Kaydınız {date} tarihinde başlıyor",
+      "starts_later_detail": "Bu tarihten önce sayılacak bir şey yok.",
+      "show_first_month": "O ayı göster",
+      "no_working_week": "Henüz sizin için bir çalışma haftası tanımlanmadı, bu yüzden hiçbir gün saat beklenmiyor. Ekipten sorumlu kişiden doldurmasını isteyin.",
+      "no_working_week_manager": "Henüz sizin için bir çalışma haftası tanımlanmadı, bu yüzden hiçbir gün saat beklenmiyor. Kişiler bölümünde kendi kaydınızda doldurun.",
       "confirm_hand_in": "{month} teslim edildikten sonra saatlerini, izinlerini ve mesai kayıtlarını kendiniz değiştiremezsiniz. Bir düzeltme gerekiyorsa ekipten sorumlu kişiye başvurun."
     },
     "team_time": {
@@ -609,6 +615,7 @@
       "next_year": "Sonraki yıl",
       "none_this_year": "Bu yıl için henüz gün yok. Eklenene kadar, yıl içindeki her resmi tatil sıradan bir iş günü sayılır.",
       "not_permitted_detail": "Zaman kayıtlarında henüz tanımlı değilsiniz, bu yüzden bu liste size gösterilmiyor. Ekipten sorumlu kişiye başvurun.",
+      "manager_only_detail": "Resmî tatilleri yalnızca ekipten sorumlu kişi değiştirebilir. Bunlar Zamanım sayfasındaki ayınıza zaten dahil edilmiştir.",
       "column_date": "Tarih",
       "column_name": "Ad",
       "column_kind": "Tür",

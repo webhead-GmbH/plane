@@ -189,6 +189,12 @@ export type THrLeaveStanding = {
 };
 
 /** Everything the personal view needs, in one response. */
+/** Whether the module has anything for the person asking, and whether they run it. Never refused. */
+export type THrAccess = {
+  is_employed: boolean;
+  is_hr_manager: boolean;
+};
+
 export type THrMe = {
   profile: THrEmploymentProfile | null;
   is_hr_manager: boolean;
@@ -630,6 +636,14 @@ export class HrService extends APIService {
   // belong to one company and the people in them are the same people, so somebody
   // reaches their own hours and their own month from wherever they happen to be.
   private base = "/api/hr";
+
+  async access(): Promise<THrAccess> {
+    return this.get(`${this.base}/access/`)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw withStatus(error);
+      });
+  }
 
   async me(year?: number, month?: number): Promise<THrMe> {
     const query = year && month ? `?year=${year}&month=${month}` : "";
