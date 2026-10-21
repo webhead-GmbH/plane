@@ -14,10 +14,12 @@ client and where support tickets arrive:
   is none, one is created and given the mapping (the custom-field value, or the
   identifier), so everything Plane mirrors back from then on lands on that CRM
   project.
-- ``task.created``: a task converted from a ticket message. It becomes a work item
-  in the mapped Plane project, tied to the CRM task through ``CrmTaskLink`` — the
-  same link Plane's own work items use — so from here on Plane owns it: the next
-  save mirrors the work item onto that task instead of creating another.
+- ``task.created``: a task converted from a ticket message, or one an admin sends
+  to Plane from the CRM. It becomes a work item in the mapped Plane project, tied
+  to the CRM task through ``CrmTaskLink`` — the same link Plane's own work items
+  use — so from here on Plane owns it: the next save mirrors the work item onto
+  that task instead of creating another. Its history comes along: checklist,
+  comments, timers (as linked worklogs) and files.
 
 Both are idempotent: a retried delivery finds what the first one made.
 """
@@ -26,7 +28,7 @@ Both are idempotent: a retried delivery finds what the first one made.
 import json
 import re
 import unicodedata
-from datetime import date
+from datetime import date, datetime
 
 # Third party imports
 from bs4 import BeautifulSoup
@@ -47,6 +49,7 @@ from plane.db.models import (
     CustomFieldValue,
     Issue,
     IssueAssignee,
+    IssueComment,
     Project,
     ProjectIdentifier,
     ProjectMember,
@@ -55,7 +58,12 @@ from plane.db.models import (
 )
 from plane.db.models.state import DEFAULT_STATES
 from plane.utils.content_validator import validate_html_content
-from plane.utils.crm_timer_inbound import plane_user_for_crm_staff
+from plane.utils.crm_timer_inbound import (
+    TIMER_STARTED,
+    TIMER_STOPPED,
+    apply_crm_timer_event,
+    plane_user_for_crm_staff,
+)
 
 PROJECT_SAVED = "project.saved"
 TASK_CREATED = "task.created"
@@ -435,14 +443,32 @@ def _state_for(project, crm_status):
     return State.objects.filter(project=project, group=group).order_by("sequence").first()
 
 
+def _sanitized_html(html):
+    """CRM HTML as Plane will store it, or plain text when it cannot be cleaned."""
+    html = str(html or "").strip()
+    if not html:
+        return ""
+    is_valid, _error, sanitized = validate_html_content(html)
+    html = sanitized if sanitized is not None else html
+    return html if is_valid else f"<p>{escape(_plain_text(html))}</p>"
+
+
+def _checklist_html(items):
+    """The CRM checklist as a Plane task list, ticked where it was ticked."""
+    rows = []
+    for item in items if isinstance(items, list) else []:
+        if not isinstance(item, dict):
+            continue
+        text = _plain_text(item.get("description"))
+        if text:
+            checked = "true" if item.get("finished") else "false"
+            rows.append(f'<li data-type="taskItem" data-checked="{checked}"><p>{escape(text)}</p></li>')
+    return f'<ul data-type="taskList">{"".join(rows)}</ul>' if rows else ""
+
+
 def _description_html(task):
-    """The task's text, sanitised, with a note of the ticket it came from."""
-    html = str(task.get("description") or "").strip()
-    if html:
-        is_valid, _error, sanitized = validate_html_content(html)
-        html = sanitized if sanitized is not None else html
-        if not is_valid:
-            html = f"<p>{escape(_plain_text(html))}</p>"
+    """The task's text, sanitised, with its checklist and a note of the ticket it came from."""
+    html = _sanitized_html(task.get("description")) + _checklist_html(task.get("checklist"))
 
     ticket = task.get("ticket") if isinstance(task.get("ticket"), dict) else {}
     ticket_id = _positive_int(ticket.get("id"))
@@ -532,8 +558,113 @@ def apply_task_created(integration, task, origin=None):
         )
         _record_creation(issue, actor, task, origin)
 
+        # A task that lived in the CRM for a while brings its history: what was
+        # said on it, the time logged on it and its files. Only once — a repeated
+        # delivery stops at the link above.
+        comments = _copy_comments(integration, issue, task.get("comments"), actor)
+        recorded, not_recorded = _copy_timers(integration, issue, project, crm_task_id, task.get("timers"))
+        attachments = _queue_attachments(issue, actor, task.get("attachments"))
+
     issue = Issue.objects.select_related("project", "workspace").get(pk=issue.pk)
-    return {"result": "created", "work_item": _work_item_summary(issue)}
+    return {
+        "result": "created",
+        "work_item": _work_item_summary(issue),
+        "copied": {
+            "comments": comments,
+            "time_entries": recorded,
+            "time_entries_not_copied": not_recorded,
+            "attachments": attachments,
+        },
+    }
+
+
+def _parse_datetime(value):
+    if not value:
+        return None
+    try:
+        moment = datetime.fromisoformat(str(value))
+    except ValueError:
+        return None
+    return moment if moment.tzinfo is not None else dj_timezone.make_aware(moment)
+
+
+def _copy_comments(integration, issue, comments, fallback_actor):
+    """Copy the task's comments, oldest first, each by its author and on its date.
+
+    A comment by someone without an account in this workspace — a client, or
+    staff who never joined Plane — is posted by whoever the task is recorded as,
+    under a line naming the real author.
+    """
+    copied = 0
+    rows = [comment for comment in comments if isinstance(comment, dict)] if isinstance(comments, list) else []
+    for comment in sorted(rows, key=lambda row: str(row.get("dateadded") or "")):
+        html = _sanitized_html(comment.get("content"))
+        if not _plain_text(html):
+            continue
+        staff = comment.get("staff") if isinstance(comment.get("staff"), dict) else {}
+        author = plane_user_for_crm_staff(
+            integration.workspace_id, _positive_int(staff.get("staff_id")), staff.get("email")
+        )
+        if author is None:
+            name = str(comment.get("author_name") or "").strip() or "Someone"
+            html = f"<p><em>{escape(name)}, in the CRM:</em></p>{html}"
+            author = fallback_actor
+
+        with impersonate(author):
+            row = IssueComment.objects.create(
+                issue=issue,
+                project_id=issue.project_id,
+                workspace_id=issue.workspace_id,
+                actor=author,
+                comment_html=html,
+                external_source="crm",
+                external_id=str(comment.get("id") or ""),
+            )
+        written_at = _parse_datetime(comment.get("dateadded"))
+        if written_at is not None:
+            IssueComment.objects.filter(pk=row.pk).update(created_at=written_at, updated_at=written_at)
+        copied += 1
+    return copied
+
+
+def _copy_timers(integration, issue, project, crm_task_id, timers):
+    """Record the task's CRM timers as worklogs, linked so they never travel back.
+
+    The same path as a timer the CRM reports live: a finished timer becomes a
+    finished worklog, a running one keeps running in Plane, and one in a month the
+    person's HR record has already settled, or by staff without a Plane account,
+    is left out. People who logged time join the project, so their hours can be.
+    """
+    recorded = not_recorded = 0
+    for timer in timers if isinstance(timers, list) else []:
+        if not isinstance(timer, dict):
+            continue
+        user = plane_user_for_crm_staff(
+            integration.workspace_id, _positive_int(timer.get("staff_id")), timer.get("staff_email")
+        )
+        if user is not None:
+            _ensure_project_member(project, user)
+        event = TIMER_STOPPED if timer.get("end_time") else TIMER_STARTED
+        result = apply_crm_timer_event(integration, event, {**timer, "task_id": crm_task_id})
+        if result in ("recorded", "started"):
+            recorded += 1
+        else:
+            not_recorded += 1
+    return recorded, not_recorded
+
+
+def _queue_attachments(issue, actor, attachments):
+    """Fetch the task's files from the CRM after this commits; returns how many were queued."""
+    files = [
+        {"id": file_id, "name": str(row.get("name") or ""), "type": str(row.get("type") or "")}
+        for row in (attachments if isinstance(attachments, list) else [])
+        if isinstance(row, dict) and (file_id := _positive_int(row.get("id")))
+    ]
+    if files:
+        from plane.bgtasks.crm_sync_task import import_crm_task_attachments
+
+        transaction.on_commit(lambda: import_crm_task_attachments.delay(str(issue.id), str(actor.id), files))
+    return len(files)
 
 
 def _record_creation(issue, actor, task, origin):

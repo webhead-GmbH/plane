@@ -918,3 +918,80 @@ def remap_workspace_crm_tasks(workspace_id):
         return
     for project_id in Project.objects.filter(workspace_id=workspace_id).values_list("id", flat=True):
         remap_project_crm_tasks(str(project_id))
+
+
+# ─── Attachments of a task taken over from the CRM ─────────────────────────
+
+
+@shared_task
+def import_crm_task_attachments(issue_id, actor_id, files):
+    """Copy the files of a CRM task onto the work item it became.
+
+    Runs after the work item is created, because downloading and uploading files
+    must not hold up the CRM admin who is waiting for the answer. Each file is
+    recorded with its CRM id, so running this again copies nothing twice. A file
+    of a type Plane does not take, or larger than its upload limit, is left in
+    the CRM.
+    """
+    from io import BytesIO
+    from uuid import uuid4
+
+    from crum import impersonate
+
+    from plane.db.models import FileAsset, User
+    from plane.settings.storage import S3Storage
+    from plane.utils.attachment_type import attachment_type
+    from plane.utils.path_validator import sanitize_filename
+
+    issue = Issue.objects.filter(id=issue_id).first()
+    actor = User.objects.filter(id=actor_id).first()
+    if issue is None or actor is None:
+        return
+    integration = _active_integration(issue.workspace_id)
+    crm = _get_client(integration) if integration is not None else None
+    if crm is None:
+        return
+
+    storage = S3Storage(is_server=True)
+    for entry in files:
+        file_id = int(entry["id"])
+        already = FileAsset.objects.filter(
+            issue_id=issue.id,
+            entity_type=FileAsset.EntityTypeContext.ISSUE_ATTACHMENT,
+            attributes__crm_file_id=file_id,
+        ).exists()
+        if already:
+            continue
+
+        name = sanitize_filename(entry.get("name")) or "attachment"
+        content_type = attachment_type(name, entry.get("type"))
+        if not content_type or content_type not in settings.ATTACHMENT_MIME_TYPES:
+            logger.info("CRM file %s (%s) is not a type Plane takes; left in the CRM.", file_id, name)
+            continue
+
+        try:
+            content = crm.download_task_file(file_id)
+        except CrmApiError as exc:
+            logger.error("Could not download CRM file %s for work item %s: %s", file_id, issue.id, exc)
+            continue
+        if len(content) > settings.FILE_SIZE_LIMIT:
+            logger.info("CRM file %s (%s) is larger than the upload limit; left in the CRM.", file_id, name)
+            continue
+
+        asset_key = f"{issue.workspace_id}/{uuid4().hex}-{name}"
+        if not storage.upload_file(file_obj=BytesIO(content), object_name=asset_key, content_type=content_type):
+            logger.error("Could not store CRM file %s for work item %s.", file_id, issue.id)
+            continue
+
+        with impersonate(actor):
+            FileAsset.objects.create(
+                attributes={"name": name, "type": content_type, "size": len(content), "crm_file_id": file_id},
+                asset=asset_key,
+                size=len(content),
+                workspace_id=issue.workspace_id,
+                project_id=issue.project_id,
+                issue_id=issue.id,
+                entity_type=FileAsset.EntityTypeContext.ISSUE_ATTACHMENT,
+                is_uploaded=True,
+                storage_metadata=storage.get_object_metadata(object_name=asset_key),
+            )

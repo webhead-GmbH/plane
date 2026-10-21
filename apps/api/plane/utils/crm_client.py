@@ -219,6 +219,19 @@ class CrmApiClient:
             body.update({"events_url": events_url, "workspace_slug": workspace_slug, "workspace_name": workspace_name})
         return self._request("POST", "timer_webhook", json=body).get("data", {})
 
+    def download_task_file(self, file_id):
+        """The bytes of one file attached to a CRM task."""
+        try:
+            response = self._session.get(
+                self._url("task_file"), params={"id": int(file_id)}, timeout=self.timeout, verify=self.verify
+            )
+            response.raise_for_status()
+        except requests.RequestException as exc:
+            raise CrmApiError(str(exc)) from exc
+        if response.headers.get("Content-Type", "").startswith("application/json"):
+            raise CrmApiError("The CRM answered with JSON instead of the file")
+        return response.content
+
     def unregister_timer_webhook(self):
         """Stop the CRM reporting to this workspace, and listing it in its project form."""
         return self._request("DELETE", "timer_webhook").get("data", {})

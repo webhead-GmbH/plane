@@ -18,13 +18,18 @@ from django.utils import timezone
 from rest_framework.test import APIClient
 
 # Module imports
+from plane.bgtasks.crm_sync_task import import_crm_task_attachments
 from plane.db.models import (
     CrmIntegration,
     CrmTaskLink,
+    CrmTimerLink,
     CustomField,
     CustomFieldValue,
+    FileAsset,
     Issue,
     IssueAssignee,
+    IssueComment,
+    IssueWorkLog,
     Project,
     ProjectMember,
     State,
@@ -365,3 +370,155 @@ class TestRegistration:
         assert response.status_code == 204
         assert request.call_args.args == ("DELETE", "timer_webhook")
         assert not CrmIntegration.objects.filter(workspace=setup["workspace"]).exists()
+
+
+class TestTaskHistory:
+    """A task that lived in the CRM for a while brings what happened on it."""
+
+    def project(self, setup):
+        project = mapped_project(setup, name="Site", identifier="SITE")
+        State.objects.create(
+            name="Todo", project=project, workspace=setup["workspace"], group="unstarted", default=True
+        )
+        return project
+
+    def test_the_checklist_becomes_a_task_list(self, setup):
+        self.project(setup)
+        checklist = [
+            {"description": "Back up the site", "finished": 1},
+            {"description": "Update plugins", "finished": 0},
+        ]
+
+        result = apply_task_created(setup["integration"], crm_task(checklist=checklist))
+
+        html = Issue.objects.get(id=result["work_item"]["id"]).description_html
+        assert 'data-type="taskList"' in html
+        assert "Back up the site" in html and "Update plugins" in html
+        assert 'data-checked="true"' in html and 'data-checked="false"' in html
+
+    def test_comments_are_copied_by_their_author_on_their_date(self, setup):
+        self.project(setup)
+        comments = [
+            {
+                "id": 2,
+                "content": "<p>Done on staging.</p>",
+                "dateadded": "2026-09-02T10:00:00+02:00",
+                "staff": {"staff_id": 7, "email": "person@example.com"},
+            },
+            {
+                "id": 1,
+                "content": "<p>Please check the form.</p>",
+                "dateadded": "2026-09-01T09:30:00+02:00",
+                "staff": None,
+                "author_name": "Client Contact",
+            },
+        ]
+
+        result = apply_task_created(setup["integration"], crm_task(comments=comments))
+
+        assert result["copied"]["comments"] == 2
+        copied = list(IssueComment.objects.filter(issue_id=result["work_item"]["id"]).order_by("created_at"))
+        assert [c.external_id for c in copied] == ["1", "2"]
+        assert "Client Contact, in the CRM" in copied[0].comment_html
+        assert copied[0].actor == setup["owner"]
+        assert copied[1].actor == setup["person"]
+        assert copied[1].created_at.isoformat().startswith("2026-09-02T08:00:00")
+
+    def test_timers_become_linked_worklogs(self, setup):
+        self.project(setup)
+        timers = [
+            {
+                "id": 901,
+                "staff_id": 7,
+                "staff_email": "person@example.com",
+                "start_time": 1790000000,
+                "end_time": 1790003600,
+                "note": "Form fix",
+            },
+            {
+                "id": 902,
+                "staff_id": 99,
+                "staff_email": "nobody@example.com",
+                "start_time": 1790000000,
+                "end_time": 1790001800,
+            },
+        ]
+
+        result = apply_task_created(setup["integration"], crm_task(timers=timers))
+
+        assert result["copied"]["time_entries"] == 1
+        assert result["copied"]["time_entries_not_copied"] == 1
+        worklog = IssueWorkLog.objects.get(issue_id=result["work_item"]["id"])
+        assert worklog.logged_by == setup["person"]
+        assert worklog.duration == 3600
+        assert CrmTimerLink.objects.get(worklog=worklog).crm_timer_id == 901
+
+    def test_files_are_fetched_after_the_work_item_exists(self, setup, django_capture_on_commit_callbacks):
+        self.project(setup)
+        files = [{"id": 31, "name": "screenshot.png", "type": "image/png"}]
+
+        with mock.patch("plane.bgtasks.crm_sync_task.import_crm_task_attachments.delay") as delay:
+            with django_capture_on_commit_callbacks(execute=True):
+                result = apply_task_created(setup["integration"], crm_task(attachments=files))
+
+        assert result["copied"]["attachments"] == 1
+        delay.assert_called_once()
+        assert delay.call_args.args[0] == result["work_item"]["id"]
+        assert delay.call_args.args[2] == files
+
+    def test_a_repeated_delivery_copies_nothing_twice(self, setup):
+        self.project(setup)
+        comments = [{"id": 1, "content": "<p>Hello</p>", "dateadded": "2026-09-01T09:30:00+02:00"}]
+        apply_task_created(setup["integration"], crm_task(comments=comments))
+
+        again = apply_task_created(setup["integration"], crm_task(comments=comments))
+
+        assert again["result"] == "exists"
+        assert IssueComment.objects.filter(issue_id=again["work_item"]["id"]).count() == 1
+
+
+class TestImportingAttachments:
+    def issue(self, setup):
+        project = mapped_project(setup, name="Site", identifier="SITE")
+        return Issue.objects.create(project=project, workspace=setup["workspace"], name="Form")
+
+    def run(self, setup, issue, files, content=b"\x89PNG data"):
+        with (
+            mock.patch("plane.utils.crm_client.CrmApiClient.download_task_file", return_value=content) as download,
+            mock.patch("plane.settings.storage.S3Storage.upload_file", return_value=True) as upload,
+            mock.patch("plane.settings.storage.S3Storage.get_object_metadata", return_value={}),
+        ):
+            import_crm_task_attachments(str(issue.id), str(setup["owner"].id), files)
+        return download, upload
+
+    def test_a_file_is_stored_as_a_work_item_attachment(self, setup):
+        issue = self.issue(setup)
+
+        download, upload = self.run(setup, issue, [{"id": 31, "name": "screenshot.png", "type": "image/png"}])
+
+        download.assert_called_once_with(31)
+        upload.assert_called_once()
+        asset = FileAsset.objects.get(issue=issue)
+        assert asset.attributes["crm_file_id"] == 31
+        assert asset.attributes["name"] == "screenshot.png"
+        assert asset.is_uploaded
+
+    def test_running_again_copies_nothing_twice(self, setup):
+        issue = self.issue(setup)
+        files = [{"id": 31, "name": "screenshot.png", "type": "image/png"}]
+        self.run(setup, issue, files)
+
+        download, _upload = self.run(setup, issue, files)
+
+        download.assert_not_called()
+        assert FileAsset.objects.filter(issue=issue).count() == 1
+
+    def test_a_type_plane_does_not_take_stays_in_the_crm(self, setup):
+        issue = self.issue(setup)
+
+        download, _upload = self.run(
+            setup, issue, [{"id": 32, "name": "setup.exe", "type": "application/x-msdownload"}]
+        )
+
+        download.assert_not_called()
+        assert not FileAsset.objects.filter(issue=issue).exists()
