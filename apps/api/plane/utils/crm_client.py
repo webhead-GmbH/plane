@@ -204,15 +204,24 @@ class CrmApiClient:
             "GET", "timers", params={"ids": ",".join(str(timer_id) for timer_id in ids)}
         ).get("data", [])
 
-    def register_timer_webhook(self, url, secret):
+    def register_timer_webhook(self, url, secret, workspace_slug=None, workspace_name=None, events_url=None):
         """Tell the CRM where to report the timers its own users start and stop.
 
         The CRM signs every event with ``secret`` (HMAC-SHA256 of the body), and
         keeps one webhook per API key, so registering again replaces it.
+
+        The workspace and ``events_url`` let the CRM offer this workspace in its
+        project form and send it the projects and ticket tasks made there. A CRM
+        module older than 1.1.0 ignores them.
         """
-        return self._request(
-            "POST", "timer_webhook", json={"url": url, "secret": secret}
-        ).get("data", {})
+        body = {"url": url, "secret": secret}
+        if events_url:
+            body.update({"events_url": events_url, "workspace_slug": workspace_slug, "workspace_name": workspace_name})
+        return self._request("POST", "timer_webhook", json=body).get("data", {})
+
+    def unregister_timer_webhook(self):
+        """Stop the CRM reporting to this workspace, and listing it in its project form."""
+        return self._request("DELETE", "timer_webhook").get("data", {})
 
     def set_custom_field(self, task_id, field_id, value):
         """Set a single custom-field value on a CRM task."""

@@ -14,7 +14,7 @@ from plane.db.models import CrmIntegration, Workspace
 from plane.app.permissions import allow_permission, ROLE
 from plane.app.serializers import CrmIntegrationSerializer
 from plane.utils.crm_client import CrmApiClient, CrmApiError
-from plane.utils.crm_timer_webhook import register_timer_webhook
+from plane.utils.crm_timer_webhook import register_timer_webhook, unregister_timer_webhook
 from ..base import BaseAPIView
 
 # Interactive endpoints (test / fetch) run inside the request/response cycle, so
@@ -103,6 +103,7 @@ class CrmIntegrationEndpoint(BaseAPIView):
         integration = self._get_integration(slug)
         if integration is None:
             return Response(status=status.HTTP_204_NO_CONTENT)
+        unregister_timer_webhook(integration)
         # Hard-delete: this is a per-workspace singleton keyed by a unique OneToOne,
         # so a soft-deleted remnant would block re-configuration. Cascades the logs.
         integration.delete(soft=False)
