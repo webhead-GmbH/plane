@@ -8,6 +8,7 @@ from plane.app.views import (
     CrmIntegrationEndpoint,
     CrmIntegrationTestEndpoint,
     CrmIntegrationSyncEndpoint,
+    CrmEventsWebhookEndpoint,
     CrmTimerWebhookEndpoint,
 )
 
@@ -34,5 +35,11 @@ urlpatterns = [
         "workspaces/<str:slug>/crm-integration/timer-webhook/",
         CrmTimerWebhookEndpoint.as_view(),
         name="crm-integration-timer-webhook",
+    ),
+    # Also called by the CRM: the projects and ticket tasks made there.
+    path(
+        "workspaces/<str:slug>/crm-integration/events/",
+        CrmEventsWebhookEndpoint.as_view(),
+        name="crm-integration-events-webhook",
     ),
 ]
