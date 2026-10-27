@@ -881,7 +881,67 @@
     "processing": "Processing",
     "invalid_file_type": "Invalid file type",
     "missing_fields": "Missing fields",
-    "success": "{fileName} Uploaded!"
+    "success": "{fileName} Uploaded!",
+    "not_uploaded": "“{name}” wasn't uploaded",
+    "errors": {
+      "storage_full": {
+        "title": "The file server is full",
+        "description": "The file wasn't saved because the server that stores files has run out of space. Ask your Plane administrator to free up space, then try again."
+      },
+      "file_too_large": {
+        "title": "The file is too large",
+        "description": "This file is larger than the server accepts. Choose a smaller file.",
+        "description_with_limit": "Files can be at most {limit}. Choose a smaller file."
+      },
+      "file_type_not_allowed": {
+        "title": "This type of file isn't accepted",
+        "description": "Files of this type can't be uploaded here. Choose a different file."
+      },
+      "network": {
+        "title": "The connection was lost",
+        "description": "The file couldn't reach the server. Check your internet connection and try again."
+      },
+      "link_expired": {
+        "title": "The upload took too long",
+        "description": "The upload link expired before the file was sent. Try again."
+      },
+      "not_allowed": {
+        "title": "You can't upload here",
+        "description": "You don't have permission to add files here, or your session has ended. Reload the page and try again."
+      },
+      "storage_rejected": {
+        "title": "The file server refused the file",
+        "description": "The server that stores files didn't accept this file. Try again, and if it keeps happening, tell your Plane administrator."
+      },
+      "storage_unavailable": {
+        "title": "The file server isn't responding",
+        "description": "The server that stores files can't be reached right now. Try again in a few minutes."
+      },
+      "server_error": {
+        "title": "Plane couldn't take the file",
+        "description": "Something went wrong on the server. Try again in a few minutes, and if it keeps happening, tell your Plane administrator."
+      },
+      "not_stored": {
+        "title": "The file didn't arrive",
+        "description": "The upload seemed to finish, but the file isn't on the server. Try again."
+      },
+      "not_saved": {
+        "title": "The upload couldn't be completed",
+        "description": "The file reached the server, but Plane couldn't record it. Try again in a few minutes."
+      },
+      "unknown": {
+        "title": "The file couldn't be uploaded",
+        "description": "Something unexpected went wrong. Try again, and if it keeps happening, tell your Plane administrator."
+      },
+      "cancelled": {
+        "title": "Upload cancelled",
+        "description": "The upload was stopped before it finished."
+      },
+      "not_an_image": {
+        "title": "Only images can be added here",
+        "description": "Not added: {names}. Only JPEG, PNG, WebP and GIF images can go into the text."
+      }
+    }
   },
   "date": "Date",
   "exporter": {

@@ -6,13 +6,19 @@
 
 import { NodeViewWrapper } from "@tiptap/react";
 import type { NodeViewProps } from "@tiptap/react";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 // local imports
 import type { CustomImageExtensionType, TCustomImageAttributes } from "../types";
 import { ECustomImageAttributeNames, ECustomImageStatus } from "../types";
 import { hasImageDuplicationFailed } from "../utils";
 import { CustomImageBlock } from "./block";
 import { CustomImageUploader } from "./uploader";
+
+/** An upload that failed, kept so that it can be tried again with the same file. */
+export type TImageUploadFailure = {
+  file: File;
+  message: string;
+};
 
 export type CustomImageNodeViewProps = Omit<NodeViewProps, "extension" | "updateAttributes"> & {
   extension: CustomImageExtensionType;
@@ -31,6 +37,7 @@ export function CustomImageNodeView(props: CustomImageNodeViewProps) {
   const [resolvedDownloadSrc, setResolvedDownloadSrc] = useState<string | undefined>(undefined);
   const [imageFromFileSystem, setImageFromFileSystem] = useState<string | undefined>(undefined);
   const [failedToLoadImage, setFailedToLoadImage] = useState(false);
+  const [uploadFailure, setUploadFailure] = useState<TImageUploadFailure | undefined>(undefined);
 
   const [editorContainer, setEditorContainer] = useState<HTMLDivElement | null>(null);
   const imageComponentRef = useRef<HTMLDivElement>(null);
@@ -132,9 +139,21 @@ export function CustomImageNodeView(props: CustomImageNodeViewProps) {
     }
   }, [status]);
 
+  // A failed upload leaves the uploader with the reason in place of a preview that would load forever
+  const handleUploadFailure = useCallback(
+    (failure: TImageUploadFailure | undefined) => {
+      setUploadFailure(failure);
+      if (failure) {
+        setImageFromFileSystem(undefined);
+        updateAttributes({ status: ECustomImageStatus.PENDING });
+      }
+    },
+    [updateAttributes]
+  );
+
   const hasDuplicationFailed = hasImageDuplicationFailed(status);
   const hasValidImageSource = imageFromFileSystem || (isUploaded && resolvedSrc);
-  const shouldShowBlock = hasValidImageSource && !failedToLoadImage && !hasDuplicationFailed;
+  const shouldShowBlock = hasValidImageSource && !failedToLoadImage && !hasDuplicationFailed && !uploadFailure;
 
   return (
     <NodeViewWrapper key={node.attrs[ECustomImageAttributeNames.ID]}>
@@ -155,7 +174,9 @@ export function CustomImageNodeView(props: CustomImageNodeViewProps) {
             hasDuplicationFailed={hasDuplicationFailed}
             loadImageFromFileSystem={setImageFromFileSystem}
             maxFileSize={(editor.storage.imageComponent as { maxFileSize?: number } | undefined)?.maxFileSize ?? 0}
+            onUploadFailure={handleUploadFailure}
             setIsUploaded={setIsUploaded}
+            uploadFailure={uploadFailure}
             {...props}
           />
         )}

@@ -880,7 +880,67 @@
     "processing": "Processando",
     "invalid_file_type": "Tipo de arquivo inválido",
     "missing_fields": "Campos ausentes",
-    "success": "{fileName} Enviado!"
+    "success": "{fileName} Enviado!",
+    "not_uploaded": "“{name}” não foi enviado",
+    "errors": {
+      "storage_full": {
+        "title": "O servidor de arquivos está cheio",
+        "description": "O arquivo não foi salvo porque o servidor que armazena os arquivos ficou sem espaço. Peça ao administrador do Plane para liberar espaço e tente novamente."
+      },
+      "file_too_large": {
+        "title": "O arquivo é grande demais",
+        "description": "Este arquivo é maior do que o servidor aceita. Escolha um arquivo menor.",
+        "description_with_limit": "Os arquivos podem ter no máximo {limit}. Escolha um arquivo menor."
+      },
+      "file_type_not_allowed": {
+        "title": "Este tipo de arquivo não é aceito",
+        "description": "Arquivos deste tipo não podem ser enviados aqui. Escolha outro arquivo."
+      },
+      "network": {
+        "title": "A conexão foi perdida",
+        "description": "O arquivo não chegou ao servidor. Verifique sua conexão com a internet e tente novamente."
+      },
+      "link_expired": {
+        "title": "O envio demorou demais",
+        "description": "O link de envio expirou antes de o arquivo ser enviado. Tente novamente."
+      },
+      "not_allowed": {
+        "title": "Você não pode enviar arquivos aqui",
+        "description": "Você não tem permissão para adicionar arquivos aqui ou sua sessão terminou. Recarregue a página e tente novamente."
+      },
+      "storage_rejected": {
+        "title": "O servidor de arquivos recusou o arquivo",
+        "description": "O servidor que armazena os arquivos não aceitou este arquivo. Tente novamente e, se continuar acontecendo, avise o administrador do Plane."
+      },
+      "storage_unavailable": {
+        "title": "O servidor de arquivos não está respondendo",
+        "description": "Não é possível acessar o servidor que armazena os arquivos agora. Tente novamente em alguns minutos."
+      },
+      "server_error": {
+        "title": "O Plane não conseguiu receber o arquivo",
+        "description": "Algo deu errado no servidor. Tente novamente em alguns minutos e, se continuar acontecendo, avise o administrador do Plane."
+      },
+      "not_stored": {
+        "title": "O arquivo não chegou",
+        "description": "O envio parecia concluído, mas o arquivo não está no servidor. Tente novamente."
+      },
+      "not_saved": {
+        "title": "Não foi possível concluir o envio",
+        "description": "O arquivo chegou ao servidor, mas o Plane não conseguiu registrá-lo. Tente novamente em alguns minutos."
+      },
+      "unknown": {
+        "title": "Não foi possível enviar o arquivo",
+        "description": "Ocorreu um erro inesperado. Tente novamente e, se continuar acontecendo, avise o administrador do Plane."
+      },
+      "cancelled": {
+        "title": "Envio cancelado",
+        "description": "O envio foi interrompido antes de terminar."
+      },
+      "not_an_image": {
+        "title": "Só é possível adicionar imagens aqui",
+        "description": "Não adicionado: {names}. Só imagens JPEG, PNG, WebP e GIF podem ser inseridas no texto."
+      }
+    }
   },
   "date": "Data",
   "exporter": {

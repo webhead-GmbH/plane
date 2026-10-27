@@ -880,7 +880,67 @@
     "processing": "Se procesează",
     "invalid_file_type": "Tip de fișier invalid",
     "missing_fields": "Câmpuri lipsă",
-    "success": "{fileName} Încărcat!"
+    "success": "{fileName} Încărcat!",
+    "not_uploaded": "„{name}” nu a fost încărcat",
+    "errors": {
+      "storage_full": {
+        "title": "Serverul de fișiere este plin",
+        "description": "Fișierul nu a fost salvat, deoarece serverul care stochează fișierele a rămas fără spațiu. Roagă administratorul Plane să elibereze spațiu, apoi încearcă din nou."
+      },
+      "file_too_large": {
+        "title": "Fișierul este prea mare",
+        "description": "Acest fișier este mai mare decât acceptă serverul. Alege un fișier mai mic.",
+        "description_with_limit": "Fișierele pot avea cel mult {limit}. Alege un fișier mai mic."
+      },
+      "file_type_not_allowed": {
+        "title": "Acest tip de fișier nu este acceptat",
+        "description": "Fișierele de acest tip nu pot fi încărcate aici. Alege alt fișier."
+      },
+      "network": {
+        "title": "Conexiunea s-a întrerupt",
+        "description": "Fișierul nu a ajuns la server. Verifică conexiunea la internet și încearcă din nou."
+      },
+      "link_expired": {
+        "title": "Încărcarea a durat prea mult",
+        "description": "Linkul de încărcare a expirat înainte ca fișierul să fie trimis. Încearcă din nou."
+      },
+      "not_allowed": {
+        "title": "Nu poți încărca aici",
+        "description": "Nu ai permisiunea de a adăuga fișiere aici sau sesiunea ta s-a încheiat. Reîncarcă pagina și încearcă din nou."
+      },
+      "storage_rejected": {
+        "title": "Serverul de fișiere a refuzat fișierul",
+        "description": "Serverul care stochează fișierele nu a acceptat acest fișier. Încearcă din nou și, dacă se repetă, anunță administratorul Plane."
+      },
+      "storage_unavailable": {
+        "title": "Serverul de fișiere nu răspunde",
+        "description": "Serverul care stochează fișierele nu poate fi accesat acum. Încearcă din nou peste câteva minute."
+      },
+      "server_error": {
+        "title": "Plane nu a putut primi fișierul",
+        "description": "A apărut o eroare pe server. Încearcă din nou peste câteva minute și, dacă se repetă, anunță administratorul Plane."
+      },
+      "not_stored": {
+        "title": "Fișierul nu a ajuns",
+        "description": "Încărcarea părea încheiată, dar fișierul nu este pe server. Încearcă din nou."
+      },
+      "not_saved": {
+        "title": "Încărcarea nu a putut fi finalizată",
+        "description": "Fișierul a ajuns la server, dar Plane nu a putut să-l înregistreze. Încearcă din nou peste câteva minute."
+      },
+      "unknown": {
+        "title": "Fișierul nu a putut fi încărcat",
+        "description": "A apărut o eroare neașteptată. Încearcă din nou și, dacă se repetă, anunță administratorul Plane."
+      },
+      "cancelled": {
+        "title": "Încărcare anulată",
+        "description": "Încărcarea a fost oprită înainte de final."
+      },
+      "not_an_image": {
+        "title": "Aici se pot adăuga doar imagini",
+        "description": "Neadăugat: {names}. În text se pot insera doar imagini JPEG, PNG, WebP și GIF."
+      }
+    }
   },
   "date": "Dată",
   "exporter": {

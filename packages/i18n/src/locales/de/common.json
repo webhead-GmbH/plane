@@ -880,7 +880,67 @@
     "processing": "Verarbeite",
     "invalid_file_type": "Ungültiger Dateityp",
     "missing_fields": "Fehlende Felder",
-    "success": "{fileName} hochgeladen!"
+    "success": "{fileName} hochgeladen!",
+    "not_uploaded": "„{name}“ wurde nicht hochgeladen",
+    "errors": {
+      "storage_full": {
+        "title": "Der Dateiserver ist voll",
+        "description": "Die Datei wurde nicht gespeichert, weil auf dem Server für Dateien kein Speicherplatz mehr frei ist. Bitten Sie Ihre Plane-Administration, Speicherplatz freizugeben, und versuchen Sie es dann erneut."
+      },
+      "file_too_large": {
+        "title": "Die Datei ist zu groß",
+        "description": "Diese Datei ist größer, als der Server annimmt. Wählen Sie eine kleinere Datei.",
+        "description_with_limit": "Dateien dürfen höchstens {limit} groß sein. Wählen Sie eine kleinere Datei."
+      },
+      "file_type_not_allowed": {
+        "title": "Dieser Dateityp wird nicht angenommen",
+        "description": "Dateien dieses Typs können hier nicht hochgeladen werden. Wählen Sie eine andere Datei."
+      },
+      "network": {
+        "title": "Die Verbindung wurde unterbrochen",
+        "description": "Die Datei hat den Server nicht erreicht. Prüfen Sie Ihre Internetverbindung und versuchen Sie es erneut."
+      },
+      "link_expired": {
+        "title": "Das Hochladen hat zu lange gedauert",
+        "description": "Der Upload-Link ist abgelaufen, bevor die Datei gesendet wurde. Versuchen Sie es erneut."
+      },
+      "not_allowed": {
+        "title": "Sie können hier nichts hochladen",
+        "description": "Sie dürfen hier keine Dateien hinzufügen, oder Ihre Sitzung ist abgelaufen. Laden Sie die Seite neu und versuchen Sie es erneut."
+      },
+      "storage_rejected": {
+        "title": "Der Dateiserver hat die Datei abgelehnt",
+        "description": "Der Server für Dateien hat diese Datei nicht angenommen. Versuchen Sie es erneut; wenn es wieder passiert, wenden Sie sich an Ihre Plane-Administration."
+      },
+      "storage_unavailable": {
+        "title": "Der Dateiserver antwortet nicht",
+        "description": "Der Server für Dateien ist gerade nicht erreichbar. Versuchen Sie es in ein paar Minuten erneut."
+      },
+      "server_error": {
+        "title": "Plane konnte die Datei nicht annehmen",
+        "description": "Auf dem Server ist ein Fehler aufgetreten. Versuchen Sie es in ein paar Minuten erneut; wenn es wieder passiert, wenden Sie sich an Ihre Plane-Administration."
+      },
+      "not_stored": {
+        "title": "Die Datei ist nicht angekommen",
+        "description": "Das Hochladen schien abgeschlossen, aber die Datei liegt nicht auf dem Server. Versuchen Sie es erneut."
+      },
+      "not_saved": {
+        "title": "Das Hochladen konnte nicht abgeschlossen werden",
+        "description": "Die Datei hat den Server erreicht, aber Plane konnte sie nicht erfassen. Versuchen Sie es in ein paar Minuten erneut."
+      },
+      "unknown": {
+        "title": "Die Datei konnte nicht hochgeladen werden",
+        "description": "Etwas Unerwartetes ist schiefgelaufen. Versuchen Sie es erneut; wenn es wieder passiert, wenden Sie sich an Ihre Plane-Administration."
+      },
+      "cancelled": {
+        "title": "Hochladen abgebrochen",
+        "description": "Das Hochladen wurde vor dem Ende gestoppt."
+      },
+      "not_an_image": {
+        "title": "Hier können nur Bilder eingefügt werden",
+        "description": "Nicht hinzugefügt: {names}. In den Text können nur Bilder im Format JPEG, PNG, WebP und GIF eingefügt werden."
+      }
+    }
   },
   "date": "Datum",
   "exporter": {

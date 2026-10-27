@@ -8,6 +8,7 @@ import { forwardRef } from "react";
 // plane imports
 import { RichTextEditorWithRef } from "@plane/editor";
 import type { EditorRefApi, IRichTextEditorProps, TFileHandler } from "@plane/editor";
+import { useTranslation } from "@plane/i18n";
 import type { MakeOptional } from "@plane/types";
 // helpers
 import { getEditorFileHandlers } from "@/helpers/editor.helper";
@@ -47,6 +48,7 @@ export const RichTextEditor = forwardRef(function RichTextEditor(
     disabledExtensions: additionalDisabledExtensions = [],
     ...rest
   } = props;
+  const { t } = useTranslation();
   // store hooks
   const { getMemberById } = useMember();
   // parse content
@@ -59,7 +61,7 @@ export const RichTextEditor = forwardRef(function RichTextEditor(
   return (
     <RichTextEditorWithRef
       mentionHandler={{
-        renderComponent: (props) => <EditorMentionsRoot {...props} />,
+        renderComponent: (mentionProps) => <EditorMentionsRoot {...mentionProps} />,
         getMentionedEntityDetails: (id: string) => ({
           display_name: getMemberById(id)?.member__display_name ?? "",
         }),
@@ -69,6 +71,7 @@ export const RichTextEditor = forwardRef(function RichTextEditor(
       editable={editable}
       fileHandler={getEditorFileHandlers({
         anchor,
+        t,
         uploadFile: editable ? props.uploadFile : async () => "",
         workspaceId,
       })}

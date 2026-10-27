@@ -12,6 +12,7 @@ import { FileUploadService } from "./file-upload.service";
 // helpers
 import { FileService } from "./file.service";
 import { generateFileUploadPayload, getAssetIdFromUrl, getFileMetaDataForUpload } from "./helper";
+import { confirmFileUpload, toFileUploadError } from "./upload-error";
 
 /**
  * Service class for managing file operations within plane sites application.
@@ -20,7 +21,6 @@ import { generateFileUploadPayload, getAssetIdFromUrl, getFileMetaDataForUpload 
  * @remarks This service is only available for plane sites
  */
 export class SitesFileService extends FileService {
-  private cancelSource: any;
   fileUploadService: FileUploadService;
 
   /**
@@ -42,11 +42,8 @@ export class SitesFileService extends FileService {
    * @throws {Error} If the request fails
    */
   private async updateAssetUploadStatus(anchor: string, assetId: string): Promise<void> {
-    return this.patch(`/api/public/assets/v2/anchor/${anchor}/${assetId}/`)
-      .then((response) => response?.data)
-      .catch((error) => {
-        throw error?.response?.data;
-      });
+    // The raw error reaches confirmFileUpload, which tells a lost request from a refusal
+    return this.patch(`/api/public/assets/v2/anchor/${anchor}/${assetId}/`).then((response) => response?.data);
   }
 
   /**
@@ -77,7 +74,7 @@ export class SitesFileService extends FileService {
    * @param {TFileEntityInfo} data - The data payload
    * @param {File} file - The file to upload
    * @returns {Promise<TFileSignedURLResponse>} Promise resolving to the signed URL response
-   * @throws {Error} If the request fails
+   * @throws {FileUploadError} Why the upload failed, and at which step
    */
   async uploadAsset(anchor: string, data: TFileEntityInfo, file: File): Promise<TFileSignedURLResponse> {
     const fileMetaData = await getFileMetaDataForUpload(file);
@@ -89,11 +86,11 @@ export class SitesFileService extends FileService {
         const signedURLResponse: TFileSignedURLResponse = response?.data;
         const fileUploadPayload = generateFileUploadPayload(signedURLResponse, file);
         await this.fileUploadService.uploadFile(signedURLResponse.upload_data.url, fileUploadPayload);
-        await this.updateAssetUploadStatus(anchor, signedURLResponse.asset_id);
+        await confirmFileUpload(() => this.updateAssetUploadStatus(anchor, signedURLResponse.asset_id));
         return signedURLResponse;
       })
       .catch((error) => {
-        throw error?.response?.data;
+        throw toFileUploadError(error, "prepare");
       });
   }
 
@@ -118,6 +115,6 @@ export class SitesFileService extends FileService {
    * Cancels the upload
    */
   cancelUpload() {
-    this.cancelSource.cancelUpload();
+    this.fileUploadService.cancelUpload();
   }
 }

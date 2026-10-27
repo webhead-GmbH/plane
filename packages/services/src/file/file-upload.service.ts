@@ -7,6 +7,7 @@
 import axios from "axios";
 // api service
 import { APIService } from "../api.service";
+import { toFileUploadError } from "./upload-error";
 
 /**
  * Service class for handling file upload operations
@@ -25,9 +26,10 @@ export class FileUploadService extends APIService {
    * @param {string} url - The URL to upload the file to
    * @param {FormData} data - The form data to upload
    * @returns {Promise<void>} Promise resolving to void
-   * @throws {Error} If the request fails
+   * @throws {FileUploadError} Why storage did not take the file, including a cancelled upload
    */
   async uploadFile(url: string, data: FormData): Promise<void> {
+    // oxlint-disable-next-line import/no-named-as-default-member -- CancelToken is accessed via the default export at runtime
     this.cancelSource = axios.CancelToken.source();
     return this.post(url, data, {
       headers: {
@@ -38,11 +40,7 @@ export class FileUploadService extends APIService {
     })
       .then((response) => response?.data)
       .catch((error) => {
-        if (axios.isCancel(error)) {
-          console.log(error.message);
-        } else {
-          throw error?.response?.data;
-        }
+        throw toFileUploadError(error, "upload");
       });
   }
 
@@ -50,6 +48,6 @@ export class FileUploadService extends APIService {
    * Cancels the upload
    */
   cancelUpload() {
-    this.cancelSource.cancel("Upload canceled");
+    this.cancelSource?.cancel("Upload canceled");
   }
 }

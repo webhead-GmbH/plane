@@ -59,13 +59,8 @@ export const IssueAttachmentActionButton = observer(function IssueAttachmentActi
         setIsLoading(true);
         attachmentOperations
           .create(currentFile)
-          .catch(() => {
-            setToast({
-              type: "error",
-              title: "Error!",
-              message: "File could not be attached. Try uploading again.",
-            });
-          })
+          // useAttachmentOperations has already said why the upload failed
+          .catch(() => undefined)
           .finally(() => {
             handleFetchPropertyActivities();
             setLastWidgetAction("attachments");
@@ -96,6 +91,8 @@ export const IssueAttachmentActionButton = observer(function IssueAttachmentActi
 
   return (
     <div
+      // Only keeps the click from reaching the widget header; the button inside is the control
+      role="presentation"
       onClick={(e) => {
         // TODO: Remove extra div and move event propagation to button
         e.stopPropagation();

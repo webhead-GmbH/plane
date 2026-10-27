@@ -23,6 +23,7 @@ type TUploaderArgs = {
   maxFileSize: number;
   onInvalidFile: (error: EFileError, file: File, message: string) => void;
   onUpload: (url: string, file: File) => void;
+  onUploadError?: (error: unknown, file: File) => void;
 };
 
 export const useUploader = (args: TUploaderArgs) => {
@@ -34,6 +35,7 @@ export const useUploader = (args: TUploaderArgs) => {
     maxFileSize,
     onInvalidFile,
     onUpload,
+    onUploadError,
   } = args;
   // states
   const [isUploading, setIsUploading] = useState(false);
@@ -56,6 +58,8 @@ export const useUploader = (args: TUploaderArgs) => {
       try {
         if (loadFileFromFileSystem) {
           const reader = new FileReader();
+          // A reader used once: its handlers go with it, so there is nothing to remove later
+          // oxlint-disable-next-line unicorn/prefer-add-event-listener
           reader.onload = () => {
             if (reader.result) {
               loadFileFromFileSystem(reader.result as string);
@@ -63,6 +67,7 @@ export const useUploader = (args: TUploaderArgs) => {
               console.error("Failed to read the file: reader.result is null");
             }
           };
+          // oxlint-disable-next-line unicorn/prefer-add-event-listener
           reader.onerror = () => {
             console.error("Error reading file");
           };
@@ -74,8 +79,9 @@ export const useUploader = (args: TUploaderArgs) => {
           throw new Error("Something went wrong while uploading the file.");
         }
         onUpload(url, file);
-      } catch {
-        console.error("useFileUpload: Error in uploading file");
+      } catch (error) {
+        console.error("useFileUpload: Error in uploading file", error);
+        onUploadError?.(error, file);
       } finally {
         handleProgressStatus?.(false);
         setIsUploading(false);
@@ -89,6 +95,7 @@ export const useUploader = (args: TUploaderArgs) => {
       maxFileSize,
       onInvalidFile,
       onUpload,
+      onUploadError,
     ]
   );
 

@@ -27,6 +27,7 @@ import { CoverImage } from "@/components/common/cover-image";
 import { SettingsBoxedControlItem } from "@/components/settings/boxed-control-item";
 // helpers
 import { handleCoverImageChange } from "@/helpers/cover-image.helper";
+import { isFileUploadFailure, showFileUploadError } from "@/helpers/file-upload-error.helper";
 // hooks
 import { useInstance } from "@/hooks/store/use-instance";
 import { useUser, useUserProfile } from "@/hooks/store/user";
@@ -141,11 +142,15 @@ export const GeneralProfileSettingsForm = observer(function GeneralProfileSettin
       }
     } catch (error) {
       console.error("Error handling cover image:", error);
-      setToast({
-        type: "error",
-        title: t("toast.error"),
-        message: error instanceof Error ? error.message : "Failed to process cover image",
-      });
+      if (isFileUploadFailure(error)) {
+        showFileUploadError(t, error);
+      } else {
+        setToast({
+          type: "error",
+          title: t("toast.error"),
+          message: error instanceof Error ? error.message : "Failed to process cover image",
+        });
+      }
       setIsLoading(false);
       return;
     }
@@ -234,9 +239,7 @@ export const GeneralProfileSettingsForm = observer(function GeneralProfileSettin
                         <img
                           src={getFileURL(userAvatar)}
                           className="absolute top-0 left-0 h-full w-full rounded-lg object-cover"
-                          onClick={() => setIsImageUploadModalOpen(true)}
                           alt={currentUser?.display_name}
-                          role="button"
                         />
                       </div>
                     )}

@@ -880,7 +880,67 @@
     "processing": "Procesando",
     "invalid_file_type": "Tipo de archivo inválido",
     "missing_fields": "Campos faltantes",
-    "success": "¡{fileName} subido!"
+    "success": "¡{fileName} subido!",
+    "not_uploaded": "«{name}» no se subió",
+    "errors": {
+      "storage_full": {
+        "title": "El servidor de archivos está lleno",
+        "description": "El archivo no se guardó porque el servidor que almacena los archivos se quedó sin espacio. Pide al administrador de Plane que libere espacio y vuelve a intentarlo."
+      },
+      "file_too_large": {
+        "title": "El archivo es demasiado grande",
+        "description": "Este archivo supera el tamaño que acepta el servidor. Elige un archivo más pequeño.",
+        "description_with_limit": "Los archivos pueden tener como máximo {limit}. Elige un archivo más pequeño."
+      },
+      "file_type_not_allowed": {
+        "title": "Este tipo de archivo no se acepta",
+        "description": "Aquí no se pueden subir archivos de este tipo. Elige otro archivo."
+      },
+      "network": {
+        "title": "Se perdió la conexión",
+        "description": "El archivo no llegó al servidor. Revisa tu conexión a internet y vuelve a intentarlo."
+      },
+      "link_expired": {
+        "title": "La subida tardó demasiado",
+        "description": "El enlace de subida caducó antes de enviar el archivo. Vuelve a intentarlo."
+      },
+      "not_allowed": {
+        "title": "No puedes subir archivos aquí",
+        "description": "No tienes permiso para añadir archivos aquí o tu sesión ha terminado. Recarga la página y vuelve a intentarlo."
+      },
+      "storage_rejected": {
+        "title": "El servidor de archivos rechazó el archivo",
+        "description": "El servidor que almacena los archivos no aceptó este archivo. Vuelve a intentarlo y, si sigue pasando, avisa al administrador de Plane."
+      },
+      "storage_unavailable": {
+        "title": "El servidor de archivos no responde",
+        "description": "Ahora mismo no se puede acceder al servidor que almacena los archivos. Vuelve a intentarlo en unos minutos."
+      },
+      "server_error": {
+        "title": "Plane no pudo recibir el archivo",
+        "description": "Algo falló en el servidor. Vuelve a intentarlo en unos minutos y, si sigue pasando, avisa al administrador de Plane."
+      },
+      "not_stored": {
+        "title": "El archivo no llegó",
+        "description": "La subida parecía terminada, pero el archivo no está en el servidor. Vuelve a intentarlo."
+      },
+      "not_saved": {
+        "title": "No se pudo completar la subida",
+        "description": "El archivo llegó al servidor, pero Plane no pudo registrarlo. Vuelve a intentarlo en unos minutos."
+      },
+      "unknown": {
+        "title": "No se pudo subir el archivo",
+        "description": "Ocurrió un error inesperado. Vuelve a intentarlo y, si sigue pasando, avisa al administrador de Plane."
+      },
+      "cancelled": {
+        "title": "Subida cancelada",
+        "description": "La subida se detuvo antes de terminar."
+      },
+      "not_an_image": {
+        "title": "Aquí solo se pueden añadir imágenes",
+        "description": "No se añadió: {names}. En el texto solo se pueden insertar imágenes JPEG, PNG, WebP y GIF."
+      }
+    }
   },
   "date": "Fecha",
   "exporter": {

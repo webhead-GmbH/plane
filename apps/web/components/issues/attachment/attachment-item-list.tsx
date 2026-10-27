@@ -76,13 +76,8 @@ export const IssueAttachmentItemList = observer(function IssueAttachmentItemList
 
         setIsUploading(true);
         createAttachment(currentFile)
-          .catch(() => {
-            setToast({
-              type: "error",
-              title: t("toast.error"),
-              message: t("attachment.error"),
-            });
-          })
+          // useAttachmentOperations has already said why the upload failed
+          .catch(() => undefined)
           .finally(() => {
             handleFetchPropertyActivities();
             setIsUploading(false);
@@ -100,7 +95,7 @@ export const IssueAttachmentItemList = observer(function IssueAttachmentItemList
       });
       return;
     },
-    [createAttachment, maxFileSize, workspaceSlug, handleFetchPropertyActivities]
+    [createAttachment, maxFileSize, workspaceSlug, handleFetchPropertyActivities, t]
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -112,8 +107,8 @@ export const IssueAttachmentItemList = observer(function IssueAttachmentItemList
 
   return (
     <>
-      {uploadStatus?.map((uploadStatus) => (
-        <IssueAttachmentsUploadItem key={uploadStatus.id} uploadStatus={uploadStatus} />
+      {uploadStatus?.map((fileStatus) => (
+        <IssueAttachmentsUploadItem key={fileStatus.id} uploadStatus={fileStatus} />
       ))}
       {issueAttachments && (
         <>

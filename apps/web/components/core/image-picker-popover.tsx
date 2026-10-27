@@ -19,11 +19,12 @@ import { Tab, Tabs, TabsList, TabsPanel } from "@makeplane/propel/components/tab
 import { ACCEPTED_COVER_IMAGE_MIME_TYPES_FOR_REACT_DROPZONE, MAX_FILE_SIZE } from "@plane/constants";
 import { Button } from "@makeplane/propel/components/button";
 import { Button as ButtonElement } from "@makeplane/propel/elements/button";
-import { setToast } from "@plane/blocks/toast";
+import { useTranslation } from "@plane/i18n";
 import { EFileAssetType } from "@plane/types";
 import { Loader } from "@plane/blocks/skeleton";
 // helpers
 import { STATIC_COVER_IMAGES, getCoverImageDisplayURL } from "@/helpers/cover-image.helper";
+import { showFileUploadError } from "@/helpers/file-upload-error.helper";
 // hooks
 import { useInstance } from "@/hooks/store/use-instance";
 // services
@@ -56,8 +57,6 @@ type TCoverImageUploadOptions = {
   onChange: (data: string) => void;
   onUploaded: () => void;
 };
-
-type TCoverImageUploadError = { error?: string } | undefined;
 
 type TUnsplashImagesPanelProps<TFieldValues extends FieldValues> = {
   control: Control<TFieldValues>;
@@ -94,6 +93,7 @@ function useCoverImageUpload(options: TCoverImageUploadOptions) {
   const [isImageUploading, setIsImageUploading] = useState(false);
   // router params
   const { workspaceSlug } = useParams();
+  const { t } = useTranslation();
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     // A rejected drop passes no accepted file, so keep the image that was picked before it.
@@ -118,14 +118,10 @@ function useCoverImageUpload(options: TCoverImageUploadOptions) {
       onUploaded();
     };
 
-    const handleUploadError = (logMessage: string) => (error: TCoverImageUploadError) => {
+    const handleUploadError = (logMessage: string) => (error: unknown) => {
       console.error(logMessage, error);
       setIsImageUploading(false);
-      setToast({
-        message: error?.error ?? "The image could not be uploaded",
-        type: "error",
-        title: "Image not uploaded",
-      });
+      showFileUploadError(t, error);
     };
 
     if (isProfileCover) {
@@ -250,7 +246,7 @@ function StaticCoverImagesPanel(props: TStaticCoverImagesPanelProps) {
         >
           <img
             src={imageUrl}
-            alt={`Cover image ${index + 1}`}
+            alt={`Cover ${index + 1}`}
             className="absolute top-0 left-0 h-full w-full cursor-pointer rounded-sm object-cover transition-opacity hover:opacity-80"
           />
         </button>
@@ -282,7 +278,7 @@ function CoverImageUploadPanel(props: TCoverImageUploadPanelProps) {
             <>
               <img
                 src={image ? URL.createObjectURL(image) : getCoverImageDisplayURL(value, "")}
-                alt="image"
+                alt="Selected cover"
                 className="h-full w-full rounded-lg object-cover"
               />
             </>

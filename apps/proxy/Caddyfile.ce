@@ -1,5 +1,10 @@
 (plane_proxy) {
-	request_body {
+	# Request bodies are capped at FILE_SIZE_LIMIT, except the uploads that go straight to
+	# storage. Their form fields add a few KB to the file, so a file just under the limit was
+	# turned away here with a bare 413, and a FILE_SIZE_LIMIT set only for the API was cut
+	# back to this one. Storage enforces the exact size the API signs into each upload link.
+	@not_storage not path /{$BUCKET_NAME}/* /{$BUCKET_NAME}
+	request_body @not_storage {
 		max_size {$FILE_SIZE_LIMIT}
 	}
 

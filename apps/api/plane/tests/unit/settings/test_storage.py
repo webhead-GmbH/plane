@@ -5,7 +5,7 @@
 import os
 from unittest.mock import Mock, patch
 import pytest
-from plane.settings.storage import S3Storage
+from plane.settings.storage import S3Storage, StorageUnavailable
 
 
 @pytest.mark.unit
@@ -222,3 +222,50 @@ class TestS3StorageObjectMetadata:
 
         assert S3Storage().get_object_metadata("ws/missing.png") is None
         assert mock_log.called is logged
+
+
+@pytest.mark.unit
+class TestS3StorageFindObject:
+    """``find_object`` tells a missing object apart from storage that cannot answer."""
+
+    @patch("plane.settings.storage.boto3")
+    def test_a_stored_object_gives_its_metadata(self, mock_boto3):
+        client = Mock()
+        client.head_object.return_value = {"ContentType": "image/png", "ContentLength": 3}
+        mock_boto3.client.return_value = client
+
+        assert S3Storage().find_object("ws/a.png")["ContentLength"] == 3
+
+    @pytest.mark.parametrize("code", ["404", "NoSuchKey", "NotFound"])
+    @patch("plane.settings.storage.boto3")
+    def test_a_missing_object_is_none(self, mock_boto3, code):
+        from botocore.exceptions import ClientError
+
+        client = Mock()
+        client.head_object.side_effect = ClientError({"Error": {"Code": code}}, "HeadObject")
+        mock_boto3.client.return_value = client
+
+        assert S3Storage().find_object("ws/missing.png") is None
+
+    @pytest.mark.parametrize("code", ["403", "500", "SlowDown"])
+    @patch("plane.settings.storage.boto3")
+    def test_any_other_answer_is_not_taken_as_missing(self, mock_boto3, code):
+        from botocore.exceptions import ClientError
+
+        client = Mock()
+        client.head_object.side_effect = ClientError({"Error": {"Code": code}}, "HeadObject")
+        mock_boto3.client.return_value = client
+
+        with pytest.raises(StorageUnavailable):
+            S3Storage().find_object("ws/a.png")
+
+    @patch("plane.settings.storage.boto3")
+    def test_no_answer_at_all_is_not_taken_as_missing(self, mock_boto3):
+        from botocore.exceptions import EndpointConnectionError
+
+        client = Mock()
+        client.head_object.side_effect = EndpointConnectionError(endpoint_url="http://storage:9000")
+        mock_boto3.client.return_value = client
+
+        with pytest.raises(StorageUnavailable):
+            S3Storage().find_object("ws/a.png")

@@ -22,6 +22,7 @@ from ..base import BaseAPIView
 from plane.db.models import FileAsset, Workspace, Project, User, WorkspaceMember, ProjectMember
 from plane.settings.storage import S3Storage
 from plane.app.permissions import allow_permission, ROLE
+from plane.utils.asset_upload import confirm_upload, file_too_large_response, recover_upload
 from plane.utils.cache import invalidate_cache_directly
 from plane.utils.path_validator import sanitize_filename
 from plane.bgtasks.storage_metadata_task import get_asset_object_metadata
@@ -182,6 +183,11 @@ class UserAssetsV2Endpoint(BaseAPIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
+        # Refuse a file over the limit here, with a clear reason, rather than at storage
+        too_large = file_too_large_response(size)
+        if too_large:
+            return too_large
+
         # asset key
         asset_key = f"{uuid.uuid4().hex}-{name}"
 
@@ -212,8 +218,10 @@ class UserAssetsV2Endpoint(BaseAPIView):
     def patch(self, request, asset_id):
         # get the asset id
         asset = FileAsset.objects.get(id=asset_id, user_id=request.user.id)
-        # get the storage metadata
-        asset.is_uploaded = True
+        # Confirm the upload only when its file is in storage
+        not_stored = confirm_upload(asset)
+        if not_stored:
+            return not_stored
         # get the storage metadata
         if not asset.storage_metadata:
             get_asset_object_metadata.delay(asset_id=str(asset_id))
@@ -227,7 +235,7 @@ class UserAssetsV2Endpoint(BaseAPIView):
         # update the attributes
         asset.attributes = request.data.get("attributes", asset.attributes)
         # save the asset
-        asset.save(update_fields=["is_uploaded", "attributes"])
+        asset.save(update_fields=["is_uploaded", "attributes", "storage_metadata"])
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     def delete(self, request, asset_id):
@@ -420,6 +428,11 @@ class WorkspaceFileAssetEndpoint(BaseAPIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
+        # Refuse a file over the limit here, with a clear reason, rather than at storage
+        too_large = file_too_large_response(size)
+        if too_large:
+            return too_large
+
         # Get the size limit
         size_limit = min(settings.FILE_SIZE_LIMIT, size)
 
@@ -469,8 +482,10 @@ class WorkspaceFileAssetEndpoint(BaseAPIView):
                 {"error": "You don't have the required permissions."},
                 status=status.HTTP_403_FORBIDDEN,
             )
-        # get the storage metadata
-        asset.is_uploaded = True
+        # Confirm the upload only when its file is in storage
+        not_stored = confirm_upload(asset)
+        if not_stored:
+            return not_stored
         # get the storage metadata
         if not asset.storage_metadata:
             get_asset_object_metadata.delay(asset_id=str(asset_id))
@@ -484,7 +499,7 @@ class WorkspaceFileAssetEndpoint(BaseAPIView):
         # update the attributes
         asset.attributes = request.data.get("attributes", asset.attributes)
         # save the asset
-        asset.save(update_fields=["is_uploaded", "attributes"])
+        asset.save(update_fields=["is_uploaded", "attributes", "storage_metadata"])
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     @allow_permission([ROLE.ADMIN, ROLE.MEMBER, ROLE.GUEST], level="WORKSPACE")
@@ -519,12 +534,10 @@ class WorkspaceFileAssetEndpoint(BaseAPIView):
                 status=status.HTTP_403_FORBIDDEN,
             )
 
-        # Check if the asset is uploaded
-        if not asset.is_uploaded:
-            return Response(
-                {"error": "The requested asset could not be found."},
-                status=status.HTTP_404_NOT_FOUND,
-            )
+        # Serve it only when its file is in storage, recovering an upload whose confirmation was lost
+        not_servable = recover_upload(asset)
+        if not_servable:
+            return not_servable
 
         # Get the presigned URL
         storage = S3Storage(request=request)
@@ -547,12 +560,10 @@ class StaticFileAssetEndpoint(BaseAPIView):
         # get the asset id
         asset = FileAsset.objects.get(id=asset_id)
 
-        # Check if the asset is uploaded
-        if not asset.is_uploaded:
-            return Response(
-                {"error": "The requested asset could not be found."},
-                status=status.HTTP_404_NOT_FOUND,
-            )
+        # Serve it only when its file is in storage, recovering an upload whose confirmation was lost
+        not_servable = recover_upload(asset)
+        if not_servable:
+            return not_servable
 
         # Check if the entity type is allowed
         if asset.entity_type not in [
@@ -661,6 +672,11 @@ class ProjectAssetEndpoint(BaseAPIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
+        # Refuse a file over the limit here, with a clear reason, rather than at storage
+        too_large = file_too_large_response(size)
+        if too_large:
+            return too_large
+
         # Get the size limit
         size_limit = min(settings.FILE_SIZE_LIMIT, size)
 
@@ -705,8 +721,10 @@ class ProjectAssetEndpoint(BaseAPIView):
                 {"error": "You don't have the required permissions."},
                 status=status.HTTP_403_FORBIDDEN,
             )
-        # get the storage metadata
-        asset.is_uploaded = True
+        # Confirm the upload only when its file is in storage
+        not_stored = confirm_upload(asset)
+        if not_stored:
+            return not_stored
         # get the storage metadata
         if not asset.storage_metadata:
             get_asset_object_metadata.delay(asset_id=str(pk))
@@ -714,7 +732,7 @@ class ProjectAssetEndpoint(BaseAPIView):
         # update the attributes
         asset.attributes = request.data.get("attributes", asset.attributes)
         # save the asset
-        asset.save(update_fields=["is_uploaded", "attributes"])
+        asset.save(update_fields=["is_uploaded", "attributes", "storage_metadata"])
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     @allow_permission([ROLE.ADMIN, ROLE.MEMBER, ROLE.GUEST])
@@ -738,12 +756,10 @@ class ProjectAssetEndpoint(BaseAPIView):
         # get the asset id
         asset = FileAsset.objects.get(workspace__slug=slug, project_id=project_id, pk=pk)
 
-        # Check if the asset is uploaded
-        if not asset.is_uploaded:
-            return Response(
-                {"error": "The requested asset could not be found."},
-                status=status.HTTP_404_NOT_FOUND,
-            )
+        # Serve it only when its file is in storage, recovering an upload whose confirmation was lost
+        not_servable = recover_upload(asset)
+        if not_servable:
+            return not_servable
 
         # Get the presigned URL
         storage = S3Storage(request=request)
@@ -903,12 +919,16 @@ class DuplicateAssetEndpoint(BaseAPIView):
         # Restrict the source asset to the same destination workspace to prevent cross-workspace asset copying
         original_asset = FileAsset.objects.filter(
             id=asset_id,
-            is_uploaded=True,
             workspace=workspace,
         ).first()
 
         if not original_asset:
             return Response({"error": "Asset not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        # Copy it only when its file is in storage, recovering an upload whose confirmation was lost
+        not_servable = recover_upload(original_asset)
+        if not_servable:
+            return not_servable
 
         sanitized_name = sanitize_filename(original_asset.attributes.get("name")) or "unnamed"
         destination_key = f"{workspace.id}/{uuid.uuid4().hex}-{sanitized_name}"
@@ -943,13 +963,17 @@ class WorkspaceAssetDownloadEndpoint(BaseAPIView):
             asset = FileAsset.objects.get(
                 id=asset_id,
                 workspace__slug=slug,
-                is_uploaded=True,
             )
         except FileAsset.DoesNotExist:
             return Response(
                 {"error": "The requested asset could not be found."},
                 status=status.HTTP_404_NOT_FOUND,
             )
+
+        # Serve it only when its file is in storage, recovering an upload whose confirmation was lost
+        not_servable = recover_upload(asset)
+        if not_servable:
+            return not_servable
 
         storage = S3Storage(request=request)
         signed_url = storage.generate_presigned_url(
@@ -971,13 +995,17 @@ class ProjectAssetDownloadEndpoint(BaseAPIView):
                 id=asset_id,
                 workspace__slug=slug,
                 project_id=project_id,
-                is_uploaded=True,
             )
         except FileAsset.DoesNotExist:
             return Response(
                 {"error": "The requested asset could not be found."},
                 status=status.HTTP_404_NOT_FOUND,
             )
+
+        # Serve it only when its file is in storage, recovering an upload whose confirmation was lost
+        not_servable = recover_upload(asset)
+        if not_servable:
+            return not_servable
 
         storage = S3Storage(request=request)
         signed_url = storage.generate_presigned_url(

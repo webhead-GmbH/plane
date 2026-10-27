@@ -880,7 +880,67 @@
     "processing": "Spracováva sa",
     "invalid_file_type": "Neplatný typ súboru",
     "missing_fields": "Chýbajúce polia",
-    "success": "{fileName} nahraný!"
+    "success": "{fileName} nahraný!",
+    "not_uploaded": "Súbor „{name}“ sa nenahral",
+    "errors": {
+      "storage_full": {
+        "title": "Súborový server je plný",
+        "description": "Súbor sa neuložil, pretože na serveri, ktorý ukladá súbory, došlo miesto. Požiadajte správcu Plane o uvoľnenie miesta a skúste to znova."
+      },
+      "file_too_large": {
+        "title": "Súbor je príliš veľký",
+        "description": "Tento súbor je väčší, než server prijíma. Vyberte menší súbor.",
+        "description_with_limit": "Súbory môžu mať najviac {limit}. Vyberte menší súbor."
+      },
+      "file_type_not_allowed": {
+        "title": "Tento typ súboru nie je povolený",
+        "description": "Súbory tohto typu sem nemožno nahrať. Vyberte iný súbor."
+      },
+      "network": {
+        "title": "Spojenie sa prerušilo",
+        "description": "Súbor sa nedostal na server. Skontrolujte pripojenie na internet a skúste to znova."
+      },
+      "link_expired": {
+        "title": "Nahrávanie trvalo príliš dlho",
+        "description": "Odkaz na nahranie vypršal skôr, než sa súbor odoslal. Skúste to znova."
+      },
+      "not_allowed": {
+        "title": "Sem nemôžete nahrávať",
+        "description": "Nemáte oprávnenie pridávať sem súbory, alebo sa vaša relácia skončila. Obnovte stránku a skúste to znova."
+      },
+      "storage_rejected": {
+        "title": "Súborový server súbor odmietol",
+        "description": "Server, ktorý ukladá súbory, tento súbor neprijal. Skúste to znova, a ak sa to bude opakovať, dajte vedieť správcovi Plane."
+      },
+      "storage_unavailable": {
+        "title": "Súborový server neodpovedá",
+        "description": "Server, ktorý ukladá súbory, je teraz nedostupný. Skúste to znova o niekoľko minút."
+      },
+      "server_error": {
+        "title": "Plane súbor neprijal",
+        "description": "Na serveri sa vyskytla chyba. Skúste to znova o niekoľko minút, a ak sa to bude opakovať, dajte vedieť správcovi Plane."
+      },
+      "not_stored": {
+        "title": "Súbor neprišiel",
+        "description": "Nahrávanie vyzeralo ako dokončené, ale súbor na serveri nie je. Skúste to znova."
+      },
+      "not_saved": {
+        "title": "Nahrávanie sa nepodarilo dokončiť",
+        "description": "Súbor sa dostal na server, ale Plane ho nedokázal zaznamenať. Skúste to znova o niekoľko minút."
+      },
+      "unknown": {
+        "title": "Súbor sa nepodarilo nahrať",
+        "description": "Vyskytla sa neočakávaná chyba. Skúste to znova, a ak sa to bude opakovať, dajte vedieť správcovi Plane."
+      },
+      "cancelled": {
+        "title": "Nahrávanie zrušené",
+        "description": "Nahrávanie sa zastavilo pred dokončením."
+      },
+      "not_an_image": {
+        "title": "Sem možno pridať iba obrázky",
+        "description": "Nepridané: {names}. Do textu možno vložiť iba obrázky JPEG, PNG, WebP a GIF."
+      }
+    }
   },
   "date": "Dátum",
   "exporter": {

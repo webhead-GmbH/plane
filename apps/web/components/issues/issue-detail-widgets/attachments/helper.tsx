@@ -6,8 +6,11 @@
 
 import { useMemo } from "react";
 import { setPromiseToast, setToast } from "@plane/blocks/toast";
+import { useTranslation } from "@plane/i18n";
 import type { TIssueServiceType } from "@plane/types";
 import { EIssueServiceType } from "@plane/types";
+// helpers
+import { describeFileUploadError } from "@/helpers/file-upload-error.helper";
 // hooks
 import { useIssueDetail } from "@/hooks/store/use-issue-detail";
 // types
@@ -36,6 +39,7 @@ export const useAttachmentOperations = (
   const {
     attachment: { createAttachment, removeAttachment, getAttachmentsUploadStatusByIssueId },
   } = useIssueDetail(issueServiceType);
+  const { t } = useTranslation();
 
   const attachmentOperations: TAttachmentOperations = useMemo(
     () => ({
@@ -49,8 +53,9 @@ export const useAttachmentOperations = (
             message: () => "The attachment has been successfully uploaded",
           },
           error: {
-            title: "Attachment not uploaded",
-            message: () => "The attachment could not be uploaded",
+            title: t("file_upload.not_uploaded", { name: file.name }),
+            // Why it failed and what to do: storage full, too large, offline, ...
+            message: (error: unknown) => describeFileUploadError(t, error).message,
           },
         });
 
@@ -74,7 +79,7 @@ export const useAttachmentOperations = (
         }
       },
     }),
-    [workspaceSlug, projectId, issueId, createAttachment, removeAttachment]
+    [workspaceSlug, projectId, issueId, createAttachment, removeAttachment, t]
   );
   const attachmentsUploadStatus = getAttachmentsUploadStatusByIssueId(issueId);
 

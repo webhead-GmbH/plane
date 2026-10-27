@@ -27,6 +27,7 @@ import { ImagePickerPopover } from "@/components/core/image-picker-popover";
 import { TimezoneSelect } from "@/components/global";
 // helpers
 import { handleCoverImageChange } from "@/helpers/cover-image.helper";
+import { isFileUploadFailure, showFileUploadError } from "@/helpers/file-upload-error.helper";
 // hooks
 import { useProject } from "@/hooks/store/use-project";
 import { usePlatformOS } from "@/hooks/use-platform-os";
@@ -94,13 +95,13 @@ export function ProjectDetailsForm(props: IProjectDetailsForm) {
   const handleUpdateChange = async (payload: Partial<IProject>) => {
     if (!workspaceSlug || !project) return;
     return updateProject(workspaceSlug.toString(), project.id, payload)
-      .then(() => {
+      .then(() =>
         setToast({
           type: "success",
           title: t("toast.success"),
           message: t("project_settings.general.toast.success"),
-        });
-      })
+        })
+      )
       .catch((err) => {
         try {
           // Handle the new error format where codes are nested in arrays under field names
@@ -180,11 +181,15 @@ export function ProjectDetailsForm(props: IProjectDetailsForm) {
       }
     } catch (error) {
       console.error("Error handling cover image:", error);
-      setToast({
-        type: "error",
-        title: t("toast.error"),
-        message: error instanceof Error ? error.message : "Failed to process cover image",
-      });
+      if (isFileUploadFailure(error)) {
+        showFileUploadError(t, error);
+      } else {
+        setToast({
+          type: "error",
+          title: t("toast.error"),
+          message: error instanceof Error ? error.message : "Failed to process cover image",
+        });
+      }
       setIsLoading(false);
       return;
     }
@@ -193,8 +198,8 @@ export function ProjectDetailsForm(props: IProjectDetailsForm) {
       await projectService
         .checkProjectIdentifierAvailability(workspaceSlug, payload.identifier ?? "")
         .then(async (res) => {
-          if (res.exists) setError("identifier", { message: t("common.identifier_already_exists") });
-          else await handleUpdateChange(payload);
+          if (res.exists) return setError("identifier", { message: t("common.identifier_already_exists") });
+          return handleUpdateChange(payload);
         });
     else await handleUpdateChange(payload);
     setTimeout(() => {
@@ -438,8 +443,8 @@ export function ProjectDetailsForm(props: IProjectDetailsForm) {
                 <>
                   <TimezoneSelect
                     value={value}
-                    onChange={(value: string) => {
-                      onChange(value);
+                    onChange={(timezone: string) => {
+                      onChange(timezone);
                     }}
                     error={Boolean(errors.timezone)}
                     buttonClassName="!border-subtle !shadow-none font-medium rounded-md"

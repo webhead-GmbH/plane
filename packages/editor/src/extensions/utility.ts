@@ -85,6 +85,7 @@ export const UtilityExtension = (props: Props) => {
           disabledExtensions,
           flaggedExtensions,
           editor: this.editor,
+          onUnsupportedFiles: fileHandler.onUnsupportedFiles,
         }),
       ];
     },
@@ -116,7 +117,7 @@ export const UtilityExtension = (props: Props) => {
               uniqueAssets.add(args.asset);
             }
           } else if ("idToRemove" in args) {
-            const asset = this.storage.assetsList.find((asset) => asset.id === args.idToRemove);
+            const asset = this.storage.assetsList.find((item) => item.id === args.idToRemove);
             if (asset) {
               uniqueAssets.delete(asset);
             }

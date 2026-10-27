@@ -9,6 +9,7 @@ avatar/cover can only link (and replace) the user's own asset of the matching
 entity type.
 """
 
+from io import BytesIO
 from unittest.mock import patch
 
 import pytest
@@ -16,6 +17,7 @@ from rest_framework import status
 
 from plane.authentication.adapter.base import Adapter
 from plane.db.models import FileAsset, User, UserNotificationPreference
+from plane.settings.storage import S3Storage
 
 USER_URL = "/api/users/me/"
 NOTIFICATION_PREFERENCE_URL = "/api/users/me/notification-preferences/"
@@ -39,6 +41,11 @@ def _asset(user, entity_type):
         entity_type=entity_type,
         storage_metadata={"size": 1024},
     )
+
+
+def _store(asset):
+    """Put the asset's file in storage, as the browser's upload does before it confirms."""
+    assert S3Storage().upload_file(BytesIO(b"png"), asset.asset.name, "image/png")
 
 
 @pytest.mark.contract
@@ -101,6 +108,7 @@ class TestUserAssetOwner:
         foreign = _asset(other_user, FileAsset.EntityTypeContext.USER_AVATAR)
         User.objects.filter(pk=create_user.pk).update(avatar_asset=foreign)
         new_avatar = _asset(create_user, FileAsset.EntityTypeContext.USER_AVATAR)
+        _store(new_avatar)
 
         response = session_client.patch(_user_asset_url(new_avatar.id), {}, format="json")
 
@@ -128,6 +136,7 @@ class TestUserAssetOwner:
         previous = _asset(create_user, FileAsset.EntityTypeContext.USER_AVATAR)
         User.objects.filter(pk=create_user.pk).update(avatar_asset=previous)
         new_avatar = _asset(create_user, FileAsset.EntityTypeContext.USER_AVATAR)
+        _store(new_avatar)
 
         response = session_client.patch(_user_asset_url(new_avatar.id), {}, format="json")
 

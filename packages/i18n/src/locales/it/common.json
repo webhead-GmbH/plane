@@ -880,7 +880,67 @@
     "processing": "Elaborazione",
     "invalid_file_type": "Tipo di file non valido",
     "missing_fields": "Campi mancanti",
-    "success": "{fileName} Caricato!"
+    "success": "{fileName} Caricato!",
+    "not_uploaded": "«{name}» non è stato caricato",
+    "errors": {
+      "storage_full": {
+        "title": "Il server dei file è pieno",
+        "description": "Il file non è stato salvato perché il server che archivia i file ha esaurito lo spazio. Chiedi all’amministratore di Plane di liberare spazio, poi riprova."
+      },
+      "file_too_large": {
+        "title": "Il file è troppo grande",
+        "description": "Questo file supera la dimensione accettata dal server. Scegli un file più piccolo.",
+        "description_with_limit": "I file possono essere al massimo di {limit}. Scegli un file più piccolo."
+      },
+      "file_type_not_allowed": {
+        "title": "Questo tipo di file non è accettato",
+        "description": "Qui non è possibile caricare file di questo tipo. Scegli un altro file."
+      },
+      "network": {
+        "title": "La connessione si è interrotta",
+        "description": "Il file non ha raggiunto il server. Controlla la connessione a Internet e riprova."
+      },
+      "link_expired": {
+        "title": "Il caricamento ha richiesto troppo tempo",
+        "description": "Il link di caricamento è scaduto prima dell’invio del file. Riprova."
+      },
+      "not_allowed": {
+        "title": "Non puoi caricare file qui",
+        "description": "Non hai il permesso di aggiungere file qui, oppure la sessione è scaduta. Ricarica la pagina e riprova."
+      },
+      "storage_rejected": {
+        "title": "Il server dei file ha rifiutato il file",
+        "description": "Il server che archivia i file non ha accettato questo file. Riprova e, se succede ancora, avvisa l’amministratore di Plane."
+      },
+      "storage_unavailable": {
+        "title": "Il server dei file non risponde",
+        "description": "Al momento il server che archivia i file non è raggiungibile. Riprova tra qualche minuto."
+      },
+      "server_error": {
+        "title": "Plane non è riuscito a ricevere il file",
+        "description": "Si è verificato un errore sul server. Riprova tra qualche minuto e, se succede ancora, avvisa l’amministratore di Plane."
+      },
+      "not_stored": {
+        "title": "Il file non è arrivato",
+        "description": "Il caricamento sembrava completato, ma il file non è sul server. Riprova."
+      },
+      "not_saved": {
+        "title": "Impossibile completare il caricamento",
+        "description": "Il file ha raggiunto il server, ma Plane non è riuscito a registrarlo. Riprova tra qualche minuto."
+      },
+      "unknown": {
+        "title": "Impossibile caricare il file",
+        "description": "Si è verificato un errore imprevisto. Riprova e, se succede ancora, avvisa l’amministratore di Plane."
+      },
+      "cancelled": {
+        "title": "Caricamento annullato",
+        "description": "Il caricamento è stato interrotto prima della fine."
+      },
+      "not_an_image": {
+        "title": "Qui si possono aggiungere solo immagini",
+        "description": "Non aggiunto: {names}. Nel testo si possono inserire solo immagini JPEG, PNG, WebP e GIF."
+      }
+    }
   },
   "date": "Data",
   "exporter": {

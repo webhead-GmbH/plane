@@ -18,6 +18,7 @@ import ProjectCreateHeader from "@/components/project/create/header";
 import ProjectCreateButtons from "@/components/project/create/project-create-buttons";
 // hooks
 import { getCoverImageType, uploadCoverImage } from "@/helpers/cover-image.helper";
+import { isFileUploadFailure, showFileUploadError } from "@/helpers/file-upload-error.helper";
 import { useCustomField } from "@/hooks/store/use-custom-field";
 import { useProject } from "@/hooks/store/use-project";
 import { useProjectCustomFieldValues } from "@/hooks/use-project-custom-field-values";
@@ -94,11 +95,15 @@ export const CreateProjectForm = observer(function CreateProjectForm(props: TCre
           });
         } catch (error) {
           console.error("Error uploading cover image:", error);
-          setToast({
-            type: "error",
-            title: t("toast.error"),
-            message: error instanceof Error ? error.message : "Failed to upload cover image",
-          });
+          if (isFileUploadFailure(error)) {
+            showFileUploadError(t, error);
+          } else {
+            setToast({
+              type: "error",
+              title: t("toast.error"),
+              message: error instanceof Error ? error.message : "Failed to upload cover image",
+            });
+          }
           return Promise.reject(error);
         }
       } else {

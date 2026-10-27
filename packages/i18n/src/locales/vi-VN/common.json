@@ -880,7 +880,67 @@
     "processing": "Đang xử lý",
     "invalid_file_type": "Loại tệp không hợp lệ",
     "missing_fields": "Thiếu trường",
-    "success": "{fileName} đã được tải lên!"
+    "success": "{fileName} đã được tải lên!",
+    "not_uploaded": "Chưa tải lên được “{name}”",
+    "errors": {
+      "storage_full": {
+        "title": "Máy chủ tệp đã đầy",
+        "description": "Tệp chưa được lưu vì máy chủ lưu trữ tệp đã hết dung lượng. Hãy nhờ quản trị viên Plane giải phóng dung lượng, rồi thử lại."
+      },
+      "file_too_large": {
+        "title": "Tệp quá lớn",
+        "description": "Tệp này lớn hơn mức máy chủ chấp nhận. Hãy chọn tệp nhỏ hơn.",
+        "description_with_limit": "Tệp chỉ được tối đa {limit}. Hãy chọn tệp nhỏ hơn."
+      },
+      "file_type_not_allowed": {
+        "title": "Loại tệp này không được chấp nhận",
+        "description": "Không thể tải lên loại tệp này tại đây. Hãy chọn tệp khác."
+      },
+      "network": {
+        "title": "Mất kết nối",
+        "description": "Tệp chưa đến được máy chủ. Hãy kiểm tra kết nối internet và thử lại."
+      },
+      "link_expired": {
+        "title": "Tải lên quá lâu",
+        "description": "Liên kết tải lên đã hết hạn trước khi tệp được gửi. Hãy thử lại."
+      },
+      "not_allowed": {
+        "title": "Bạn không thể tải lên tại đây",
+        "description": "Bạn không có quyền thêm tệp tại đây, hoặc phiên đăng nhập đã hết hạn. Hãy tải lại trang và thử lại."
+      },
+      "storage_rejected": {
+        "title": "Máy chủ tệp đã từ chối tệp",
+        "description": "Máy chủ lưu trữ tệp không chấp nhận tệp này. Hãy thử lại, và nếu vẫn xảy ra, hãy báo cho quản trị viên Plane."
+      },
+      "storage_unavailable": {
+        "title": "Máy chủ tệp không phản hồi",
+        "description": "Hiện không thể kết nối tới máy chủ lưu trữ tệp. Hãy thử lại sau vài phút."
+      },
+      "server_error": {
+        "title": "Plane không nhận được tệp",
+        "description": "Đã xảy ra lỗi trên máy chủ. Hãy thử lại sau vài phút, và nếu vẫn xảy ra, hãy báo cho quản trị viên Plane."
+      },
+      "not_stored": {
+        "title": "Tệp chưa đến nơi",
+        "description": "Quá trình tải lên tưởng như đã xong, nhưng tệp không có trên máy chủ. Hãy thử lại."
+      },
+      "not_saved": {
+        "title": "Không thể hoàn tất tải lên",
+        "description": "Tệp đã đến máy chủ, nhưng Plane không ghi nhận được. Hãy thử lại sau vài phút."
+      },
+      "unknown": {
+        "title": "Không thể tải tệp lên",
+        "description": "Đã xảy ra lỗi không mong muốn. Hãy thử lại, và nếu vẫn xảy ra, hãy báo cho quản trị viên Plane."
+      },
+      "cancelled": {
+        "title": "Đã hủy tải lên",
+        "description": "Quá trình tải lên đã dừng trước khi hoàn tất."
+      },
+      "not_an_image": {
+        "title": "Chỉ có thể thêm hình ảnh tại đây",
+        "description": "Chưa thêm: {names}. Chỉ có thể chèn ảnh JPEG, PNG, WebP và GIF vào văn bản."
+      }
+    }
   },
   "date": "Ngày",
   "exporter": {
