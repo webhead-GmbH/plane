@@ -56,6 +56,7 @@ from plane.db.models import (
     State,
     WorkspaceMember,
 )
+from plane.db.models.project import ProjectNetwork
 from plane.db.models.state import DEFAULT_STATES
 from plane.utils.content_validator import validate_html_content
 from plane.utils.crm_timer_inbound import (
@@ -368,6 +369,8 @@ def _create_project(integration, crm_project_id, name, description, actor):
         name=_free_project_name(workspace_id, name, crm_project_id),
         identifier=identifier,
         description=description,
+        # Private: only the people the CRM project names are added, nobody joins by themselves
+        network=ProjectNetwork.SECRET.value,
     )
     ProjectIdentifier.objects.create(name=project.identifier, project=project, workspace_id=workspace_id)
     ProjectMember.objects.create(project=project, member=actor, workspace_id=workspace_id, role=ROLE.ADMIN.value)

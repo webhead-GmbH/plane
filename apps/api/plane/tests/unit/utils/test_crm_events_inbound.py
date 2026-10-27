@@ -34,6 +34,7 @@ from plane.db.models import (
     ProjectMember,
     State,
 )
+from plane.db.models.project import ProjectNetwork
 from plane.tests.factories import ProjectFactory, UserFactory, WorkspaceFactory, WorkspaceMemberFactory
 from plane.utils.crm_events_inbound import (
     PROJECT_SAVED,
@@ -132,6 +133,8 @@ class TestProjectSaved:
         assert State.objects.filter(project=project).count() > 0
         assert ProjectMember.objects.filter(project=project, member=setup["owner"], role=20).exists()
         assert project.created_by == setup["owner"]
+        # Private, not open for every workspace member to join
+        assert project.network == ProjectNetwork.SECRET.value
 
     def test_a_rename_in_the_crm_renames_the_same_project(self, setup):
         first = apply_project_saved(setup["integration"], crm_project())
@@ -160,6 +163,15 @@ class TestProjectSaved:
         existing.refresh_from_db()
         assert existing.name == "QA Test"
         assert existing.description == "Kept as it is"
+
+    def test_linking_a_project_that_existed_in_plane_keeps_its_network(self, setup):
+        existing = mapped_project(setup, name="Open", identifier="OPEN", description="")
+        Project.objects.filter(id=existing.id).update(network=ProjectNetwork.PUBLIC.value)
+
+        apply_project_saved(setup["integration"], crm_project(name="Open"))
+
+        existing.refresh_from_db()
+        assert existing.network == ProjectNetwork.PUBLIC.value
 
     def test_only_what_changed_in_the_crm_is_carried_over(self, setup):
         existing = mapped_project(setup, name="Shop", identifier="SHOP", description="Written in Plane")
