@@ -128,6 +128,7 @@ class IntakeIssueViewSet(BaseViewSet):
                 attachment_count=FileAsset.objects.filter(
                     issue_id=OuterRef("id"),
                     entity_type=FileAsset.EntityTypeContext.ISSUE_ATTACHMENT,
+                    is_uploaded=True,
                 )
                 .order_by()
                 .annotate(count=Func(F("id"), function="Count"))

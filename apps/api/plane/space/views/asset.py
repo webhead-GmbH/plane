@@ -18,6 +18,7 @@ from rest_framework.response import Response
 from plane.bgtasks.storage_metadata_task import get_asset_object_metadata
 from plane.db.models import DeployBoard, FileAsset, IssueComment
 from plane.settings.storage import S3Storage
+from plane.utils.asset_upload import confirm_upload, file_too_large_response, recover_upload
 from plane.utils.path_validator import sanitize_filename
 
 # Module imports
@@ -64,12 +65,10 @@ class EntityAssetEndpoint(BaseAPIView):
             ],
         )
 
-        # Check if the asset is uploaded
-        if not asset.is_uploaded:
-            return Response(
-                {"error": "The requested asset could not be found."},
-                status=status.HTTP_404_NOT_FOUND,
-            )
+        # Serve it only when its file is in storage, recovering an upload whose confirmation was lost
+        not_servable = recover_upload(asset)
+        if not_servable:
+            return not_servable
 
         # Get the presigned URL. Inline only for an allow-listed image type, which S3Storage
         # pins as the response Content-Type; any other type downloads.
@@ -145,6 +144,11 @@ class EntityAssetEndpoint(BaseAPIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
+        # Refuse a file over the limit here, with a clear reason, rather than at storage
+        too_large = file_too_large_response(size)
+        if too_large:
+            return too_large
+
         # asset key
         asset_key = f"{deploy_board.workspace_id}/{uuid.uuid4().hex}-{name}"
 
@@ -183,8 +187,10 @@ class EntityAssetEndpoint(BaseAPIView):
 
         # get the asset id — scope to project to prevent cross-project IDOR
         asset = FileAsset.objects.get(id=pk, workspace=deploy_board.workspace, project_id=deploy_board.project_id)
-        # get the storage metadata
-        asset.is_uploaded = True
+        # Confirm the upload only when its file is in storage
+        not_stored = confirm_upload(asset)
+        if not_stored:
+            return not_stored
         # get the storage metadata
         if not asset.storage_metadata:
             get_asset_object_metadata.delay(str(asset.id))
@@ -192,7 +198,7 @@ class EntityAssetEndpoint(BaseAPIView):
         # update the attributes
         asset.attributes = request.data.get("attributes", asset.attributes)
         # save the asset
-        asset.save(update_fields=["attributes", "is_uploaded"])
+        asset.save(update_fields=["attributes", "is_uploaded", "storage_metadata"])
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     def delete(self, request, anchor, pk):

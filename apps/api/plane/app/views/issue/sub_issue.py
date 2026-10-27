@@ -67,6 +67,7 @@ class SubIssuesEndpoint(BaseAPIView):
                         FileAsset.objects.filter(
                             issue_id=OuterRef("id"),
                             entity_type=FileAsset.EntityTypeContext.ISSUE_ATTACHMENT,
+                            is_uploaded=True,
                         )
                         .order_by()
                         .values("issue_id")

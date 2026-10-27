@@ -81,6 +81,7 @@ from plane.db.models import (
     Workspace,
 )
 from plane.settings.storage import S3Storage
+from plane.utils.asset_upload import confirm_upload, file_too_large_response, recover_upload
 from plane.utils.attachment_type import attachment_type
 from plane.utils.path_validator import sanitize_filename
 from plane.utils.order_queryset import (
@@ -381,6 +382,7 @@ class IssueListCreateAPIEndpoint(BaseAPIView):
                 attachment_count=FileAsset.objects.filter(
                     issue_id=OuterRef("id"),
                     entity_type=FileAsset.EntityTypeContext.ISSUE_ATTACHMENT,
+                    is_uploaded=True,
                 )
                 .order_by()
                 .annotate(count=Func(F("id"), function="Count"))
@@ -1939,9 +1941,14 @@ class IssueAttachmentListCreateAPIEndpoint(BaseAPIView):
 
         if not type or type not in settings.ATTACHMENT_MIME_TYPES:
             return Response(
-                {"error": "Invalid file type.", "status": False},
+                {"error": "Invalid file type.", "code": "FILE_TYPE_NOT_ALLOWED", "status": False},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+
+        # Refuse a file over the limit here, with a clear reason, rather than at storage
+        too_large = file_too_large_response(size)
+        if too_large:
+            return too_large
 
         # Get the workspace
         workspace = Workspace.objects.get(slug=slug)
@@ -2154,12 +2161,10 @@ class IssueAttachmentDetailAPIEndpoint(BaseAPIView):
         # Get the asset
         asset = FileAsset.objects.get(id=pk, workspace__slug=slug, project_id=project_id)
 
-        # Check if the asset is uploaded
-        if not asset.is_uploaded:
-            return Response(
-                {"error": "The asset is not uploaded.", "status": False},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+        # Serve it only when its file is in storage, recovering an upload whose confirmation was lost
+        not_servable = recover_upload(asset)
+        if not_servable:
+            return not_servable
 
         storage = S3Storage(request=request)
         presigned_url = storage.generate_presigned_url(
@@ -2221,6 +2226,10 @@ class IssueAttachmentDetailAPIEndpoint(BaseAPIView):
 
         # Send this activity only if the attachment is not uploaded before
         if not issue_attachment.is_uploaded:
+            # Confirm the upload only when its file is in storage
+            not_stored = confirm_upload(issue_attachment)
+            if not_stored:
+                return not_stored
             issue_activity.delay(
                 type="attachment.activity.created",
                 requested_data=None,
@@ -2234,7 +2243,6 @@ class IssueAttachmentDetailAPIEndpoint(BaseAPIView):
             )
 
             # Update the attachment
-            issue_attachment.is_uploaded = True
             issue_attachment.created_by = request.user
 
         # Get the storage metadata

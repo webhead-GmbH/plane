@@ -11,12 +11,24 @@ from django.conf import settings
 
 # Third party imports
 import boto3
-from botocore.exceptions import ClientError
+from botocore.config import Config
+from botocore.exceptions import BotoCoreError, ClientError
 from urllib.parse import quote
 
 # Module imports
 from plane.utils.exception_logger import log_exception
 from storages.backends.s3boto3 import S3Boto3Storage
+
+
+# Answers that mean "no such object", as opposed to storage failing to answer
+MISSING_OBJECT_CODES = ("404", "NoSuchKey", "NotFound")
+
+# A lookup made while a person waits must fail fast rather than hang the request
+PROBE_CLIENT_CONFIG = Config(connect_timeout=5, read_timeout=10, retries={"max_attempts": 2})
+
+
+class StorageUnavailable(Exception):
+    """Storage could not say whether an object exists."""
 
 
 class S3Storage(S3Boto3Storage):
@@ -25,7 +37,7 @@ class S3Storage(S3Boto3Storage):
 
     """S3 storage class to generate presigned URLs for S3 objects"""
 
-    def __init__(self, request=None, is_server=False):
+    def __init__(self, request=None, is_server=False, client_config=None):
         # is_server: the public API's asset endpoints pass it for uploads another server
         # makes rather than a browser. Links are signed for the address the caller reached
         # the API on either way, which is one it can evidently reach, so nothing differs.
@@ -41,6 +53,10 @@ class S3Storage(S3Boto3Storage):
         self.aws_s3_endpoint_url = os.environ.get("AWS_S3_ENDPOINT_URL") or os.environ.get("MINIO_ENDPOINT_URL")
         # Use the SIGNED_URL_EXPIRATION environment variable for the expiration time (default: 3600 seconds)
         self.signed_url_expiration = int(os.environ.get("SIGNED_URL_EXPIRATION", "3600"))
+        # client_config adds client settings such as timeouts on top of the signature version
+        config = boto3.session.Config(signature_version="s3v4")
+        if client_config is not None:
+            config = config.merge(client_config)
 
         if os.environ.get("USE_MINIO") == "1":
             # Determine protocol based on environment variable
@@ -55,7 +71,7 @@ class S3Storage(S3Boto3Storage):
                 aws_secret_access_key=self.aws_secret_access_key,
                 region_name=self.aws_region,
                 endpoint_url=(f"{endpoint_protocol}://{request.get_host()}" if request else self.aws_s3_endpoint_url),
-                config=boto3.session.Config(signature_version="s3v4"),
+                config=config,
             )
         else:
             # Create an S3 client
@@ -65,7 +81,7 @@ class S3Storage(S3Boto3Storage):
                 aws_secret_access_key=self.aws_secret_access_key,
                 region_name=self.aws_region,
                 endpoint_url=self.aws_s3_endpoint_url,
-                config=boto3.session.Config(signature_version="s3v4"),
+                config=config,
             )
 
     def generate_presigned_post(self, object_name, file_type, file_size, expiration=None):
@@ -159,10 +175,32 @@ class S3Storage(S3Boto3Storage):
             response = self.s3_client.head_object(Bucket=self.aws_storage_bucket_name, Key=object_name)
         except ClientError as e:
             # A missing object (upload never completed) is expected, not an error
-            if e.response.get("Error", {}).get("Code") not in ("404", "NoSuchKey"):
+            if e.response.get("Error", {}).get("Code") not in MISSING_OBJECT_CODES:
                 log_exception(e)
             return None
 
+        return self._object_metadata(response)
+
+    def find_object(self, object_name):
+        """The metadata of a stored object, or None when storage has no such object.
+
+        Unlike get_object_metadata, a failure to reach storage is not reported as a
+        missing object: it raises StorageUnavailable, so that nothing is decided about
+        a file that may well be there.
+        """
+        try:
+            response = self.s3_client.head_object(Bucket=self.aws_storage_bucket_name, Key=object_name)
+        except ClientError as e:
+            if e.response.get("Error", {}).get("Code") in MISSING_OBJECT_CODES:
+                return None
+            raise StorageUnavailable(str(e)) from e
+        except BotoCoreError as e:
+            raise StorageUnavailable(str(e)) from e
+
+        return self._object_metadata(response)
+
+    @staticmethod
+    def _object_metadata(response):
         return {
             "ContentType": response.get("ContentType"),
             "ContentLength": response.get("ContentLength"),

@@ -12,6 +12,7 @@ active member of the asset's project. The legacy routes keyed by asset path foll
 the same rules.
 """
 
+from io import BytesIO
 from uuid import uuid4
 
 import pytest
@@ -19,6 +20,7 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 from plane.db.models import FileAsset, ProjectMember
+from plane.settings.storage import S3Storage
 from plane.tests.factories import ProjectFactory, ProjectMemberFactory, UserFactory, WorkspaceMemberFactory
 
 ADMIN, MEMBER, GUEST = 20, 15, 5
@@ -52,6 +54,11 @@ def _asset(workspace, created_by, entity_type, project=None, is_uploaded=True):
     # Outside a request BaseModel.save() clears created_by unless it is passed here
     asset.save(created_by_id=created_by.id)
     return asset
+
+
+def _store(asset):
+    """Put the asset's file in storage, as the browser's upload does before it confirms."""
+    assert S3Storage().upload_file(BytesIO(b"png"), asset.asset.name, "image/png")
 
 
 def _project_url(workspace, project, asset):
@@ -134,6 +141,7 @@ class TestProjectAssetRoleScope:
     def test_guest_uploader_can_confirm_and_delete_own_asset(self, workspace, project, entity_type):
         guest = _user(workspace, project, workspace_role=GUEST)
         asset = _asset(workspace, guest, entity_type, project, is_uploaded=False)
+        _store(asset)
         client = _client(guest)
         url = _project_url(workspace, project, asset)
         response = client.patch(url, {"attributes": {"name": "own.png"}}, format="json")
@@ -252,5 +260,6 @@ class TestBrandingAssetRoleScope:
         """A cover uploaded before its project exists is confirmed by its uploader."""
         user = _user(workspace, workspace_role=MEMBER)
         cover = _asset(workspace, user, FileAsset.EntityTypeContext.PROJECT_COVER, is_uploaded=False)
+        _store(cover)
         response = _client(user).patch(_workspace_url(workspace, cover))
         assert response.status_code == status.HTTP_204_NO_CONTENT

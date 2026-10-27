@@ -17,6 +17,7 @@ from drf_spectacular.utils import OpenApiExample, OpenApiRequest
 # Module Imports
 from plane.bgtasks.storage_metadata_task import get_asset_object_metadata
 from plane.settings.storage import S3Storage
+from plane.utils.asset_upload import confirm_upload, file_too_large_response, recover_upload
 from plane.utils.attachment_type import attachment_type
 from plane.utils.path_validator import sanitize_filename
 from plane.db.models import FileAsset, User, Workspace
@@ -149,6 +150,11 @@ class UserAssetEndpoint(BaseAPIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
+        # Refuse a file over the limit here, with a clear reason, rather than at storage
+        too_large = file_too_large_response(size)
+        if too_large:
+            return too_large
+
         # asset key
         asset_key = f"{uuid.uuid4().hex}-{name}"
 
@@ -211,15 +217,17 @@ class UserAssetEndpoint(BaseAPIView):
         """
         # get the asset id
         asset = FileAsset.objects.get(id=asset_id, user_id=request.user.id)
-        # get the storage metadata
-        asset.is_uploaded = True
+        # Confirm the upload only when its file is in storage
+        not_stored = confirm_upload(asset)
+        if not_stored:
+            return not_stored
         # get the storage metadata
         if not asset.storage_metadata:
             get_asset_object_metadata.delay(asset_id=str(asset_id))
         # update the attributes
         asset.attributes = request.data.get("attributes", asset.attributes)
         # save the asset
-        asset.save(update_fields=["is_uploaded", "attributes"])
+        asset.save(update_fields=["is_uploaded", "attributes", "storage_metadata"])
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     @asset_docs(
@@ -322,6 +330,11 @@ class UserServerAssetEndpoint(BaseAPIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
+        # Refuse a file over the limit here, with a clear reason, rather than at storage
+        too_large = file_too_large_response(size)
+        if too_large:
+            return too_large
+
         # asset key
         asset_key = f"{uuid.uuid4().hex}-{name}"
 
@@ -367,15 +380,17 @@ class UserServerAssetEndpoint(BaseAPIView):
         """
         # get the asset id
         asset = FileAsset.objects.get(id=asset_id, user_id=request.user.id)
-        # get the storage metadata
-        asset.is_uploaded = True
+        # Confirm the upload only when its file is in storage
+        not_stored = confirm_upload(asset)
+        if not_stored:
+            return not_stored
         # get the storage metadata
         if not asset.storage_metadata:
             get_asset_object_metadata.delay(asset_id=str(asset_id))
         # update the attributes
         asset.attributes = request.data.get("attributes", asset.attributes)
         # save the asset
-        asset.save(update_fields=["is_uploaded", "attributes"])
+        asset.save(update_fields=["is_uploaded", "attributes", "storage_metadata"])
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     @asset_docs(
@@ -438,12 +453,10 @@ class GenericAssetEndpoint(BaseAPIView):
             # Get the asset
             asset = FileAsset.objects.get(id=asset_id, workspace_id=workspace.id, is_deleted=False)
 
-            # Check if the asset exists and is uploaded
-            if not asset.is_uploaded:
-                return Response(
-                    {"error": "Asset not yet uploaded"},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
+            # Serve it only when its file is in storage, recovering an upload whose confirmation was lost
+            not_servable = recover_upload(asset)
+            if not_servable:
+                return not_servable
 
             # Generate presigned URL for GET. Inline only for an allow-listed image type, which S3Storage
             # pins as the response Content-Type; any other type downloads.
@@ -531,9 +544,14 @@ class GenericAssetEndpoint(BaseAPIView):
         # Check if the file type is allowed
         if not type or type not in settings.ATTACHMENT_MIME_TYPES:
             return Response(
-                {"error": "Invalid file type.", "status": False},
+                {"error": "Invalid file type.", "code": "FILE_TYPE_NOT_ALLOWED", "status": False},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+
+        # Refuse a file over the limit here, with a clear reason, rather than at storage
+        too_large = file_too_large_response(size)
+        if too_large:
+            return too_large
 
         # Get the workspace
         workspace = Workspace.objects.get(slug=slug)
@@ -616,14 +634,20 @@ class GenericAssetEndpoint(BaseAPIView):
         try:
             asset = FileAsset.objects.get(id=asset_id, workspace__slug=slug, is_deleted=False)
 
-            # Update is_uploaded status
-            asset.is_uploaded = request.data.get("is_uploaded", asset.is_uploaded)
+            # Update is_uploaded status, confirming an upload only when its file is in storage
+            is_uploaded = request.data.get("is_uploaded", asset.is_uploaded)
+            if is_uploaded and not asset.is_uploaded:
+                not_stored = confirm_upload(asset)
+                if not_stored:
+                    return not_stored
+            else:
+                asset.is_uploaded = is_uploaded
 
             # Update storage metadata if not present
             if not asset.storage_metadata:
                 get_asset_object_metadata.delay(asset_id=str(asset_id))
 
-            asset.save(update_fields=["is_uploaded"])
+            asset.save(update_fields=["is_uploaded", "storage_metadata"])
 
             return Response(status=status.HTTP_204_NO_CONTENT)
         except FileAsset.DoesNotExist:

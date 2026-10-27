@@ -182,6 +182,7 @@ class DynamicBaseSerializer(BaseSerializer):
                     issue_attachments = FileAsset.objects.filter(
                         issue_id=issue_id,
                         entity_type=FileAsset.EntityTypeContext.ISSUE_ATTACHMENT,
+                        is_uploaded=True,
                     )
                     # Serialize issue_attachments and add them to the response
                     response["issue_attachments"] = IssueAttachmentLiteSerializer(issue_attachments, many=True).data

@@ -11,6 +11,7 @@ the URL slug, regardless of the workspace their Personal Access Token came
 from.
 """
 
+from io import BytesIO
 from unittest import mock
 from uuid import uuid4
 
@@ -135,6 +136,8 @@ class TestGenericAssetCrossWorkspaceIDOR:
             is_uploaded=False,
             storage_metadata={"size": 10},
         )
+        # The upload itself, which the confirmation now checks for
+        assert S3Storage().upload_file(BytesIO(b"pdf"), asset.asset.name, "application/pdf")
         url = self.detail_url(workspace.slug, asset.id)
 
         response = api_key_client.patch(url, {"is_uploaded": True}, format="json")
