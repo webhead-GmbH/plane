@@ -12,6 +12,7 @@
   cannot exceed the target's workspace role.
 """
 
+from io import BytesIO
 from unittest import mock
 from uuid import uuid4
 
@@ -30,6 +31,7 @@ from plane.db.models import (
     User,
     WorkspaceMember,
 )
+from plane.settings.storage import S3Storage
 
 ADMIN, MEMBER, GUEST = 20, 15, 5
 
@@ -305,6 +307,8 @@ class TestAttachmentDelete:
         self, client_for, workspace, project, issue, create_user, member_user
     ):
         asset = _attachment(workspace, project, issue, create_user, is_uploaded=False)
+        # The upload itself, which the confirmation checks for
+        assert S3Storage().upload_file(BytesIO(b"x"), asset.asset.name, "text/plain")
         url = _attachment_url(workspace, project, issue, asset)
         client = client_for(member_user)
         with (

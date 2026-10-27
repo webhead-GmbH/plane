@@ -12,8 +12,16 @@ with a mock, which is why they never met it.
 import pytest
 from rest_framework import status
 
-from plane.db.models import FileAsset
+from plane.db.models import FileAsset, Project, ProjectMember
 from plane.settings.storage import S3Storage
+
+
+@pytest.fixture
+def project(db, workspace, create_user):
+    # A generic asset is an issue attachment, so its link needs a project the caller is in
+    project = Project.objects.create(name="Assets", identifier="ASSET", workspace=workspace, created_by=create_user)
+    ProjectMember.objects.create(project=project, member=create_user, role=20, is_active=True)
+    return project
 
 
 @pytest.mark.unit
@@ -34,10 +42,10 @@ class TestAssetUploadLinks:
         assert response.status_code == status.HTTP_200_OK
         assert response.data["upload_data"]["fields"]["Content-Type"] == "image/png"
 
-    def test_a_generic_asset_gets_its_link_and_can_be_read_back(self, api_key_client, workspace):
+    def test_a_generic_asset_gets_its_link_and_can_be_read_back(self, api_key_client, workspace, project):
         created = api_key_client.post(
             f"/api/v1/workspaces/{workspace.slug}/assets/",
-            {"name": "report.pdf", "type": "application/pdf", "size": 1024},
+            {"name": "report.pdf", "type": "application/pdf", "size": 1024, "project_id": str(project.id)},
             format="json",
         )
         assert created.status_code == status.HTTP_200_OK
@@ -50,10 +58,10 @@ class TestAssetUploadLinks:
         assert read.status_code == status.HTTP_200_OK
         assert asset.asset.name in read.data["asset_url"]
 
-    def test_a_generic_text_asset_sent_without_a_type_is_accepted(self, api_key_client, workspace):
+    def test_a_generic_text_asset_sent_without_a_type_is_accepted(self, api_key_client, workspace, project):
         response = api_key_client.post(
             f"/api/v1/workspaces/{workspace.slug}/assets/",
-            {"name": "notes.md", "type": "", "size": 120},
+            {"name": "notes.md", "type": "", "size": 120, "project_id": str(project.id)},
             format="json",
         )
 
