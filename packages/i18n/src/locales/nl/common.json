@@ -880,7 +880,67 @@
     "processing": "Verwerken",
     "invalid_file_type": "Ongeldig bestandstype",
     "missing_fields": "Ontbrekende velden",
-    "success": "{fileName} geüpload!"
+    "success": "{fileName} geüpload!",
+    "not_uploaded": "‘{name}’ is niet geüpload",
+    "errors": {
+      "storage_full": {
+        "title": "De bestandsserver is vol",
+        "description": "Het bestand is niet opgeslagen, omdat de server waarop bestanden worden bewaard geen ruimte meer heeft. Vraag je Plane-beheerder om ruimte vrij te maken en probeer het daarna opnieuw."
+      },
+      "file_too_large": {
+        "title": "Het bestand is te groot",
+        "description": "Dit bestand is groter dan de server accepteert. Kies een kleiner bestand.",
+        "description_with_limit": "Bestanden mogen maximaal {limit} groot zijn. Kies een kleiner bestand."
+      },
+      "file_type_not_allowed": {
+        "title": "Dit bestandstype wordt niet geaccepteerd",
+        "description": "Bestanden van dit type kunnen hier niet worden geüpload. Kies een ander bestand."
+      },
+      "network": {
+        "title": "De verbinding is verbroken",
+        "description": "Het bestand heeft de server niet bereikt. Controleer je internetverbinding en probeer het opnieuw."
+      },
+      "link_expired": {
+        "title": "Het uploaden duurde te lang",
+        "description": "De uploadlink is verlopen voordat het bestand was verzonden. Probeer het opnieuw."
+      },
+      "not_allowed": {
+        "title": "Je kunt hier niets uploaden",
+        "description": "Je hebt geen toestemming om hier bestanden toe te voegen, of je sessie is verlopen. Laad de pagina opnieuw en probeer het nog eens."
+      },
+      "storage_rejected": {
+        "title": "De bestandsserver heeft het bestand geweigerd",
+        "description": "De server waarop bestanden worden bewaard heeft dit bestand niet geaccepteerd. Probeer het opnieuw en laat het je Plane-beheerder weten als het blijft gebeuren."
+      },
+      "storage_unavailable": {
+        "title": "De bestandsserver reageert niet",
+        "description": "De server waarop bestanden worden bewaard is nu niet bereikbaar. Probeer het over een paar minuten opnieuw."
+      },
+      "server_error": {
+        "title": "Plane kon het bestand niet aannemen",
+        "description": "Er ging iets mis op de server. Probeer het over een paar minuten opnieuw en laat het je Plane-beheerder weten als het blijft gebeuren."
+      },
+      "not_stored": {
+        "title": "Het bestand is niet aangekomen",
+        "description": "Het uploaden leek klaar, maar het bestand staat niet op de server. Probeer het opnieuw."
+      },
+      "not_saved": {
+        "title": "Het uploaden kon niet worden afgerond",
+        "description": "Het bestand heeft de server bereikt, maar Plane kon het niet vastleggen. Probeer het over een paar minuten opnieuw."
+      },
+      "unknown": {
+        "title": "Het bestand kon niet worden geüpload",
+        "description": "Er ging iets onverwachts mis. Probeer het opnieuw en laat het je Plane-beheerder weten als het blijft gebeuren."
+      },
+      "cancelled": {
+        "title": "Uploaden geannuleerd",
+        "description": "Het uploaden is gestopt voordat het klaar was."
+      },
+      "not_an_image": {
+        "title": "Hier kunnen alleen afbeeldingen worden toegevoegd",
+        "description": "Niet toegevoegd: {names}. Alleen JPEG-, PNG-, WebP- en GIF-afbeeldingen kunnen in de tekst."
+      }
+    }
   },
   "date": "Datum",
   "exporter": {

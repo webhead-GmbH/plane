@@ -6,6 +6,7 @@
 
 import type { AxiosRequestConfig } from "axios";
 import axios from "axios";
+import { toFileUploadError } from "@plane/services";
 // services
 import { APIService } from "@/services/api.service";
 
@@ -33,16 +34,12 @@ export class FileUploadService extends APIService {
     })
       .then((response) => response?.data)
       .catch((error) => {
-        // oxlint-disable-next-line import/no-named-as-default-member -- isCancel is accessed via the default export at runtime
-        if (axios.isCancel(error)) {
-          console.log(error.message);
-        } else {
-          throw error?.response?.data;
-        }
+        // Why storage did not take the file, including a cancelled upload
+        throw toFileUploadError(error, "upload");
       });
   }
 
   cancelUpload() {
-    this.cancelSource.cancel("Upload canceled");
+    this.cancelSource?.cancel("Upload canceled");
   }
 }

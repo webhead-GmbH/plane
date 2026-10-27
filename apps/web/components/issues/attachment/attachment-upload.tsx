@@ -33,7 +33,11 @@ export const IssueAttachmentUpload = observer(function IssueAttachmentUpload(pro
       if (!currentFile || !workspaceSlug) return;
 
       setIsLoading(true);
-      attachmentOperations.create(currentFile).finally(() => setIsLoading(false));
+      attachmentOperations
+        .create(currentFile)
+        // The attachment operations have already said why the upload failed
+        .catch(() => undefined)
+        .finally(() => setIsLoading(false));
     },
     [attachmentOperations, workspaceSlug]
   );

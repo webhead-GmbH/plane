@@ -19,15 +19,21 @@ import { useUploader, useDropZone, uploadFirstFileAndInsertRemaining } from "@/h
 // local imports
 import { ECustomImageStatus } from "../types";
 import { getImageComponentImageFileMap } from "../utils";
-import type { CustomImageNodeViewProps } from "./node-view";
+import type { CustomImageNodeViewProps, TImageUploadFailure } from "./node-view";
 
 type CustomImageUploaderProps = CustomImageNodeViewProps & {
   failedToLoadImage: boolean;
   hasDuplicationFailed: boolean;
   loadImageFromFileSystem: (file: string) => void;
   maxFileSize: number;
+  onUploadFailure: (failure: TImageUploadFailure | undefined) => void;
   setIsUploaded: (isUploaded: boolean) => void;
+  uploadFailure: TImageUploadFailure | undefined;
 };
+
+// The host app throws an Error whose message already says why, in the reader's language
+const getUploadFailureMessage = (error: unknown) =>
+  error instanceof Error && error.message ? error.message : "The image could not be uploaded.";
 
 type UploaderBorderColorArgs = {
   isEditable: boolean;
@@ -44,22 +50,27 @@ const getUploaderBorderColor = ({ isEditable, isErrorState, selected }: Uploader
 type CustomImageRetryButtonProps = Pick<
   CustomImageUploaderProps,
   "editor" | "hasDuplicationFailed" | "selected" | "updateAttributes"
->;
+> & {
+  onRetryUpload?: () => void;
+};
 
 function CustomImageRetryButton(props: CustomImageRetryButtonProps) {
-  const { editor, hasDuplicationFailed, selected, updateAttributes } = props;
+  const { editor, hasDuplicationFailed, onRetryUpload, selected, updateAttributes } = props;
 
   const handleRetryClick = useCallback(
     (e: React.MouseEvent) => {
       e.stopPropagation();
-      if (hasDuplicationFailed && editor.isEditable) {
+      if (!editor.isEditable) return;
+      if (onRetryUpload) {
+        onRetryUpload();
+      } else if (hasDuplicationFailed) {
         updateAttributes({ status: ECustomImageStatus.DUPLICATING });
       }
     },
-    [hasDuplicationFailed, editor.isEditable, updateAttributes]
+    [hasDuplicationFailed, editor.isEditable, onRetryUpload, updateAttributes]
   );
 
-  if (!hasDuplicationFailed || !editor.isEditable) return null;
+  if ((!hasDuplicationFailed && !onRetryUpload) || !editor.isEditable) return null;
 
   return (
     <button
@@ -71,7 +82,7 @@ function CustomImageRetryButton(props: CustomImageRetryButtonProps) {
           "hover:bg-danger-subtle-hover": selected,
         }
       )}
-      title="Retry duplication"
+      title={onRetryUpload ? "Upload the same image again" : "Retry duplication"}
     >
       <RefreshOutline className="size-3" />
       <span className="text-11">Retry</span>
@@ -88,10 +99,12 @@ export function CustomImageUploader(props: CustomImageUploaderProps) {
     loadImageFromFileSystem,
     maxFileSize,
     node,
+    onUploadFailure,
     selected,
     setIsUploaded,
     updateAttributes,
     hasDuplicationFailed,
+    uploadFailure,
   } = props;
   // refs
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -146,10 +159,21 @@ export function CustomImageUploader(props: CustomImageUploaderProps) {
 
   const uploadImageEditorCommand = useCallback(
     async (file: File) => {
+      onUploadFailure(undefined);
       updateAttributes({ status: ECustomImageStatus.UPLOADING });
       return await extension.options.uploadImage?.(imageEntityId ?? "", file);
     },
-    [extension.options, imageEntityId, updateAttributes]
+    [extension.options, imageEntityId, onUploadFailure, updateAttributes]
+  );
+
+  const handleUploadError = useCallback(
+    (error: unknown, file: File) => {
+      // The failure keeps the file for "Try again". Its queued entry must go, or the uploader that
+      // shows the failure would find it on mount and upload it again, over and over.
+      if (imageEntityId) imageComponentImageFileMap?.delete(imageEntityId);
+      onUploadFailure({ file, message: getUploadFailureMessage(error) });
+    },
+    [imageComponentImageFileMap, imageEntityId, onUploadFailure]
   );
 
   const handleProgressStatus = useCallback(
@@ -172,7 +196,12 @@ export function CustomImageUploader(props: CustomImageUploaderProps) {
     maxFileSize,
     onInvalidFile: handleInvalidFile,
     onUpload,
+    onUploadError: handleUploadError,
   });
+
+  const retryUpload = useCallback(() => {
+    if (uploadFailure) void uploadFile(uploadFailure.file);
+  }, [uploadFailure, uploadFile]);
 
   const { draggedInside, onDrop, onDragEnter, onDragLeave } = useDropZone({
     editor,
@@ -224,18 +253,22 @@ export function CustomImageUploader(props: CustomImageUploaderProps) {
     [uploadFile, editor, getPos]
   );
 
-  const isErrorState = failedToLoadImage || hasDuplicationFailed;
+  const isErrorState = failedToLoadImage || hasDuplicationFailed || !!uploadFailure;
 
   const borderColor = getUploaderBorderColor({ isEditable: editor.isEditable, isErrorState, selected });
 
   const getDisplayMessage = useCallback(() => {
     const isUploading = isImageBeingUploaded;
-    if (isErrorState) {
-      return "Error loading image";
-    }
-
     if (isUploading) {
       return "Uploading...";
+    }
+
+    if (uploadFailure) {
+      return uploadFailure.message;
+    }
+
+    if (isErrorState) {
+      return "Error loading image";
     }
 
     if (draggedInside && editor.isEditable) {
@@ -243,9 +276,10 @@ export function CustomImageUploader(props: CustomImageUploaderProps) {
     }
 
     return "Add an image";
-  }, [draggedInside, editor.isEditable, isErrorState, isImageBeingUploaded]);
+  }, [draggedInside, editor.isEditable, isErrorState, isImageBeingUploaded, uploadFailure]);
 
   return (
+    // oxlint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions -- it holds the Retry button, so it cannot be a button itself; the file input does the picking
     <div
       className={cn(
         "image-upload-component flex cursor-default items-center justify-start gap-2 rounded-lg border border-dashed bg-layer-3 px-2 py-3 text-tertiary transition-all duration-200 ease-in-out",
@@ -259,6 +293,8 @@ export function CustomImageUploader(props: CustomImageUploaderProps) {
           "hover:bg-danger-subtle-hover hover:text-danger-primary": isErrorState && editor.isEditable,
           "bg-danger-subtle-selected": isErrorState && selected,
           "hover:bg-danger-subtle-active": isErrorState && selected && editor.isEditable,
+          // after a failed upload another image can still be chosen
+          "cursor-pointer": !!uploadFailure && editor.isEditable,
         }
       )}
       style={borderColor ? { borderColor } : undefined}
@@ -277,6 +313,7 @@ export function CustomImageUploader(props: CustomImageUploaderProps) {
       <CustomImageRetryButton
         editor={editor}
         hasDuplicationFailed={hasDuplicationFailed}
+        onRetryUpload={uploadFailure ? retryUpload : undefined}
         selected={selected}
         updateAttributes={updateAttributes}
       />

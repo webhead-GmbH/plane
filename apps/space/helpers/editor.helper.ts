@@ -7,8 +7,11 @@
 // plane imports
 import { MAX_FILE_SIZE } from "@plane/constants";
 import type { TFileHandler } from "@plane/editor";
+import type { TTranslationStore } from "@plane/i18n";
 import { SitesFileService } from "@plane/services";
 import { getFileURL } from "@plane/utils";
+// helpers
+import { describeFileUploadError, showFileUploadError, showUnsupportedEditorFiles } from "./file-upload-error.helper";
 // services
 const sitesFileService = new SitesFileService();
 
@@ -23,6 +26,7 @@ export const getEditorAssetSrc = (anchor: string, assetId: string): string | und
 
 type TArgs = {
   anchor: string;
+  t: TTranslationStore["t"];
   uploadFile: TFileHandler["upload"];
   workspaceId: string;
 };
@@ -32,7 +36,7 @@ type TArgs = {
  * @param {TArgs} args
  */
 export const getEditorFileHandlers = (args: TArgs): TFileHandler => {
-  const { anchor, uploadFile, workspaceId } = args;
+  const { anchor, t, uploadFile, workspaceId } = args;
 
   const getAssetSrc = async (path: string) => {
     if (!path) return "";
@@ -48,7 +52,16 @@ export const getEditorFileHandlers = (args: TArgs): TFileHandler => {
     assetsUploadStatus: {},
     getAssetDownloadSrc: getAssetSrc,
     getAssetSrc: getAssetSrc,
-    upload: uploadFile,
+    upload: async (blockId, file) => {
+      try {
+        return await uploadFile(blockId, file);
+      } catch (error) {
+        showFileUploadError(t, error);
+        // The editor shows this next to the image, with a way to try again
+        throw new Error(describeFileUploadError(t, error).message, { cause: error });
+      }
+    },
+    onUnsupportedFiles: (files) => showUnsupportedEditorFiles(t, files),
     delete: async (src: string) => {
       if (src?.startsWith("http")) {
         await sitesFileService.deleteOldEditorAsset(workspaceId, src);

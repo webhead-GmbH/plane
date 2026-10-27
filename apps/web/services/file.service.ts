@@ -7,7 +7,12 @@
 import type { AxiosRequestConfig } from "axios";
 // plane types
 import { API_BASE_URL } from "@plane/constants";
-import { getFileMetaDataForUpload, generateFileUploadPayload } from "@plane/services";
+import {
+  confirmFileUpload,
+  getFileMetaDataForUpload,
+  generateFileUploadPayload,
+  toFileUploadError,
+} from "@plane/services";
 import type { EFileAssetType, TFileEntityInfo, TFileSignedURLResponse } from "@plane/types";
 import { getAssetIdFromUrl } from "@plane/utils";
 // helpers
@@ -51,7 +56,6 @@ export enum TFileAssetType {
 }
 
 export class FileService extends APIService {
-  private cancelSource: any;
   private fileUploadService: FileUploadService;
 
   constructor() {
@@ -62,11 +66,8 @@ export class FileService extends APIService {
   }
 
   private async updateWorkspaceAssetUploadStatus(workspaceSlug: string, assetId: string): Promise<void> {
-    return this.patch(`/api/assets/v2/workspaces/${workspaceSlug}/${assetId}/`)
-      .then((response) => response?.data)
-      .catch((error) => {
-        throw error?.response?.data;
-      });
+    // The raw error reaches confirmFileUpload, which tells a lost request from a refusal
+    return this.patch(`/api/assets/v2/workspaces/${workspaceSlug}/${assetId}/`).then((response) => response?.data);
   }
 
   async uploadWorkspaceAsset(
@@ -88,11 +89,13 @@ export class FileService extends APIService {
           fileUploadPayload,
           uploadProgressHandler
         );
-        await this.updateWorkspaceAssetUploadStatus(workspaceSlug.toString(), signedURLResponse.asset_id);
+        await confirmFileUpload(() =>
+          this.updateWorkspaceAssetUploadStatus(workspaceSlug.toString(), signedURLResponse.asset_id)
+        );
         return signedURLResponse;
       })
       .catch((error) => {
-        throw error?.response?.data;
+        throw toFileUploadError(error, "prepare");
       });
   }
 
@@ -109,11 +112,10 @@ export class FileService extends APIService {
     projectId: string,
     assetId: string
   ): Promise<void> {
-    return this.patch(`/api/assets/v2/workspaces/${workspaceSlug}/projects/${projectId}/${assetId}/`)
-      .then((response) => response?.data)
-      .catch((error) => {
-        throw error?.response?.data;
-      });
+    // The raw error reaches confirmFileUpload, which tells a lost request from a refusal
+    return this.patch(`/api/assets/v2/workspaces/${workspaceSlug}/projects/${projectId}/${assetId}/`).then(
+      (response) => response?.data
+    );
   }
 
   async updateBulkWorkspaceAssetsUploadStatus(
@@ -165,20 +167,19 @@ export class FileService extends APIService {
           fileUploadPayload,
           uploadProgressHandler
         );
-        await this.updateProjectAssetUploadStatus(workspaceSlug, projectId, signedURLResponse.asset_id);
+        await confirmFileUpload(() =>
+          this.updateProjectAssetUploadStatus(workspaceSlug, projectId, signedURLResponse.asset_id)
+        );
         return signedURLResponse;
       })
       .catch((error) => {
-        throw error?.response?.data;
+        throw toFileUploadError(error, "prepare");
       });
   }
 
   private async updateUserAssetUploadStatus(assetId: string): Promise<void> {
-    return this.patch(`/api/assets/v2/user-assets/${assetId}/`)
-      .then((response) => response?.data)
-      .catch((error) => {
-        throw error?.response?.data;
-      });
+    // The raw error reaches confirmFileUpload, which tells a lost request from a refusal
+    return this.patch(`/api/assets/v2/user-assets/${assetId}/`).then((response) => response?.data);
   }
 
   async uploadUserAsset(data: TFileEntityInfo, file: File): Promise<TFileSignedURLResponse> {
@@ -191,11 +192,11 @@ export class FileService extends APIService {
         const signedURLResponse: TFileSignedURLResponse = response?.data;
         const fileUploadPayload = generateFileUploadPayload(signedURLResponse, file);
         await this.fileUploadService.uploadFile(signedURLResponse.upload_data.url, fileUploadPayload);
-        await this.updateUserAssetUploadStatus(signedURLResponse.asset_id);
+        await confirmFileUpload(() => this.updateUserAssetUploadStatus(signedURLResponse.asset_id));
         return signedURLResponse;
       })
       .catch((error) => {
-        throw error?.response?.data;
+        throw toFileUploadError(error, "prepare");
       });
   }
 
@@ -266,7 +267,7 @@ export class FileService extends APIService {
   }
 
   cancelUpload() {
-    this.cancelSource.cancel("Upload canceled");
+    this.fileUploadService.cancelUpload();
   }
 
   async getUnsplashImages(query?: string): Promise<UnSplashImage[]> {

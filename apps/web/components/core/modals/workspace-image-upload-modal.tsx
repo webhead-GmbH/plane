@@ -22,9 +22,11 @@ import {
   DialogMain,
   DialogTitle,
 } from "@makeplane/propel/components/dialog";
-import { setToast } from "@plane/blocks/toast";
+import { useTranslation } from "@plane/i18n";
 import { EFileAssetType } from "@plane/types";
 import { getAssetIdFromUrl, checkURLValidity } from "@plane/utils";
+// helpers
+import { showFileUploadError } from "@/helpers/file-upload-error.helper";
 // hooks
 import { useWorkspace } from "@/hooks/store/use-workspace";
 // services
@@ -53,6 +55,7 @@ export const WorkspaceImageUploadModal = observer(function WorkspaceImageUploadM
   const { workspaceSlug } = useParams();
   // store hooks
   const { currentWorkspace, updateWorkspaceLogo } = useWorkspace();
+  const { t } = useTranslation();
 
   const onDrop = (acceptedFiles: File[]) => {
     // A rejected drop passes no accepted file, so keep the image that was picked before it.
@@ -90,13 +93,8 @@ export const WorkspaceImageUploadModal = observer(function WorkspaceImageUploadM
       );
       updateWorkspaceLogo(workspaceSlug.toString(), asset_url);
       onSuccess(asset_url);
-    } catch (error: any) {
-      console.log("error", error);
-      setToast({
-        type: "error",
-        title: "Error",
-        message: error.error || "Something went wrong",
-      });
+    } catch (error) {
+      showFileUploadError(t, error);
     } finally {
       setIsImageUploading(false);
     }

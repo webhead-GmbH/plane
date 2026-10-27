@@ -880,7 +880,67 @@
     "processing": "Traitement",
     "invalid_file_type": "Type de fichier invalide",
     "missing_fields": "Champs manquants",
-    "success": "{fileName} téléchargé !"
+    "success": "{fileName} téléchargé !",
+    "not_uploaded": "« {name} » n’a pas été envoyé",
+    "errors": {
+      "storage_full": {
+        "title": "Le serveur de fichiers est plein",
+        "description": "Le fichier n’a pas été enregistré, car le serveur qui stocke les fichiers n’a plus d’espace libre. Demandez à l’administrateur de Plane de libérer de l’espace, puis réessayez."
+      },
+      "file_too_large": {
+        "title": "Le fichier est trop volumineux",
+        "description": "Ce fichier dépasse la taille acceptée par le serveur. Choisissez un fichier plus petit.",
+        "description_with_limit": "Les fichiers ne peuvent pas dépasser {limit}. Choisissez un fichier plus petit."
+      },
+      "file_type_not_allowed": {
+        "title": "Ce type de fichier n’est pas accepté",
+        "description": "Les fichiers de ce type ne peuvent pas être envoyés ici. Choisissez un autre fichier."
+      },
+      "network": {
+        "title": "La connexion a été perdue",
+        "description": "Le fichier n’a pas pu atteindre le serveur. Vérifiez votre connexion Internet et réessayez."
+      },
+      "link_expired": {
+        "title": "L’envoi a pris trop de temps",
+        "description": "Le lien d’envoi a expiré avant que le fichier ne soit transmis. Réessayez."
+      },
+      "not_allowed": {
+        "title": "Vous ne pouvez pas envoyer de fichier ici",
+        "description": "Vous n’avez pas l’autorisation d’ajouter des fichiers ici, ou votre session a expiré. Rechargez la page et réessayez."
+      },
+      "storage_rejected": {
+        "title": "Le serveur de fichiers a refusé le fichier",
+        "description": "Le serveur qui stocke les fichiers n’a pas accepté ce fichier. Réessayez et, si le problème persiste, prévenez l’administrateur de Plane."
+      },
+      "storage_unavailable": {
+        "title": "Le serveur de fichiers ne répond pas",
+        "description": "Le serveur qui stocke les fichiers est injoignable pour le moment. Réessayez dans quelques minutes."
+      },
+      "server_error": {
+        "title": "Plane n’a pas pu recevoir le fichier",
+        "description": "Une erreur s’est produite sur le serveur. Réessayez dans quelques minutes et, si le problème persiste, prévenez l’administrateur de Plane."
+      },
+      "not_stored": {
+        "title": "Le fichier n’est pas arrivé",
+        "description": "L’envoi semblait terminé, mais le fichier n’est pas sur le serveur. Réessayez."
+      },
+      "not_saved": {
+        "title": "L’envoi n’a pas pu être finalisé",
+        "description": "Le fichier a atteint le serveur, mais Plane n’a pas pu l’enregistrer. Réessayez dans quelques minutes."
+      },
+      "unknown": {
+        "title": "Le fichier n’a pas pu être envoyé",
+        "description": "Une erreur inattendue s’est produite. Réessayez et, si le problème persiste, prévenez l’administrateur de Plane."
+      },
+      "cancelled": {
+        "title": "Envoi annulé",
+        "description": "L’envoi a été interrompu avant la fin."
+      },
+      "not_an_image": {
+        "title": "Seules les images peuvent être ajoutées ici",
+        "description": "Non ajouté : {names}. Seules les images JPEG, PNG, WebP et GIF peuvent être insérées dans le texte."
+      }
+    }
   },
   "date": "Date",
   "exporter": {

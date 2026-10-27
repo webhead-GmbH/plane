@@ -8,6 +8,7 @@ import React from "react";
 // plane imports
 import { LiteTextEditorWithRef } from "@plane/editor";
 import type { EditorRefApi, ILiteTextEditorProps, TFileHandler } from "@plane/editor";
+import { useTranslation } from "@plane/i18n";
 import type { MakeOptional } from "@plane/types";
 import { cn, isCommentEmpty } from "@plane/utils";
 // helpers
@@ -38,6 +39,10 @@ type LiteTextEditorWrapperProps = MakeOptional<
       }
   );
 
+function isMutableRefObject<T>(ref: React.ForwardedRef<T>): ref is React.MutableRefObject<T | null> {
+  return !!ref && typeof ref === "object" && "current" in ref;
+}
+
 export const LiteTextEditor = React.forwardRef(function LiteTextEditor(
   props: LiteTextEditorWrapperProps,
   ref: React.ForwardedRef<EditorRefApi>
@@ -52,9 +57,7 @@ export const LiteTextEditor = React.forwardRef(function LiteTextEditor(
     workspaceId,
     ...rest
   } = props;
-  function isMutableRefObject<T>(ref: React.ForwardedRef<T>): ref is React.MutableRefObject<T | null> {
-    return !!ref && typeof ref === "object" && "current" in ref;
-  }
+  const { t } = useTranslation();
   // derived values
   const isEmpty = isCommentEmpty(props.initialValue);
   const editorRef = isMutableRefObject<EditorRefApi>(ref) ? ref.current : null;
@@ -73,12 +76,13 @@ export const LiteTextEditor = React.forwardRef(function LiteTextEditor(
         editable={editable}
         fileHandler={getEditorFileHandlers({
           anchor,
+          t,
           uploadFile: editable ? props.uploadFile : async () => "",
           workspaceId,
         })}
         getEditorMetaData={getEditorMetaData}
         mentionHandler={{
-          renderComponent: (props) => <EditorMentionsRoot {...props} />,
+          renderComponent: (mentionProps) => <EditorMentionsRoot {...mentionProps} />,
         }}
         extendedEditorProps={{}}
         {...rest}

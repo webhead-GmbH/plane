@@ -21,9 +21,11 @@ import {
   DialogMain,
   DialogTitle,
 } from "@makeplane/propel/components/dialog";
-import { setToast } from "@plane/blocks/toast";
+import { useTranslation } from "@plane/i18n";
 import { EFileAssetType } from "@plane/types";
 import { getAssetIdFromUrl, checkURLValidity } from "@plane/utils";
+// helpers
+import { showFileUploadError } from "@/helpers/file-upload-error.helper";
 // services
 import { FileService } from "@/services/file.service";
 // local components
@@ -45,6 +47,7 @@ export const UserImageUploadModal = observer(function UserImageUploadModal(props
   const [image, setImage] = useState<File | null>(null);
   const [isRemoving, setIsRemoving] = useState(false);
   const [isImageUploading, setIsImageUploading] = useState(false);
+  const { t } = useTranslation();
 
   const onDrop = (acceptedFiles: File[]) => {
     // A rejected drop passes no accepted file, so keep the image that was picked before it.
@@ -80,12 +83,7 @@ export const UserImageUploadModal = observer(function UserImageUploadModal(props
       onSuccess(asset_url);
       setImage(null);
     } catch (error) {
-      setToast({
-        type: "error",
-        title: "Error!",
-        message: error?.toString() ?? "Something went wrong. Please try again.",
-      });
-      throw new Error("Error in uploading file.", { cause: error });
+      showFileUploadError(t, error);
     } finally {
       setIsImageUploading(false);
     }

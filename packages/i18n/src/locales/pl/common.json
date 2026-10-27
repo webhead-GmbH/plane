@@ -880,7 +880,67 @@
     "processing": "Przetwarzanie",
     "invalid_file_type": "Nieprawidłowy typ pliku",
     "missing_fields": "Brakujące pola",
-    "success": "{fileName} przesłany!"
+    "success": "{fileName} przesłany!",
+    "not_uploaded": "Nie przesłano pliku „{name}”",
+    "errors": {
+      "storage_full": {
+        "title": "Serwer plików jest pełny",
+        "description": "Plik nie został zapisany, ponieważ na serwerze, który przechowuje pliki, zabrakło miejsca. Poproś administratora Plane o zwolnienie miejsca i spróbuj ponownie."
+      },
+      "file_too_large": {
+        "title": "Plik jest za duży",
+        "description": "Ten plik jest większy, niż akceptuje serwer. Wybierz mniejszy plik.",
+        "description_with_limit": "Pliki mogą mieć najwyżej {limit}. Wybierz mniejszy plik."
+      },
+      "file_type_not_allowed": {
+        "title": "Ten typ pliku nie jest akceptowany",
+        "description": "Plików tego typu nie można tutaj przesłać. Wybierz inny plik."
+      },
+      "network": {
+        "title": "Połączenie zostało przerwane",
+        "description": "Plik nie dotarł do serwera. Sprawdź połączenie z internetem i spróbuj ponownie."
+      },
+      "link_expired": {
+        "title": "Przesyłanie trwało zbyt długo",
+        "description": "Link do przesyłania wygasł, zanim plik został wysłany. Spróbuj ponownie."
+      },
+      "not_allowed": {
+        "title": "Nie możesz tutaj przesyłać plików",
+        "description": "Nie masz uprawnień do dodawania tutaj plików albo Twoja sesja wygasła. Odśwież stronę i spróbuj ponownie."
+      },
+      "storage_rejected": {
+        "title": "Serwer plików odrzucił plik",
+        "description": "Serwer, który przechowuje pliki, nie przyjął tego pliku. Spróbuj ponownie, a jeśli to się powtórzy, powiadom administratora Plane."
+      },
+      "storage_unavailable": {
+        "title": "Serwer plików nie odpowiada",
+        "description": "Serwer, który przechowuje pliki, jest teraz niedostępny. Spróbuj ponownie za kilka minut."
+      },
+      "server_error": {
+        "title": "Plane nie mógł przyjąć pliku",
+        "description": "Na serwerze wystąpił błąd. Spróbuj ponownie za kilka minut, a jeśli to się powtórzy, powiadom administratora Plane."
+      },
+      "not_stored": {
+        "title": "Plik nie dotarł",
+        "description": "Przesyłanie wyglądało na zakończone, ale pliku nie ma na serwerze. Spróbuj ponownie."
+      },
+      "not_saved": {
+        "title": "Nie udało się dokończyć przesyłania",
+        "description": "Plik dotarł na serwer, ale Plane nie mógł go zarejestrować. Spróbuj ponownie za kilka minut."
+      },
+      "unknown": {
+        "title": "Nie udało się przesłać pliku",
+        "description": "Wystąpił nieoczekiwany błąd. Spróbuj ponownie, a jeśli to się powtórzy, powiadom administratora Plane."
+      },
+      "cancelled": {
+        "title": "Przesyłanie anulowane",
+        "description": "Przesyłanie zostało przerwane przed końcem."
+      },
+      "not_an_image": {
+        "title": "Tutaj można dodawać tylko obrazy",
+        "description": "Nie dodano: {names}. Do tekstu można wstawiać tylko obrazy JPEG, PNG, WebP i GIF."
+      }
+    }
   },
   "date": "Data",
   "exporter": {

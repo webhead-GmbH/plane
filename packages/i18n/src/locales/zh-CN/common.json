@@ -880,7 +880,67 @@
     "processing": "处理中",
     "invalid_file_type": "无效的文件类型",
     "missing_fields": "缺少字段",
-    "success": "{fileName} 已上传！"
+    "success": "{fileName} 已上传！",
+    "not_uploaded": "“{name}”未上传",
+    "errors": {
+      "storage_full": {
+        "title": "文件服务器已满",
+        "description": "存储文件的服务器空间已用完，文件未能保存。请让 Plane 管理员释放空间后再试。"
+      },
+      "file_too_large": {
+        "title": "文件太大",
+        "description": "此文件超出服务器可接受的大小。请选择更小的文件。",
+        "description_with_limit": "文件最大为 {limit}。请选择更小的文件。"
+      },
+      "file_type_not_allowed": {
+        "title": "不接受此类型的文件",
+        "description": "此处无法上传这种类型的文件。请选择其他文件。"
+      },
+      "network": {
+        "title": "连接已中断",
+        "description": "文件未能到达服务器。请检查网络连接后重试。"
+      },
+      "link_expired": {
+        "title": "上传耗时过长",
+        "description": "文件发送完成前上传链接已过期。请重试。"
+      },
+      "not_allowed": {
+        "title": "你无法在此上传",
+        "description": "你没有在此添加文件的权限，或者会话已结束。请刷新页面后重试。"
+      },
+      "storage_rejected": {
+        "title": "文件服务器拒绝了该文件",
+        "description": "存储文件的服务器没有接受此文件。请重试；如果问题持续，请告知 Plane 管理员。"
+      },
+      "storage_unavailable": {
+        "title": "文件服务器没有响应",
+        "description": "目前无法连接到存储文件的服务器。请几分钟后重试。"
+      },
+      "server_error": {
+        "title": "Plane 无法接收该文件",
+        "description": "服务器出现问题。请几分钟后重试；如果问题持续，请告知 Plane 管理员。"
+      },
+      "not_stored": {
+        "title": "文件未送达",
+        "description": "上传看似已完成，但服务器上没有该文件。请重试。"
+      },
+      "not_saved": {
+        "title": "无法完成上传",
+        "description": "文件已到达服务器，但 Plane 未能记录它。请几分钟后重试。"
+      },
+      "unknown": {
+        "title": "无法上传文件",
+        "description": "发生了意外错误。请重试；如果问题持续，请告知 Plane 管理员。"
+      },
+      "cancelled": {
+        "title": "已取消上传",
+        "description": "上传在完成前已停止。"
+      },
+      "not_an_image": {
+        "title": "此处只能添加图片",
+        "description": "未添加：{names}。正文中只能插入 JPEG、PNG、WebP 和 GIF 图片。"
+      }
+    }
   },
   "date": "日期",
   "exporter": {

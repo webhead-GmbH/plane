@@ -7,7 +7,12 @@
 import type { AxiosRequestConfig } from "axios";
 import { API_BASE_URL } from "@plane/constants";
 // plane types
-import { getFileMetaDataForUpload, generateFileUploadPayload } from "@plane/services";
+import {
+  confirmFileUpload,
+  getFileMetaDataForUpload,
+  generateFileUploadPayload,
+  toFileUploadError,
+} from "@plane/services";
 import type { TIssueAttachment, TIssueAttachmentUploadResponse, TIssueServiceType } from "@plane/types";
 import { EIssueServiceType } from "@plane/types";
 // services
@@ -31,13 +36,10 @@ export class IssueAttachmentService extends APIService {
     issueId: string,
     attachmentId: string
   ): Promise<void> {
+    // The raw error reaches confirmFileUpload, which tells a lost request from a refusal
     return this.patch(
       `/api/assets/v2/workspaces/${workspaceSlug}/projects/${projectId}/${this.serviceType}/${issueId}/attachments/${attachmentId}/`
-    )
-      .then((response) => response?.data)
-      .catch((error) => {
-        throw error?.response?.data;
-      });
+    ).then((response) => response?.data);
   }
 
   async uploadIssueAttachment(
@@ -60,11 +62,13 @@ export class IssueAttachmentService extends APIService {
           fileUploadPayload,
           uploadProgressHandler
         );
-        await this.updateIssueAttachmentUploadStatus(workspaceSlug, projectId, issueId, signedURLResponse.asset_id);
+        await confirmFileUpload(() =>
+          this.updateIssueAttachmentUploadStatus(workspaceSlug, projectId, issueId, signedURLResponse.asset_id)
+        );
         return signedURLResponse.attachment;
       })
       .catch((error) => {
-        throw error?.response?.data;
+        throw toFileUploadError(error, "prepare");
       });
   }
 

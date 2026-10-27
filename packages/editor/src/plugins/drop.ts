@@ -15,10 +15,24 @@ type Props = {
   disabledExtensions?: TExtensions[];
   flaggedExtensions?: TExtensions[];
   editor: Editor;
+  onUnsupportedFiles?: (files: File[]) => void;
+};
+
+const IMAGE_MIME_TYPES = new Set(ACCEPTED_IMAGE_MIME_TYPES);
+
+// Only images can be added to the text; anything else would vanish without a word
+const reportUnsupportedFiles = (
+  files: File[],
+  disabledExtensions: TExtensions[] | undefined,
+  onUnsupportedFiles: ((files: File[]) => void) | undefined
+) => {
+  const imagesDisabled = !!disabledExtensions?.includes("image");
+  const unsupported = files.filter((file) => imagesDisabled || !IMAGE_MIME_TYPES.has(file.type));
+  if (unsupported.length) onUnsupportedFiles?.(unsupported);
 };
 
 export const DropHandlerPlugin = (props: Props): Plugin => {
-  const { disabledExtensions, flaggedExtensions, editor } = props;
+  const { disabledExtensions, flaggedExtensions, editor, onUnsupportedFiles } = props;
 
   return new Plugin({
     key: new PluginKey("drop-handler-plugin"),
@@ -35,6 +49,7 @@ export const DropHandlerPlugin = (props: Props): Plugin => {
           const acceptedFiles = files.filter(
             (f) => ACCEPTED_IMAGE_MIME_TYPES.includes(f.type) || ACCEPTED_ATTACHMENT_MIME_TYPES.includes(f.type)
           );
+          reportUnsupportedFiles(files, disabledExtensions, onUnsupportedFiles);
 
           if (acceptedFiles.length) {
             const pos = view.state.selection.from;
@@ -64,6 +79,7 @@ export const DropHandlerPlugin = (props: Props): Plugin => {
           const acceptedFiles = files.filter(
             (f) => ACCEPTED_IMAGE_MIME_TYPES.includes(f.type) || ACCEPTED_ATTACHMENT_MIME_TYPES.includes(f.type)
           );
+          reportUnsupportedFiles(files, disabledExtensions, onUnsupportedFiles);
 
           if (acceptedFiles.length) {
             const coordinates = view.posAtCoords({

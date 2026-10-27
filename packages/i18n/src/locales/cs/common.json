@@ -880,7 +880,67 @@
     "processing": "Zpracovává se",
     "invalid_file_type": "Neplatný typ souboru",
     "missing_fields": "Chybějící pole",
-    "success": "{fileName} nahráno!"
+    "success": "{fileName} nahráno!",
+    "not_uploaded": "Soubor „{name}“ nebyl nahrán",
+    "errors": {
+      "storage_full": {
+        "title": "Souborový server je plný",
+        "description": "Soubor nebyl uložen, protože na serveru, který ukládá soubory, došlo místo. Požádejte správce Plane o uvolnění místa a zkuste to znovu."
+      },
+      "file_too_large": {
+        "title": "Soubor je příliš velký",
+        "description": "Tento soubor je větší, než server přijímá. Vyberte menší soubor.",
+        "description_with_limit": "Soubory mohou mít nejvýše {limit}. Vyberte menší soubor."
+      },
+      "file_type_not_allowed": {
+        "title": "Tento typ souboru není povolen",
+        "description": "Soubory tohoto typu sem nelze nahrát. Vyberte jiný soubor."
+      },
+      "network": {
+        "title": "Spojení bylo přerušeno",
+        "description": "Soubor se nedostal na server. Zkontrolujte připojení k internetu a zkuste to znovu."
+      },
+      "link_expired": {
+        "title": "Nahrávání trvalo příliš dlouho",
+        "description": "Odkaz pro nahrání vypršel dřív, než byl soubor odeslán. Zkuste to znovu."
+      },
+      "not_allowed": {
+        "title": "Sem nemůžete nahrávat",
+        "description": "Nemáte oprávnění sem přidávat soubory, nebo vaše relace skončila. Obnovte stránku a zkuste to znovu."
+      },
+      "storage_rejected": {
+        "title": "Souborový server soubor odmítl",
+        "description": "Server, který ukládá soubory, tento soubor nepřijal. Zkuste to znovu, a pokud se to bude opakovat, dejte vědět správci Plane."
+      },
+      "storage_unavailable": {
+        "title": "Souborový server neodpovídá",
+        "description": "Server, který ukládá soubory, je teď nedostupný. Zkuste to znovu za několik minut."
+      },
+      "server_error": {
+        "title": "Plane soubor nepřijal",
+        "description": "Na serveru došlo k chybě. Zkuste to znovu za několik minut, a pokud se to bude opakovat, dejte vědět správci Plane."
+      },
+      "not_stored": {
+        "title": "Soubor nedorazil",
+        "description": "Nahrávání vypadalo jako dokončené, ale soubor na serveru není. Zkuste to znovu."
+      },
+      "not_saved": {
+        "title": "Nahrávání nelze dokončit",
+        "description": "Soubor se dostal na server, ale Plane ho nedokázal zaznamenat. Zkuste to znovu za několik minut."
+      },
+      "unknown": {
+        "title": "Soubor se nepodařilo nahrát",
+        "description": "Došlo k neočekávané chybě. Zkuste to znovu, a pokud se to bude opakovat, dejte vědět správci Plane."
+      },
+      "cancelled": {
+        "title": "Nahrávání zrušeno",
+        "description": "Nahrávání bylo zastaveno před dokončením."
+      },
+      "not_an_image": {
+        "title": "Sem lze přidat pouze obrázky",
+        "description": "Nepřidáno: {names}. Do textu lze vložit pouze obrázky JPEG, PNG, WebP a GIF."
+      }
+    }
   },
   "date": "Datum",
   "exporter": {

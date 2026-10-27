@@ -880,7 +880,67 @@
     "processing": "İşleniyor",
     "invalid_file_type": "Geçersiz dosya tipi",
     "missing_fields": "Eksik alanlar",
-    "success": "{fileName} Yüklendi!"
+    "success": "{fileName} Yüklendi!",
+    "not_uploaded": "“{name}” yüklenmedi",
+    "errors": {
+      "storage_full": {
+        "title": "Dosya sunucusu dolu",
+        "description": "Dosyaları saklayan sunucuda yer kalmadığı için dosya kaydedilmedi. Plane yöneticinizden yer açmasını isteyin, ardından tekrar deneyin."
+      },
+      "file_too_large": {
+        "title": "Dosya çok büyük",
+        "description": "Bu dosya, sunucunun kabul ettiği boyuttan büyük. Daha küçük bir dosya seçin.",
+        "description_with_limit": "Dosyalar en fazla {limit} olabilir. Daha küçük bir dosya seçin."
+      },
+      "file_type_not_allowed": {
+        "title": "Bu dosya türü kabul edilmiyor",
+        "description": "Bu türdeki dosyalar buraya yüklenemez. Başka bir dosya seçin."
+      },
+      "network": {
+        "title": "Bağlantı kesildi",
+        "description": "Dosya sunucuya ulaşamadı. İnternet bağlantınızı kontrol edip tekrar deneyin."
+      },
+      "link_expired": {
+        "title": "Yükleme çok uzun sürdü",
+        "description": "Dosya gönderilmeden önce yükleme bağlantısının süresi doldu. Tekrar deneyin."
+      },
+      "not_allowed": {
+        "title": "Buraya yükleme yapamazsınız",
+        "description": "Buraya dosya ekleme izniniz yok ya da oturumunuz sona erdi. Sayfayı yenileyip tekrar deneyin."
+      },
+      "storage_rejected": {
+        "title": "Dosya sunucusu dosyayı reddetti",
+        "description": "Dosyaları saklayan sunucu bu dosyayı kabul etmedi. Tekrar deneyin; sorun sürerse Plane yöneticinize bildirin."
+      },
+      "storage_unavailable": {
+        "title": "Dosya sunucusu yanıt vermiyor",
+        "description": "Dosyaları saklayan sunucuya şu anda ulaşılamıyor. Birkaç dakika sonra tekrar deneyin."
+      },
+      "server_error": {
+        "title": "Plane dosyayı alamadı",
+        "description": "Sunucuda bir sorun oluştu. Birkaç dakika sonra tekrar deneyin; sorun sürerse Plane yöneticinize bildirin."
+      },
+      "not_stored": {
+        "title": "Dosya ulaşmadı",
+        "description": "Yükleme tamamlanmış gibi görünüyordu, ancak dosya sunucuda yok. Tekrar deneyin."
+      },
+      "not_saved": {
+        "title": "Yükleme tamamlanamadı",
+        "description": "Dosya sunucuya ulaştı, ancak Plane onu kaydedemedi. Birkaç dakika sonra tekrar deneyin."
+      },
+      "unknown": {
+        "title": "Dosya yüklenemedi",
+        "description": "Beklenmeyen bir sorun oluştu. Tekrar deneyin; sorun sürerse Plane yöneticinize bildirin."
+      },
+      "cancelled": {
+        "title": "Yükleme iptal edildi",
+        "description": "Yükleme bitmeden durduruldu."
+      },
+      "not_an_image": {
+        "title": "Buraya yalnızca görsel eklenebilir",
+        "description": "Eklenmedi: {names}. Metne yalnızca JPEG, PNG, WebP ve GIF görselleri eklenebilir."
+      }
+    }
   },
   "date": "Tarih",
   "exporter": {

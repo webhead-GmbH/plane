@@ -880,7 +880,67 @@
     "processing": "Memproses",
     "invalid_file_type": "Tipe file tidak valid",
     "missing_fields": "Bidang yang hilang",
-    "success": "{fileName} Diunggah!"
+    "success": "{fileName} Diunggah!",
+    "not_uploaded": "“{name}” tidak terunggah",
+    "errors": {
+      "storage_full": {
+        "title": "Server file penuh",
+        "description": "File tidak tersimpan karena server penyimpan file sudah kehabisan ruang. Minta administrator Plane untuk mengosongkan ruang, lalu coba lagi."
+      },
+      "file_too_large": {
+        "title": "File terlalu besar",
+        "description": "File ini lebih besar daripada yang diterima server. Pilih file yang lebih kecil.",
+        "description_with_limit": "Ukuran file paling besar {limit}. Pilih file yang lebih kecil."
+      },
+      "file_type_not_allowed": {
+        "title": "Jenis file ini tidak diterima",
+        "description": "File jenis ini tidak dapat diunggah di sini. Pilih file lain."
+      },
+      "network": {
+        "title": "Koneksi terputus",
+        "description": "File tidak sampai ke server. Periksa koneksi internet Anda, lalu coba lagi."
+      },
+      "link_expired": {
+        "title": "Pengunggahan terlalu lama",
+        "description": "Tautan unggah kedaluwarsa sebelum file terkirim. Coba lagi."
+      },
+      "not_allowed": {
+        "title": "Anda tidak dapat mengunggah di sini",
+        "description": "Anda tidak punya izin menambahkan file di sini, atau sesi Anda telah berakhir. Muat ulang halaman, lalu coba lagi."
+      },
+      "storage_rejected": {
+        "title": "Server file menolak file ini",
+        "description": "Server penyimpan file tidak menerima file ini. Coba lagi, dan jika terus terjadi, beri tahu administrator Plane."
+      },
+      "storage_unavailable": {
+        "title": "Server file tidak merespons",
+        "description": "Server penyimpan file tidak dapat dijangkau saat ini. Coba lagi dalam beberapa menit."
+      },
+      "server_error": {
+        "title": "Plane tidak dapat menerima file",
+        "description": "Terjadi masalah di server. Coba lagi dalam beberapa menit, dan jika terus terjadi, beri tahu administrator Plane."
+      },
+      "not_stored": {
+        "title": "File tidak sampai",
+        "description": "Pengunggahan tampak selesai, tetapi file tidak ada di server. Coba lagi."
+      },
+      "not_saved": {
+        "title": "Pengunggahan tidak dapat diselesaikan",
+        "description": "File sudah sampai di server, tetapi Plane tidak dapat mencatatnya. Coba lagi dalam beberapa menit."
+      },
+      "unknown": {
+        "title": "File tidak dapat diunggah",
+        "description": "Terjadi kesalahan yang tidak terduga. Coba lagi, dan jika terus terjadi, beri tahu administrator Plane."
+      },
+      "cancelled": {
+        "title": "Pengunggahan dibatalkan",
+        "description": "Pengunggahan dihentikan sebelum selesai."
+      },
+      "not_an_image": {
+        "title": "Hanya gambar yang dapat ditambahkan di sini",
+        "description": "Tidak ditambahkan: {names}. Hanya gambar JPEG, PNG, WebP, dan GIF yang dapat dimasukkan ke dalam teks."
+      }
+    }
   },
   "date": "Tanggal",
   "exporter": {

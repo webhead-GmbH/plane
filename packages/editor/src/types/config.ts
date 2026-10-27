@@ -16,6 +16,8 @@ export type TFileHandler = {
   restore: (assetSrc: string) => Promise<void>;
   upload: (blockId: string, file: File) => Promise<string>;
   duplicate: (assetId: string) => Promise<string>;
+  /** Receives the files dropped or pasted into the editor that it cannot add, so the host can say so */
+  onUnsupportedFiles?: (files: File[]) => void;
   validation: {
     /**
      * @description max file size in bytes

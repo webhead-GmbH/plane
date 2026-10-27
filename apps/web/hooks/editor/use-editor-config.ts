@@ -7,7 +7,14 @@
 import { useCallback } from "react";
 // plane imports
 import type { TFileHandler } from "@plane/editor";
+import { useTranslation } from "@plane/i18n";
 import { getEditorAssetDownloadSrc, getEditorAssetSrc } from "@plane/utils";
+// helpers
+import {
+  describeFileUploadError,
+  showFileUploadError,
+  showUnsupportedEditorFiles,
+} from "@/helpers/file-upload-error.helper";
 // hooks
 import { useEditorAsset } from "@/hooks/store/use-editor-asset";
 // plane web hooks
@@ -31,6 +38,7 @@ export const useEditorConfig = () => {
   // file size
   const { maxFileSize } = useFileSize();
   const { getExtendedEditorFileHandlers } = useExtendedEditorConfig();
+  const { t } = useTranslation();
 
   const getEditorFileHandlers = useCallback(
     (args: TArgs): TFileHandler => {
@@ -91,7 +99,16 @@ export const useEditorConfig = () => {
             await fileService.restoreNewAsset(workspaceSlug, src);
           }
         },
-        upload: uploadFile,
+        upload: async (blockId, file) => {
+          try {
+            return await uploadFile(blockId, file);
+          } catch (error) {
+            showFileUploadError(t, error);
+            // The editor shows this next to the image, with a way to try again
+            throw new Error(describeFileUploadError(t, error).message, { cause: error });
+          }
+        },
+        onUnsupportedFiles: (files) => showUnsupportedEditorFiles(t, files),
         duplicate: duplicateFile,
         validation: {
           maxFileSize,
@@ -99,7 +116,7 @@ export const useEditorConfig = () => {
         ...getExtendedEditorFileHandlers({ projectId, workspaceSlug }),
       };
     },
-    [assetsUploadPercentage, getExtendedEditorFileHandlers, maxFileSize]
+    [assetsUploadPercentage, getExtendedEditorFileHandlers, maxFileSize, t]
   );
 
   return {
