@@ -201,13 +201,17 @@
         "removed": "Ayrıldı olarak işaretlendi",
         "refused": "İşlem gerçekleşmedi",
         "try_again": "Lütfen tekrar deneyin.",
-        "brought_back": "Yeniden işe alındı"
+        "brought_back": "Yeniden işe alındı",
+        "crm_resync_started": "İş öğeleri CRM’e yeniden gönderiliyor",
+        "crm_resync_nothing": "Bu kişinin CRM’i bekleyen bir şeyi yok",
+        "crm_resync_not_connected": "Bu kişinin çalışma alanlarından hiçbiri CRM’e bağlı değil"
       },
       "opening": "Açılış bakiyesi",
       "rates": "Ücretler",
       "leave": "İzin",
       "crm_staff_id": "CRM personel ID'si",
       "crm_staff_id_placeholder": "E-postaya göre eşleştirmek için boş bırakın",
+      "crm_resync": "İşini CRM’e yeniden gönder",
       "crm_guessed": "CRM yalnızca e-posta adresine göre",
       "crm_missing": "CRM hesabı yok",
       "crm_link": {

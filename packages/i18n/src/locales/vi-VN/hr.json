@@ -201,13 +201,17 @@
         "removed": "Đã đánh dấu là đã nghỉ việc",
         "refused": "Thao tác không thành công",
         "try_again": "Vui lòng thử lại.",
-        "brought_back": "Đã tuyển lại"
+        "brought_back": "Đã tuyển lại",
+        "crm_resync_started": "Các mục công việc đang được gửi lại sang CRM",
+        "crm_resync_nothing": "Không có gì của người này đang chờ gửi sang CRM",
+        "crm_resync_not_connected": "Không có không gian làm việc nào của người này được kết nối với CRM"
       },
       "opening": "Số dư đầu kỳ",
       "rates": "Đơn giá",
       "leave": "Nghỉ phép",
       "crm_staff_id": "Mã nhân viên CRM",
       "crm_staff_id_placeholder": "Để trống để đối chiếu theo email",
+      "crm_resync": "Gửi lại công việc sang CRM",
       "crm_guessed": "CRM chỉ theo địa chỉ email",
       "crm_missing": "Không có tài khoản CRM",
       "crm_link": {

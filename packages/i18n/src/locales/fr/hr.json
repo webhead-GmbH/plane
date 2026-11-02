@@ -201,13 +201,17 @@
         "removed": "Départ enregistré",
         "refused": "L’opération n’a pas abouti",
         "try_again": "Veuillez réessayer.",
-        "brought_back": "De nouveau employé"
+        "brought_back": "De nouveau employé",
+        "crm_resync_started": "Ses éléments de travail sont renvoyés au CRM",
+        "crm_resync_nothing": "Rien de sa part n’attend le CRM",
+        "crm_resync_not_connected": "Aucun de ses espaces de travail n’est connecté au CRM"
       },
       "opening": "Solde initial",
       "rates": "Tarifs",
       "leave": "Congés",
       "crm_staff_id": "Identifiant CRM du collaborateur",
       "crm_staff_id_placeholder": "Laissez vide pour une correspondance par e-mail",
+      "crm_resync": "Renvoyer son travail au CRM",
       "crm_guessed": "CRM par adresse e-mail seulement",
       "crm_missing": "Aucun compte CRM",
       "crm_link": {

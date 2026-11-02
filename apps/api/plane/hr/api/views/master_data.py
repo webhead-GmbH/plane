@@ -44,7 +44,7 @@ from plane.hr.services.setup import (
     seed_holidays,
 )
 from plane.hr.utils.company import hr_home_workspace
-from plane.hr.utils.crm_link import set_crm_staff_id
+from plane.hr.utils.crm_link import crm_link_for, set_crm_staff_id
 from plane.hr.permissions import (
     MANAGER,
     SELF,
@@ -172,7 +172,17 @@ class HrEmploymentProfileEndpoint(HrWorkspaceConfigEndpoint):
 
         # After the record saves, so a rejected change does not leave the id moved.
         if sets_crm:
+            before = crm_link_for(row)["staff_id"]
             set_crm_staff_id(row, staff_id)
+            if before != staff_id:
+                from django.db import transaction
+
+                from plane.bgtasks.crm_sync_task import resync_member_to_crm
+
+                # Hours logged while the person could not be matched, and tasks they
+                # were dropped from, only catch up when each work item syncs again.
+                member_id = str(row.member_id)
+                transaction.on_commit(lambda: resync_member_to_crm.delay(member_id))
 
         if was_manager != becomes_manager:
             # Filed like any other change to somebody's record, because it is one —
@@ -233,6 +243,29 @@ def _another_manager_remains(profile):
         .exclude(pk=profile.pk)
         .exists()
     )
+
+
+class HrEmployeeCrmResyncEndpoint(BaseAPIView):
+    """Send one person's work items to the CRM again, on request.
+
+    Saving a changed CRM staff id does this by itself. This is for an id saved
+    before that existed, and for anything else that left their hours waiting in
+    the table on a CRM task instead of becoming timers.
+    """
+
+    @hr_permission(MANAGER)
+    def post(self, request, pk):
+        from plane.bgtasks.crm_sync_task import member_resync_issue_ids, resync_member_to_crm
+
+        profile = HrEmploymentProfile.objects.filter(pk=pk).first()
+        if profile is None:
+            return Response({"error": "Not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        found = member_resync_issue_ids(profile.member_id)
+        work_items = sum(len(issue_ids) for issue_ids in found.values())
+        if work_items:
+            resync_member_to_crm.delay(str(profile.member_id))
+        return Response({"connected": bool(found), "work_items": work_items}, status=status.HTTP_200_OK)
 
 
 class HrContractEndpoint(BaseAPIView):

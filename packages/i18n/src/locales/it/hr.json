@@ -201,13 +201,17 @@
         "removed": "Uscita registrata",
         "refused": "Operazione non riuscita",
         "try_again": "Riprovi, per favore.",
-        "brought_back": "Persona riassunta"
+        "brought_back": "Persona riassunta",
+        "crm_resync_started": "I suoi elementi di lavoro vengono inviati di nuovo al CRM",
+        "crm_resync_nothing": "Nulla di suo è in attesa del CRM",
+        "crm_resync_not_connected": "Nessuno dei suoi workspace è collegato al CRM"
       },
       "opening": "Saldo iniziale",
       "rates": "Tariffe",
       "leave": "Ferie",
       "crm_staff_id": "ID staff CRM",
       "crm_staff_id_placeholder": "Lasci vuoto per abbinare tramite email",
+      "crm_resync": "Invia di nuovo il suo lavoro al CRM",
       "crm_guessed": "CRM solo tramite indirizzo email",
       "crm_missing": "Nessun account CRM",
       "crm_link": {

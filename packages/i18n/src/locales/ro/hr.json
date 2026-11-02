@@ -201,13 +201,17 @@
         "removed": "Plecare marcată",
         "refused": "Acțiunea nu a reușit",
         "try_again": "Vă rugăm să încercați din nou.",
-        "brought_back": "Angajat din nou"
+        "brought_back": "Angajat din nou",
+        "crm_resync_started": "Elementele de lucru sunt trimise din nou în CRM",
+        "crm_resync_nothing": "Nimic de la această persoană nu așteaptă CRM-ul",
+        "crm_resync_not_connected": "Niciunul dintre spațiile de lucru ale acestei persoane nu este conectat la CRM"
       },
       "opening": "Sold inițial",
       "rates": "Tarife",
       "leave": "Concediu",
       "crm_staff_id": "ID-ul CRM al angajatului",
       "crm_staff_id_placeholder": "Lăsați gol pentru potrivire după e-mail",
+      "crm_resync": "Trimiteți din nou munca în CRM",
       "crm_guessed": "CRM doar după e-mail",
       "crm_missing": "Fără cont în CRM",
       "crm_link": {

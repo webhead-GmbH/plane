@@ -201,13 +201,17 @@
         "removed": "Marked as having left",
         "refused": "That did not go through",
         "try_again": "Please try again.",
-        "brought_back": "Employed again"
+        "brought_back": "Employed again",
+        "crm_resync_started": "Their work items are being sent to the CRM again",
+        "crm_resync_nothing": "Nothing of theirs is waiting for the CRM",
+        "crm_resync_not_connected": "None of their workspaces is connected to the CRM"
       },
       "opening": "Starting balance",
       "rates": "Rates",
       "leave": "Leave",
       "crm_staff_id": "CRM staff id",
       "crm_staff_id_placeholder": "Leave empty to match by email",
+      "crm_resync": "Send their work to the CRM again",
       "crm_link": {
         "set": "Set here, so the hours go to this account whatever the addresses say.",
         "email": "Nobody has said which CRM account this is, so their hours are matched on the email address. Nothing checks that a CRM account with that address exists.",

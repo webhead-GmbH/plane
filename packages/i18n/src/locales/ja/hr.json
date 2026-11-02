@@ -201,13 +201,17 @@
         "removed": "退職として記録しました",
         "refused": "処理できませんでした",
         "try_again": "もう一度お試しください。",
-        "brought_back": "再び雇用しました"
+        "brought_back": "再び雇用しました",
+        "crm_resync_started": "作業項目を CRM に再送信しています",
+        "crm_resync_nothing": "この人の CRM 待ちの項目はありません",
+        "crm_resync_not_connected": "この人のワークスペースはどれも CRM に接続されていません"
       },
       "opening": "開始時の過不足",
       "rates": "単価",
       "leave": "年次休暇",
       "crm_staff_id": "CRMスタッフID",
       "crm_staff_id_placeholder": "空欄にするとメールアドレスで照合します",
+      "crm_resync": "作業を CRM に再送信",
       "crm_guessed": "CRMはメールアドレスのみで照合",
       "crm_missing": "CRMアカウントなし",
       "crm_link": {

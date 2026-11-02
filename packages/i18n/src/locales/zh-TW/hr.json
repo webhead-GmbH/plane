@@ -201,13 +201,17 @@
         "removed": "已標記為離職",
         "refused": "操作未完成",
         "try_again": "請再試一次。",
-        "brought_back": "已重新錄用"
+        "brought_back": "已重新錄用",
+        "crm_resync_started": "正在將工作項目重新傳送到 CRM",
+        "crm_resync_nothing": "此人沒有等待傳送到 CRM 的內容",
+        "crm_resync_not_connected": "此人的工作區都未連接 CRM"
       },
       "opening": "期初結餘",
       "rates": "費率",
       "leave": "年假",
       "crm_staff_id": "CRM 員工編號",
       "crm_staff_id_placeholder": "留空則改以電子郵件比對",
+      "crm_resync": "將工作重新傳送到 CRM",
       "crm_guessed": "CRM 僅以電子郵件位址比對",
       "crm_missing": "未連結 CRM 帳號",
       "crm_link": {

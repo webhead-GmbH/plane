@@ -201,13 +201,17 @@
         "removed": "Marcado como baja",
         "refused": "No se pudo completar",
         "try_again": "Vuelva a intentarlo.",
-        "brought_back": "Contratado de nuevo"
+        "brought_back": "Contratado de nuevo",
+        "crm_resync_started": "Sus elementos de trabajo se están enviando de nuevo al CRM",
+        "crm_resync_nothing": "No hay nada suyo pendiente para el CRM",
+        "crm_resync_not_connected": "Ninguno de sus espacios de trabajo está conectado al CRM"
       },
       "opening": "Saldo inicial",
       "rates": "Tarifas",
       "leave": "Vacaciones",
       "crm_staff_id": "ID de empleado en el CRM",
       "crm_staff_id_placeholder": "Déjelo vacío para vincular por correo electrónico",
+      "crm_resync": "Enviar de nuevo su trabajo al CRM",
       "crm_guessed": "CRM solo por dirección de correo",
       "crm_missing": "Sin cuenta en el CRM",
       "crm_link": {

@@ -201,13 +201,17 @@
         "removed": "Увольнение отмечено",
         "refused": "Действие не выполнено",
         "try_again": "Пожалуйста, повторите попытку.",
-        "brought_back": "Снова принят на работу"
+        "brought_back": "Снова принят на работу",
+        "crm_resync_started": "Рабочие элементы снова отправляются в CRM",
+        "crm_resync_nothing": "От этого человека ничего не ждёт отправки в CRM",
+        "crm_resync_not_connected": "Ни одно из рабочих пространств этого человека не подключено к CRM"
       },
       "opening": "Начальный баланс",
       "rates": "Ставки",
       "leave": "Отпуск",
       "crm_staff_id": "ID сотрудника в CRM",
       "crm_staff_id_placeholder": "Оставьте пустым, чтобы сопоставлять по email",
+      "crm_resync": "Отправить работу в CRM заново",
       "crm_guessed": "CRM только по email",
       "crm_missing": "Нет учётной записи в CRM",
       "crm_link": {

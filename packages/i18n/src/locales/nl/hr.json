@@ -201,13 +201,17 @@
         "removed": "Gemarkeerd als vertrokken",
         "refused": "Dat is niet gelukt",
         "try_again": "Probeer het opnieuw.",
-        "brought_back": "Opnieuw in dienst"
+        "brought_back": "Opnieuw in dienst",
+        "crm_resync_started": "De werkitems worden opnieuw naar het CRM gestuurd",
+        "crm_resync_nothing": "Er wacht niets van deze persoon op het CRM",
+        "crm_resync_not_connected": "Geen van de werkruimten van deze persoon is met het CRM verbonden"
       },
       "opening": "Beginsaldo",
       "rates": "Tarieven",
       "leave": "Verlof",
       "crm_staff_id": "CRM-medewerker-id",
       "crm_staff_id_placeholder": "Leeg laten om op e-mail te koppelen",
+      "crm_resync": "Werk opnieuw naar het CRM sturen",
       "crm_link": {
         "set": "Hier ingesteld, dus de uren gaan naar dit account, wat de adressen ook zeggen.",
         "email": "Niemand heeft aangegeven welk CRM-account dit is, dus de uren worden op het e-mailadres gekoppeld. Er wordt niet gecontroleerd of er een CRM-account met dat adres bestaat.",
