@@ -7,7 +7,7 @@ Only whoever looks after the team can use this screen. If that is not you, the p
 ## What is on this page
 
 - [Where the screen is](#where-the-screen-is)
-- [The three kinds of file](#the-three-kinds-of-file)
+- [The kinds of file](#the-kinds-of-file)
 - [Start from the template](#start-from-the-template)
 - [What each column means](#what-each-column-means)
 - [How a length of time is read](#how-a-length-of-time-is-read)
@@ -34,15 +34,16 @@ If you see **This is not yours to see** instead of the card, your account is not
 
 Do not drag a file onto the card. There is nothing here that catches a dropped file, so the browser leaves this page and opens the file instead, and you have to find your way back. Use the **Choose a file** button.
 
-## The three kinds of file
+## The kinds of file
 
-The dropdown is labelled **What the file holds**. It has three options, and it decides how your file is read.
+The dropdown is labelled **What the file holds**. It has four options, and it decides how your file is read.
 
 | Option                | What it writes                                                      | Where it shows up afterwards                                                 |
 | --------------------- | ------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
 | **Hours**             | Hours somebody worked on a given day, with no work item behind them | On that person's day, under **Hours with no work item**, tagged **Imported** |
 | **Absences**          | Days somebody was away, already agreed                              | On the **Absences** screen, in the state **Agreed**                          |
 | **Starting balances** | The figure a person's running balance starts from                   | On that person's record, under **Starting balance**                          |
+| **Public holidays**   | Days off for everyone, in the holiday calendar                      | On the **Public holidays** screen                                            |
 
 Two things about the dropdown are worth knowing before you start.
 
@@ -52,7 +53,7 @@ The check that follows names the kind it used. The heading above the checked row
 
 ## Start from the template
 
-Press **Download a template** with the right kind chosen. A small CSV file lands in your downloads, named after the kind: `time_entries-template.csv`, `absences-template.csv` or `opening_balances-template.csv`. It has the heading row and one example row, so you can see the shape.
+Press **Download a template** with the right kind chosen. A small CSV file lands in your downloads, named after the kind: `time_entries-template.csv`, `absences-template.csv`, `opening_balances-template.csv` or `holidays-template.csv`. It has the heading row and one example row, so you can see the shape.
 
 Open it, delete the example row, paste your own rows in, and save it. The template is written so that Excel opens it without mangling umlauts in names.
 
@@ -104,6 +105,19 @@ How long each absence is worth is worked out from that person's working week, no
 | `confidence`             | No               | How sure the figure is: `documented` or `exact` records it as **Taken from records**, `reconstructed` as **Worked out from other records**, `estimated` as **Estimated**, `agreed` as **From a conversation with them**. An empty cell, or any other word, is recorded as **From a conversation with them**, and a misspelling here is not reported. |
 
 **Only a balance of kind `time` is counted anywhere.** A balance brought in as `leave` or `overtime` is stored and shown on the person's record, and no calculation reads it. Leave for the year is set per person on the **People** screen, with **Add a leave year** and **Leave for the year**. If you bring everybody's remaining leave over from the old spreadsheet as a starting balance, it will look accepted and it will do nothing.
+
+### Public holidays
+
+| Heading     | Required | What goes in it                                                                                                       |
+| ----------- | -------- | --------------------------------------------------------------------------------------------------------------------- |
+| `date`      | Yes      | The day. `datum` also works.                                                                                          |
+| `name_de`   | Yes      | The name in German. `name` also works.                                                                                |
+| `name_en`   | No       | The name in English. Empty means the German name is used for both.                                                    |
+| `half_day`  | No       | `yes` for half a day. Empty or `no` means a whole day.                                                                |
+| `statutory` | No       | `yes` for a day the law gives. Empty or `no` means a day the company grants.                                          |
+| `calendar`  | No       | Only where there is more than one calendar: its name or country code, such as `AT`. Empty means the default calendar. |
+
+`half_day` and `statutory` also accept `ja`, `nein`, `true`, `false`, `1` and `0`. A day already in the calendar is skipped, not changed. There has to be a calendar to bring days into; on an installation with none, set it up on **Public holidays** first. Undoing a holiday file is never refused: a closed month keeps the figures it was closed with, so taking a day back out cannot reach one.
 
 ## How a length of time is read
 
@@ -200,6 +214,12 @@ These are the exact sentences you will see in the **Detail** column.
 | The basis column is empty. Write where the figure came from, for example: from the old leave spreadsheet.                      | The `basis` cell is empty, and it is required                                    | Say where the number came from, in words                                                                                         |
 | It ends before it starts.                                                                                                      | `end_date` is earlier than `start_date`                                          | Swap them, or clear the end date for a single day                                                                                |
 | No reason for being away has the code "{code}". The codes are on the **Absences** screen, under **Reasons**.                   | The `type` cell is not one of the codes set up here                              | Use one of them, or add the reason first                                                                                         |
+| There is no holiday calendar yet. Set one up on Public holidays first.                                                         | A holiday file, on an installation with no holiday calendar                      | Press **Set up Austria's public holidays** on **Public holidays**, then upload the file again                                    |
+| No holiday calendar is called {calendar}.                                                                                      | The `calendar` cell names no calendar here                                       | Use the calendar's name or country code, or leave the cell empty for the default                                                 |
+| The day has no name.                                                                                                           | The `name_de` cell is empty                                                      | Give the day a name                                                                                                              |
+| The name is longer than 120 characters.                                                                                        | A name cell is too long                                                          | Shorten it                                                                                                                       |
+| The {column} column has to say yes or no.                                                                                      | `half_day` or `statutory` holds some other word                                  | Write `yes` or `no`, or leave it empty                                                                                           |
+| This day is already in the calendar, so it is left as it is.                                                                   | The calendar already has a day on that date. This is a **skip**, not an error    | Nothing, unless the day in the calendar is wrong: then change it on **Public holidays**                                          |
 
 Note that "that month is no longer open" is said about a month that has merely been **Handed in**, as well as one that is **Agreed** or **Closed**. All three have stopped being recalculated, so nothing new can be counted into any of them.
 

@@ -165,6 +165,15 @@ class HrHoliday(HrBaseModel):
     # Separates a statutory holiday, which carries a pay entitlement, from a day
     # the company grants.
     is_statutory = models.BooleanField(default=True)
+    # The import that wrote this day, so undoing that import takes back exactly
+    # what it added and nothing typed in by hand.
+    import_batch = models.ForeignKey(
+        "hr.HrImportBatch",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="holidays",
+    )
 
     def __str__(self):
         return f"{self.date} {self.name_de}"

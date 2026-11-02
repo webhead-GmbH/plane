@@ -20,7 +20,7 @@ from rest_framework.response import Response
 
 # Module imports
 from plane.app.views.base import BaseAPIView
-from plane.hr.models import HrImportBatch, HrPeriod
+from plane.hr.models import HrHoliday, HrHolidayCalendar, HrImportBatch, HrPeriod
 from plane.hr.utils.company import hr_home_workspace
 from plane.hr.services.refusal import Refused
 from plane.hr.permissions import (
@@ -204,6 +204,43 @@ class HrMonthExportEndpoint(BaseAPIView):
 
         response = HttpResponse(payload, content_type=content_type)
         response["Content-Disposition"] = f'attachment; filename="hr-{year}-{month:02d}.{file_format}"'
+        return response
+
+
+class HrHolidayExportEndpoint(BaseAPIView):
+    """A holiday calendar's days, in the shape the holiday import reads back.
+
+    Readable by anyone who can read the calendar, which is everybody employed: the
+    days are no secret, and the file is how they get into somebody's own calendar.
+    """
+
+    @hr_permission(SELF)
+    def get(self, request):
+        calendar_id = request.query_params.get("calendar")
+        calendars = HrHolidayCalendar.objects.all()
+        calendar = (
+            calendars.filter(pk=calendar_id).first() if calendar_id else calendars.filter(is_default=True).first()
+        )
+        if calendar is None:
+            return Response({"error": "There is no such holiday calendar."}, status=status.HTTP_404_NOT_FOUND)
+
+        holidays = HrHoliday.objects.filter(calendar=calendar).order_by("date")
+        year = request.query_params.get("year")
+        if year and year.isdigit():
+            holidays = holidays.filter(date__year=int(year))
+
+        file_format = _requested_format(request)
+        try:
+            payload, content_type = exporting.render(
+                exporting.holiday_rows(holidays), exporting.HOLIDAY_COLUMNS, file_format
+            )
+        except Refused as refused:
+            return Response({"error": refused.message}, status=status.HTTP_400_BAD_REQUEST)
+
+        which = slugify(calendar.name) or calendar.country_code.lower()
+        span = year if year and year.isdigit() else "all"
+        response = HttpResponse(payload, content_type=content_type)
+        response["Content-Disposition"] = f'attachment; filename="holidays-{which}-{span}.{file_format}"'
         return response
 
 

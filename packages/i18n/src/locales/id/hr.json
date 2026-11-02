@@ -311,15 +311,18 @@
       "kind": {
         "time_entries": "Jam",
         "absences": "Ketidakhadiran",
-        "opening_balances": "Saldo awal"
+        "opening_balances": "Saldo awal",
+        "holidays": "Hari libur nasional"
       },
       "columns": {
         "time_entries": "Kolom: email, date, dan salah satu dari hours atau minutes — judul kolomnya harus persis seperti itu. Kolom note ikut disimpan jika ada. Judul kolom menentukan arti angka biasa: 7,7 di kolom hours dan 462 di kolom minutes sama-sama berarti 7 jam 42 menit. Ditulis sebagai 7:42, artinya sama di kolom mana pun.",
         "absences": "Kolom: email, start_date, end_date, dan type — judul kolomnya harus persis seperti itu. Untuk ketidakhadiran satu hari saja, kolom end_date tidak perlu disertakan.",
-        "opening_balances": "Kolom: email, date untuk hari saat saldo mulai berlaku, salah satu dari hours atau minutes untuk saldonya sendiri, dan basis yang menyebutkan asal angkanya — judul kolomnya harus persis seperti itu. Tambahkan kolom kind berisi time, leave atau overtime jika saldonya bukan jam."
+        "opening_balances": "Kolom: email, date untuk hari saat saldo mulai berlaku, salah satu dari hours atau minutes untuk saldonya sendiri, dan basis yang menyebutkan asal angkanya — judul kolomnya harus persis seperti itu. Tambahkan kolom kind berisi time, leave atau overtime jika saldonya bukan jam.",
+        "holidays": "Kolom: date dan name_de — persis dengan judul itu. name_en, half_day, dan statutory boleh ditambahkan; half_day dan statutory berisi yes atau no. Jika ada lebih dari satu kalender, kolom calendar menyebutkan yang mana. Hari yang sudah ada di kalender dibiarkan apa adanya. File yang diunduh dari Hari libur nasional sudah memiliki judul ini."
       },
       "preview_title": "{filename}, dibaca sebagai {kind}",
       "preview_hint": "Belum ada apa pun yang ditulis. Baris ditambahkan ke apa yang sudah tercatat pada hari-hari itu, jadi hari yang diimpor dua kali akan terhitung dua kali. Untuk memperbaiki file yang sudah masuk, urungkan dulu, jangan mengimpor salinan yang sudah diperbaiki.",
+      "preview_hint_holidays": "Belum ada apa pun yang ditulis. Hari yang sudah ada di kalender dilewati, bukan diubah, jadi mengimpor file yang sama dua kali tidak menambahkan apa pun. Hari yang sudah ada diubah di Hari libur nasional.",
       "will_write": "akan ditulis",
       "cannot_read": "tidak dapat dibaca",
       "skipped": "dilewati",
@@ -373,7 +376,13 @@
         "basis_missing": "Kolom basis kosong. Tulis dari mana angka itu berasal, misalnya: dari spreadsheet cuti yang lama.",
         "bad_start_date": "Tanggal mulai tidak terbaca.",
         "ends_before_it_starts": "Berakhir sebelum dimulai.",
-        "unknown_absence_type": "Tidak ada alasan ketidakhadiran dengan kode “{code}”. Kodenya ada di layar Ketidakhadiran, bagian Alasan."
+        "unknown_absence_type": "Tidak ada alasan ketidakhadiran dengan kode “{code}”. Kodenya ada di layar Ketidakhadiran, bagian Alasan.",
+        "no_calendar": "Belum ada kalender hari libur. Siapkan dulu di Hari libur nasional.",
+        "unknown_calendar": "Tidak ada kalender hari libur bernama {calendar}.",
+        "name_missing": "Hari ini tidak memiliki nama.",
+        "name_too_long": "Nama lebih dari {limit} karakter.",
+        "bad_flag": "Kolom {column} harus berisi yes atau no.",
+        "holiday_exists": "Hari ini sudah ada di kalender, jadi dibiarkan apa adanya."
       }
     },
     "opening": {
@@ -498,6 +507,8 @@
         "column_leave": "Potong jatah cuti",
         "column_action": "Tindakan",
         "none_yet": "Belum ada alasan yang disiapkan.",
+        "add_standard": "Tambahkan alasan yang biasa",
+        "standard_detail": "Cuti tahunan, sakit, cuti pengganti lembur, dan alasan biasa lainnya, dihitung sesuai hukum Austria. Semuanya dapat diubah nanti.",
         "retire": "Nonaktifkan",
         "bring_back": "Aktifkan lagi",
         "delete": "Hapus alasan",
@@ -606,6 +617,10 @@
       "title": "Hari libur nasional",
       "subtitle": "Hari-hari ketika tidak ada yang bekerja. Hari libur dihitung sebagai jam kerja; jam wajib seseorang tidak berkurang karenanya. Perubahan di sini hanya berlaku untuk bulan yang masih terbuka.",
       "subtitle_read_only": "Hari-hari ketika tidak ada yang bekerja. Hari libur dihitung sebagai jam kerja; jam wajib seseorang tidak berkurang karenanya.",
+      "setup_title": "Belum ada kalender hari libur",
+      "setup_detail": "Selama belum ada, setiap hari libur dihitung sebagai hari kerja biasa. Penyiapan akan menambahkan hari libur nasional Austria dari {from} sampai {to}. Masing-masing dapat diubah atau dihapus setelahnya, dan hari yang diberikan perusahaan dapat ditambahkan.",
+      "setup_button": "Siapkan hari libur Austria",
+      "import": "Impor hari dari file",
       "back_to_month": "Bulan ini",
       "calendar": "Kalender",
       "previous_year": "Tahun sebelumnya",
@@ -628,10 +643,12 @@
       "name_placeholder": "Nama hari libur ini",
       "errors": {
         "date_and_name": "Sebutkan tanggal dan nama hari libur ini.",
-        "already_there": "Hari ini sudah ada {day}."
+        "already_there": "Hari ini sudah ada {day}.",
+        "no_calendar": "Belum ada kalender hari libur untuk menambahkan hari ini."
       },
       "toasts": {
         "added": "Hari libur ditambahkan",
+        "set_up": "Hari libur sudah disiapkan",
         "removed": "Hari libur dihapus",
         "refused": "Tidak dapat disimpan",
         "try_again": "Silakan coba lagi."

@@ -6,6 +6,7 @@
 
 import { useRef, useState } from "react";
 import { observer } from "mobx-react";
+import { useSearchParams } from "react-router";
 import { AlertTriangle, CheckCircle2, Download, MinusCircle, Undo2, Upload } from "lucide-react";
 import useSWR from "swr";
 // plane imports
@@ -30,12 +31,18 @@ import { formatDayWithYear, refusalMessage } from "./utils";
 
 const hrService = new HrService();
 
-const KINDS = [EHrImportKind.TIME_ENTRIES, EHrImportKind.ABSENCES, EHrImportKind.OPENING_BALANCES];
+const KINDS = [
+  EHrImportKind.TIME_ENTRIES,
+  EHrImportKind.ABSENCES,
+  EHrImportKind.OPENING_BALANCES,
+  EHrImportKind.HOLIDAYS,
+];
 
 const KIND_KEY: Record<number, string> = {
   [EHrImportKind.TIME_ENTRIES]: "time_entries",
   [EHrImportKind.ABSENCES]: "absences",
   [EHrImportKind.OPENING_BALANCES]: "opening_balances",
+  [EHrImportKind.HOLIDAYS]: "holidays",
 };
 
 /**
@@ -53,7 +60,11 @@ const KIND_KEY: Record<number, string> = {
 export const HrImportRoot = observer(function HrImportRoot() {
   const { t, currentLocale } = useTranslation();
   const fileField = useRef<HTMLInputElement>(null);
-  const [kind, setKind] = useState<EHrImportKind>(EHrImportKind.TIME_ENTRIES);
+  // Pages that send somebody here to bring in one kind of thing say which.
+  const [searchParams] = useSearchParams();
+  const [kind, setKind] = useState<EHrImportKind>(
+    () => KINDS.find((value) => KIND_KEY[value] === searchParams.get("kind")) ?? EHrImportKind.TIME_ENTRIES
+  );
   const [checking, setChecking] = useState<THrImportBatch | null>(null);
   const [isBusy, setIsBusy] = useState(false);
   const [undoing, setUndoing] = useState<THrImportBatch | null>(null);
@@ -277,7 +288,11 @@ const ImportPreview = ({
               kind: t(`hr.imports.kind.${KIND_KEY[batch.kind]}`),
             })}
           </h2>
-          <p className="text-13 text-tertiary">{t("hr.imports.preview_hint")}</p>
+          {/* Hours add up, so a day brought in twice counts twice; a holiday is
+              one entry a day, and a second copy of it is skipped. */}
+          <p className="text-13 text-tertiary">
+            {t(batch.kind === EHrImportKind.HOLIDAYS ? "hr.imports.preview_hint_holidays" : "hr.imports.preview_hint")}
+          </p>
         </div>
         <div className="flex items-center gap-2">
           <Button variant="secondary" size="md" stretch="auto" label={t("hr.imports.discard")} onClick={onDiscard} />
@@ -513,6 +528,10 @@ function downloadTemplate(kind: EHrImportKind) {
     [EHrImportKind.OPENING_BALANCES]: [
       ["email", "date", "hours", "kind", "basis", "confidence"],
       ["anna.berger@example.com", "2026-01-01", "12:30", "time", "Agreed on 12 Jan", "documented"],
+    ],
+    [EHrImportKind.HOLIDAYS]: [
+      ["date", "name_de", "name_en", "half_day", "statutory"],
+      ["2026-12-24", "Heiliger Abend", "Christmas Eve", "yes", "no"],
     ],
     [EHrImportKind.ABSENCES]: [
       ["email", "start_date", "end_date", "type"],

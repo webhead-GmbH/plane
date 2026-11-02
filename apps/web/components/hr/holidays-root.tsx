@@ -6,13 +6,26 @@
 
 import { useEffect, useState } from "react";
 import { observer } from "mobx-react";
-import { ChevronLeft, ChevronRight, Circle, Contrast, Plus, Trash2 } from "lucide-react";
+import { useNavigate, useParams } from "react-router";
+import {
+  CalendarPlus,
+  ChevronLeft,
+  ChevronRight,
+  Circle,
+  Contrast,
+  Download,
+  FileUp,
+  MoreHorizontal,
+  Plus,
+  Trash2,
+} from "lucide-react";
 import useSWR from "swr";
 // plane imports
 import { useTranslation } from "@plane/i18n";
 import { Button } from "@makeplane/propel/components/button";
 import { Icon } from "@makeplane/propel/components/icon";
 import { IconButton } from "@makeplane/propel/components/icon-button";
+import { Menu, MenuContent, MenuItem, MenuTrigger } from "@makeplane/propel/components/menu";
 import { ConfirmDialog } from "@plane/blocks/dialog";
 import { cn } from "@plane/utils";
 import { EmptyStateCompact } from "@plane/blocks/empty-state";
@@ -139,7 +152,12 @@ const HolidaysCalendar = observer(function HolidaysCalendar({ canChange }: { can
   );
 
   const handleAdd = async () => {
-    if (!calendarId) return;
+    // Said out loud rather than returned from: a press that does nothing at all
+    // is how this page failed on an installation with no calendar.
+    if (!calendarId) {
+      setProblem(t("hr.holidays.errors.no_calendar"));
+      return;
+    }
     if (!date || !name.trim()) {
       setProblem(t("hr.holidays.errors.date_and_name"));
       return;
@@ -232,14 +250,26 @@ const HolidaysCalendar = observer(function HolidaysCalendar({ canChange }: { can
   if (nothingToShow(error, calendars))
     return <HolidaysUnavailable notAllowed={isForbidden(error)} onRetry={() => void retryCalendars()} />;
 
+  if (calendars?.length === 0)
+    return (
+      <NoCalendar
+        canChange={canChange}
+        onReady={async (madeId) => {
+          await retryCalendars();
+          setCalendarId(madeId);
+        }}
+      />
+    );
+
   const rows = holidays ?? [];
 
   return (
     <div className="flex w-full flex-col gap-7">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="text-13 text-tertiary">
+      <div className="flex items-start justify-between gap-3">
+        <p className="min-w-0 flex-1 text-13 text-tertiary">
           {t(canChange ? "hr.holidays.subtitle" : "hr.holidays.subtitle_read_only")}
         </p>
+        {calendarId ? <HolidaysMenu calendarId={calendarId} year={year} canChange={canChange} /> : null}
       </div>
 
       <HolidayScope
@@ -310,6 +340,108 @@ const HolidaysCalendar = observer(function HolidaysCalendar({ canChange }: { can
     </div>
   );
 });
+
+type TNoCalendarProps = {
+  canChange: boolean;
+  /** Told which calendar was made, once it exists. */
+  onReady: (calendarId: string) => Promise<void>;
+};
+
+/**
+ * What the page offers before there is any calendar to put a day in.
+ *
+ * Made here on first use: the setup step that used to make it has no button, so
+ * an installation that never ran it had no calendar, and Add did nothing at all.
+ */
+const NoCalendar = ({ canChange, onReady }: TNoCalendarProps) => {
+  const { t, currentLocale } = useTranslation();
+  const [isBusy, setIsBusy] = useState(false);
+  const now = new Date().getFullYear();
+
+  if (!canChange)
+    return (
+      <EmptyStateCompact
+        title={t("hr.holidays.none_this_year")}
+        assetKey="note"
+        assetClassName="size-20"
+        rootClassName="py-16"
+      />
+    );
+
+  const handleSetUp = async () => {
+    setIsBusy(true);
+    try {
+      const { calendar } = await hrService.setUpDefaultHolidayCalendar();
+      await onReady(calendar.id);
+      setToast({ type: "success", title: t("hr.holidays.toasts.set_up") });
+    } catch (failure) {
+      complainAbout(failure, t, currentLocale);
+    } finally {
+      setIsBusy(false);
+    }
+  };
+
+  return (
+    <div className="w-full">
+      <EmptyStateCompact
+        title={t("hr.holidays.setup_title")}
+        description={t("hr.holidays.setup_detail", { from: now - 5, to: now + 5 })}
+        assetKey="note"
+        assetClassName="size-20"
+        rootClassName="py-16"
+        actions={[
+          {
+            label: t("hr.holidays.setup_button"),
+            variant: "primary",
+            prependIcon: <Icon icon={CalendarPlus} />,
+            onClick: () => void handleSetUp(),
+            disabled: isBusy,
+          },
+        ]}
+      />
+    </div>
+  );
+};
+
+/** The year on screen as a file, and the way to bring days in from one. */
+const HolidaysMenu = ({ calendarId, year, canChange }: { calendarId: string; year: number; canChange: boolean }) => {
+  const { t } = useTranslation();
+  const { workspaceSlug } = useParams();
+  const navigate = useNavigate();
+  return (
+    <Menu>
+      <MenuTrigger
+        render={
+          <IconButton
+            variant="ghost"
+            size="md"
+            icon={<Icon icon={MoreHorizontal} />}
+            aria-label={t("common.options")}
+          />
+        }
+      />
+      <MenuContent side="bottom" align="end">
+        <MenuItem
+          icon={<Icon icon={Download} />}
+          label={t("hr.my_time.export_csv")}
+          onClick={() => window.open(hrService.holidayExportUrl(calendarId, year, "csv"), "_self")}
+        />
+        <MenuItem
+          icon={<Icon icon={Download} />}
+          label={t("hr.my_time.export_excel")}
+          onClick={() => window.open(hrService.holidayExportUrl(calendarId, year, "xlsx"), "_self")}
+        />
+        {canChange ? (
+          <MenuItem
+            icon={<Icon icon={FileUp} />}
+            label={t("hr.holidays.import")}
+            onClick={() => navigate(`/${workspaceSlug}/team-time/import?kind=holidays`)}
+          />
+        ) : null}
+      </MenuContent>
+    </Menu>
+  );
+};
 
 type TUnavailableProps = {
   /** Refused rather than broken, which is worth saying differently. */

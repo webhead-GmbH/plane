@@ -311,15 +311,18 @@
       "kind": {
         "time_entries": "Uren",
         "absences": "Afwezigheden",
-        "opening_balances": "Beginsaldi"
+        "opening_balances": "Beginsaldi",
+        "holidays": "Feestdagen"
       },
       "columns": {
         "time_entries": "Kolommen: email, date en ofwel hours ofwel minutes, precies met die koppen. Een kolom note blijft bewaard als die er is. De kop bepaalt wat een los getal betekent: 7.7 onder hours en 462 onder minutes zijn allebei 7 uur 42 minuten. Geschreven als 7:42 is het onder beide koppen hetzelfde.",
         "absences": "Kolommen: email, start_date, end_date en type, precies met die koppen. Laat end_date weg voor één dag.",
-        "opening_balances": "Kolommen: email, date voor de dag vanaf wanneer het saldo geldt, ofwel hours ofwel minutes voor het saldo zelf, en basis met waar het cijfer vandaan komt, precies met die koppen. Voeg een kolom kind toe met time, leave of overtime als het saldo geen uren betreft."
+        "opening_balances": "Kolommen: email, date voor de dag vanaf wanneer het saldo geldt, ofwel hours ofwel minutes voor het saldo zelf, en basis met waar het cijfer vandaan komt, precies met die koppen. Voeg een kolom kind toe met time, leave of overtime als het saldo geen uren betreft.",
+        "holidays": "Kolommen: date en name_de, met precies die koppen. name_en, half_day en statutory mogen erbij; half_day en statutory bevatten yes of no. Is er meer dan één kalender, dan noemt een kolom calendar welke. Een dag die al in de kalender staat, blijft zoals hij is. Een bestand dat je bij Feestdagen downloadt, heeft deze koppen al."
       },
       "preview_title": "{filename}, gelezen als {kind}",
       "preview_hint": "Er is nog niets weggeschreven. Rijen worden opgeteld bij wat er voor die dagen al is vastgelegd, dus een dag die twee keer wordt binnengehaald, telt twee keer. Om een bestand te corrigeren dat al binnen is, maak je het eerst ongedaan in plaats van een gecorrigeerde kopie binnen te halen.",
+      "preview_hint_holidays": "Er is nog niets weggeschreven. Een dag die al in de kalender staat, wordt overgeslagen en niet gewijzigd, dus hetzelfde bestand twee keer binnenhalen voegt niets toe. Een dag die er al is, wijzig je bij Feestdagen.",
       "will_write": "wordt weggeschreven",
       "cannot_read": "kan niet worden gelezen",
       "skipped": "overgeslagen",
@@ -373,7 +376,13 @@
         "basis_missing": "De kolom basis is leeg. Schrijf op waar het cijfer vandaan komt, bijvoorbeeld: uit de oude verlofspreadsheet.",
         "bad_start_date": "De begindatum kon niet worden gelezen.",
         "ends_before_it_starts": "Het eindigt voordat het begint.",
-        "unknown_absence_type": "Geen enkele reden voor afwezigheid heeft de code “{code}”. De codes staan op het scherm Afwezigheden, onder Redenen."
+        "unknown_absence_type": "Geen enkele reden voor afwezigheid heeft de code “{code}”. De codes staan op het scherm Afwezigheden, onder Redenen.",
+        "no_calendar": "Er is nog geen feestdagenkalender. Stel er eerst een in bij Feestdagen.",
+        "unknown_calendar": "Er is geen feestdagenkalender met de naam {calendar}.",
+        "name_missing": "De dag heeft geen naam.",
+        "name_too_long": "De naam is langer dan {limit} tekens.",
+        "bad_flag": "De kolom {column} moet yes of no bevatten.",
+        "holiday_exists": "Deze dag staat al in de kalender en blijft zoals hij is."
       }
     },
     "opening": {
@@ -498,6 +507,8 @@
         "column_leave": "Van verloftegoed af",
         "column_action": "Actie",
         "none_yet": "Nog geen redenen ingesteld.",
+        "add_standard": "De gebruikelijke redenen toevoegen",
+        "standard_detail": "Vakantie, ziekte, tijd voor tijd en de andere gebruikelijke redenen, geteld zoals de Oostenrijkse wet het voorschrijft. Je kunt ze daarna wijzigen.",
         "retire": "Buiten gebruik stellen",
         "bring_back": "Weer in gebruik nemen",
         "delete": "Reden verwijderen",
@@ -618,6 +629,10 @@
       "title": "Feestdagen",
       "subtitle": "De dagen waarop niemand werkt. Een feestdag telt als gewerkte uren; hij verlaagt niet wat iemand moet werken. Een wijziging hier geldt alleen voor maanden die nog open zijn.",
       "subtitle_read_only": "De dagen waarop niemand werkt. Een feestdag telt als gewerkte uren; hij verlaagt niet wat iemand moet werken.",
+      "setup_title": "Er is nog geen feestdagenkalender",
+      "setup_detail": "Zolang die er niet is, telt elke feestdag als een gewone werkdag. Bij het instellen worden de Oostenrijkse feestdagen van {from} tot en met {to} toegevoegd. Elk daarvan kun je daarna wijzigen of verwijderen, en dagen die het bedrijf geeft kun je toevoegen.",
+      "setup_button": "Oostenrijkse feestdagen instellen",
+      "import": "Dagen uit een bestand binnenhalen",
       "back_to_month": "De maand",
       "calendar": "Kalender",
       "previous_year": "Vorig jaar",
@@ -640,10 +655,12 @@
       "name_placeholder": "Hoe de dag heet",
       "errors": {
         "date_and_name": "Geef de dag een datum en een naam.",
-        "already_there": "{day} valt al op deze dag."
+        "already_there": "{day} valt al op deze dag.",
+        "no_calendar": "Er is nog geen feestdagenkalender om deze dag aan toe te voegen."
       },
       "toasts": {
         "added": "Dag toegevoegd",
+        "set_up": "Feestdagen ingesteld",
         "removed": "Dag verwijderd",
         "refused": "Dat kon niet worden opgeslagen",
         "try_again": "Probeer het opnieuw."

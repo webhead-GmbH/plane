@@ -115,7 +115,7 @@ Two questions decide what a reason does, and they are the two columns you see in
 - **Counts as worked** — whether the day still counts towards the hours for that month. Almost every reason does. Unpaid leave does not.
 - **Off the leave account** — whether the time comes out of the person's leave for the year. Only annual leave does.
 
-If the system was set up in the usual way, six reasons exist:
+If the system was set up in the usual way, or **Add the usual reasons** was pressed, six reasons exist:
 
 | Reason                  | Counts as worked | Off the leave account |
 | ----------------------- | ---------------- | --------------------- |
@@ -247,6 +247,8 @@ The row disappears and a green message says **Absence deleted**. If the absence 
 The **Reasons** button, beside the button at the top right, is only shown to somebody who looks after the team. It opens **Reasons for being away**, with the line **Two answers decide the arithmetic: whether the day still counts as worked, and whether it comes off the leave account.**
 
 The table lists every reason, with **Counts as worked** and **Off the leave account** shown as **Yes** or **No**. A reason that has been retired is shown crossed out.
+
+**When the list is empty**, the table reads **No reasons set up yet**, and under it is **Add the usual reasons**. Pressing it adds the six reasons in the table further up this page in one go. Until there is at least one reason, nobody can ask for time off: the **Reason** box has nothing to choose. The button is only there while the list is empty.
 
 **To stop a reason being offered**, press **Retire** on its row. It disappears from the **Reason** box when somebody records an absence, and every absence already recorded under it stays readable and correctly named. **Bring back** puts it back.
 

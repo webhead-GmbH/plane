@@ -30,6 +30,8 @@ from plane.hr.models import (
     HrAbsence,
     HrAbsenceType,
     HrEmploymentProfile,
+    HrHoliday,
+    HrHolidayCalendar,
     HrImportBatch,
     HrOpeningBalance,
     HrPeriod,
@@ -505,10 +507,160 @@ class AbsenceLoader(_Loader):
         return HrAbsence.objects.filter(import_batch=batch).delete()[0]
 
 
+_YES = {"yes", "y", "ja", "j", "true", "1", "x"}
+_NO = {"", "no", "n", "nein", "false", "0"}
+
+
+def _as_flag(value):
+    """True or False out of a yes/no cell, or None for anything else."""
+    text = str(value if value is not None else "").strip().lower()
+    if text in _YES:
+        return True
+    if text in _NO:
+        return False
+    return None
+
+
+class HolidayLoader(_Loader):
+    """Days off for everyone, into a holiday calendar.
+
+    A day already in the calendar is left as it is rather than overwritten: the
+    calendar is somebody's to correct by hand, and a file is often an old list
+    that knows less than the screen does.
+    """
+
+    kind = HrImportBatch.Kind.HOLIDAYS
+    NAME_LENGTH = 120
+
+    def __init__(self, workspace):
+        super().__init__(workspace)
+        self._calendars = list(HrHolidayCalendar.objects.all())
+        self._known = set(
+            HrHoliday.objects.filter(calendar__in=self._calendars).values_list("calendar_id", "date")
+        )
+
+    def calendar_for(self, value):
+        """The calendar a row names, by name or country code; the default where it names none."""
+        wanted = str(value or "").strip().lower()
+        if not wanted:
+            return next((calendar for calendar in self._calendars if calendar.is_default), None)
+        return next(
+            (
+                calendar
+                for calendar in self._calendars
+                if wanted in (calendar.name.strip().lower(), calendar.country_code.lower())
+            ),
+            None,
+        )
+
+    def check(self, rows):
+        results = []
+        seen = set()
+        for index, row in enumerate(rows, start=2):
+            day = _as_date(row.get("date") or row.get("datum"))
+            name_de = str(row.get("name_de") or row.get("name") or "").strip()
+            name_en = str(row.get("name_en") or "").strip() or name_de
+            half = _as_flag(row.get("half_day"))
+            statutory = _as_flag(row.get("statutory"))
+            named = str(row.get("calendar") or "").strip()
+            calendar = self.calendar_for(named)
+
+            if calendar is None and not named:
+                results.append(
+                    RowResult(index, ERROR, "There is no holiday calendar yet.", row, "no_calendar")
+                )
+            elif calendar is None:
+                results.append(
+                    RowResult(
+                        index,
+                        ERROR,
+                        f"There is no holiday calendar called {named}.",
+                        row,
+                        "unknown_calendar",
+                        {"calendar": named},
+                    )
+                )
+            elif day is None:
+                results.append(RowResult(index, ERROR, "The date could not be read.", row, "bad_date"))
+            elif not name_de:
+                results.append(RowResult(index, ERROR, "The day has no name.", row, "name_missing"))
+            elif max(len(name_de), len(name_en)) > self.NAME_LENGTH:
+                results.append(
+                    RowResult(index, ERROR, "The name is too long.", row, "name_too_long", {"limit": self.NAME_LENGTH})
+                )
+            elif half is None or statutory is None:
+                column = "half_day" if half is None else "statutory"
+                results.append(
+                    RowResult(index, ERROR, f"{column} has to say yes or no.", row, "bad_flag", {"column": column})
+                )
+            elif (calendar.id, day) in self._known or (calendar.id, day) in seen:
+                results.append(
+                    RowResult(
+                        index,
+                        SKIP,
+                        "That day is already in the calendar.",
+                        row,
+                        "holiday_exists",
+                        {"day": day.isoformat()},
+                    )
+                )
+            else:
+                seen.add((calendar.id, day))
+                results.append(
+                    RowResult(
+                        index,
+                        OK,
+                        "",
+                        {
+                            "calendar_id": str(calendar.id),
+                            "date": day.isoformat(),
+                            "name_de": name_de,
+                            "name_en": name_en,
+                            "day_fraction": "0.5" if half else "1",
+                            # Stored as text with the rest of the preview, so spelled out.
+                            "is_statutory": "yes" if statutory else "no",
+                        },
+                    )
+                )
+        return results
+
+    def write(self, batch, results):
+        written = 0
+        for result in results:
+            if result.verdict != OK:
+                continue
+            day = date.fromisoformat(result.data["date"])
+            # Somebody may have added the same day by hand between the preview and
+            # this, and the calendar holds one entry a day.
+            if HrHoliday.objects.filter(calendar_id=result.data["calendar_id"], date=day).exists():
+                continue
+            HrHoliday.objects.create(
+                workspace=self.workspace,
+                calendar_id=result.data["calendar_id"],
+                date=day,
+                name_de=result.data["name_de"],
+                name_en=result.data["name_en"],
+                day_fraction=Decimal(result.data["day_fraction"]),
+                is_statutory=result.data["is_statutory"] == "yes",
+                import_batch=batch,
+            )
+            written += 1
+        return written
+
+    def counted_into_a_closed_month(self, batch):
+        # A closed month keeps the figures it was closed with whatever happens to
+        # the calendar afterwards, so taking a day back out cannot reach one.
+        return False
+
+    def undo(self, batch):
+        return HrHoliday.objects.filter(import_batch=batch).delete()[0]
+
+
 LOADERS = {
     HrImportBatch.Kind.TIME_ENTRIES: TimeEntryLoader,
     HrImportBatch.Kind.OPENING_BALANCES: OpeningBalanceLoader,
     HrImportBatch.Kind.ABSENCES: AbsenceLoader,
+    HrImportBatch.Kind.HOLIDAYS: HolidayLoader,
 }
 
 

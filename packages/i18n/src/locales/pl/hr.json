@@ -311,15 +311,18 @@
       "kind": {
         "time_entries": "Godziny",
         "absences": "Nieobecności",
-        "opening_balances": "Salda początkowe"
+        "opening_balances": "Salda początkowe",
+        "holidays": "Dni świąteczne"
       },
       "columns": {
         "time_entries": "Kolumny: email, date oraz hours albo minutes — dokładnie takie nagłówki. Kolumna note zostaje zachowana, jeśli plik ją zawiera. O znaczeniu zwykłej liczby decyduje nagłówek: 7,7 pod hours i 462 pod minutes to za każdym razem 7 godzin i 42 minuty. Zapis 7:42 znaczy to samo pod jednym i pod drugim nagłówkiem.",
         "absences": "Kolumny: email, start_date, end_date oraz type — dokładnie takie nagłówki. Przy pojedynczym dniu kolumnę end_date należy pominąć.",
-        "opening_balances": "Kolumny: email, date z dniem, od którego saldo obowiązuje, hours albo minutes z samym saldem oraz basis z informacją, skąd wzięła się ta liczba — dokładnie takie nagłówki. Jeśli saldo to nie godziny, dodaj kolumnę kind z wartością time, leave albo overtime."
+        "opening_balances": "Kolumny: email, date z dniem, od którego saldo obowiązuje, hours albo minutes z samym saldem oraz basis z informacją, skąd wzięła się ta liczba — dokładnie takie nagłówki. Jeśli saldo to nie godziny, dodaj kolumnę kind z wartością time, leave albo overtime.",
+        "holidays": "Kolumny: date i name_de – dokładnie z tymi nagłówkami. Można dodać name_en, half_day i statutory; half_day i statutory zawierają yes lub no. Jeśli kalendarzy jest więcej, kolumna calendar wskazuje który. Dzień, który już jest w kalendarzu, pozostaje bez zmian. Plik pobrany w Dni świąteczne ma już te nagłówki."
       },
       "preview_title": "{filename}, wczytany jako {kind}",
       "preview_hint": "Nic jeszcze nie zostało zapisane. Wiersze dochodzą do tego, co już zapisano w tych dniach, więc dzień wczytany dwa razy liczy się dwa razy. Aby poprawić plik, który już jest wczytany, najpierw go cofnij, zamiast wczytywać poprawioną kopię.",
+      "preview_hint_holidays": "Nic jeszcze nie zostało zapisane. Dzień, który już jest w kalendarzu, zostaje pominięty, a nie zmieniony, więc dwukrotne wczytanie tego samego pliku niczego nie dodaje. Dzień, który już jest, zmienia się w Dni świąteczne.",
       "will_write": "do zapisania",
       "cannot_read": "nie do odczytania",
       "skipped": "do pominięcia",
@@ -373,7 +376,13 @@
         "basis_missing": "Kolumna basis jest pusta. Napisz, skąd wzięła się ta liczba, na przykład: ze starego arkusza urlopowego.",
         "bad_start_date": "Nie udało się odczytać daty początkowej.",
         "ends_before_it_starts": "Kończy się, zanim się zacznie.",
-        "unknown_absence_type": "Żaden powód nieobecności nie ma kodu „{code}”. Kody są na ekranie Nieobecności, w sekcji Powody."
+        "unknown_absence_type": "Żaden powód nieobecności nie ma kodu „{code}”. Kody są na ekranie Nieobecności, w sekcji Powody.",
+        "no_calendar": "Nie ma jeszcze kalendarza dni świątecznych. Najpierw skonfiguruj go w Dni świąteczne.",
+        "unknown_calendar": "Nie ma kalendarza dni świątecznych o nazwie {calendar}.",
+        "name_missing": "Dzień nie ma nazwy.",
+        "name_too_long": "Nazwa ma więcej niż {limit} znaków.",
+        "bad_flag": "Kolumna {column} musi zawierać yes lub no.",
+        "holiday_exists": "Ten dzień jest już w kalendarzu, więc pozostaje bez zmian."
       }
     },
     "opening": {
@@ -498,6 +507,8 @@
         "column_leave": "Z puli urlopu",
         "column_action": "Akcja",
         "none_yet": "Nie dodano jeszcze powodów.",
+        "add_standard": "Dodaj typowe powody",
+        "standard_detail": "Urlop wypoczynkowy, zwolnienie lekarskie, odbiór nadgodzin i inne typowe powody, liczone tak, jak przewiduje prawo austriackie. Można je potem zmienić.",
         "retire": "Wyłącz",
         "bring_back": "Przywróć",
         "delete": "Usuń powód",
@@ -618,6 +629,10 @@
       "title": "Dni świąteczne",
       "subtitle": "Dni, w których nikt nie pracuje. Święto liczy się jako godziny przepracowane; nie zmniejsza tego, ile trzeba przepracować. Zmiana tutaj obejmuje tylko miesiące, które są jeszcze otwarte.",
       "subtitle_read_only": "Dni, w których nikt nie pracuje. Święto liczy się jako godziny przepracowane; nie zmniejsza tego, ile trzeba przepracować.",
+      "setup_title": "Nie ma jeszcze kalendarza dni świątecznych",
+      "setup_detail": "Dopóki go nie ma, każde święto liczy się jako zwykły dzień pracy. Konfiguracja dodaje austriackie święta od {from} do {to}. Każde z nich można potem zmienić lub usunąć, a także dodać dni przyznane przez firmę.",
+      "setup_button": "Skonfiguruj austriackie święta",
+      "import": "Importuj dni z pliku",
       "back_to_month": "Miesiąc",
       "calendar": "Kalendarz",
       "previous_year": "Poprzedni rok",
@@ -640,10 +655,12 @@
       "name_placeholder": "Nazwa tego dnia",
       "errors": {
         "date_and_name": "Proszę podać datę i nazwę dnia.",
-        "already_there": "Tego dnia jest już {day}."
+        "already_there": "Tego dnia jest już {day}.",
+        "no_calendar": "Nie ma jeszcze kalendarza dni świątecznych, do którego można dodać ten dzień."
       },
       "toasts": {
         "added": "Dzień dodany",
+        "set_up": "Dni świąteczne skonfigurowane",
         "removed": "Dzień usunięty",
         "refused": "Nie udało się zapisać",
         "try_again": "Proszę spróbować ponownie."

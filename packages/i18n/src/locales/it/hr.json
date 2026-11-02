@@ -311,15 +311,18 @@
       "kind": {
         "time_entries": "Ore",
         "absences": "Assenze",
-        "opening_balances": "Saldi iniziali"
+        "opening_balances": "Saldi iniziali",
+        "holidays": "Festività"
       },
       "columns": {
         "time_entries": "Colonne: email, date e, in alternativa, hours oppure minutes — esattamente queste intestazioni. Se è presente una colonna note, viene conservata. È l’intestazione a stabilire che cosa significa un numero semplice: 7,7 sotto hours e 462 sotto minutes sono entrambi 7 ore e 42 minuti. Scritto 7:42 vale lo stesso sotto entrambe le intestazioni.",
         "absences": "Colonne: email, start_date, end_date e type — esattamente queste intestazioni. Per un solo giorno, ometta end_date.",
-        "opening_balances": "Colonne: email, date per il giorno da cui vale il saldo, hours oppure minutes per il saldo stesso e basis per indicare da dove viene la cifra — esattamente queste intestazioni. Aggiunga una colonna kind con time, leave oppure overtime se il saldo non è in ore."
+        "opening_balances": "Colonne: email, date per il giorno da cui vale il saldo, hours oppure minutes per il saldo stesso e basis per indicare da dove viene la cifra — esattamente queste intestazioni. Aggiunga una colonna kind con time, leave oppure overtime se il saldo non è in ore.",
+        "holidays": "Colonne: date e name_de, con esattamente queste intestazioni. Si possono aggiungere name_en, half_day e statutory; half_day e statutory contengono yes o no. Se c’è più di un calendario, una colonna calendar indica quale. Un giorno già presente nel calendario resta com’è. Un file scaricato da Festività ha già queste intestazioni."
       },
       "preview_title": "{filename}, letto come {kind}",
       "preview_hint": "Non è stato ancora scritto nulla. Le righe si aggiungono a quanto è già registrato in quei giorni, perciò un giorno importato due volte conta due volte. Per correggere un file già importato, lo annulli prima, invece di importarne una copia corretta.",
+      "preview_hint_holidays": "Non è stato ancora scritto nulla. Un giorno già presente nel calendario viene saltato, non modificato, quindi importare due volte lo stesso file non aggiunge nulla. Un giorno già presente si modifica in Festività.",
       "will_write": "verranno scritte",
       "cannot_read": "non possono essere lette",
       "skipped": "saltate",
@@ -373,7 +376,13 @@
         "basis_missing": "La colonna basis è vuota. Scriva da dove viene la cifra, ad esempio: dal vecchio foglio delle ferie.",
         "bad_start_date": "Non è stato possibile leggere la data di inizio.",
         "ends_before_it_starts": "Finisce prima di iniziare.",
-        "unknown_absence_type": "Nessun motivo di assenza ha il codice «{code}». I codici si trovano nella schermata Assenze, in Motivi."
+        "unknown_absence_type": "Nessun motivo di assenza ha il codice «{code}». I codici si trovano nella schermata Assenze, in Motivi.",
+        "no_calendar": "Non c’è ancora un calendario delle festività. Ne configuri prima uno in Festività.",
+        "unknown_calendar": "Nessun calendario delle festività si chiama {calendar}.",
+        "name_missing": "Il giorno non ha un nome.",
+        "name_too_long": "Il nome supera i {limit} caratteri.",
+        "bad_flag": "La colonna {column} deve contenere yes o no.",
+        "holiday_exists": "Questo giorno è già nel calendario, quindi resta com’è."
       }
     },
     "opening": {
@@ -498,6 +507,8 @@
         "column_leave": "Scalata dal monte ferie",
         "column_action": "Azione",
         "none_yet": "Nessun motivo ancora configurato.",
+        "add_standard": "Aggiungi i motivi abituali",
+        "standard_detail": "Ferie, malattia, recupero ore e gli altri motivi abituali, conteggiati come prevede la legge austriaca. Si possono modificare in seguito.",
         "retire": "Disattiva",
         "bring_back": "Ripristina",
         "delete": "Elimina motivo",
@@ -618,6 +629,10 @@
       "title": "Festività",
       "subtitle": "I giorni in cui non lavora nessuno. Una festività conta come ore lavorate; non riduce le ore che una persona deve lavorare. Una modifica qui raggiunge solo i mesi ancora aperti.",
       "subtitle_read_only": "I giorni in cui non lavora nessuno. Una festività conta come ore lavorate; non riduce le ore che una persona deve lavorare.",
+      "setup_title": "Non c’è ancora un calendario delle festività",
+      "setup_detail": "Finché non esiste, ogni festività conta come un normale giorno lavorativo. Configurandolo si aggiungono le festività austriache dal {from} al {to}. Ognuna può poi essere modificata o rimossa, e si possono aggiungere i giorni concessi dall’azienda.",
+      "setup_button": "Configura le festività austriache",
+      "import": "Importa giorni da un file",
       "back_to_month": "Il mese",
       "calendar": "Calendario",
       "previous_year": "Anno precedente",
@@ -640,10 +655,12 @@
       "name_placeholder": "Come si chiama il giorno",
       "errors": {
         "date_and_name": "Indichi la data e il nome del giorno.",
-        "already_there": "{day} è già in questa data."
+        "already_there": "{day} è già in questa data.",
+        "no_calendar": "Non c’è ancora un calendario delle festività in cui aggiungere questo giorno."
       },
       "toasts": {
         "added": "Giorno aggiunto",
+        "set_up": "Festività configurate",
         "removed": "Giorno rimosso",
         "refused": "Non è stato possibile salvare",
         "try_again": "Riprovi, per favore."

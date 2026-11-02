@@ -7,6 +7,7 @@ Auf dieser Seite geht es um die Liste der Tage, an denen im Unternehmen niemand 
 - [Wo Sie diese Seite finden](#wo-sie-diese-seite-finden)
 - [Wer sie ändern darf](#wer-sie-ändern-darf)
 - [Was bereits im Kalender steht](#was-bereits-im-kalender-steht)
+- [Vor dem ersten Tag: den Kalender einrichten](#vor-dem-ersten-tag-den-kalender-einrichten)
 - [Das angezeigte Jahr](#das-angezeigte-jahr)
 - [Die Liste lesen](#die-liste-lesen)
 - [Was ein Feiertag mit dem Soll macht](#was-ein-feiertag-mit-dem-soll-macht)
@@ -22,6 +23,7 @@ Auf dieser Seite geht es um die Liste der Tage, an denen im Unternehmen niemand 
 - [Wann die Änderung bei den Zahlen ankommt](#wann-die-änderung-bei-den-zahlen-ankommt)
 - [Monate, die bereits eingereicht oder abgeschlossen sind](#monate-die-bereits-eingereicht-oder-abgeschlossen-sind)
 - [Das kommende Jahr rechtzeitig befüllen](#das-kommende-jahr-rechtzeitig-befüllen)
+- [Der Kalender als Datei](#der-kalender-als-datei)
 - [Meldungen, die Ihnen begegnen können](#meldungen-die-ihnen-begegnen-können)
 - [Wenn Sie nicht weiterkommen](#wenn-sie-nicht-weiterkommen)
 
@@ -80,6 +82,12 @@ Der Karfreitag steht nicht auf der Liste. Er ist in Österreich kein allgemeiner
 Heiliger Abend und Silvester stehen als halbe Tage auf der Liste, weil die meisten Unternehmen das so vereinbaren, nicht weil ein Gesetz es vorschreibt. Sie sind als **Betrieblich** gekennzeichnet, und beide können wie jeder andere betriebliche Tag auf einen ganzen Tag gesetzt oder entfernt werden.
 
 Alles andere, wofür das Unternehmen zusperrt — ein Fenstertag, eine Betriebsschließung —, steht erst dann darin, wenn es jemand eingibt.
+
+## Vor dem ersten Tag: den Kalender einrichten
+
+Auf einer Installation, auf der noch niemand einen Feiertagskalender eingerichtet hat, zeigt die Seite statt der Liste **Es gibt noch keinen Feiertagskalender** und darunter die Schaltfläche **Österreichische Feiertage einrichten**. Wer sich um das Team kümmert, drückt sie einmal. Der Kalender wird angelegt, die Tage aus der Tabelle oben werden für fünf Jahre zurück und fünf Jahre voraus eingetragen, und es erscheint ein grünes **Feiertage eingerichtet**. Sonst ändert sich nichts: Die Arbeitswoche, die jemand schuldet, bleibt unberührt, und es werden keine Abwesenheitsgründe angelegt.
+
+Bis das geschehen ist, sehen alle anderen **Für dieses Jahr sind noch keine Tage hinterlegt. Solange keine hinterlegt sind, zählt jeder Feiertag darin als gewöhnlicher Arbeitstag.**
 
 ## Das angezeigte Jahr
 
@@ -299,6 +307,15 @@ Und genau das passiert dann auch. Dreizehn Tage im Jahr werden für alle zu gew�
 **Machen Sie das jeden Herbst zur festen Aufgabe.** Öffnen Sie **Feiertage**, drücken Sie **Folgejahr**, bis Sie beim Jahr nach dem laufenden sind, und zählen Sie die Zeilen. Fünfzehn in einem gewöhnlichen Jahr — dreizehn mit **Gesetzlich, nicht änderbar** sowie Heiliger Abend und Silvester als **Betrieblich / Halber Tag**. Ist das Jahr leer oder unvollständig, geben Sie die fehlenden Tage hier von Hand ein oder bitten Sie die Personen, die das System eingerichtet haben, den einmaligen Einrichtungsschritt noch einmal auszuführen. Ihn noch einmal auszuführen ist gefahrlos: Er füllt fünf Jahre nach beiden Seiten auf und lässt jeden Tag, der schon da ist, unangetastet.
 
 Eine Warnung, wenn der Einrichtungsschritt erneut läuft: Ein gesetzlicher Tag, den jemand von Hand entfernt hat, kommt zurück, denn der Schritt setzt jedes Datum wieder ein, das er nicht findet. Ein Tag, dessen Länge oder Name geändert wurde, bleibt, wie er ist.
+
+## Der Kalender als Datei
+
+Die Schaltfläche mit den drei Punkten rechts in der Zeile oben enthält:
+
+- **Als CSV herunterladen** und **Als Excel herunterladen** — das angezeigte Jahr, eine Zeile pro Tag, mit den Spalten `date`, `name_de`, `name_en`, `half_day` und `statutory`. Die Datei ist nach Kalender und Jahr benannt, zum Beispiel `holidays-osterreich-2027.csv`. Wer diese Seite lesen kann, kann sie herunterladen.
+- **Tage aus einer Datei importieren** — nur für die Person, die sich um das Team kümmert. Sie öffnet **Frühere Aufzeichnungen importieren** mit bereits ausgewähltem **Feiertage**. Wie die Datei geprüft wird, bevor etwas geschrieben wird, steht in „Stunden von anderswo übernehmen“.
+
+Die heruntergeladene Datei hat die Überschriften, die der Import liest. Ein Jahr lässt sich also herunterladen, in einer Tabellenkalkulation korrigieren oder ergänzen und wieder importieren. Ein Tag, der schon im Kalender steht, wird übersprungen und nicht geändert; wer dieselbe Datei zweimal importiert, fügt beim zweiten Mal nichts hinzu. So lässt sich auch ein Jahr füllen, das ausgelaufen ist: siehe [Das kommende Jahr rechtzeitig befüllen](#das-kommende-jahr-rechtzeitig-befüllen).
 
 ## Meldungen, die Ihnen begegnen können
 

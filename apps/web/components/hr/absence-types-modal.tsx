@@ -87,6 +87,18 @@ export const HrAbsenceTypesModal = ({ isOpen, types, onClose, onChanged }: TProp
     }
   };
 
+  const handleAddStandard = async () => {
+    setIsBusy(true);
+    try {
+      await hrService.addStandardAbsenceTypes();
+      await onChanged();
+    } catch (failure) {
+      complain(failure);
+    } finally {
+      setIsBusy(false);
+    }
+  };
+
   const handleToggleActive = async (type: THrAbsenceType) => {
     setIsBusy(true);
     try {
@@ -143,10 +155,24 @@ export const HrAbsenceTypesModal = ({ isOpen, types, onClose, onChanged }: TProp
                 </tr>
               </thead>
               <tbody>
+                {/* Nobody can ask for leave until there is a reason to ask under,
+                    and the usual ones were only ever made by a setup step that
+                    has no button anywhere. */}
                 {types.length === 0 && (
                   <tr>
                     <td colSpan={5} className="px-3 py-6 text-center text-tertiary">
-                      {t("hr.absences.types.none_yet")}
+                      <div className="flex flex-col items-center gap-3">
+                        <span>{t("hr.absences.types.none_yet")}</span>
+                        <span className="max-w-md text-13">{t("hr.absences.types.standard_detail")}</span>
+                        <Button
+                          variant="secondary"
+                          size="md"
+                          stretch="auto"
+                          label={t("hr.absences.types.add_standard")}
+                          onClick={() => void handleAddStandard()}
+                          disabled={isBusy}
+                        />
+                      </div>
                     </td>
                   </tr>
                 )}

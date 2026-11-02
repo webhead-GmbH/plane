@@ -311,15 +311,18 @@
       "kind": {
         "time_entries": "Ore",
         "absences": "Absențe",
-        "opening_balances": "Solduri inițiale"
+        "opening_balances": "Solduri inițiale",
+        "holidays": "Zile de sărbătoare"
       },
       "columns": {
         "time_entries": "Coloane: email, date și fie hours, fie minutes — exact aceste titluri de coloană. O coloană note este preluată dacă există. Titlul decide ce înseamnă un număr simplu: 7,7 sub hours și 462 sub minutes înseamnă amândouă 7 ore și 42 de minute. Scris ca 7:42, este același lucru sub oricare dintre titluri.",
         "absences": "Coloane: email, start_date, end_date și type — exact aceste titluri de coloană. Pentru o singură zi, omiteți end_date.",
-        "opening_balances": "Coloane: email, date pentru ziua din care se aplică soldul, fie hours, fie minutes pentru soldul propriu-zis și basis pentru a spune de unde vine cifra — exact aceste titluri de coloană. Adăugați o coloană kind cu time, leave sau overtime dacă soldul nu este în ore."
+        "opening_balances": "Coloane: email, date pentru ziua din care se aplică soldul, fie hours, fie minutes pentru soldul propriu-zis și basis pentru a spune de unde vine cifra — exact aceste titluri de coloană. Adăugați o coloană kind cu time, leave sau overtime dacă soldul nu este în ore.",
+        "holidays": "Coloane: date și name_de, exact cu aceste antete. Se pot adăuga name_en, half_day și statutory; half_day și statutory conțin yes sau no. Dacă există mai multe calendare, o coloană calendar îl indică. O zi care este deja în calendar rămâne neschimbată. Un fișier descărcat din Zile de sărbătoare are deja aceste antete."
       },
       "preview_title": "{filename}, citit ca {kind}",
       "preview_hint": "Nu s-a scris încă nimic. Rândurile se adaugă la ce este deja înregistrat în acele zile, așa că o zi adusă de două ori contează de două ori. Ca să corectați un fișier deja aplicat, anulați-l mai întâi, în loc să aduceți o copie corectată.",
+      "preview_hint_holidays": "Nu s-a scris încă nimic. O zi care este deja în calendar este sărită, nu modificată, așa că aducerea aceluiași fișier de două ori nu adaugă nimic. O zi care există deja se modifică în Zile de sărbătoare.",
       "will_write": "vor fi scrise",
       "cannot_read": "nu pot fi citite",
       "skipped": "omise",
@@ -373,7 +376,13 @@
         "basis_missing": "Coloana basis este goală. Scrieți de unde vine cifra, de exemplu: din vechea foaie de calcul cu concediile.",
         "bad_start_date": "Data de început nu a putut fi citită.",
         "ends_before_it_starts": "Se termină înainte să înceapă.",
-        "unknown_absence_type": "Niciun motiv de absență nu are codul „{code}”. Codurile se află în pagina Absențe, la Motive."
+        "unknown_absence_type": "Niciun motiv de absență nu are codul „{code}”. Codurile se află în pagina Absențe, la Motive.",
+        "no_calendar": "Nu există încă un calendar de sărbători. Configurați mai întâi unul în Zile de sărbătoare.",
+        "unknown_calendar": "Nu există niciun calendar de sărbători numit {calendar}.",
+        "name_missing": "Ziua nu are nume.",
+        "name_too_long": "Numele are mai mult de {limit} caractere.",
+        "bad_flag": "Coloana {column} trebuie să conțină yes sau no.",
+        "holiday_exists": "Această zi este deja în calendar, așa că rămâne neschimbată."
       }
     },
     "opening": {
@@ -498,6 +507,8 @@
         "column_leave": "Din soldul de concediu",
         "column_action": "Acțiune",
         "none_yet": "Niciun motiv configurat încă.",
+        "add_standard": "Adăugați motivele obișnuite",
+        "standard_detail": "Concediu de odihnă, concediu medical, timp liber compensatoriu și celelalte motive obișnuite, socotite așa cum prevede legea austriacă. Pot fi modificate ulterior.",
         "retire": "Dezactivați",
         "bring_back": "Reactivați",
         "delete": "Ștergeți motivul",
@@ -618,6 +629,10 @@
       "title": "Zile de sărbătoare",
       "subtitle": "Zilele în care nu lucrează nimeni. O zi de sărbătoare contează ca ore lucrate; nu scade orele pe care cineva trebuie să le lucreze. O modificare de aici ajunge doar în lunile încă deschise.",
       "subtitle_read_only": "Zilele în care nu lucrează nimeni. O zi de sărbătoare contează ca ore lucrate; nu scade orele pe care cineva trebuie să le lucreze.",
+      "setup_title": "Nu există încă un calendar de sărbători",
+      "setup_detail": "Cât timp nu există, fiecare sărbătoare contează ca o zi lucrătoare obișnuită. Configurarea adaugă sărbătorile legale din Austria din {from} până în {to}. Oricare dintre ele poate fi apoi modificată sau eliminată, iar zilele acordate de firmă pot fi adăugate.",
+      "setup_button": "Configurați sărbătorile din Austria",
+      "import": "Importați zile dintr-un fișier",
       "back_to_month": "Luna",
       "calendar": "Calendar",
       "previous_year": "Anul anterior",
@@ -640,10 +655,12 @@
       "name_placeholder": "Cum se numește ziua",
       "errors": {
         "date_and_name": "Precizați data și numele zilei.",
-        "already_there": "În această zi există deja {day}."
+        "already_there": "În această zi există deja {day}.",
+        "no_calendar": "Nu există încă un calendar de sărbători în care să adăugați această zi."
       },
       "toasts": {
         "added": "Zi adăugată",
+        "set_up": "Sărbători configurate",
         "removed": "Zi eliminată",
         "refused": "Nu s-a putut salva",
         "try_again": "Vă rugăm să încercați din nou."

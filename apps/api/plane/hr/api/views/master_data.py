@@ -9,9 +9,6 @@ for months that are still open, which is why the endpoints refuse to touch
 anything a closed month depends on.
 """
 
-# Django imports
-from django.utils import timezone
-
 # Third-party imports
 from rest_framework import status
 from rest_framework.response import Response
@@ -41,6 +38,11 @@ from plane.hr.models import (
     HrWorkSchedule,
 )
 from plane.hr.services.audit import record
+from plane.hr.services.setup import (
+    ensure_absence_types,
+    ensure_default_holiday_calendar,
+    seed_holidays,
+)
 from plane.hr.utils.company import hr_home_workspace
 from plane.hr.utils.crm_link import set_crm_staff_id
 from plane.hr.permissions import (
@@ -512,39 +514,6 @@ class HrLeaveEntitlementEndpoint(BaseAPIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-def _seed_holidays(workspace, calendar, span=5):
-    """Fill in the public holidays around now, leaving any already there alone.
-
-    Idempotent, and safe to re-run to extend the range: a day somebody has edited
-    or removed by hand is not put back, because the calendar is theirs to correct.
-    """
-    from plane.hr.utils.holidays import austrian_holidays
-
-    if calendar.country_code != "AT":
-        return 0
-
-    this_year = timezone.now().year
-    years = range(this_year - span, this_year + span + 1)
-    known = set(HrHoliday.objects.filter(calendar=calendar).values_list("date", flat=True))
-
-    fresh = [
-        HrHoliday(
-            workspace=workspace,
-            calendar=calendar,
-            date=day,
-            name_de=name_de,
-            name_en=name_en,
-            day_fraction=fraction,
-            is_statutory=is_statutory,
-        )
-        for year in years
-        for day, name_de, name_en, fraction, is_statutory in austrian_holidays(year)
-        if day not in known
-    ]
-    HrHoliday.objects.bulk_create(fresh)
-    return len(fresh)
-
-
 class HrSetupEndpoint(BaseAPIView):
     """Create the records a workspace needs before anybody can be set up.
 
@@ -558,65 +527,16 @@ class HrSetupEndpoint(BaseAPIView):
         workspace = hr_home_workspace()
 
         created = {}
-        if not HrAbsenceType.objects.exists():
-            HrAbsenceType.objects.bulk_create(
-                [
-                    HrAbsenceType(
-                        workspace=workspace,
-                        code=code,
-                        name_de=name_de,
-                        name_en=name_en,
-                        credits_actual=credits,
-                        consumes_leave_entitlement=leave,
-                        consumes_balance=balance,
-                        requires_document=document,
-                        precedence=precedence,
-                    )
-                    for code, name_de, name_en, credits, leave, balance, document, precedence in (
-                        ("urlaub", "Urlaub", "Annual leave", True, True, False, False, 100),
-                        # Sickness outranks leave, so a day taken ill during booked
-                        # leave is charged to sickness and the leave stays.
-                        ("krankenstand", "Krankenstand", "Sick leave", True, False, False, True, 10),
-                        ("zeitausgleich", "Zeitausgleich", "Time off in lieu", True, False, True, False, 50),
-                        (
-                            "pflegefreistellung",
-                            "Pflegefreistellung",
-                            "Care leave",
-                            True,
-                            False,
-                            False,
-                            False,
-                            20,
-                        ),
-                        (
-                            "dienstverhinderung",
-                            "Sonstige Dienstverhinderung",
-                            "Other justified absence",
-                            True,
-                            False,
-                            False,
-                            False,
-                            30,
-                        ),
-                        ("unbezahlt", "Unbezahlter Urlaub", "Unpaid leave", False, False, False, False, 200),
-                    )
-                ]
-            )
+        if ensure_absence_types(workspace):
             created["absence_types"] = HrAbsenceType.objects.count()
 
-        calendar = HrHolidayCalendar.objects.filter(is_default=True).first()
-        if calendar is None:
-            calendar = HrHolidayCalendar.objects.create(
-                workspace=workspace, name="Österreich", country_code="AT", is_default=True
-            )
+        calendar, made, seeded = ensure_default_holiday_calendar(workspace)
+        if made:
             created["holiday_calendar"] = "AT"
 
-        # An empty calendar is not a neutral starting point: every public holiday
-        # would read as an ordinary working day and show as a full day's shortfall
-        # against somebody who was legally off. Seeded generously either side of
-        # now, because past months are entered by hand from the old records and a
-        # year that runs out brings the same fault back silently.
-        added = _seed_holidays(workspace, calendar)
+        # Seeded again on every run rather than only when the calendar is new, so
+        # running the step extends a calendar whose years are running out.
+        added = seeded + seed_holidays(workspace, calendar)
         if added:
             created["holidays"] = added
 
@@ -638,4 +558,40 @@ class HrSetupEndpoint(BaseAPIView):
         return Response(
             {"created": created, "already_present": not created},
             status=status.HTTP_200_OK,
+        )
+
+
+class HrDefaultHolidayCalendarEndpoint(BaseAPIView):
+    """The default holiday calendar, made and filled in the first time it is needed.
+
+    Only the calendar: the setup step also writes a company-wide working week,
+    and doing that from the Public holidays page would quietly change what
+    everybody without a week of their own has to work.
+    """
+
+    @hr_permission(MANAGER)
+    def post(self, request):
+        calendar, made, added = ensure_default_holiday_calendar(hr_home_workspace())
+        return Response(
+            {
+                "calendar": HrHolidayCalendarSerializer(calendar).data,
+                "created": made,
+                "holidays_added": added,
+            },
+            status=status.HTTP_201_CREATED if made else status.HTTP_200_OK,
+        )
+
+
+class HrStandardAbsenceTypesEndpoint(BaseAPIView):
+    """The usual reasons for being away, added in one go to an empty list."""
+
+    @hr_permission(MANAGER)
+    def post(self, request):
+        made = ensure_absence_types(hr_home_workspace())
+        return Response(
+            {
+                "created": made,
+                "absence_types": HrAbsenceTypeSerializer(HrAbsenceType.objects.all(), many=True).data,
+            },
+            status=status.HTTP_201_CREATED if made else status.HTTP_200_OK,
         )

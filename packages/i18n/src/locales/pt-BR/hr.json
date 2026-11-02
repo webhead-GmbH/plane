@@ -306,6 +306,10 @@
       "title": "Feriados",
       "subtitle": "Os dias em que ninguém trabalha. Um feriado conta como horas trabalhadas; ele não reduz o que a pessoa tem que trabalhar. Uma mudança aqui só alcança os meses que ainda estão abertos.",
       "subtitle_read_only": "Os dias em que ninguém trabalha. Um feriado conta como horas trabalhadas; ele não reduz o que a pessoa tem que trabalhar.",
+      "setup_title": "Ainda não há um calendário de feriados",
+      "setup_detail": "Enquanto não houver, cada feriado conta como um dia útil comum. Ao configurá-lo, os feriados da Áustria de {from} a {to} são adicionados. Depois, qualquer um deles pode ser alterado ou removido, e dias concedidos pela empresa podem ser adicionados.",
+      "setup_button": "Configurar os feriados da Áustria",
+      "import": "Importar dias de um arquivo",
       "back_to_month": "O mês",
       "calendar": "Calendário",
       "previous_year": "Ano anterior",
@@ -328,10 +332,12 @@
       "name_placeholder": "Como o dia se chama",
       "errors": {
         "date_and_name": "Informe uma data e um nome para o dia.",
-        "already_there": "{day} já está nesse dia."
+        "already_there": "{day} já está nesse dia.",
+        "no_calendar": "Ainda não há um calendário de feriados para adicionar este dia."
       },
       "toasts": {
         "added": "Dia adicionado",
+        "set_up": "Feriados configurados",
         "removed": "Dia removido",
         "refused": "Não foi possível salvar",
         "try_again": "Por favor, tente novamente."
@@ -429,15 +435,18 @@
       "kind": {
         "time_entries": "Horas",
         "absences": "Ausências",
-        "opening_balances": "Saldos iniciais"
+        "opening_balances": "Saldos iniciais",
+        "holidays": "Feriados"
       },
       "columns": {
         "time_entries": "Colunas: email, date e hours ou minutes — exatamente esses títulos de coluna. Uma coluna note é mantida, se houver. O título decide o que um número simples significa: 7,7 em hours e 462 em minutes são a mesma coisa, 7 horas e 42 minutos. Escrito como 7:42, dá no mesmo sob qualquer um dos dois títulos.",
         "absences": "Colunas: email, start_date, end_date e type — exatamente esses títulos de coluna. Para um único dia, deixe end_date de fora.",
-        "opening_balances": "Colunas: email, date para o dia a partir do qual o saldo vale, hours ou minutes para o próprio saldo e basis dizendo de onde veio o número — exatamente esses títulos de coluna. Acrescente uma coluna kind com time, leave ou overtime se o saldo não for de horas."
+        "opening_balances": "Colunas: email, date para o dia a partir do qual o saldo vale, hours ou minutes para o próprio saldo e basis dizendo de onde veio o número — exatamente esses títulos de coluna. Acrescente uma coluna kind com time, leave ou overtime se o saldo não for de horas.",
+        "holidays": "Colunas: date e name_de, exatamente com esses cabeçalhos. name_en, half_day e statutory podem ser acrescentados; half_day e statutory recebem yes ou no. Se houver mais de um calendário, uma coluna calendar indica qual. Um dia que já está no calendário fica como está. Um arquivo baixado em Feriados já tem esses cabeçalhos."
       },
       "preview_title": "{filename}, lido como {kind}",
       "preview_hint": "Nada foi gravado ainda. As linhas são somadas ao que já está registrado nesses dias, então um dia importado duas vezes conta duas vezes. Para corrigir um arquivo já importado, desfaça-o primeiro em vez de importar uma cópia corrigida.",
+      "preview_hint_holidays": "Nada foi gravado ainda. Um dia que já está no calendário é ignorado em vez de alterado, então importar o mesmo arquivo duas vezes não acrescenta nada. Um dia que já existe é alterado em Feriados.",
       "will_write": "serão gravadas",
       "cannot_read": "não podem ser lidas",
       "skipped": "ignoradas",
@@ -491,7 +500,13 @@
         "basis_missing": "A coluna basis está vazia. Escreva de onde veio o número, por exemplo: da planilha antiga de férias.",
         "bad_start_date": "Não foi possível ler a data de início.",
         "ends_before_it_starts": "Termina antes de começar.",
-        "unknown_absence_type": "Nenhum motivo de ausência tem o código “{code}”. Os códigos estão na tela Ausências, em Motivos."
+        "unknown_absence_type": "Nenhum motivo de ausência tem o código “{code}”. Os códigos estão na tela Ausências, em Motivos.",
+        "no_calendar": "Ainda não há um calendário de feriados. Configure um primeiro em Feriados.",
+        "unknown_calendar": "Não há calendário de feriados chamado {calendar}.",
+        "name_missing": "O dia não tem nome.",
+        "name_too_long": "O nome tem mais de {limit} caracteres.",
+        "bad_flag": "A coluna {column} precisa dizer yes ou no.",
+        "holiday_exists": "Este dia já está no calendário, então fica como está."
       }
     },
     "opening": {
@@ -616,6 +631,8 @@
         "column_leave": "Desconta do saldo de férias",
         "column_action": "Ação",
         "none_yet": "Nenhum motivo cadastrado ainda.",
+        "add_standard": "Adicionar os motivos habituais",
+        "standard_detail": "Férias, licença médica, folga compensatória e os outros motivos habituais, contados como a lei austríaca determina. Podem ser alterados depois.",
         "retire": "Desativar",
         "bring_back": "Reativar",
         "delete": "Excluir motivo",

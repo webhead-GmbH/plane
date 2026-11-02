@@ -306,6 +306,10 @@
       "title": "Ngày lễ",
       "subtitle": "Những ngày không ai đi làm. Ngày lễ được tính như giờ đã làm; nó không làm giảm số giờ phải làm. Thay đổi ở đây chỉ ảnh hưởng đến những tháng còn mở.",
       "subtitle_read_only": "Những ngày không ai đi làm. Ngày lễ được tính như giờ đã làm; nó không làm giảm số giờ phải làm.",
+      "setup_title": "Chưa có lịch ngày lễ",
+      "setup_detail": "Khi chưa có lịch, mỗi ngày lễ được tính như một ngày làm việc bình thường. Thiết lập sẽ thêm các ngày lễ của Áo từ {from} đến {to}. Sau đó có thể thay đổi hoặc xóa bất kỳ ngày nào, và thêm những ngày công ty cho nghỉ.",
+      "setup_button": "Thiết lập ngày lễ của Áo",
+      "import": "Nhập ngày từ tệp",
       "back_to_month": "Tháng",
       "calendar": "Lịch",
       "previous_year": "Năm trước",
@@ -328,10 +332,12 @@
       "name_placeholder": "Tên gọi của ngày này",
       "errors": {
         "date_and_name": "Hãy chọn ngày và đặt tên cho ngày lễ này.",
-        "already_there": "Ngày này đã có {day}."
+        "already_there": "Ngày này đã có {day}.",
+        "no_calendar": "Chưa có lịch ngày lễ để thêm ngày này vào."
       },
       "toasts": {
         "added": "Đã thêm ngày lễ",
+        "set_up": "Đã thiết lập ngày lễ",
         "removed": "Đã xóa ngày lễ",
         "refused": "Không thể lưu",
         "try_again": "Vui lòng thử lại."
@@ -429,15 +435,18 @@
       "kind": {
         "time_entries": "Số giờ",
         "absences": "Vắng mặt",
-        "opening_balances": "Số dư đầu kỳ"
+        "opening_balances": "Số dư đầu kỳ",
+        "holidays": "Ngày lễ"
       },
       "columns": {
         "time_entries": "Các cột: email, date, và một trong hai cột hours hoặc minutes — tiêu đề cột phải đúng như vậy. Nếu có cột note thì cột đó được giữ lại. Tiêu đề cột quyết định một con số trần có nghĩa gì: 7,7 ở cột hours và 462 ở cột minutes đều là 7 giờ 42 phút. Viết là 7:42 thì cả hai tiêu đề đều hiểu như nhau.",
         "absences": "Các cột: email, start_date, end_date và type — tiêu đề cột phải đúng như vậy. Nếu chỉ vắng một ngày thì bỏ cột end_date đi.",
-        "opening_balances": "Các cột: email, date cho ngày số dư bắt đầu áp dụng, hours hoặc minutes cho chính số dư, và basis cho biết con số lấy từ đâu — tiêu đề cột phải đúng như vậy. Thêm cột kind ghi time, leave hoặc overtime nếu số dư không phải là giờ."
+        "opening_balances": "Các cột: email, date cho ngày số dư bắt đầu áp dụng, hours hoặc minutes cho chính số dư, và basis cho biết con số lấy từ đâu — tiêu đề cột phải đúng như vậy. Thêm cột kind ghi time, leave hoặc overtime nếu số dư không phải là giờ.",
+        "holidays": "Cột: date và name_de — đúng các tiêu đề đó. Có thể thêm name_en, half_day và statutory; half_day và statutory ghi yes hoặc no. Nếu có nhiều lịch, cột calendar cho biết lịch nào. Ngày đã có trong lịch được giữ nguyên. Tệp tải xuống từ Ngày lễ đã có sẵn các tiêu đề này."
       },
       "preview_title": "{filename}, đọc theo dạng {kind}",
       "preview_hint": "Chưa có gì được ghi. Các dòng được cộng thêm vào những gì đã ghi nhận cho các ngày đó, nên một ngày nhập vào hai lần sẽ được tính hai lần. Muốn sửa một tệp đã nhập, hãy hoàn tác tệp đó trước chứ đừng nhập thêm bản đã sửa.",
+      "preview_hint_holidays": "Chưa có gì được ghi. Ngày đã có trong lịch sẽ được bỏ qua chứ không bị thay đổi, nên nhập cùng một tệp hai lần cũng không thêm gì. Ngày đã có được sửa ở Ngày lễ.",
       "will_write": "sẽ được ghi",
       "cannot_read": "không đọc được",
       "skipped": "đã bỏ qua",
@@ -491,7 +500,13 @@
         "basis_missing": "Cột basis đang trống. Hãy ghi con số lấy từ đâu, ví dụ: từ bảng tính nghỉ phép cũ.",
         "bad_start_date": "Không đọc được ngày bắt đầu.",
         "ends_before_it_starts": "Kết thúc trước khi bắt đầu.",
-        "unknown_absence_type": "Không có lý do vắng mặt nào mang mã “{code}”. Các mã nằm ở màn hình Vắng mặt, mục Lý do."
+        "unknown_absence_type": "Không có lý do vắng mặt nào mang mã “{code}”. Các mã nằm ở màn hình Vắng mặt, mục Lý do.",
+        "no_calendar": "Chưa có lịch ngày lễ. Hãy thiết lập một lịch ở Ngày lễ trước.",
+        "unknown_calendar": "Không có lịch ngày lễ nào tên là {calendar}.",
+        "name_missing": "Ngày này chưa có tên.",
+        "name_too_long": "Tên dài hơn {limit} ký tự.",
+        "bad_flag": "Cột {column} phải ghi yes hoặc no.",
+        "holiday_exists": "Ngày này đã có trong lịch nên được giữ nguyên."
       }
     },
     "opening": {
@@ -616,6 +631,8 @@
         "column_leave": "Trừ vào quỹ phép",
         "column_action": "Thao tác",
         "none_yet": "Chưa thiết lập lý do nào.",
+        "add_standard": "Thêm các lý do thông thường",
+        "standard_detail": "Nghỉ phép năm, nghỉ ốm, nghỉ bù và các lý do thông thường khác, được tính theo luật của Áo. Có thể thay đổi sau.",
         "retire": "Ngừng dùng",
         "bring_back": "Dùng lại",
         "delete": "Xóa lý do",
