@@ -197,11 +197,19 @@ class TestDownloadingTheCalendar:
     def test_a_year_comes_out_with_the_import_headings(self, workspace, manager):
         calendar = calendar_for(workspace)
         HrHoliday.objects.create(
-            workspace=workspace, calendar=calendar, date=date(2026, 12, 24), name_de="Heiliger Abend",
-            name_en="Christmas Eve", day_fraction=Decimal("0.5"), is_statutory=False,
+            workspace=workspace,
+            calendar=calendar,
+            date=date(2026, 12, 24),
+            name_de="Heiliger Abend",
+            name_en="Christmas Eve",
+            day_fraction=Decimal("0.5"),
+            is_statutory=False,
         )
         HrHoliday.objects.create(
-            workspace=workspace, calendar=calendar, date=date(2025, 12, 25), name_de="Christtag",
+            workspace=workspace,
+            calendar=calendar,
+            date=date(2025, 12, 25),
+            name_de="Christtag",
         )
 
         response = client_for(manager).get(f"/api/hr/holidays/export/?calendar={calendar.id}&year=2026")
@@ -239,8 +247,20 @@ class TestImportingHolidays:
         response = check(
             client,
             [
-                {"date": "24.12.2026", "name_de": "Heiliger Abend", "name_en": "", "half_day": "ja", "statutory": "nein"},
-                {"date": "2026-12-31", "name_de": "Silvester", "name_en": "New Year's Eve", "half_day": "yes", "statutory": ""},
+                {
+                    "date": "24.12.2026",
+                    "name_de": "Heiliger Abend",
+                    "name_en": "",
+                    "half_day": "ja",
+                    "statutory": "nein",
+                },
+                {
+                    "date": "2026-12-31",
+                    "name_de": "Silvester",
+                    "name_en": "New Year's Eve",
+                    "half_day": "yes",
+                    "statutory": "",
+                },
             ],
         )
 
@@ -258,13 +278,21 @@ class TestImportingHolidays:
 
     def test_a_day_already_in_the_calendar_is_left_as_it_is(self, workspace, manager):
         calendar = calendar_for(workspace)
-        HrHoliday.objects.create(workspace=workspace, calendar=calendar, date=date(2026, 11, 1), name_de="Allerheiligen")
+        HrHoliday.objects.create(
+            workspace=workspace, calendar=calendar, date=date(2026, 11, 1), name_de="Allerheiligen"
+        )
 
         batch = check(
             client_for(manager),
             [
                 {"date": "2026-11-01", "name_de": "Something else", "name_en": "", "half_day": "", "statutory": ""},
-                {"date": "2026-12-08", "name_de": "Mariä Empfängnis", "name_en": "", "half_day": "", "statutory": "yes"},
+                {
+                    "date": "2026-12-08",
+                    "name_de": "Mariä Empfängnis",
+                    "name_en": "",
+                    "half_day": "",
+                    "statutory": "yes",
+                },
                 {"date": "2026-12-08", "name_de": "Twice in the file", "name_en": "", "half_day": "", "statutory": ""},
             ],
         ).json()
@@ -316,8 +344,13 @@ class TestImportingHolidays:
     def test_a_downloaded_calendar_comes_back_in_unchanged(self, workspace, manager):
         calendar = calendar_for(workspace)
         HrHoliday.objects.create(
-            workspace=workspace, calendar=calendar, date=date(2026, 12, 31), name_de="Silvester",
-            name_en="New Year's Eve", day_fraction=Decimal("0.5"), is_statutory=False,
+            workspace=workspace,
+            calendar=calendar,
+            date=date(2026, 12, 31),
+            name_de="Silvester",
+            name_en="New Year's Eve",
+            day_fraction=Decimal("0.5"),
+            is_statutory=False,
         )
         client = client_for(manager)
         exported = client.get("/api/hr/holidays/export/?year=2026").content
@@ -347,7 +380,8 @@ class TestImportingHolidays:
         HrHoliday.objects.create(workspace=workspace, calendar=calendar, date=date(2026, 1, 1), name_de="Neujahr")
         client = client_for(manager)
         batch_id = check(
-            client, [{"date": "2026-12-24", "name_de": "Heiliger Abend", "name_en": "", "half_day": "yes", "statutory": "no"}]
+            client,
+            [{"date": "2026-12-24", "name_de": "Heiliger Abend", "name_en": "", "half_day": "yes", "statutory": "no"}],
         ).json()["id"]
         client.post(f"/api/hr/imports/{batch_id}/commit/")
 

@@ -5,15 +5,20 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('hr', '0006_absence_import_batch'),
+        ("hr", "0006_absence_import_batch"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='hrholiday',
-            name='import_batch',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='holidays', to='hr.hrimportbatch'),
+            model_name="hrholiday",
+            name="import_batch",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="holidays",
+                to="hr.hrimportbatch",
+            ),
         ),
     ]

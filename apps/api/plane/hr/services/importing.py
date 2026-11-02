@@ -535,9 +535,7 @@ class HolidayLoader(_Loader):
     def __init__(self, workspace):
         super().__init__(workspace)
         self._calendars = list(HrHolidayCalendar.objects.all())
-        self._known = set(
-            HrHoliday.objects.filter(calendar__in=self._calendars).values_list("calendar_id", "date")
-        )
+        self._known = set(HrHoliday.objects.filter(calendar__in=self._calendars).values_list("calendar_id", "date"))
 
     def calendar_for(self, value):
         """The calendar a row names, by name or country code; the default where it names none."""
@@ -566,9 +564,7 @@ class HolidayLoader(_Loader):
             calendar = self.calendar_for(named)
 
             if calendar is None and not named:
-                results.append(
-                    RowResult(index, ERROR, "There is no holiday calendar yet.", row, "no_calendar")
-                )
+                results.append(RowResult(index, ERROR, "There is no holiday calendar yet.", row, "no_calendar"))
             elif calendar is None:
                 results.append(
                     RowResult(
