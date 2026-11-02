@@ -18,7 +18,7 @@ have no work item, which the mirror cannot see.
 
 # Python imports
 import hashlib
-from datetime import datetime
+from datetime import date, datetime
 from decimal import ROUND_HALF_UP, Decimal, InvalidOperation
 
 # Django imports
@@ -486,8 +486,9 @@ class AbsenceLoader(_Loader):
                 workspace=self.workspace,
                 profile_id=result.data["profile_id"],
                 absence_type_id=result.data["absence_type_id"],
-                start_date=result.data["start_date"],
-                end_date=result.data["end_date"],
+                # Dates, not the preview's text: the instance is counted below, day by day
+                start_date=date.fromisoformat(result.data["start_date"]),
+                end_date=date.fromisoformat(result.data["end_date"]),
                 state=HrAbsence.State.APPROVED,
                 import_batch=batch,
                 reason="Imported from a previous system.",
