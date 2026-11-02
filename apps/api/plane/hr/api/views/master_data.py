@@ -10,7 +10,6 @@ anything a closed month depends on.
 """
 
 # Django imports
-from django.db import transaction
 from django.utils import timezone
 
 # Third-party imports
@@ -174,6 +173,8 @@ class HrEmploymentProfileEndpoint(HrWorkspaceConfigEndpoint):
             before = crm_link_for(row)["staff_id"]
             set_crm_staff_id(row, staff_id)
             if before != staff_id:
+                from django.db import transaction
+
                 from plane.bgtasks.crm_sync_task import resync_member_to_crm
 
                 # Hours logged while the person could not be matched, and tasks they
