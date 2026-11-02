@@ -814,6 +814,105 @@ def backfill_workspace_to_crm(integration_id):
     )
 
 
+# ─── Hours that could not reach the CRM when they were logged ───────────────
+
+# How far back the hourly sweep looks. Hours that still cannot be matched after
+# this long belong to somebody with no CRM account at all, and looking at them
+# every hour for ever would only repeat the same answer.
+STRANDED_WINDOW_DAYS = 30
+
+
+def _linked_issue_ids(workspace_id):
+    return CrmTaskLink.objects.filter(workspace_id=workspace_id).values("issue_id")
+
+
+def _unmirrored_worklogs(workspace_id):
+    """Worklogs on mirrored work items that never became a CRM timer."""
+    return IssueWorkLog.objects.filter(workspace_id=workspace_id, issue_id__in=_linked_issue_ids(workspace_id)).exclude(
+        id__in=CrmTimerLink.objects.values("worklog_id")
+    )
+
+
+@shared_task
+def resync_member_to_crm(user_id):
+    """Bring a person's mirrored work items up to date after their CRM staff id changed.
+
+    Hours logged while nobody could tell who they were in the CRM sit in the
+    "could not be attached" table on the task, and the person is left off its
+    assignees. Both are put right by the next sync of each work item — which used
+    to mean somebody saving every one of them by hand. Re-syncing them here turns
+    the stranded hours into timers, clears the table and puts the assignee back.
+    """
+    workspace_ids = WorkspaceMember.objects.filter(member_id=user_id, is_active=True).values_list(
+        "workspace_id", flat=True
+    )
+    for workspace_id in workspace_ids:
+        if _active_integration(workspace_id) is None:
+            continue
+        issue_ids = set(
+            _unmirrored_worklogs(workspace_id).filter(logged_by_id=user_id).values_list("issue_id", flat=True)
+        )
+        issue_ids |= set(
+            IssueAssignee.objects.filter(
+                workspace_id=workspace_id, assignee_id=user_id, issue_id__in=_linked_issue_ids(workspace_id)
+            ).values_list("issue_id", flat=True)
+        )
+        for issue_id in issue_ids:
+            sync_issue_to_crm.delay(str(issue_id))
+        if issue_ids:
+            logger.info(
+                "Re-syncing %s CRM work items of user %s in workspace %s after their CRM link changed.",
+                len(issue_ids),
+                user_id,
+                workspace_id,
+            )
+
+
+@shared_task
+def resync_stranded_crm_hours():
+    """Hourly: send on hours whose author can be matched now but could not be when they were logged.
+
+    Setting somebody's CRM staff id re-syncs their work at once. This catches the
+    rest: a CRM account made after the hours were logged, an account switched back
+    on, or a CRM that could not be reached at the time. Only work items with such
+    hours are synced, so an hour with nothing to do costs one query per workspace.
+    """
+    since = dj_timezone.now() - timedelta(days=STRANDED_WINDOW_DAYS)
+    for integration in CrmIntegration.objects.filter(is_active=True):
+        workspace_id = integration.workspace_id
+        candidates = _unmirrored_worklogs(workspace_id).filter(created_at__gte=since, logged_by__isnull=False)
+        authors = set(candidates.values_list("logged_by_id", "logged_by__email"))
+        if not authors:
+            continue
+
+        staff_by_email = _crm_staff_by_email(workspace_id)
+        if staff_by_email is None:
+            continue  # the CRM could not be asked; the next hour asks again
+
+        overrides = set(
+            WorkspaceMember.objects.filter(
+                workspace_id=workspace_id,
+                member_id__in=[user_id for user_id, _ in authors],
+                is_active=True,
+                crm_staff_id__gt=0,
+            ).values_list("member_id", flat=True)
+        )
+        matchable = [
+            user_id
+            for user_id, email in authors
+            if user_id in overrides or (email and staff_by_email.get(email.strip().lower()))
+        ]
+        if not matchable:
+            continue
+
+        issue_ids = set(candidates.filter(logged_by_id__in=matchable).values_list("issue_id", flat=True))
+        for issue_id in issue_ids:
+            sync_issue_to_crm.delay(str(issue_id))
+        logger.info(
+            "Sending on stranded hours from %s CRM work items in workspace %s.", len(issue_ids), workspace_id
+        )
+
+
 # ─── Project remap (a project's CRM id changed) ──────────────────────────────
 
 

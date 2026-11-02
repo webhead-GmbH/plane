@@ -102,6 +102,10 @@ app.conf.beat_schedule = {
         "task": "plane.bgtasks.crm_sync_task.reconcile_crm_timer_stops",
         "schedule": crontab(),  # every minute; asks the CRM only while a mirrored timer runs
     },
+    "check-every-hour-for-stranded-crm-hours": {
+        "task": "plane.bgtasks.crm_sync_task.resync_stranded_crm_hours",
+        "schedule": crontab(minute=25),  # hourly, at :25; asks the CRM only when something is stranded
+    },
     "check-every-hour-for-timers-left-running": {
         "task": "plane.hr.bgtasks.timer_sweeper.close_runaway_timers",
         "schedule": crontab(minute=5),  # hourly, at :05

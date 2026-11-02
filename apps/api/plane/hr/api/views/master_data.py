@@ -10,6 +10,7 @@ anything a closed month depends on.
 """
 
 # Django imports
+from django.db import transaction
 from django.utils import timezone
 
 # Third-party imports
@@ -42,7 +43,7 @@ from plane.hr.models import (
 )
 from plane.hr.services.audit import record
 from plane.hr.utils.company import hr_home_workspace
-from plane.hr.utils.crm_link import set_crm_staff_id
+from plane.hr.utils.crm_link import crm_link_for, set_crm_staff_id
 from plane.hr.permissions import (
     MANAGER,
     SELF,
@@ -170,7 +171,15 @@ class HrEmploymentProfileEndpoint(HrWorkspaceConfigEndpoint):
 
         # After the record saves, so a rejected change does not leave the id moved.
         if sets_crm:
+            before = crm_link_for(row)["staff_id"]
             set_crm_staff_id(row, staff_id)
+            if before != staff_id:
+                from plane.bgtasks.crm_sync_task import resync_member_to_crm
+
+                # Hours logged while the person could not be matched, and tasks they
+                # were dropped from, only catch up when each work item syncs again.
+                member_id = str(row.member_id)
+                transaction.on_commit(lambda: resync_member_to_crm.delay(member_id))
 
         if was_manager != becomes_manager:
             # Filed like any other change to somebody's record, because it is one —

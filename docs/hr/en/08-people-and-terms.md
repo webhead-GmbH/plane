@@ -210,6 +210,8 @@ The middle line is the one people misread. It does not mean a CRM account was fo
 
 Only whole numbers are accepted. Anything else is refused with "A CRM staff id is a whole number. Leave it empty to match on the email address instead." Emptying the box puts them back on the email match.
 
+**Saving a new id brings their work up to date by itself.** Every work item mirrored to the CRM that holds hours of theirs which never became a CRM timer, or that they are assigned to, is sent to the CRM again a moment later. Hours that were waiting in the table on the CRM task become timers, the table goes, and they are back on the task's assignees. Nobody has to open and save those work items. Clearing or changing the id does the same. Separately, once an hour, hours from the last 30 days whose author can now be matched — because a CRM account was made or switched back on, or the CRM could not be reached at the time — are sent on the same way.
+
 ## Looks after the team
 
 The box labelled **Looks after the team — can see and change everyone's hours, absences and leave, in every workspace** does exactly what it says. It is not the same thing as administering a workspace, and it is not limited to one workspace: somebody with this box ticked can see and change every colleague's month everywhere.
