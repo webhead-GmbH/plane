@@ -19,6 +19,8 @@ from rest_framework.test import APIClient
 from plane.app.permissions import ROLE
 from plane.db.models import IssueWorkLog
 from plane.hr.models import (
+    HrAbsence,
+    HrAbsenceType,
     HrContract,
     HrEmploymentProfile,
     HrImportBatch,
@@ -412,6 +414,63 @@ class TestImportingOpeningBalances:
         assert balance.minutes == 630
         assert balance.confidence == HrOpeningBalance.Confidence.AGREED
         assert balance.basis.startswith("Agreed with Ana")
+
+
+class TestImportingAbsences:
+    """The dates go through the stored preview as text, as they do from the screen."""
+
+    HEADERS = ["email", "start_date", "end_date", "type"]
+
+    def _commit(self, workspace, manager, rows):
+        HrAbsenceType.objects.get_or_create(workspace=workspace, code="urlaub", defaults={"name_de": "Urlaub"})
+        client = client_for(manager)
+        batch_id = client.post(
+            url(workspace, "imports/"),
+            {"file": csv_upload(rows, self.HEADERS), "kind": HrImportBatch.Kind.ABSENCES},
+            format="multipart",
+        ).json()["id"]
+        return client, batch_id, client.post(url(workspace, f"imports/{batch_id}/commit/"))
+
+    def test_applying_writes_the_absence_with_the_time_it_takes(self, workspace, manager):
+        _, profile = employ(workspace, email="ana@example.invalid")
+
+        _, _, response = self._commit(
+            workspace,
+            manager,
+            [{"email": "ana@example.invalid", "start_date": "2026-03-02", "end_date": "2026-03-02", "type": "urlaub"}],
+        )
+
+        assert response.status_code == 200
+        assert response.json()["written"] == 1
+        absence = HrAbsence.objects.get(profile=profile)
+        assert absence.state == HrAbsence.State.APPROVED
+        assert absence.total_minutes == FULL
+
+    def test_a_range_counts_only_the_days_the_person_works(self, workspace, manager):
+        _, profile = employ(workspace, email="ana@example.invalid")
+
+        # Friday to Monday: the weekend in between credits nothing
+        _, _, response = self._commit(
+            workspace,
+            manager,
+            [{"email": "ana@example.invalid", "start_date": "2026-03-06", "end_date": "2026-03-09", "type": "urlaub"}],
+        )
+
+        assert response.status_code == 200
+        assert HrAbsence.objects.get(profile=profile).total_minutes == 2 * FULL
+
+    def test_an_applied_absence_import_can_be_undone(self, workspace, manager):
+        _, profile = employ(workspace, email="ana@example.invalid")
+        client, batch_id, _ = self._commit(
+            workspace,
+            manager,
+            [{"email": "ana@example.invalid", "start_date": "2026-03-02", "end_date": "2026-03-02", "type": "urlaub"}],
+        )
+
+        response = client.post(url(workspace, f"imports/{batch_id}/undo/"), {"reason": "Wrong file."}, format="json")
+
+        assert response.status_code == 200
+        assert not HrAbsence.objects.filter(profile=profile).exists()
 
 
 class TestOpeningBalanceCorrections:
