@@ -11,6 +11,7 @@ Wenn Sie nur Ihre eigenen Stunden im Blick behalten wollen, ist dieser Bildschir
 - [Die vier Zahlen ganz oben](#die-vier-zahlen-ganz-oben)
 - [Die Tabelle, Spalte für Spalte](#die-tabelle-spalte-für-spalte)
 - [Die Zeichen neben einem Namen](#die-zeichen-neben-einem-namen)
+- [Der Monat einer Person](#der-monat-einer-person)
 - [Die fünf Zustände, die ein Monat haben kann](#die-fünf-zustände-die-ein-monat-haben-kann)
 - [Was jede Aktion bewirkt und wann sie erscheint](#was-jede-aktion-bewirkt-und-wann-sie-erscheint)
 - [Der Monat von Anfang bis Ende](#der-monat-von-anfang-bis-ende)
@@ -105,7 +106,7 @@ Die Tabelle hat eine Zeile pro Person. Auf einem schmalen Bildschirm lässt sie 
 
 | Spalte              | Was darin steht                                                   |
 | ------------------- | ----------------------------------------------------------------- |
-| **Person**          | Der Name der Person, daneben bis zu zwei Zeichen                  |
+| **Person**          | Ihr Name, der ihren Monat öffnet, daneben bis zu zwei Zeichen     |
 | **Status**          | Wie weit der Monat gekommen ist — eines von fünf Wörtern          |
 | **Soll**            | Was ihre Bedingungen von ihr verlangen, wie oben beschrieben      |
 | **Ist**             | Was ihr Monat ergeben hat, wie oben beschrieben                   |
@@ -127,7 +128,7 @@ Zwei davon muss man richtig erklären.
 
 Wurde der Vormonat nie abgeschlossen, beginnt die Kette beim **Anfangssaldo**, der für diese Person auf der Seite Personen hinterlegt ist, und bei gar nichts, wenn es keinen gibt. Deshalb müssen Monate vom ältesten an abgeschlossen werden; siehe [Wenn der Bildschirm etwas ablehnt](#wenn-der-bildschirm-etwas-ablehnt).
 
-**Die Zeilen stehen in der Reihenfolge, in der die Personen angelegt wurden, die neueste zuerst.** Sie sind nicht alphabetisch, und ein Suchfeld gibt es nicht. Kommt jemand dazu, rutschen alle anderen eine Zeile nach unten; die Zeile unter Ihrem Mauszeiger ist diesen Monat also vielleicht nicht die Zeile, die letzten Monat dort war. Auf einem Bildschirm, auf dem ein Klick die Lohnzahlen einer Person genehmigt, lesen Sie den Namen, bevor Sie etwas drücken.
+**Die Zeilen stehen in der Reihenfolge, in der die Personen angelegt wurden, die neueste zuerst.** Sie sind nicht alphabetisch. Um eine einzelne Person zu sehen, wählen Sie sie über der Tabelle unter **Stunden anzeigen für**: Die vier Zahlen ganz oben zählen dann nur diese Person, die zwei Dateien zum Herunterladen enthalten weiterhin alle. Kommt jemand dazu, rutschen alle anderen eine Zeile nach unten; die Zeile unter Ihrem Mauszeiger ist diesen Monat also vielleicht nicht die Zeile, die letzten Monat dort war. Auf einem Bildschirm, auf dem ein Klick die Lohnzahlen einer Person genehmigt, lesen Sie den Namen, bevor Sie etwas drücken.
 
 ## Die Zeichen neben einem Namen
 
@@ -136,6 +137,16 @@ Rechts neben dem Namen einer Person können zwei kleine Zeichen erscheinen.
 **Ein Timer-Zeichen.** Sein Hinweis lautet „Ein Timer läuft noch, daher kann dieser Monat noch nicht eingereicht werden.“ Jemand hat irgendwo in diesem Monat einen Timer auf einem Arbeitselement laufen, in irgendeinem Teil von Plane. Er zählt nichts zum Ist, weil er noch keine Dauer hat. Nur diese Person selbst kann ihn stoppen, auf dem Arbeitselement. Merken Sie sich, was das blockiert und was nicht: Sie kann den Monat nicht einreichen, solange der Timer läuft, aber Sie können einen Monat mit einem laufenden Timer trotzdem genehmigen und abschließen.
 
 **Ein orangefarbenes Warndreieck.** Sein Hinweis lautet „Einige Tage müssen geprüft werden, bevor dieser Monat abgeschlossen werden kann“. Es ist eine Schaltfläche — klicken Sie darauf, dann öffnet sich das Fenster **Zu prüfende Tage von {Person}**. Es ist in jedem Status da, auch bei einem Monat, der schon abgeschlossen ist, wo das Abhaken eines Tages nichts mehr ändert. Siehe **Diese Tage prüfen** weiter unten.
+
+## Der Monat einer Person
+
+Drücken Sie in der Tabelle auf einen Namen, um den Monat dieser Person zu öffnen. Er öffnet sich auf dem Monat, den Sie gerade ansehen, und die Pfeile blättern durch die Monate wie hier.
+
+Die Seite zeigt, was die Person für diesen Monat unter **Meine Zeit** sieht: die drei Zahlen, die Hinweise darunter, den Bereich **Vor der Rechnungsstellung**, wenn sie ihre Stunden selbst in Rechnung stellt, und die Tagestabelle. Dazu kommt eine Spalte **Anwesenheit** mit Beginn und Ende jedes Tages. Wird die Anwesenheit für diese Person geführt und wurde nichts erfasst, steht das in einer Zeile unter der Tabelle.
+
+**Sie können diese Seite lesen, aber nichts darauf ändern.** Die Tage lassen sich nicht öffnen, und **Genehmigen**, **Abschließen** und **Wieder öffnen** bleiben auf diesem Bildschirm. Der Button mit den drei Punkten enthält **Als CSV herunterladen** und **Als Excel herunterladen**: dieselben Dateien Tag für Tag, die die Person unter **Meine Zeit** bekommt. Beginn und Ende stehen nicht darin.
+
+Der Breadcrumb **Teamzeit** am oberen Rand führt Sie hierher zurück.
 
 ## Die fünf Zustände, die ein Monat haben kann
 

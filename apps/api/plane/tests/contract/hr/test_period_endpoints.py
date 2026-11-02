@@ -104,6 +104,57 @@ class TestMe:
         assert response.status_code in (401, 403)
 
 
+class TestSomebodyElsesMonth:
+    MONTH = "/api/hr/me/?year=2026&month=3"
+
+    def test_a_manager_reads_what_the_person_reads(self, workspace):
+        manager_user, _ = employ(workspace, is_hr_manager=True)
+        colleague_user, colleague = employ(workspace)
+
+        theirs = client_for(colleague_user).get(self.MONTH).json()
+        response = client_for(manager_user).get(f"{self.MONTH}&profile_id={colleague.id}")
+
+        assert response.status_code == 200
+        body = response.json()
+        assert body["profile"]["id"] == str(colleague.id)
+        assert body["contract"] == theirs["contract"]
+        assert body["schedule"] == theirs["schedule"]
+        assert body["leave"] == theirs["leave"]
+        assert body["telework_days_this_year"] == theirs["telework_days_this_year"]
+        assert body["period"]["id"] == theirs["period"]["id"]
+        assert body["period"]["target_minutes"] == theirs["period"]["target_minutes"]
+        assert len(body["period"]["days"]) == 31
+
+    def test_the_answer_says_who_is_asking_not_who_is_read(self, workspace):
+        manager_user, _ = employ(workspace, is_hr_manager=True)
+        _, colleague = employ(workspace)
+        response = client_for(manager_user).get(f"{self.MONTH}&profile_id={colleague.id}")
+        assert response.json()["is_hr_manager"] is True
+
+    def test_a_colleague_cannot_read_it(self, workspace):
+        user, _ = employ(workspace)
+        _, colleague = employ(workspace)
+        response = client_for(user).get(f"{self.MONTH}&profile_id={colleague.id}")
+        assert response.status_code == 404
+        assert not HrPeriod.objects.filter(profile=colleague).exists()
+
+    def test_somebody_can_still_ask_for_their_own(self, workspace):
+        user, profile = employ(workspace)
+        response = client_for(user).get(f"{self.MONTH}&profile_id={profile.id}")
+        assert response.status_code == 200
+        assert response.json()["profile"]["id"] == str(profile.id)
+
+    def test_nobody_by_that_id_is_not_found(self, workspace):
+        manager_user, _ = employ(workspace, is_hr_manager=True)
+        response = client_for(manager_user).get(f"{self.MONTH}&profile_id={uuid4()}")
+        assert response.status_code == 404
+
+    def test_a_malformed_id_is_not_a_server_error(self, workspace):
+        manager_user, _ = employ(workspace, is_hr_manager=True)
+        response = client_for(manager_user).get(f"{self.MONTH}&profile_id=not-a-uuid")
+        assert response.status_code in (400, 404)
+
+
 class TestPeriods:
     def test_a_recompute_produces_a_month_of_days(self, workspace):
         user, profile = employ(workspace)

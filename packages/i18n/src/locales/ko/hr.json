@@ -35,6 +35,7 @@
     },
     "team_time": {
       "title": "팀 근무 시간",
+      "filter_person": "표시할 대상",
       "not_permitted": "이 페이지를 볼 권한이 없습니다",
       "export_csv": "CSV로 내려받기",
       "export_excel": "Excel로 내려받기",
@@ -55,6 +56,11 @@
       "closing": "마감하는 중…",
       "confirm_close_title": "{person}님의 달을 마감할까요?",
       "confirm_close_body": "수치가 지금 상태 그대로 고정됩니다. 이후에는 누구도 이달의 근무시간이나 부재를 바꿀 수 없고, 나중에 이달로 기록된 것은 집계되지 않습니다. 이달은 다시 열 수 있으며, 다시 연 사실은 기록으로 남습니다."
+    },
+    "person_month": {
+      "read_only": "{name}님이 {page}에서 보는 달입니다. 여기서는 읽을 수만 있고 변경할 수 없습니다.",
+      "not_found": "이 사람은 근무 기록에 없습니다",
+      "no_attendance": "이 달에는 시작 또는 종료 시간이 기록되지 않았습니다."
     },
     "summary": {
       "owed": "소정 근로",
@@ -78,6 +84,7 @@
     "day_table": {
       "day": "날짜",
       "what_it_was": "구분",
+      "at_work": "근무 시간대",
       "owed": "소정 근로",
       "work_items": "작업 항목",
       "other": "작업 항목 없음",
@@ -93,6 +100,7 @@
     },
     "overview_table": {
       "person": "구성원",
+      "open_month": "{name}님의 달 열기",
       "state": "상태",
       "owed": "소정 근로",
       "worked": "실근무 시간",

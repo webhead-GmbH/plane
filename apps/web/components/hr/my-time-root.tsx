@@ -34,12 +34,10 @@ import { Loader } from "@plane/blocks/skeleton";
 import { setToast } from "@plane/blocks/toast";
 // local imports
 import { HrService, type THrMe, type THrPeriod } from "@/services/hr.service";
-import { HrDayTable } from "./day-table";
 import { HrDayEntriesModal } from "./day-entries-modal";
+import { HrMonthFigures } from "./month-figures";
 import { HrOpeningBalanceModal } from "./opening-balance-modal";
-import { HrMonthSummary } from "./month-summary";
 import { HrPeriodStepper } from "./period-stepper";
-import { HrStatementPanel } from "./statement-panel";
 import {
   formatDayWithYear,
   formatMonthLabel,
@@ -50,9 +48,6 @@ import {
 } from "./utils";
 
 const hrService = new HrService();
-
-/** Contracted hours as the schedule in force has them, and only failing that as the contract does. */
-const contractedWeeklyMinutes = (me: THrMe) => me.schedule?.weekly_minutes ?? me.contract?.weekly_minutes ?? null;
 
 type TTranslate = (key: string, values?: Record<string, unknown>) => string;
 
@@ -270,7 +265,7 @@ const MonthBody = ({ me, viewedMonth, onPickDay, onShowMonth }: TMonthBodyProps)
           {t(me.is_hr_manager ? "hr.my_time.no_working_week_manager" : "hr.my_time.no_working_week")}
         </p>
       ) : null}
-      <MonthFigures me={me} onPickDay={onPickDay} />
+      <HrMonthFigures me={me} onPickDay={onPickDay} />
     </>
   );
 };
@@ -537,32 +532,6 @@ const MonthMenu = ({
         ) : null}
       </MenuContent>
     </Menu>
-  );
-};
-
-/** What the month came to, what it is worth to whoever invoices it, and the day-by-day behind both. */
-const MonthFigures = ({ me, onPickDay }: { me: THrMe; onPickDay: (workDate: string) => void }) => {
-  const period = me.period;
-
-  return (
-    <>
-      <HrMonthSummary
-        period={period}
-        hasRunningTimer={me.has_running_timer}
-        contractedWeeklyMinutes={contractedWeeklyMinutes(me)}
-        teleworkDaysThisYear={me.telework_days_this_year}
-        leave={me.leave}
-        schedule={me.schedule}
-      />
-
-      <HrStatementPanel periodId={period?.id ?? null} arrangement={me.contract?.arrangement ?? null} />
-
-      <HrDayTable
-        days={period?.days ?? []}
-        countedThrough={period?.to_date ? period.to_date.counted_through : undefined}
-        onPickDay={onPickDay}
-      />
-    </>
   );
 };
 

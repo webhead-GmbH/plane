@@ -4,6 +4,7 @@
  * See the LICENSE file for details.
  */
 
+import { Link } from "react-router";
 import { AlertTriangle, Timer } from "lucide-react";
 // plane imports
 import { Tooltip } from "@makeplane/propel/components/tooltip";
@@ -18,6 +19,7 @@ import { balanceTone, figuresToShow, formatBalance, formatMinutes, periodStateKe
 
 type TProps = {
   rows: THrOverviewRow[];
+  workspaceSlug: string | undefined;
   busyPeriodId: string | null;
   onApprove: (row: THrOverviewRow) => void;
   onLock: (row: THrOverviewRow) => void;
@@ -53,7 +55,15 @@ const StateChip = ({ state }: { state: EHrPeriodState }) => {
  * the payroll sheet — and having to convert between them by hand is how a figure
  * ends up transcribed wrong.
  */
-export const HrOverviewTable = ({ rows, busyPeriodId, onApprove, onLock, onReopen, onReview }: TProps) => {
+export const HrOverviewTable = ({
+  rows,
+  workspaceSlug,
+  busyPeriodId,
+  onApprove,
+  onLock,
+  onReopen,
+  onReview,
+}: TProps) => {
   const { t } = useTranslation();
 
   if (rows.length === 0)
@@ -91,7 +101,14 @@ export const HrOverviewTable = ({ rows, busyPeriodId, onApprove, onLock, onReope
               <tr key={row.id} className="border-t border-subtle hover:bg-layer-1/60">
                 <td className="px-4 py-2">
                   <div className="flex items-center gap-2">
-                    <span className="font-medium text-primary">{row.member_display_name}</span>
+                    {/* On the month in the row, which is the one being reviewed. */}
+                    <Link
+                      to={`/${workspaceSlug}/team-time/person/${row.profile}?month=${row.period_start.slice(0, 7)}`}
+                      aria-label={t("hr.overview_table.open_month", { name: row.member_display_name })}
+                      className="font-medium text-primary hover:underline focus-visible:underline"
+                    >
+                      {row.member_display_name}
+                    </Link>
                     {row.has_running_timer ? (
                       <Tooltip label={t("hr.overview_table.timer_running")} side="top">
                         <Timer className="size-3.5 text-tertiary" aria-label={t("hr.overview_table.timer_running")} />

@@ -35,6 +35,7 @@
     },
     "team_time": {
       "title": "Timpul echipei",
+      "filter_person": "Arată orele pentru",
       "not_permitted": "Nu aveți permisiunea de a vedea această pagină",
       "export_csv": "Descărcați ca CSV",
       "export_excel": "Descărcați ca Excel",
@@ -55,6 +56,11 @@
       "closing": "Se închide…",
       "confirm_close_title": "Închideți luna lui {person}?",
       "confirm_close_body": "Cifrele sunt înghețate așa cum sunt acum. Nimeni nu mai poate schimba orele sau absențele acestei luni, iar ce se înregistrează ulterior în ea nu mai contează. Luna poate fi redeschisă, iar redeschiderea se consemnează."
+    },
+    "person_month": {
+      "read_only": "Aceasta este luna pe care {name} o vede în {page}. Aici o puteți citi, dar nu o puteți modifica.",
+      "not_found": "Această persoană nu apare în evidența timpului",
+      "no_attendance": "În această lună nu s-au înregistrat ore de început sau de sfârșit."
     },
     "summary": {
       "owed": "De lucrat",
@@ -78,6 +84,7 @@
     "day_table": {
       "day": "Zi",
       "what_it_was": "Ce fel de zi",
+      "at_work": "Prezență",
       "owed": "De lucrat",
       "work_items": "Activități",
       "other": "Fără element de lucru",
@@ -93,6 +100,7 @@
     },
     "overview_table": {
       "person": "Persoană",
+      "open_month": "Deschideți luna pentru {name}",
       "state": "Stare",
       "owed": "De lucrat",
       "worked": "Lucrate",

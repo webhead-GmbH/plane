@@ -35,6 +35,7 @@
     },
     "team_time": {
       "title": "Team time",
+      "filter_person": "Show hours for",
       "not_permitted": "This is not yours to see",
       "export_csv": "Download as CSV",
       "export_excel": "Download as Excel",
@@ -55,6 +56,11 @@
       "closing": "Closing…",
       "confirm_close_title": "Close {person}’s month?",
       "confirm_close_body": "The figures are frozen as they are now. Nobody can change this month's hours or absences afterwards, and anything recorded into it later will not count. The month can be reopened, and the reopening is recorded."
+    },
+    "person_month": {
+      "read_only": "This is the month {name} sees on {page}. You can read it here but not change it.",
+      "not_found": "This person is not in the time records",
+      "no_attendance": "No start or finish times were recorded this month."
     },
     "summary": {
       "owed": "To work",
@@ -78,6 +84,7 @@
     "day_table": {
       "day": "Day",
       "what_it_was": "What it was",
+      "at_work": "At work",
       "owed": "To work",
       "work_items": "Work items",
       "other": "No work item",
@@ -93,6 +100,7 @@
     },
     "overview_table": {
       "person": "Person",
+      "open_month": "Open the month of {name}",
       "state": "State",
       "owed": "To work",
       "worked": "Worked",

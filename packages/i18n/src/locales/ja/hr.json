@@ -35,6 +35,7 @@
     },
     "team_time": {
       "title": "チームの勤怠",
+      "filter_person": "表示する対象",
       "not_permitted": "このページを表示する権限がありません",
       "export_csv": "CSVでダウンロード",
       "export_excel": "Excelでダウンロード",
@@ -55,6 +56,11 @@
       "closing": "締めています…",
       "confirm_close_title": "{person} の月を締めますか？",
       "confirm_close_body": "数値は今の状態で固定されます。以降、この月の勤務時間や休暇は誰も変更できず、あとから記録した内容も集計されません。月は再オープンできますが、再オープンしたことは記録に残ります。"
+    },
+    "person_month": {
+      "read_only": "{name}さんが{page}で見ている月です。ここでは閲覧のみで、変更はできません。",
+      "not_found": "この人物は勤怠記録にありません",
+      "no_attendance": "この月の開始・終了時刻は記録されていません。"
     },
     "summary": {
       "owed": "所定",
@@ -78,6 +84,7 @@
     "day_table": {
       "day": "日付",
       "what_it_was": "区分",
+      "at_work": "勤務時間帯",
       "owed": "所定",
       "work_items": "作業項目",
       "other": "作業項目なし",
@@ -93,6 +100,7 @@
     },
     "overview_table": {
       "person": "メンバー",
+      "open_month": "{name}さんの月を開く",
       "state": "ステータス",
       "owed": "所定",
       "worked": "実働時間",

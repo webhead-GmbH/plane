@@ -35,6 +35,7 @@
     },
     "team_time": {
       "title": "Teamtijd",
+      "filter_person": "Uren tonen voor",
       "not_permitted": "Dit is niet voor jou bestemd",
       "export_csv": "Downloaden als CSV",
       "export_excel": "Downloaden als Excel",
@@ -55,6 +56,11 @@
       "closing": "Bezig met afsluiten…",
       "confirm_close_title": "De maand van {person} afsluiten?",
       "confirm_close_body": "De cijfers worden bevroren zoals ze nu zijn. Niemand kan daarna de uren of afwezigheden van deze maand nog wijzigen, en wat er later nog in wordt vastgelegd, telt niet mee. De maand kan worden heropend, en dat heropenen wordt vastgelegd."
+    },
+    "person_month": {
+      "read_only": "Dit is de maand die {name} ziet in {page}. Je kunt hem hier lezen, maar niet wijzigen.",
+      "not_found": "Deze persoon staat niet in de tijdregistratie",
+      "no_attendance": "Er zijn deze maand geen begin- en eindtijden vastgelegd."
     },
     "summary": {
       "owed": "Te werken",
@@ -78,6 +84,7 @@
     "day_table": {
       "day": "Dag",
       "what_it_was": "Wat het was",
+      "at_work": "Aanwezig",
       "owed": "Te werken",
       "work_items": "Werkitems",
       "other": "Geen werkitem",
@@ -93,6 +100,7 @@
     },
     "overview_table": {
       "person": "Persoon",
+      "open_month": "Maand van {name} openen",
       "state": "Status",
       "owed": "Te werken",
       "worked": "Gewerkt",

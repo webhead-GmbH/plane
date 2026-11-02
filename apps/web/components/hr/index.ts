@@ -23,6 +23,7 @@ export * from "./overview-table";
 export * from "./people-root";
 export * from "./period-stepper";
 export * from "./person-modal";
+export * from "./person-month-root";
 export * from "./rate-card-modal";
 export * from "./reason-modal";
 export * from "./review-days-modal";

@@ -35,6 +35,7 @@
     },
     "team_time": {
       "title": "團隊工時",
+      "filter_person": "顯示誰的工時",
       "not_permitted": "您沒有權限檢視此頁面",
       "export_csv": "下載 CSV",
       "export_excel": "下載 Excel",
@@ -55,6 +56,11 @@
       "closing": "正在關閉…",
       "confirm_close_title": "關閉 {person} 的月份？",
       "confirm_close_body": "數字會按目前的狀況凍結。之後沒有人能更改這個月的工時或缺勤，後來記錄進來的內容也不會計入。這個月份可以重新開啟，重新開啟的動作會留下記錄。"
+    },
+    "person_month": {
+      "read_only": "這是 {name} 在「{page}」中看到的月份。您可以在此檢視，但不能變更。",
+      "not_found": "工時記錄中沒有此人",
+      "no_attendance": "該月沒有記錄上下班時間。"
     },
     "summary": {
       "owed": "應工作",
@@ -78,6 +84,7 @@
     "day_table": {
       "day": "日期",
       "what_it_was": "當日類型",
+      "at_work": "出勤時間",
       "owed": "應工作",
       "work_items": "工作事項",
       "other": "無工作事項",
@@ -93,6 +100,7 @@
     },
     "overview_table": {
       "person": "人員",
+      "open_month": "開啟 {name} 的月份",
       "state": "狀態",
       "owed": "應工作",
       "worked": "實際工時",

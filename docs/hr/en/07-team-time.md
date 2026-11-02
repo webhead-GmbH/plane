@@ -11,6 +11,7 @@ If you only need to look after your own hours, this screen is not for you. Read 
 - [The four figures at the top](#the-four-figures-at-the-top)
 - [The table, column by column](#the-table-column-by-column)
 - [The marks beside a name](#the-marks-beside-a-name)
+- [One person's month](#one-persons-month)
 - [The five states a month can be in](#the-five-states-a-month-can-be-in)
 - [What each action does, and when it appears](#what-each-action-does-and-when-it-appears)
 - [The month from start to finish](#the-month-from-start-to-finish)
@@ -105,7 +106,7 @@ The table is one row per person. It scrolls sideways inside its own box on a nar
 
 | Column              | What it says                                                    |
 | ------------------- | --------------------------------------------------------------- |
-| **Person**          | The person's name, with up to two marks beside it               |
+| **Person**          | Their name, which opens their month, with up to two marks       |
 | **State**           | How far through the month has got — one of five words           |
 | **To work**         | What their terms ask of them, as described above                |
 | **Worked**          | What their month came to, as described above                    |
@@ -127,7 +128,7 @@ Two of these need saying properly.
 
 Where the month before was never closed, the chain starts from the **Starting balance** recorded for that person on the People screen, and from nothing at all where there is none. That is why months have to be closed oldest first; see [When the screen refuses](#when-the-screen-refuses).
 
-**The rows are in the order people were added, newest first.** They are not alphabetical, and there is no search box. Adding somebody pushes everybody down a row, so the row under your cursor this month may not be the row that was there last month. On a screen where one click agrees somebody's pay figures, read the name before you press anything.
+**The rows are in the order people were added, newest first.** They are not alphabetical. To see one person, choose them in **Show hours for** above the table: the four figures at the top then count only them, and the two files you can download still hold everybody. Adding somebody pushes everybody down a row, so the row under your cursor this month may not be the row that was there last month. On a screen where one click agrees somebody's pay figures, read the name before you press anything.
 
 ## The marks beside a name
 
@@ -136,6 +137,16 @@ Two small marks can appear to the right of a person's name.
 **A timer mark.** Its label reads "A timer is still running, so this month cannot be handed in yet." Somebody has a timer going on a work item, somewhere in this month, in any part of Plane. It counts nothing towards their Worked figure because it has no length yet. Only that person can stop it, on the work item itself. Note what this does and does not block: they cannot hand the month in while it runs, but you can still agree and close a month with a timer running in it.
 
 **An orange warning triangle.** Its label reads "Some days need looking at before this month can be closed." It is a button — press it and the dialog **Days to look at for {person}** opens. It is there in every state, including on a month that is already closed, where settling a day changes nothing. See **Look at those days** below.
+
+## One person's month
+
+Press a name in the table to open that person's month. It opens on the month you were looking at, and the chevrons step through the months as they do here.
+
+The page shows what they see on **My time** for that month: the three figures, the notes under them, the panel **Before you invoice** if they invoice their hours, and the table of days. It adds one column, **At work**, with when they started and finished each day. Where attendance is kept for them and nothing was recorded, a line under the table says so.
+
+**You can read this page, but nothing on it can be changed.** The days do not open, and **Agree**, **Close** and **Reopen** stay on this screen. The button with three dots holds **Download as CSV** and **Download as Excel**: the same day-by-day files they get from **My time**, which do not include the start and finish times.
+
+The breadcrumb **Team time** at the top brings you back here.
 
 ## The five states a month can be in
 
