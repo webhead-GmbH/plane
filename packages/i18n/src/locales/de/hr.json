@@ -609,6 +609,7 @@
     "holidays": {
       "title": "Feiertage",
       "subtitle": "Tage, an denen niemand arbeitet. Ein Feiertag zählt als geleistete Stunden; er senkt nicht das Soll. Eine Änderung hier wirkt sich nur auf Monate aus, die noch offen sind.",
+      "subtitle_read_only": "Tage, an denen niemand arbeitet. Ein Feiertag zählt als geleistete Stunden; er senkt nicht das Soll.",
       "back_to_month": "Der Monat",
       "calendar": "Kalender",
       "previous_year": "Vorjahr",

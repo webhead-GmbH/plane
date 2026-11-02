@@ -297,6 +297,7 @@
     "holidays": {
       "title": "Ngày lễ",
       "subtitle": "Những ngày không ai đi làm. Ngày lễ được tính như giờ đã làm; nó không làm giảm số giờ phải làm. Thay đổi ở đây chỉ ảnh hưởng đến những tháng còn mở.",
+      "subtitle_read_only": "Những ngày không ai đi làm. Ngày lễ được tính như giờ đã làm; nó không làm giảm số giờ phải làm.",
       "back_to_month": "Tháng",
       "calendar": "Lịch",
       "previous_year": "Năm trước",

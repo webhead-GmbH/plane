@@ -7,7 +7,19 @@
 import { useState } from "react";
 import { observer } from "mobx-react";
 import { useNavigate, useParams } from "react-router";
-import { Download, ListTree, MoreHorizontal, Plus, RefreshCw, Scale, Send, TriangleAlert, Users } from "lucide-react";
+import {
+  CalendarDays,
+  CalendarOff,
+  Download,
+  ListTree,
+  MoreHorizontal,
+  Plus,
+  RefreshCw,
+  Scale,
+  Send,
+  TriangleAlert,
+  Users,
+} from "lucide-react";
 import useSWR from "swr";
 // plane imports
 import { Tooltip } from "@makeplane/propel/components/tooltip";
@@ -282,7 +294,11 @@ const MonthActions = ({
   onRefresh: () => Promise<unknown>;
 }) => {
   const { t, currentLocale } = useTranslation();
+  // Only used to navigate, as in the month's menu below.
+  const { workspaceSlug } = useParams();
+  const navigate = useNavigate();
   const period = me.period;
+  const keepsLeaveAccount = Boolean(me.contract?.records_leave_account);
   const [confirming, setConfirming] = useState(false);
 
   const handleRecompute = async () => {
@@ -328,7 +344,7 @@ const MonthActions = ({
 
   return (
     <>
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         {/* One thing to do, and it is the thing somebody opened this page for.
             Everything else — the exports, the starting balance, the rebuild —
             is occasional and lives behind the menu, because six buttons of
@@ -342,6 +358,19 @@ const MonthActions = ({
           icon={<Icon icon={Plus} />}
         />
 
+        {/* The only way in for somebody who does not look after the team. Without
+            a leave account there is no leave to ask for. */}
+        {keepsLeaveAccount ? (
+          <Button
+            variant="secondary"
+            size="md"
+            stretch="auto"
+            label={t("hr.absences.request")}
+            onClick={() => void navigate(`/${workspaceSlug}/team-time/absences`)}
+            icon={<Icon icon={CalendarOff} />}
+          />
+        ) : null}
+
         <HandInButton
           period={period}
           hasRunningTimer={me.has_running_timer}
@@ -352,6 +381,7 @@ const MonthActions = ({
         <MonthMenu
           period={period}
           isHrManager={me.is_hr_manager}
+          keepsLeaveAccount={keepsLeaveAccount}
           onOpeningBalance={onOpeningBalance}
           onRecompute={handleRecompute}
         />
@@ -434,11 +464,13 @@ const HandInButton = ({
 const MonthMenu = ({
   period,
   isHrManager,
+  keepsLeaveAccount,
   onOpeningBalance,
   onRecompute,
 }: {
   period: THrPeriod | null;
   isHrManager: boolean;
+  keepsLeaveAccount: boolean;
   onOpeningBalance: () => void;
   onRecompute: () => void;
 }) => {
@@ -488,6 +520,14 @@ const MonthMenu = ({
           label={t("hr.detail.title")}
           onClick={() => navigate(`/${workspaceSlug}/team-time/detail`)}
         />
+        {/* A public holiday credits nothing to somebody who invoices their own hours. */}
+        {isHrManager || keepsLeaveAccount ? (
+          <MenuItem
+            icon={<Icon icon={CalendarDays} />}
+            label={t("hr.holidays.title")}
+            onClick={() => navigate(`/${workspaceSlug}/team-time/holidays`)}
+          />
+        ) : null}
         {isHrManager ? (
           <MenuItem
             icon={<Icon icon={Users} />}

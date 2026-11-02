@@ -27,7 +27,11 @@ Auf dieser Seite geht es um die Liste der Tage, an denen im Unternehmen niemand 
 
 ## Wo Sie diese Seite finden
 
-In der linken Seitenleiste gibt es keinen Link dorthin. Sie kommen über den Monat des Teams dorthin.
+In der linken Seitenleiste gibt es keinen Link dorthin.
+
+Wenn Ihre Bedingungen ein Urlaubskonto führen, öffnen Sie in der Seitenleiste **Meine Zeit**, dann oben rechts auf dieser Seite das Menü **⋯**, und wählen Sie **Feiertage**.
+
+Wenn Sie das Team betreuen, kommen Sie auch über den Monat des Teams dorthin:
 
 1. Öffnen Sie in der linken Seitenleiste **Meine Zeit**. Ihr eigener Monat erscheint.
 2. Öffnen Sie oben rechts auf dieser Seite das Menü **⋯** und wählen Sie **Stunden aller Personen**. Dieser Eintrag erscheint nur, wenn Sie das Team betreuen. Sie landen auf **Teamzeit**.
@@ -37,15 +41,15 @@ Die Zeile oben auf der Seite, auf der Sie landen, lautet:
 
 > **Tage, an denen niemand arbeitet. Ein Feiertag zählt als geleistete Stunden; er senkt nicht das Soll. Eine Änderung hier wirkt sich nur auf Monate aus, die noch offen sind.**
 
-Diese eine Zeile ist die ganze Regel. Der Rest dieser Seite sagt, was sie in der Praxis bedeutet.
+Diese eine Zeile ist die ganze Regel. Der Rest dieser Seite sagt, was sie in der Praxis bedeutet. Wenn Sie die Liste nur lesen können, fehlt der letzte Satz, denn er betrifft das Ändern.
 
 ## Wer sie ändern darf
 
-Wer in der Zeiterfassung angelegt ist, kann diese Seite öffnen und die Liste lesen. Das ist Absicht: Alle müssen wissen, welche Tage Feiertage sind.
+Wessen Bedingungen ein Urlaubskonto führen, kann diese Seite öffnen und die Liste für jedes Jahr lesen. Das ist Absicht: Diese Personen planen ihre freie Zeit um diese Tage herum. Wer die eigenen Stunden selbst abrechnet, bekommt durch einen Feiertag nichts gutgeschrieben; ihm wird die Seite nicht angeboten, und ihre Adresse antwortet mit **Sie haben keine Berechtigung für diese Ansicht**.
 
 Das Ändern der Liste ist etwas anderes. Nur wer das Team betreut, kann einen Tag hinzufügen, die Länge eines Tages ändern oder einen Tag entfernen.
 
-Die Seite blendet die Schaltflächen derzeit für niemanden aus. Wenn Sie das Team nicht betreuen, sehen Sie trotzdem das **Hinzufügen**-Formular und die Symbole am Ende jeder Zeile, und sie sehen weiterhin so aus, als würden sie funktionieren. Wenn Sie eines davon drücken, wird nichts gespeichert, und es erscheint die Meldung **Speichern nicht möglich**, darunter der Satz _You don't have the required permissions._ Es wurde nichts geschrieben. Bitten Sie die Teamleitung, die Änderung vorzunehmen, statt noch einmal zu drücken.
+Alle anderen sehen weder das **Hinzufügen**-Formular noch die Symbole am Ende jeder Zeile. Wenn ein Tag falsch aussieht, bitten Sie die Teamleitung, ihn zu ändern.
 
 Wenn Sie in der Zeiterfassung gar nicht angelegt sind, lädt die Seite nicht. Sie sehen **Sie haben keine Berechtigung für diese Ansicht** und darunter **Sie sind in der Zeiterfassung noch nicht angelegt, deshalb wird Ihnen diese Liste nicht angezeigt. Wenden Sie sich an die Teamleitung.**
 

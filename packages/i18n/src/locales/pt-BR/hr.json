@@ -297,6 +297,7 @@
     "holidays": {
       "title": "Feriados",
       "subtitle": "Os dias em que ninguém trabalha. Um feriado conta como horas trabalhadas; ele não reduz o que a pessoa tem que trabalhar. Uma mudança aqui só alcança os meses que ainda estão abertos.",
+      "subtitle_read_only": "Os dias em que ninguém trabalha. Um feriado conta como horas trabalhadas; ele não reduz o que a pessoa tem que trabalhar.",
       "back_to_month": "O mês",
       "calendar": "Calendário",
       "previous_year": "Ano anterior",

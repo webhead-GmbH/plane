@@ -609,6 +609,7 @@
     "holidays": {
       "title": "Festività",
       "subtitle": "I giorni in cui non lavora nessuno. Una festività conta come ore lavorate; non riduce le ore che una persona deve lavorare. Una modifica qui raggiunge solo i mesi ancora aperti.",
+      "subtitle_read_only": "I giorni in cui non lavora nessuno. Una festività conta come ore lavorate; non riduce le ore che una persona deve lavorare.",
       "back_to_month": "Il mese",
       "calendar": "Calendario",
       "previous_year": "Anno precedente",

@@ -224,17 +224,20 @@ export const HrAbsencesRoot = observer(function HrAbsencesRoot() {
               onClick={() => setManagingTypes(true)}
             />
           ) : null}
-          <Button
-            variant="primary"
-            size="md"
-            stretch="auto"
-            label={isManager ? t("hr.absences.record") : t("hr.absences.request")}
-            icon={<Icon icon={Plus} />}
-            onClick={() => {
-              setEditing(null);
-              setRecording(true);
-            }}
-          />
+          {/* Somebody with no leave account has no leave to ask for. */}
+          {isManager || me?.contract?.records_leave_account ? (
+            <Button
+              variant="primary"
+              size="md"
+              stretch="auto"
+              label={isManager ? t("hr.absences.record") : t("hr.absences.request")}
+              icon={<Icon icon={Plus} />}
+              onClick={() => {
+                setEditing(null);
+                setRecording(true);
+              }}
+            />
+          ) : null}
         </div>
       </div>
 

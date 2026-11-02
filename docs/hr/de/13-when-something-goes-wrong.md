@@ -293,9 +293,9 @@ Sie haben einen **Code** eingetippt, den es genau so schon gibt. Codes werden in
 
 Eine Falle, die Sie kennen sollten: Die Codes, die mit dem System mitgeliefert wurden, sind kleingeschrieben — `urlaub`, `krankenstand` und so weiter —, deshalb kollidiert `urlaub` **nicht** mit dem vorhandenen. Es entsteht klammheimlich ein _zweiter_, anderer Grund, der nicht vom Urlaubskonto abgezogen wird. Prüfen Sie die Liste, bevor Sie etwas hinzufügen.
 
-### Die meisten Personen kommen gar nicht auf die Seite **Abwesenheiten**
+### **Abwesenheit beantragen** fehlt auf **Meine Zeit**
 
-Nur wer das Team betreut, hat einen Link dorthin. Wenn Sie einen freien Tag möchten, gibt es derzeit keine eigene Schaltfläche für Sie: Sagen Sie es der Teamleitung, sie erfasst es. Das liegt nicht an Ihnen, und mit nichts, was Sie tun, finden Sie diese Seite.
+Die Schaltfläche gibt es, wenn Ihre Bedingungen ein Urlaubskonto führen. Wer die eigenen Stunden selbst abrechnet, hat keinen Urlaub zu beantragen; ihm wird sie nicht angeboten. Wenn Sie angestellt sind und sie nicht sehen, bitten Sie die Teamleitung, Ihre Bedingungen zu prüfen.
 
 ---
 

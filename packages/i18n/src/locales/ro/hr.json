@@ -609,6 +609,7 @@
     "holidays": {
       "title": "Zile de sărbătoare",
       "subtitle": "Zilele în care nu lucrează nimeni. O zi de sărbătoare contează ca ore lucrate; nu scade orele pe care cineva trebuie să le lucreze. O modificare de aici ajunge doar în lunile încă deschise.",
+      "subtitle_read_only": "Zilele în care nu lucrează nimeni. O zi de sărbătoare contează ca ore lucrate; nu scade orele pe care cineva trebuie să le lucreze.",
       "back_to_month": "Luna",
       "calendar": "Calendar",
       "previous_year": "Anul anterior",

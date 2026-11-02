@@ -609,6 +609,7 @@
     "holidays": {
       "title": "Resmi tatiller",
       "subtitle": "Kimsenin çalışmadığı günler. Tatil, çalışılmış saat olarak sayılır; kişinin çalışması gereken süreyi düşürmez. Buradaki bir değişiklik yalnızca hâlâ açık olan aylara ulaşır.",
+      "subtitle_read_only": "Kimsenin çalışmadığı günler. Tatil, çalışılmış saat olarak sayılır; kişinin çalışması gereken süreyi düşürmez.",
       "back_to_month": "Ay",
       "calendar": "Takvim",
       "previous_year": "Önceki yıl",

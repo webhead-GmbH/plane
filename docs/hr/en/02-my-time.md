@@ -248,7 +248,7 @@ Both are covered on their own pages, but three points belong here because they a
 
 **The button at the top of the page always opens today.** **Record time for today** jumps the whole page to the current month and opens today's day, whatever month you were looking at when you pressed it. It reads today from your own computer's clock. To put hours on any other day, step to the right month and press that date in the table.
 
-Time off is not recorded here. There is nothing in the day for being away, and the list of things you can choose from does not include it. Do not book a day of sickness or leave as **Administration** — it would count as time worked, it would never touch your leave, and it would reach payroll as admin work. Time off is recorded on the Absences page; see "Time away from work".
+Time off is not recorded here. There is nothing in the day for being away, and the list of things you can choose from does not include it. Do not book a day of sickness or leave as **Administration** — it would count as time worked, it would never touch your leave, and it would reach payroll as admin work. Time off is recorded on the Absences page, and **Ask for time off** at the top of this page takes you there if your terms keep a leave account; see "Time away from work".
 
 Recording or agreeing time off does not move your figures straight away. The month is worked out again the next time somebody opens it.
 
@@ -263,6 +263,7 @@ To the right of the buttons at the top is a small button with three dots. It hol
 | **Download as Excel** | The same file as an Excel workbook.                                                                      |
 | **Bring up to date**  | Works the month out again. Only offered while the month can still be changed.                            |
 | **Hours in detail**   | Your own hours, entry by entry, for the month. See "Hours in detail".                                    |
+| **Public holidays**   | The company calendar, to read. Offered if your terms keep a leave account. See "Public holidays".        |
 | **Everyone’s hours**  | Only for whoever looks after the team. See "Team time — everybody’s month".                              |
 
 Two notes.

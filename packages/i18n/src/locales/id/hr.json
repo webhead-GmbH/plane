@@ -597,6 +597,7 @@
     "holidays": {
       "title": "Hari libur nasional",
       "subtitle": "Hari-hari ketika tidak ada yang bekerja. Hari libur dihitung sebagai jam kerja; jam wajib seseorang tidak berkurang karenanya. Perubahan di sini hanya berlaku untuk bulan yang masih terbuka.",
+      "subtitle_read_only": "Hari-hari ketika tidak ada yang bekerja. Hari libur dihitung sebagai jam kerja; jam wajib seseorang tidak berkurang karenanya.",
       "back_to_month": "Bulan ini",
       "calendar": "Kalender",
       "previous_year": "Tahun sebelumnya",
