@@ -35,6 +35,7 @@
     },
     "team_time": {
       "title": "Čas týmu",
+      "filter_person": "Zobrazit hodiny pro",
       "not_permitted": "K zobrazení nemáte oprávnění",
       "export_csv": "Stáhnout jako CSV",
       "export_excel": "Stáhnout jako Excel",
@@ -55,6 +56,11 @@
       "closing": "Uzavírá se…",
       "confirm_close_title": "Uzavřít měsíc: {person}?",
       "confirm_close_body": "Čísla se zafixují tak, jak jsou teď. Hodiny ani nepřítomnosti tohoto měsíce už nikdo nezmění a nic, co se do něj zapíše později, se nezapočítá. Měsíc lze znovu otevřít a znovuotevření se zaznamená."
+    },
+    "person_month": {
+      "read_only": "Tento měsíc vidí {name} v části {page}. Zde si ho můžete přečíst, ale ne změnit.",
+      "not_found": "Tato osoba v evidenci času není",
+      "no_attendance": "V tomto měsíci nebyly zaznamenány časy začátku ani konce."
     },
     "summary": {
       "owed": "Fond",
@@ -78,6 +84,7 @@
     "day_table": {
       "day": "Den",
       "what_it_was": "Typ dne",
+      "at_work": "Přítomnost",
       "owed": "Fond",
       "work_items": "Pracovní položky",
       "other": "Bez pracovní položky",
@@ -93,6 +100,7 @@
     },
     "overview_table": {
       "person": "Osoba",
+      "open_month": "Otevřít měsíc: {name}",
       "state": "Stav",
       "owed": "Fond",
       "worked": "Odpracováno",

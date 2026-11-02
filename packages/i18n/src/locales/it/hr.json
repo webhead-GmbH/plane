@@ -35,6 +35,7 @@
     },
     "team_time": {
       "title": "Tempo del team",
+      "filter_person": "Mostra ore di",
       "not_permitted": "Non ha il permesso di vedere questa pagina",
       "export_csv": "Scarica in CSV",
       "export_excel": "Scarica in Excel",
@@ -55,6 +56,11 @@
       "closing": "Chiusura…",
       "confirm_close_title": "Chiudere il mese di {person}?",
       "confirm_close_body": "I dati vengono congelati come sono ora. Da quel momento nessuno può più modificare le ore o le assenze di questo mese, e ciò che vi verrà registrato dopo non conterà. Il mese può essere riaperto e la riapertura viene registrata."
+    },
+    "person_month": {
+      "read_only": "Questo è il mese che {name} vede in {page}. Qui può leggerlo, ma non modificarlo.",
+      "not_found": "Questa persona non risulta nei registri del tempo",
+      "no_attendance": "Questo mese non sono stati registrati orari di inizio o fine."
     },
     "summary": {
       "owed": "Da lavorare",
@@ -78,6 +84,7 @@
     "day_table": {
       "day": "Giorno",
       "what_it_was": "Tipo di giorno",
+      "at_work": "Presenza",
       "owed": "Da lavorare",
       "work_items": "Elementi di lavoro",
       "other": "Senza elemento di lavoro",
@@ -93,6 +100,7 @@
     },
     "overview_table": {
       "person": "Persona",
+      "open_month": "Apri il mese di {name}",
       "state": "Stato",
       "owed": "Da lavorare",
       "worked": "Lavorate",

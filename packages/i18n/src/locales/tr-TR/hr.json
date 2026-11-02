@@ -35,6 +35,7 @@
     },
     "team_time": {
       "title": "Ekip zamanı",
+      "filter_person": "Saatleri göster",
       "not_permitted": "Bunu görüntüleme yetkiniz yok",
       "export_csv": "CSV olarak indir",
       "export_excel": "Excel olarak indir",
@@ -55,6 +56,11 @@
       "closing": "Kapatılıyor…",
       "confirm_close_title": "{person} adlı kişinin ayı kapatılsın mı?",
       "confirm_close_body": "Rakamlar şu anki hâliyle dondurulur. Bundan sonra bu ayın saatlerini ve devamsızlıklarını kimse değiştiremez, sonradan bu aya kaydedilen hiçbir şey de sayılmaz. Ay yeniden açılabilir ve yeniden açılması kayda geçer."
+    },
+    "person_month": {
+      "read_only": "Bu, {name} adlı kişinin {page} bölümünde gördüğü aydır. Burada okuyabilir, ancak değiştiremezsiniz.",
+      "not_found": "Bu kişi zaman kayıtlarında yok",
+      "no_attendance": "Bu ay başlangıç veya bitiş saati kaydedilmedi."
     },
     "summary": {
       "owed": "Çalışılacak",
@@ -78,6 +84,7 @@
     "day_table": {
       "day": "Gün",
       "what_it_was": "Gün türü",
+      "at_work": "Mesai",
       "owed": "Çalışılacak",
       "work_items": "İş öğeleri",
       "other": "İş öğesi yok",
@@ -93,6 +100,7 @@
     },
     "overview_table": {
       "person": "Kişi",
+      "open_month": "{name} için ayı aç",
       "state": "Durum",
       "owed": "Çalışılacak",
       "worked": "Çalışılan",

@@ -10,7 +10,7 @@ import { AlertTriangle, ChevronDown, ChevronUp, Pencil } from "lucide-react";
 import { useTranslation } from "@plane/i18n";
 import { cn } from "@plane/utils";
 // local imports
-import { EHrDayKind, type THrPeriodDay } from "@/services/hr.service";
+import { EHrDayKind, type THrAttendanceDay, type THrPeriodDay } from "@/services/hr.service";
 import { balanceTone, dayKindKey, formatBalance, formatDayLabel, formatMinutes, hasHappened, isToday } from "./utils";
 
 type TProps = {
@@ -24,7 +24,13 @@ type TProps = {
   countedThrough?: string | null;
   /** Opens a day for editing. Absent when the month cannot be changed. */
   onPickDay?: (workDate: string) => void;
+  /** When the person was at work. Absent where the table is only about hours. */
+  attendance?: THrAttendanceDay[];
 };
+
+/** "09:00–17:30", or "09:00–" while the day is still running. */
+const workedFromTo = (day: THrAttendanceDay | undefined) =>
+  day ? `${day.started_at_local.slice(0, 5)}–${day.ended_at_local?.slice(0, 5) ?? ""}` : "";
 
 const QUIET_KINDS = new Set([EHrDayKind.NON_WORKING, EHrDayKind.HOLIDAY, EHrDayKind.HALF_HOLIDAY]);
 
@@ -35,9 +41,11 @@ const QUIET_KINDS = new Set([EHrDayKind.NON_WORKING, EHrDayKind.HOLIDAY, EHrDayK
  * would make the list shorter, but somebody scanning for where their hours went
  * needs to see that a gap was a Saturday and not a day they forgot.
  */
-export const HrDayTable = ({ days, countedThrough, onPickDay }: TProps) => {
+export const HrDayTable = ({ days, countedThrough, onPickDay, attendance }: TProps) => {
   const { t, currentLocale } = useTranslation();
   const [showToCome, setShowToCome] = useState(false);
+  const showsAttendance = Boolean(attendance?.length);
+  const attendanceByDay = new Map(attendance?.map((day) => [day.work_date, day]));
 
   if (!days.length)
     return (
@@ -53,11 +61,14 @@ export const HrDayTable = ({ days, countedThrough, onPickDay }: TProps) => {
 
   return (
     <div className="overflow-x-auto rounded-md border border-subtle">
-      <table className="w-full min-w-[42rem] text-13">
+      <table className={cn("w-full text-13", showsAttendance ? "min-w-[48rem]" : "min-w-[42rem]")}>
         <thead>
           <tr className="border-b border-subtle text-left">
             <th className="px-3 py-2.5 text-13 font-medium text-placeholder">{t("hr.day_table.day")}</th>
             <th className="px-3 py-2.5 text-13 font-medium text-placeholder">{t("hr.day_table.what_it_was")}</th>
+            {showsAttendance ? (
+              <th className="px-3 py-2.5 text-13 font-medium text-placeholder">{t("hr.day_table.at_work")}</th>
+            ) : null}
             <th className="px-3 py-2.5 text-right text-13 font-medium text-placeholder">{t("hr.day_table.owed")}</th>
             <th className="px-3 py-2.5 text-right text-13 font-medium text-placeholder">
               {t("hr.day_table.work_items")}
@@ -122,6 +133,11 @@ export const HrDayTable = ({ days, countedThrough, onPickDay }: TProps) => {
                     ) : null}
                   </span>
                 </td>
+                {showsAttendance ? (
+                  <td className="px-3 py-1.5 whitespace-nowrap text-secondary tabular-nums">
+                    {workedFromTo(attendanceByDay.get(day.work_date))}
+                  </td>
+                ) : null}
                 <td className="px-3 py-1.5 text-right tabular-nums">{formatMinutes(day.target_minutes)}</td>
                 <td className="px-3 py-1.5 text-right tabular-nums">{formatMinutes(day.project_minutes)}</td>
                 <td className="px-3 py-1.5 text-right tabular-nums">{formatMinutes(day.non_project_minutes)}</td>

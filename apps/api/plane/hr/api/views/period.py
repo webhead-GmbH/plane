@@ -141,12 +141,18 @@ class HrMeEndpoint(BaseAPIView):
 
     Gathered together deliberately: the alternative is four round trips before a
     page can render anything, on the screen people open most often.
+
+    A manager can ask for somebody else's with ``profile_id``: they are asked to
+    agree and close months, so they have to be able to read what that person reads.
     """
 
     @hr_permission(SELF)
     def get(self, request):
-        profile = request.hr_profile
+        requested = request.query_params.get("profile_id") or None
+        profile = readable_profile_or_none(request, requested)
         if profile is None:
+            if requested:
+                return Response({"error": "No such person, or not yours to read."}, status=status.HTTP_404_NOT_FOUND)
             return Response(
                 {"profile": None, "is_hr_manager": request.hr_is_manager},
                 status=status.HTTP_200_OK,

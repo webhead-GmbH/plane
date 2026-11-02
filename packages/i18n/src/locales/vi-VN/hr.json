@@ -35,6 +35,7 @@
     },
     "team_time": {
       "title": "Thời gian của nhóm",
+      "filter_person": "Hiện giờ làm của",
       "not_permitted": "Bạn không có quyền xem nội dung này",
       "export_csv": "Tải về dạng CSV",
       "export_excel": "Tải về dạng Excel",
@@ -55,6 +56,11 @@
       "closing": "Đang chốt…",
       "confirm_close_title": "Chốt tháng của {person}?",
       "confirm_close_body": "Số liệu được khóa lại đúng như hiện tại. Sau đó không ai sửa được giờ làm hay vắng mặt của tháng này, và những gì ghi vào sau sẽ không được tính. Tháng vẫn có thể mở lại, và lần mở lại đó được ghi lại."
+    },
+    "person_month": {
+      "read_only": "Đây là tháng mà {name} thấy ở {page}. Tại đây bạn có thể xem nhưng không thể thay đổi.",
+      "not_found": "Người này không có trong hồ sơ thời gian",
+      "no_attendance": "Tháng này không có giờ bắt đầu hoặc kết thúc nào được ghi lại."
     },
     "summary": {
       "owed": "Cần làm",
@@ -78,6 +84,7 @@
     "day_table": {
       "day": "Ngày",
       "what_it_was": "Loại ngày",
+      "at_work": "Có mặt",
       "owed": "Cần làm",
       "work_items": "Mục công việc",
       "other": "Không có mục công việc",
@@ -93,6 +100,7 @@
     },
     "overview_table": {
       "person": "Nhân viên",
+      "open_month": "Mở tháng của {name}",
       "state": "Trạng thái",
       "owed": "Cần làm",
       "worked": "Đã làm",

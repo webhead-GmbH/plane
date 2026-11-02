@@ -35,6 +35,7 @@
     },
     "team_time": {
       "title": "Waktu tim",
+      "filter_person": "Tampilkan jam untuk",
       "not_permitted": "Anda tidak memiliki izin untuk melihat ini",
       "export_csv": "Unduh sebagai CSV",
       "export_excel": "Unduh sebagai Excel",
@@ -55,6 +56,11 @@
       "closing": "Menutup…",
       "confirm_close_title": "Tutup bulan {person}?",
       "confirm_close_body": "Angka dibekukan seperti sekarang. Setelah ini tidak ada yang bisa mengubah jam atau ketidakhadiran bulan ini, dan apa pun yang dicatat ke dalamnya kemudian tidak akan dihitung. Bulan ini bisa dibuka kembali, dan pembukaannya dicatat."
+    },
+    "person_month": {
+      "read_only": "Ini adalah bulan yang dilihat {name} di {page}. Di sini Anda dapat membacanya, tetapi tidak dapat mengubahnya.",
+      "not_found": "Orang ini tidak ada dalam catatan waktu",
+      "no_attendance": "Tidak ada jam mulai atau selesai yang dicatat bulan ini."
     },
     "summary": {
       "owed": "Harus dikerjakan",
@@ -78,6 +84,7 @@
     "day_table": {
       "day": "Hari",
       "what_it_was": "Jenis hari",
+      "at_work": "Kehadiran",
       "owed": "Harus dikerjakan",
       "work_items": "Item kerja",
       "other": "Tanpa item pekerjaan",
@@ -93,6 +100,7 @@
     },
     "overview_table": {
       "person": "Orang",
+      "open_month": "Buka bulan {name}",
       "state": "Status",
       "owed": "Harus dikerjakan",
       "worked": "Jam tercatat",

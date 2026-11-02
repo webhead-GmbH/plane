@@ -74,6 +74,7 @@ export const HrTeamMonthRoot = observer(function HrTeamMonthRoot() {
   const [reviewing, setReviewing] = useState<THrOverviewRow | null>(null);
   const [reopening, setReopening] = useState<THrOverviewRow | null>(null);
   const [closing, setClosing] = useState<THrOverviewRow | null>(null);
+  const [personFilter, setPersonFilter] = useState("");
 
   const { t, currentLocale } = useTranslation();
   const { workspaceSlug } = useParams();
@@ -82,7 +83,12 @@ export const HrTeamMonthRoot = observer(function HrTeamMonthRoot() {
   );
   const notAllowed = (error as { status?: number } | undefined)?.status === 403;
 
-  const rows = data?.rows ?? [];
+  const allRows = data?.rows ?? [];
+  // Somebody with no row in this month shows everybody rather than nothing, and the
+  // totals follow the table so they stay the sum of what is on screen.
+  const rows = allRows.some((row) => row.profile === personFilter)
+    ? allRows.filter((row) => row.profile === personFilter)
+    : allRows;
   const monthLabel = formatMonthLabel(`${year}-${String(month).padStart(2, "0")}-01`, currentLocale);
   const { owed, worked, balance, partialThrough, outstanding } = monthTotals(rows);
 
@@ -161,8 +167,25 @@ export const HrTeamMonthRoot = observer(function HrTeamMonthRoot() {
             people={rows.length}
           />
 
+          {allRows.length > 1 ? (
+            <select
+              aria-label={t("hr.team_time.filter_person")}
+              className="w-fit rounded-md border border-subtle bg-layer-1 px-3 py-1.5 text-13 text-secondary"
+              value={rows.length === 1 ? rows[0].profile : ""}
+              onChange={(event) => setPersonFilter(event.target.value)}
+            >
+              <option value="">{t("hr.absences.everyone")}</option>
+              {allRows.map((row) => (
+                <option key={row.profile} value={row.profile}>
+                  {row.member_display_name}
+                </option>
+              ))}
+            </select>
+          ) : null}
+
           <HrOverviewTable
             rows={rows}
+            workspaceSlug={workspaceSlug}
             busyPeriodId={busyPeriodId}
             onApprove={(row) => void act(row, () => hrService.approve(row.id), t("hr.team_time.toasts.agreed"))}
             onLock={setClosing}

@@ -645,8 +645,15 @@ export class HrService extends APIService {
       });
   }
 
-  async me(year?: number, month?: number): Promise<THrMe> {
-    const query = year && month ? `?year=${year}&month=${month}` : "";
+  /** The signed-in person's month, or `profileId`'s for whoever looks after the team. */
+  async me(year?: number, month?: number, profileId?: string): Promise<THrMe> {
+    const params = new URLSearchParams();
+    if (year && month) {
+      params.set("year", String(year));
+      params.set("month", String(month));
+    }
+    if (profileId) params.set("profile_id", profileId);
+    const query = params.size > 0 ? `?${params.toString()}` : "";
     return this.get(`${this.base}/me/${query}`)
       .then((response) => response?.data)
       .catch((error) => {

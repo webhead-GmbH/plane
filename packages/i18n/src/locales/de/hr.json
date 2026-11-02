@@ -35,6 +35,7 @@
     },
     "team_time": {
       "title": "Teamzeit",
+      "filter_person": "Stunden anzeigen für",
       "not_permitted": "Sie haben keine Berechtigung für diese Ansicht",
       "export_csv": "Als CSV herunterladen",
       "export_excel": "Als Excel herunterladen",
@@ -55,6 +56,11 @@
       "closing": "Wird geschlossen…",
       "confirm_close_title": "Monat von {person} schließen?",
       "confirm_close_body": "Die Werte werden so eingefroren, wie sie jetzt sind. Danach kann niemand mehr die Stunden oder Abwesenheiten dieses Monats ändern, und was später hinein erfasst wird, zählt nicht mehr mit. Der Monat kann wieder geöffnet werden, und das Wiederöffnen wird festgehalten."
+    },
+    "person_month": {
+      "read_only": "Diesen Monat sieht {name} unter {page}. Sie können ihn hier lesen, aber nicht ändern.",
+      "not_found": "Diese Person ist nicht in den Zeitdaten erfasst",
+      "no_attendance": "Für diesen Monat wurden keine Anfangs- und Endzeiten erfasst."
     },
     "summary": {
       "owed": "Soll",
@@ -78,6 +84,7 @@
     "day_table": {
       "day": "Tag",
       "what_it_was": "Art des Tages",
+      "at_work": "Anwesenheit",
       "owed": "Soll",
       "work_items": "Arbeitselemente",
       "other": "Ohne Arbeitselement",
@@ -93,6 +100,7 @@
     },
     "overview_table": {
       "person": "Person",
+      "open_month": "Monat von {name} öffnen",
       "state": "Status",
       "owed": "Soll",
       "worked": "Ist",
