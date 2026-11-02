@@ -876,6 +876,15 @@ export class HrService extends APIService {
   }
 
   /** Marks somebody as having left. Their closed months stay readable. */
+  /** Sends one person's CRM work items again: their waiting hours, and the tasks they are on. */
+  async resyncEmployeeToCrm(profileId: string): Promise<{ connected: boolean; work_items: number }> {
+    return this.post(`${this.base}/employees/${profileId}/crm-resync/`)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw withStatus(error);
+      });
+  }
+
   async removeEmployee(profileId: string) {
     return this.delete(`${this.base}/employees/${profileId}/`)
       .then((response) => response?.data)

@@ -201,13 +201,17 @@
         "removed": "Ditandai telah keluar",
         "refused": "Tindakan itu tidak berhasil",
         "try_again": "Silakan coba lagi.",
-        "brought_back": "Dipekerjakan lagi"
+        "brought_back": "Dipekerjakan lagi",
+        "crm_resync_started": "Item kerjanya sedang dikirim ulang ke CRM",
+        "crm_resync_nothing": "Tidak ada miliknya yang menunggu CRM",
+        "crm_resync_not_connected": "Tidak ada ruang kerjanya yang terhubung ke CRM"
       },
       "opening": "Saldo awal",
       "rates": "Tarif",
       "leave": "Cuti",
       "crm_staff_id": "ID staf CRM",
       "crm_staff_id_placeholder": "Kosongkan agar dicocokkan lewat email",
+      "crm_resync": "Kirim ulang pekerjaannya ke CRM",
       "crm_guessed": "CRM lewat alamat email saja",
       "crm_missing": "Tidak ada akun CRM",
       "crm_link": {

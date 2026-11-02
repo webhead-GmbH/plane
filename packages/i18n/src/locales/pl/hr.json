@@ -201,13 +201,17 @@
         "removed": "Oznaczono odejście",
         "refused": "Nie powiodło się",
         "try_again": "Proszę spróbować ponownie.",
-        "brought_back": "Zatrudniono ponownie"
+        "brought_back": "Zatrudniono ponownie",
+        "crm_resync_started": "Elementy pracy są ponownie wysyłane do CRM",
+        "crm_resync_nothing": "Nic tej osoby nie czeka na CRM",
+        "crm_resync_not_connected": "Żaden z obszarów roboczych tej osoby nie jest połączony z CRM"
       },
       "opening": "Saldo początkowe",
       "rates": "Stawki",
       "leave": "Urlop",
       "crm_staff_id": "ID pracownika w CRM",
       "crm_staff_id_placeholder": "Puste pole oznacza dopasowanie po adresie e-mail",
+      "crm_resync": "Wyślij ponownie pracę do CRM",
       "crm_guessed": "CRM tylko po adresie e-mail",
       "crm_missing": "Brak konta w CRM",
       "crm_link": {

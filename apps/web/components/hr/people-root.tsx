@@ -6,7 +6,7 @@
 
 import { useState } from "react";
 import { observer } from "mobx-react";
-import { BadgeEuro, MoreHorizontal, Palmtree, Pencil, Plus, Scale, UserMinus, UserPlus } from "lucide-react";
+import { BadgeEuro, MoreHorizontal, Palmtree, Pencil, Plus, RefreshCw, Scale, UserMinus, UserPlus } from "lucide-react";
 import useSWR from "swr";
 // plane imports
 import { useTranslation } from "@plane/i18n";
@@ -152,6 +152,19 @@ const PeopleManagement = observer(function PeopleManagement() {
     }
   };
 
+  // For an id saved before saving one did this by itself, or anything else that
+  // left somebody's hours waiting in the table on a CRM task.
+  const handleCrmResync = async (person: THrEmploymentProfile) => {
+    try {
+      const { connected, work_items: workItems } = await hrService.resyncEmployeeToCrm(person.id);
+      if (!connected) setToast({ type: "info", title: t("hr.people.toasts.crm_resync_not_connected") });
+      else if (workItems === 0) setToast({ type: "info", title: t("hr.people.toasts.crm_resync_nothing") });
+      else setToast({ type: "success", title: t("hr.people.toasts.crm_resync_started") });
+    } catch (failure) {
+      complain(failure);
+    }
+  };
+
   const handleRemove = async () => {
     if (!removing) return;
     setIsBusy(true);
@@ -240,6 +253,7 @@ const PeopleManagement = observer(function PeopleManagement() {
           onLeave={setLeaving}
           onRemove={setRemoving}
           onReturn={(person) => void handleReturn(person)}
+          onCrmResync={(person) => void handleCrmResync(person)}
         />
       )}
 
@@ -383,6 +397,8 @@ const PeopleDialogs = ({
 };
 
 type TPersonActions = {
+  /** Sends their CRM work items again. */
+  onCrmResync: (person: THrEmploymentProfile) => void;
   onEdit: (person: THrEmploymentProfile) => void;
   onOpening: (person: THrEmploymentProfile) => void;
   onRates: (person: THrEmploymentProfile) => void;
@@ -493,6 +509,7 @@ const CrmLinkNote = ({ person }: { person: THrEmploymentProfile }) => {
  */
 const PersonRowActions = ({
   person,
+  onCrmResync,
   onEdit,
   onOpening,
   onRates,
@@ -525,6 +542,15 @@ const PersonRowActions = ({
           <MenuItem icon={<Icon icon={Scale} />} label={t("hr.people.opening")} onClick={() => onOpening(person)} />
           <MenuItem icon={<Icon icon={BadgeEuro} />} label={t("hr.people.rates")} onClick={() => onRates(person)} />
           <MenuItem icon={<Icon icon={Palmtree} />} label={t("hr.people.leave")} onClick={() => onLeave(person)} />
+          {/* Only where something joins them to the CRM: with nothing, none of
+              their hours could become a timer however often they were sent. */}
+          {person.crm_link === "none" ? null : (
+            <MenuItem
+              icon={<Icon icon={RefreshCw} />}
+              label={t("hr.people.crm_resync")}
+              onClick={() => onCrmResync(person)}
+            />
+          )}
           {person.is_active ? (
             <MenuItem
               variant="danger"

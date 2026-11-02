@@ -257,3 +257,42 @@ class TestSavingTheIdOnPeople:
             manager_client.patch(f"/api/hr/employees/{profile.id}/", {"timezone": "Europe/Berlin"}, format="json")
 
         assert not resync.called
+
+    # The button on their row, for an id saved before saving one did this by itself.
+
+    def test_the_button_sends_their_work_again(self, setup, manager_client, profile):
+        with mock.patch("plane.bgtasks.crm_sync_task.resync_member_to_crm.delay") as resync:
+            response = manager_client.post(f"/api/hr/employees/{profile.id}/crm-resync/")
+
+        assert response.status_code == 200
+        assert response.json() == {"connected": True, "work_items": 2}
+        resync.assert_called_once_with(str(setup["person"].id))
+
+    def test_the_button_says_when_nothing_of_theirs_is_waiting(self, setup, manager_client, profile):
+        IssueWorkLog.objects.filter(logged_by=setup["person"]).delete()
+        IssueAssignee.objects.filter(assignee=setup["person"]).delete()
+
+        with mock.patch("plane.bgtasks.crm_sync_task.resync_member_to_crm.delay") as resync:
+            response = manager_client.post(f"/api/hr/employees/{profile.id}/crm-resync/")
+
+        assert response.json() == {"connected": True, "work_items": 0}
+        assert not resync.called
+
+    def test_the_button_says_when_no_workspace_of_theirs_is_connected(self, setup, manager_client, profile):
+        CrmIntegration.objects.filter(pk=setup["integration"].pk).update(is_active=False)
+
+        with mock.patch("plane.bgtasks.crm_sync_task.resync_member_to_crm.delay") as resync:
+            response = manager_client.post(f"/api/hr/employees/{profile.id}/crm-resync/")
+
+        assert response.json() == {"connected": False, "work_items": 0}
+        assert not resync.called
+
+    def test_only_whoever_looks_after_the_team_can_press_it(self, setup, profile):
+        client = APIClient()
+        client.force_authenticate(user=setup["person"])
+
+        with mock.patch("plane.bgtasks.crm_sync_task.resync_member_to_crm.delay") as resync:
+            response = client.post(f"/api/hr/employees/{profile.id}/crm-resync/")
+
+        assert response.status_code == 403
+        assert not resync.called

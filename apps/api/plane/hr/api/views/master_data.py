@@ -243,6 +243,29 @@ def _another_manager_remains(profile):
     )
 
 
+class HrEmployeeCrmResyncEndpoint(BaseAPIView):
+    """Send one person's work items to the CRM again, on request.
+
+    Saving a changed CRM staff id does this by itself. This is for an id saved
+    before that existed, and for anything else that left their hours waiting in
+    the table on a CRM task instead of becoming timers.
+    """
+
+    @hr_permission(MANAGER)
+    def post(self, request, pk):
+        from plane.bgtasks.crm_sync_task import member_resync_issue_ids, resync_member_to_crm
+
+        profile = HrEmploymentProfile.objects.filter(pk=pk).first()
+        if profile is None:
+            return Response({"error": "Not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        found = member_resync_issue_ids(profile.member_id)
+        work_items = sum(len(issue_ids) for issue_ids in found.values())
+        if work_items:
+            resync_member_to_crm.delay(str(profile.member_id))
+        return Response({"connected": bool(found), "work_items": work_items}, status=status.HTTP_200_OK)
+
+
 class HrContractEndpoint(BaseAPIView):
     """Somebody's terms, as a series of dated slices."""
 

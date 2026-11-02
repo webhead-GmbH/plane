@@ -201,13 +201,17 @@
         "removed": "Desligamento registrado",
         "refused": "A ação não foi concluída",
         "try_again": "Por favor, tente novamente.",
-        "brought_back": "Contratado novamente"
+        "brought_back": "Contratado novamente",
+        "crm_resync_started": "Os itens de trabalho estão sendo enviados de novo ao CRM",
+        "crm_resync_nothing": "Nada desta pessoa está esperando pelo CRM",
+        "crm_resync_not_connected": "Nenhum dos espaços de trabalho desta pessoa está conectado ao CRM"
       },
       "opening": "Saldo inicial",
       "rates": "Remunerações",
       "leave": "Férias",
       "crm_staff_id": "ID do funcionário no CRM",
       "crm_staff_id_placeholder": "Deixe em branco para vincular pelo e-mail",
+      "crm_resync": "Enviar o trabalho de novo ao CRM",
       "crm_guessed": "CRM só pelo endereço de e-mail",
       "crm_missing": "Sem conta no CRM",
       "crm_link": {

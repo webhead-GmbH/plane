@@ -201,13 +201,17 @@
         "removed": "Odchod zaznamenán",
         "refused": "Akce neproběhla",
         "try_again": "Zkuste to prosím znovu.",
-        "brought_back": "Pracovní poměr obnoven"
+        "brought_back": "Pracovní poměr obnoven",
+        "crm_resync_started": "Pracovní položky se znovu odesílají do CRM",
+        "crm_resync_nothing": "Nic od této osoby nečeká na CRM",
+        "crm_resync_not_connected": "Žádný z pracovních prostorů této osoby není propojen s CRM"
       },
       "opening": "Počáteční saldo",
       "rates": "Sazby",
       "leave": "Dovolená",
       "crm_staff_id": "ID zaměstnance v CRM",
       "crm_staff_id_placeholder": "Nechte prázdné, spáruje se podle e-mailu",
+      "crm_resync": "Znovu odeslat práci do CRM",
       "crm_guessed": "CRM jen podle e-mailové adresy",
       "crm_missing": "Bez účtu v CRM",
       "crm_link": {

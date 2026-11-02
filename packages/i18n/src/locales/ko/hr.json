@@ -201,13 +201,17 @@
         "removed": "퇴사 처리되었습니다",
         "refused": "처리되지 않았습니다",
         "try_again": "다시 시도해 주세요.",
-        "brought_back": "다시 고용되었습니다"
+        "brought_back": "다시 고용되었습니다",
+        "crm_resync_started": "작업 항목을 CRM에 다시 보내는 중입니다",
+        "crm_resync_nothing": "이 사람의 CRM 대기 항목이 없습니다",
+        "crm_resync_not_connected": "이 사람의 작업 공간 중 CRM에 연결된 곳이 없습니다"
       },
       "opening": "기초 누적 차이",
       "rates": "단가",
       "leave": "연차",
       "crm_staff_id": "CRM 직원 ID",
       "crm_staff_id_placeholder": "비워 두면 이메일 주소로 연결합니다",
+      "crm_resync": "작업을 CRM에 다시 보내기",
       "crm_guessed": "이메일 주소로만 연결한 CRM",
       "crm_missing": "CRM 계정 없음",
       "crm_link": {

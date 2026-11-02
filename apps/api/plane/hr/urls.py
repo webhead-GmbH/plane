@@ -22,6 +22,7 @@ from plane.hr.api.views import (
     HrCandidateEndpoint,
     HrContractEndpoint,
     HrEmploymentProfileEndpoint,
+    HrEmployeeCrmResyncEndpoint,
     HrHolidayCalendarEndpoint,
     HrHolidayEndpoint,
     HrImportCommitEndpoint,
@@ -87,6 +88,11 @@ urlpatterns = [
     path("candidates/", HrCandidateEndpoint.as_view(), name="hr-candidates"),
     path("employees/", HrEmploymentProfileEndpoint.as_view(), name="hr-employees"),
     path("employees/<uuid:pk>/", HrEmploymentProfileEndpoint.as_view(), name="hr-employee-detail"),
+    path(
+        "employees/<uuid:pk>/crm-resync/",
+        HrEmployeeCrmResyncEndpoint.as_view(),
+        name="hr-employee-crm-resync",
+    ),
     path("employees/<uuid:profile_id>/contracts/", HrContractEndpoint.as_view(), name="hr-contracts"),
     path(
         "employees/<uuid:profile_id>/contracts/<uuid:pk>/",

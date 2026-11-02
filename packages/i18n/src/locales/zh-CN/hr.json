@@ -201,13 +201,17 @@
         "removed": "已标记为离职",
         "refused": "操作未成功",
         "try_again": "请重试。",
-        "brought_back": "已重新录用"
+        "brought_back": "已重新录用",
+        "crm_resync_started": "正在将工作项重新发送到 CRM",
+        "crm_resync_nothing": "此人没有等待发送到 CRM 的内容",
+        "crm_resync_not_connected": "此人的工作区都未连接 CRM"
       },
       "opening": "期初结余",
       "rates": "费率",
       "leave": "年假",
       "crm_staff_id": "CRM 员工 ID",
       "crm_staff_id_placeholder": "留空则按邮箱匹配",
+      "crm_resync": "将工作重新发送到 CRM",
       "crm_guessed": "仅按邮箱地址匹配 CRM",
       "crm_missing": "未关联 CRM 账户",
       "crm_link": {

@@ -833,16 +833,14 @@ def _unmirrored_worklogs(workspace_id):
     )
 
 
-@shared_task
-def resync_member_to_crm(user_id):
-    """Bring a person's mirrored work items up to date after their CRM staff id changed.
+def member_resync_issue_ids(user_id):
+    """The mirrored work items to sync again for one person, per connected workspace.
 
-    Hours logged while nobody could tell who they were in the CRM sit in the
-    "could not be attached" table on the task, and the person is left off its
-    assignees. Both are put right by the next sync of each work item — which used
-    to mean somebody saving every one of them by hand. Re-syncing them here turns
-    the stranded hours into timers, clears the table and puts the assignee back.
+    Those holding their hours that never became a CRM timer, and those they are
+    assigned to. Only work items already in the CRM: nothing here makes a task.
+    A connected workspace with nothing to sync is still listed, with an empty set.
     """
+    found = {}
     workspace_ids = WorkspaceMember.objects.filter(member_id=user_id, is_active=True).values_list(
         "workspace_id", flat=True
     )
@@ -857,6 +855,21 @@ def resync_member_to_crm(user_id):
                 workspace_id=workspace_id, assignee_id=user_id, issue_id__in=_linked_issue_ids(workspace_id)
             ).values_list("issue_id", flat=True)
         )
+        found[workspace_id] = issue_ids
+    return found
+
+
+@shared_task
+def resync_member_to_crm(user_id):
+    """Bring a person's mirrored work items up to date after their CRM link changed.
+
+    Hours logged while nobody could tell who they were in the CRM sit in the
+    "could not be attached" table on the task, and the person is left off its
+    assignees. Both are put right by the next sync of each work item — which used
+    to mean somebody saving every one of them by hand. Re-syncing them here turns
+    the stranded hours into timers, clears the table and puts the assignee back.
+    """
+    for workspace_id, issue_ids in member_resync_issue_ids(user_id).items():
         for issue_id in issue_ids:
             sync_issue_to_crm.delay(str(issue_id))
         if issue_ids:

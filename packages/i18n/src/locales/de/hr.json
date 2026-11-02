@@ -201,13 +201,17 @@
         "removed": "Als ausgetreten markiert",
         "refused": "Nicht durchgeführt",
         "try_again": "Bitte versuchen Sie es erneut.",
-        "brought_back": "Wieder eingestellt"
+        "brought_back": "Wieder eingestellt",
+        "crm_resync_started": "Ihre Arbeitselemente werden erneut ans CRM gesendet",
+        "crm_resync_nothing": "Von dieser Person wartet nichts auf das CRM",
+        "crm_resync_not_connected": "Keiner ihrer Workspaces ist mit dem CRM verbunden"
       },
       "opening": "Anfangssaldo",
       "rates": "Vergütungssätze",
       "leave": "Urlaub",
       "crm_staff_id": "CRM-Mitarbeiter-ID",
       "crm_staff_id_placeholder": "Leer lassen, um über die E-Mail-Adresse zuzuordnen",
+      "crm_resync": "Arbeit erneut ans CRM senden",
       "crm_guessed": "CRM nur über die E-Mail-Adresse",
       "crm_missing": "Kein CRM-Konto",
       "crm_link": {
