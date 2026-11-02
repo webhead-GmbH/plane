@@ -218,6 +218,25 @@ def day_rows(period):
     ]
 
 
+# The same headings the holiday import reads, so a calendar can be downloaded,
+# corrected in a spreadsheet and brought back in.
+HOLIDAY_COLUMNS = ["date", "name_de", "name_en", "half_day", "statutory"]
+
+
+def holiday_rows(holidays):
+    """One row per day off, in date order."""
+    return [
+        {
+            "date": holiday.date.isoformat(),
+            "name_de": holiday.name_de,
+            "name_en": holiday.name_en,
+            "half_day": "yes" if holiday.day_fraction < 1 else "no",
+            "statutory": "yes" if holiday.is_statutory else "no",
+        }
+        for holiday in holidays
+    ]
+
+
 def render(rows, columns, file_format):
     """Rows into a file, with the columns in a fixed order.
 

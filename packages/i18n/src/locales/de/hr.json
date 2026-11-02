@@ -311,15 +311,18 @@
       "kind": {
         "time_entries": "Stunden",
         "absences": "Abwesenheiten",
-        "opening_balances": "Anfangssalden"
+        "opening_balances": "Anfangssalden",
+        "holidays": "Feiertage"
       },
       "columns": {
         "time_entries": "Spalten: email, date und entweder hours oder minutes — genau so als Spaltenüberschrift schreiben (auf Deutsch auch stunden, std, minuten). Eine Spalte note (oder notiz) wird übernommen, sofern vorhanden. Die Überschrift entscheidet, was eine bloße Zahl bedeutet: 7,7 unter hours und 462 unter minutes sind beide 7 Stunden 42 Minuten. Als 7:42 geschrieben ist es unter beiden Überschriften dasselbe.",
         "absences": "Spalten: email, start_date, end_date und type — genau so als Spaltenüberschrift schreiben (auf Deutsch auch von, bis, art). Für einen einzelnen Tag end_date weglassen.",
-        "opening_balances": "Spalten: email, date für den Tag, ab dem der Saldo gilt, entweder hours oder minutes für den Saldo selbst und basis dafür, woher die Zahl stammt — genau so als Spaltenüberschrift schreiben. Ist der Saldo kein Stundensaldo, kommt eine Spalte kind mit time, leave oder overtime dazu."
+        "opening_balances": "Spalten: email, date für den Tag, ab dem der Saldo gilt, entweder hours oder minutes für den Saldo selbst und basis dafür, woher die Zahl stammt — genau so als Spaltenüberschrift schreiben. Ist der Saldo kein Stundensaldo, kommt eine Spalte kind mit time, leave oder overtime dazu.",
+        "holidays": "Spalten: date und name_de – genau diese Überschriften. name_en, half_day und statutory können dazukommen; half_day und statutory enthalten yes oder no. Gibt es mehr als einen Kalender, nennt eine Spalte calendar ihn. Ein Tag, der schon im Kalender steht, bleibt unverändert. Eine unter Feiertage heruntergeladene Datei hat diese Überschriften bereits."
       },
       "preview_title": "{filename}, gelesen als {kind}",
       "preview_hint": "Es wurde noch nichts geschrieben. Zeilen kommen zu dem hinzu, was für diese Tage bereits erfasst ist; ein doppelt importierter Tag zählt deshalb doppelt. Um eine bereits importierte Datei zu berichtigen, nehmen Sie sie zuerst zurück, statt eine korrigierte Fassung zu importieren.",
+      "preview_hint_holidays": "Es wurde noch nichts geschrieben. Ein Tag, der schon im Kalender steht, wird übersprungen und nicht geändert; dieselbe Datei zweimal zu importieren fügt also nichts hinzu. Einen Tag, der schon da ist, ändern Sie unter Feiertage.",
       "will_write": "werden geschrieben",
       "cannot_read": "können nicht gelesen werden",
       "skipped": "übersprungen",
@@ -373,7 +376,13 @@
         "basis_missing": "Die Spalte basis ist leer. Schreiben Sie hinein, woher die Zahl stammt, zum Beispiel: aus der alten Urlaubstabelle.",
         "bad_start_date": "Das Startdatum konnte nicht gelesen werden.",
         "ends_before_it_starts": "Es endet, bevor es beginnt.",
-        "unknown_absence_type": "Kein Abwesenheitsgrund hat den Code „{code}“. Die Codes finden Sie auf der Seite Abwesenheiten unter Gründe."
+        "unknown_absence_type": "Kein Abwesenheitsgrund hat den Code „{code}“. Die Codes finden Sie auf der Seite Abwesenheiten unter Gründe.",
+        "no_calendar": "Es gibt noch keinen Feiertagskalender. Richten Sie zuerst unter Feiertage einen ein.",
+        "unknown_calendar": "Es gibt keinen Feiertagskalender namens {calendar}.",
+        "name_missing": "Der Tag hat keinen Namen.",
+        "name_too_long": "Der Name ist länger als {limit} Zeichen.",
+        "bad_flag": "Die Spalte {column} muss yes oder no enthalten.",
+        "holiday_exists": "Dieser Tag steht schon im Kalender und bleibt so, wie er ist."
       }
     },
     "opening": {
@@ -498,6 +507,8 @@
         "column_leave": "Vom Urlaubskonto",
         "column_action": "Aktion",
         "none_yet": "Noch keine Gründe angelegt.",
+        "add_standard": "Die üblichen Gründe hinzufügen",
+        "standard_detail": "Urlaub, Krankenstand, Zeitausgleich und die anderen üblichen Gründe, so gezählt, wie das österreichische Recht es vorsieht. Sie lassen sich danach ändern.",
         "retire": "Deaktivieren",
         "bring_back": "Reaktivieren",
         "delete": "Grund löschen",
@@ -618,6 +629,10 @@
       "title": "Feiertage",
       "subtitle": "Tage, an denen niemand arbeitet. Ein Feiertag zählt als geleistete Stunden; er senkt nicht das Soll. Eine Änderung hier wirkt sich nur auf Monate aus, die noch offen sind.",
       "subtitle_read_only": "Tage, an denen niemand arbeitet. Ein Feiertag zählt als geleistete Stunden; er senkt nicht das Soll.",
+      "setup_title": "Es gibt noch keinen Feiertagskalender",
+      "setup_detail": "Solange es keinen gibt, zählt jeder Feiertag als gewöhnlicher Arbeitstag. Beim Einrichten werden die österreichischen Feiertage von {from} bis {to} eingetragen. Jeder davon lässt sich danach ändern oder entfernen, und Tage, die das Unternehmen gewährt, können hinzukommen.",
+      "setup_button": "Österreichische Feiertage einrichten",
+      "import": "Tage aus einer Datei importieren",
       "back_to_month": "Der Monat",
       "calendar": "Kalender",
       "previous_year": "Vorjahr",
@@ -640,10 +655,12 @@
       "name_placeholder": "Bezeichnung des Tages",
       "errors": {
         "date_and_name": "Geben Sie für den Tag ein Datum und einen Namen an.",
-        "already_there": "An diesem Tag steht bereits {day}."
+        "already_there": "An diesem Tag steht bereits {day}.",
+        "no_calendar": "Es gibt noch keinen Feiertagskalender, in den dieser Tag eingetragen werden kann."
       },
       "toasts": {
         "added": "Tag hinzugefügt",
+        "set_up": "Feiertage eingerichtet",
         "removed": "Tag entfernt",
         "refused": "Speichern nicht möglich",
         "try_again": "Bitte versuchen Sie es erneut."

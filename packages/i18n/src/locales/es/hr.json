@@ -311,15 +311,18 @@
       "kind": {
         "time_entries": "Horas",
         "absences": "Ausencias",
-        "opening_balances": "Saldos iniciales"
+        "opening_balances": "Saldos iniciales",
+        "holidays": "Días festivos"
       },
       "columns": {
         "time_entries": "Columnas: email, date y, o bien hours, o bien minutes — exactamente esos encabezados. Si hay una columna note, se conserva. El encabezado decide qué significa un número a secas: 7,7 en hours y 462 en minutes son ambos 7 horas y 42 minutos. Escrito como 7:42 es lo mismo bajo cualquiera de los dos encabezados.",
         "absences": "Columnas: email, start_date, end_date y type — exactamente esos encabezados. Para un solo día, omita end_date.",
-        "opening_balances": "Columnas: email, date para el día desde el que se aplica el saldo, hours o minutes para el saldo en sí, y basis para decir de dónde sale la cifra — exactamente esos encabezados. Añada una columna kind con time, leave u overtime si el saldo no son horas."
+        "opening_balances": "Columnas: email, date para el día desde el que se aplica el saldo, hours o minutes para el saldo en sí, y basis para decir de dónde sale la cifra — exactamente esos encabezados. Añada una columna kind con time, leave u overtime si el saldo no son horas.",
+        "holidays": "Columnas: date y name_de, con esos encabezados exactos. Se pueden añadir name_en, half_day y statutory; half_day y statutory llevan yes o no. Si hay más de un calendario, una columna calendar indica cuál. Un día que ya está en el calendario se deja como está. Un archivo descargado en Días festivos ya tiene estos encabezados."
       },
       "preview_title": "{filename}, leído como {kind}",
       "preview_hint": "Todavía no se ha escrito nada. Las filas se suman a lo que ya haya registrado esos días, así que un día importado dos veces cuenta dos veces. Para corregir un archivo ya importado, deshágalo primero en lugar de importar una copia corregida.",
+      "preview_hint_holidays": "Todavía no se ha escrito nada. Un día que ya está en el calendario se omite en lugar de cambiarse, así que importar dos veces el mismo archivo no añade nada. Un día que ya existe se cambia en Días festivos.",
       "will_write": "se escribirán",
       "cannot_read": "no se pueden leer",
       "skipped": "omitidas",
@@ -373,7 +376,13 @@
         "basis_missing": "La columna basis está vacía. Escriba de dónde sale la cifra, por ejemplo: de la antigua hoja de vacaciones.",
         "bad_start_date": "No se ha podido leer la fecha de inicio.",
         "ends_before_it_starts": "Termina antes de empezar.",
-        "unknown_absence_type": "Ningún motivo de ausencia tiene el código «{code}». Los códigos están en la pantalla Ausencias, en Motivos."
+        "unknown_absence_type": "Ningún motivo de ausencia tiene el código «{code}». Los códigos están en la pantalla Ausencias, en Motivos.",
+        "no_calendar": "Todavía no hay un calendario de festivos. Configure uno primero en Días festivos.",
+        "unknown_calendar": "No hay ningún calendario de festivos llamado {calendar}.",
+        "name_missing": "El día no tiene nombre.",
+        "name_too_long": "El nombre tiene más de {limit} caracteres.",
+        "bad_flag": "La columna {column} tiene que decir yes o no.",
+        "holiday_exists": "Este día ya está en el calendario, así que se deja como está."
       }
     },
     "opening": {
@@ -498,6 +507,8 @@
         "column_leave": "Descuenta de vacaciones",
         "column_action": "Acción",
         "none_yet": "Aún no hay motivos configurados.",
+        "add_standard": "Añadir los motivos habituales",
+        "standard_detail": "Vacaciones, baja por enfermedad, compensación de horas y los demás motivos habituales, contados como establece la ley austriaca. Se pueden cambiar después.",
         "retire": "Desactivar",
         "bring_back": "Reactivar",
         "delete": "Eliminar motivo",
@@ -618,6 +629,10 @@
       "title": "Días festivos",
       "subtitle": "Los días en que no trabaja nadie. Un día festivo cuenta como horas trabajadas; no reduce lo que hay que trabajar. Un cambio aquí solo llega a los meses que siguen abiertos.",
       "subtitle_read_only": "Los días en que no trabaja nadie. Un día festivo cuenta como horas trabajadas; no reduce lo que hay que trabajar.",
+      "setup_title": "Todavía no hay un calendario de festivos",
+      "setup_detail": "Mientras no exista, cada festivo cuenta como un día laborable normal. Al configurarlo se añaden los festivos de Austria de {from} a {to}. Después se puede cambiar o quitar cualquiera de ellos y añadir días que conceda la empresa.",
+      "setup_button": "Configurar los festivos de Austria",
+      "import": "Importar días desde un archivo",
       "back_to_month": "El mes",
       "calendar": "Calendario",
       "previous_year": "Año anterior",
@@ -640,10 +655,12 @@
       "name_placeholder": "Cómo se llama el día",
       "errors": {
         "date_and_name": "Indique una fecha y un nombre para el día.",
-        "already_there": "{day} ya ocupa ese día."
+        "already_there": "{day} ya ocupa ese día.",
+        "no_calendar": "Todavía no hay un calendario de festivos en el que añadir este día."
       },
       "toasts": {
         "added": "Día añadido",
+        "set_up": "Festivos configurados",
         "removed": "Día eliminado",
         "refused": "No se ha podido guardar",
         "try_again": "Inténtelo de nuevo."

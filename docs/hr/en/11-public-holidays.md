@@ -7,6 +7,7 @@ This page is about the list of days on which nobody in the company is expected t
 - [Where the screen is](#where-the-screen-is)
 - [Who may change it](#who-may-change-it)
 - [What is already on the calendar](#what-is-already-on-the-calendar)
+- [Before the first day: setting the calendar up](#before-the-first-day-setting-the-calendar-up)
 - [The year on screen](#the-year-on-screen)
 - [Reading the list](#reading-the-list)
 - [What a holiday does to the hours somebody owes](#what-a-holiday-does-to-the-hours-somebody-owes)
@@ -22,6 +23,7 @@ This page is about the list of days on which nobody in the company is expected t
 - [When the change reaches the figures](#when-the-change-reaches-the-figures)
 - [Months that have already been handed in or closed](#months-that-have-already-been-handed-in-or-closed)
 - [Keeping the year ahead stocked](#keeping-the-year-ahead-stocked)
+- [The calendar as a file](#the-calendar-as-a-file)
 - [Messages you may see](#messages-you-may-see)
 - [If you get stuck](#if-you-get-stuck)
 
@@ -80,6 +82,12 @@ Good Friday is not on the list. It is not a general public holiday in Austria, a
 Christmas Eve and New Year's Eve are on the list as half days because that is what most companies agree, not because any law says so. They are marked **Granted**, and either of them can be made a whole day or removed like any other granted day.
 
 Anything else the company decides to close for — a bridging day, an office closure — is not there until somebody types it in.
+
+## Before the first day: setting the calendar up
+
+On an installation where nobody has set up a holiday calendar yet, the page shows **There is no holiday calendar yet** in place of the list, with a button **Set up Austria's public holidays** under it. Whoever looks after the team presses it once. The calendar is made, the days in the table above are filled in for five years back and five years forward, and a green **Public holidays set up** appears. Nothing else changes: the working week people owe is not touched, and no reason for being away is added.
+
+Until that has been done, anybody else sees **No days for this year yet. Until they are added, every public holiday in it counts as an ordinary working day.**
 
 ## The year on screen
 
@@ -299,6 +307,15 @@ That is exactly what happens. Thirteen days a year become ordinary working days 
 **Make this a job every autumn.** Open **Public holidays**, press **Next year** until you reach the year after the one you are in, and count the rows. Fifteen in an ordinary year — thirteen **By law, cannot be changed** plus Christmas Eve and New Year's Eve as **Granted / Half day**. If the year is empty or short, either type the missing days in here by hand, or ask whoever installed the system to run the one-off setup step again. Running it again is safe: it fills in five years either side and leaves alone any day that is already there.
 
 One caution if the setup step is re-run: a statutory day that somebody removed by hand will come back, because the step puts back any date it does not find. A day whose length or name was edited is left as it is.
+
+## The calendar as a file
+
+The button with three dots at the right of the line at the top holds:
+
+- **Download as CSV** and **Download as Excel** — the year on screen, one row per day, with the columns `date`, `name_de`, `name_en`, `half_day` and `statutory`. The file is named after the calendar and the year, for example `holidays-osterreich-2027.csv`. Anybody who can read this page can download it.
+- **Bring days in from a file** — only for whoever looks after the team. It opens **Bring earlier records in** with **Public holidays** already chosen. How the file is checked before anything is written is in "Bringing hours in from somewhere else".
+
+The download has the headings the import reads, so a year can be downloaded, corrected or extended in a spreadsheet, and brought back in. A day already in the calendar is skipped rather than changed, so bringing the same file in twice adds nothing the second time. This is also a way to fill in a year that has run out: see [Keeping the year ahead stocked](#keeping-the-year-ahead-stocked).
 
 ## Messages you may see
 

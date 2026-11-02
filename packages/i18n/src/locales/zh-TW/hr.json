@@ -306,6 +306,10 @@
       "title": "國定假日",
       "subtitle": "沒有人上班的日子。假日會計為已工作的時數，而不是扣減應工作的時數。在這裡的變更只會影響仍然開啟的月份。",
       "subtitle_read_only": "沒有人上班的日子。假日會計為已工作的時數，而不是扣減應工作的時數。",
+      "setup_title": "還沒有國定假日行事曆",
+      "setup_detail": "在沒有行事曆之前，每個國定假日都會當作一般工作日計算。設定後會加入 {from} 年至 {to} 年的奧地利國定假日。之後可以修改或移除其中任何一天，也可以加入公司給的假日。",
+      "setup_button": "設定奧地利國定假日",
+      "import": "從檔案匯入日期",
       "back_to_month": "月份工時",
       "calendar": "行事曆",
       "previous_year": "上一年",
@@ -328,10 +332,12 @@
       "name_placeholder": "這一天的名稱",
       "errors": {
         "date_and_name": "請填寫這一天的日期與名稱。",
-        "already_there": "這一天已有 {day}。"
+        "already_there": "這一天已有 {day}。",
+        "no_calendar": "還沒有可以加入這一天的國定假日行事曆。"
       },
       "toasts": {
         "added": "假日已新增",
+        "set_up": "國定假日已設定",
         "removed": "假日已移除",
         "refused": "無法儲存",
         "try_again": "請再試一次。"
@@ -429,15 +435,18 @@
       "kind": {
         "time_entries": "工時",
         "absences": "請假",
-        "opening_balances": "期初結餘"
+        "opening_balances": "期初結餘",
+        "holidays": "國定假日"
       },
       "columns": {
         "time_entries": "欄位標題必須原樣寫成 email、date，以及 hours 或 minutes 其中一欄。若有 note 欄位也會一併保留。純數字的意思由標題決定：hours 欄下的 7.7 和 minutes 欄下的 462 都是 7 小時 42 分鐘。寫成 7:42 則在兩種標題下都一樣。",
         "absences": "欄位標題必須原樣寫成 email、start_date、end_date 與 type。若只有一天，請省略 end_date。",
-        "opening_balances": "欄位標題必須原樣寫成 email、標示結餘自哪一天起適用的 date、填寫結餘本身的 hours 或 minutes 其中一欄，以及說明數字來源的 basis。若結餘不是工時，請再加一個 kind 欄，填 time、leave 或 overtime。"
+        "opening_balances": "欄位標題必須原樣寫成 email、標示結餘自哪一天起適用的 date、填寫結餘本身的 hours 或 minutes 其中一欄，以及說明數字來源的 basis。若結餘不是工時，請再加一個 kind 欄，填 time、leave 或 overtime。",
+        "holidays": "欄位：date 和 name_de（必須是這兩個標題）。可以加上 name_en、half_day 和 statutory；half_day 和 statutory 填寫 yes 或 no。如果有多個行事曆，用 calendar 欄位指明。行事曆中已有的日期保持不變。從國定假日頁面下載的檔案已經包含這些標題。"
       },
       "preview_title": "{filename}，讀取為{kind}",
       "preview_hint": "目前尚未寫入任何資料。各列會加到那些日期既有的記錄上，因此同一天匯入兩次就會計兩次。若要更正已經匯入的檔案，請先復原它，不要再匯入一份修正版。",
+      "preview_hint_holidays": "目前尚未寫入任何資料。行事曆中已有的日期會被略過而不是修改，因此同一個檔案匯入兩次也不會增加任何內容。已有的日期請在國定假日頁面修改。",
       "will_write": "將寫入",
       "cannot_read": "無法讀取",
       "skipped": "已略過",
@@ -491,7 +500,13 @@
         "basis_missing": "basis 欄是空的。請寫明數字的來源，例如：來自舊的請假試算表。",
         "bad_start_date": "無法讀取開始日期。",
         "ends_before_it_starts": "結束早於開始。",
-        "unknown_absence_type": "沒有任何缺勤事由的代碼是「{code}」。代碼可在「缺勤」頁面的「事由」中查看。"
+        "unknown_absence_type": "沒有任何缺勤事由的代碼是「{code}」。代碼可在「缺勤」頁面的「事由」中查看。",
+        "no_calendar": "還沒有國定假日行事曆。請先在國定假日頁面設定一個。",
+        "unknown_calendar": "沒有名為 {calendar} 的國定假日行事曆。",
+        "name_missing": "這一天沒有名稱。",
+        "name_too_long": "名稱超過 {limit} 個字元。",
+        "bad_flag": "{column} 欄位必須填寫 yes 或 no。",
+        "holiday_exists": "這一天已在行事曆中，因此保持不變。"
       }
     },
     "opening": {
@@ -616,6 +631,8 @@
         "column_leave": "扣除年假額度",
         "column_action": "操作",
         "none_yet": "尚未設定任何事由。",
+        "add_standard": "新增常用事由",
+        "standard_detail": "特休、病假、補休以及其他常用事由，依奧地利法律的規定計算。之後可以修改。",
         "retire": "停用",
         "bring_back": "重新啟用",
         "delete": "刪除事由",

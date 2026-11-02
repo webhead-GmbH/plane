@@ -115,7 +115,7 @@ Zwei Fragen entscheiden, was ein Grund bewirkt, und es sind die beiden Spalten, 
 - **Zählt als gearbeitet** — ob der Tag weiterhin zu den Stunden dieses Monats zählt. Fast jeder Grund tut das. Unbezahlter Urlaub nicht.
 - **Vom Urlaubskonto** — ob die Zeit vom Jahresurlaub der Person abgeht. Nur beim Urlaub ist das so.
 
-Wenn das System auf die übliche Weise eingerichtet wurde, gibt es sechs Gründe:
+Wenn das System auf die übliche Weise eingerichtet oder **Die üblichen Gründe hinzufügen** gedrückt wurde, gibt es sechs Gründe:
 
 | Grund                       | Zählt als gearbeitet | Vom Urlaubskonto |
 | --------------------------- | -------------------- | ---------------- |
@@ -247,6 +247,8 @@ Die Zeile verschwindet, und eine grüne Meldung sagt **Abwesenheit gelöscht**. 
 Die Schaltfläche **Gründe** neben der Schaltfläche rechts oben wird nur der Person angezeigt, die das Team betreut. Sie öffnet **Abwesenheitsgründe**, mit der Zeile **Zwei Angaben bestimmen die Berechnung: ob der Tag als gearbeitet zählt und ob er vom Urlaubskonto abgezogen wird.**
 
 Die Tabelle listet jeden Grund auf, mit **Zählt als gearbeitet** und **Vom Urlaubskonto** als **Ja** oder **Nein**. Ein deaktivierter Grund wird durchgestrichen angezeigt.
+
+**Wenn die Liste leer ist**, steht in der Tabelle **Noch keine Gründe angelegt.**, und darunter **Die üblichen Gründe hinzufügen**. Ein Druck darauf legt die sechs Gründe aus der Tabelle weiter oben auf dieser Seite auf einmal an. Solange es keinen einzigen Grund gibt, kann niemand Urlaub beantragen: Das Feld **Grund** hat nichts zur Auswahl. Die Schaltfläche gibt es nur, solange die Liste leer ist.
 
 **Damit ein Grund nicht mehr angeboten wird**, klicken Sie in seiner Zeile auf **Deaktivieren**. Er verschwindet aus dem Feld **Grund**, wenn jemand eine Abwesenheit erfasst, und jede bereits damit erfasste Abwesenheit bleibt lesbar und richtig benannt. **Reaktivieren** holt ihn zurück.
 

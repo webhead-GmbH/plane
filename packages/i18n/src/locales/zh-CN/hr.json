@@ -311,15 +311,18 @@
       "kind": {
         "time_entries": "工时",
         "absences": "缺勤",
-        "opening_balances": "期初结余"
+        "opening_balances": "期初结余",
+        "holidays": "节假日"
       },
       "columns": {
         "time_entries": "表头必须原样写成 email、date，以及 hours 或 minutes 其中之一。如果有 note 列，也会一并保留。纯数字的含义由表头决定：hours 列下的 7.7 和 minutes 列下的 462 都是 7 小时 42 分钟。写成 7:42 时，两种表头下含义相同。",
         "absences": "表头必须原样写成 email、start_date、end_date 和 type。只有一天时，省略 end_date。",
-        "opening_balances": "表头必须原样写成 email、填写生效日期的 date、填写结余数额的 hours 或 minutes 其中之一，以及说明数字来源的 basis。如果结余不是工时，请再加一列 kind，填写 time、leave 或 overtime。"
+        "opening_balances": "表头必须原样写成 email、填写生效日期的 date、填写结余数额的 hours 或 minutes 其中之一，以及说明数字来源的 basis。如果结余不是工时，请再加一列 kind，填写 time、leave 或 overtime。",
+        "holidays": "列：date 和 name_de（必须是这两个标题）。可以加上 name_en、half_day 和 statutory；half_day 和 statutory 填写 yes 或 no。如果有多个日历，用 calendar 列指明。日历中已有的日期保持不变。从节假日页面下载的文件已经包含这些标题。"
       },
       "preview_title": "{filename}，按{kind}读取",
       "preview_hint": "目前尚未写入任何数据。各行会追加到这些日期上已有的记录，因此同一天导入两次就会计入两次。要更正已经导入的文件，请先撤销它，而不是再导入一份改好的副本。",
+      "preview_hint_holidays": "目前尚未写入任何数据。日历中已有的日期会被跳过而不是修改，因此同一个文件导入两次也不会增加任何内容。已有的日期请在节假日页面修改。",
       "will_write": "将写入",
       "cannot_read": "无法读取",
       "skipped": "已跳过",
@@ -373,7 +376,13 @@
         "basis_missing": "basis 列为空。请写明这个数字的来源，例如：来自旧的假期电子表格。",
         "bad_start_date": "无法读取开始日期。",
         "ends_before_it_starts": "结束早于开始。",
-        "unknown_absence_type": "没有代码为“{code}”的缺勤事由。代码在“缺勤”页面的“事由”中。"
+        "unknown_absence_type": "没有代码为“{code}”的缺勤事由。代码在“缺勤”页面的“事由”中。",
+        "no_calendar": "还没有节假日日历。请先在节假日页面设置一个。",
+        "unknown_calendar": "没有名为 {calendar} 的节假日日历。",
+        "name_missing": "这一天没有名称。",
+        "name_too_long": "名称超过 {limit} 个字符。",
+        "bad_flag": "{column} 列必须填写 yes 或 no。",
+        "holiday_exists": "这一天已在日历中，因此保持不变。"
       }
     },
     "opening": {
@@ -498,6 +507,8 @@
         "column_leave": "扣年假额度",
         "column_action": "操作",
         "none_yet": "尚未设置事由。",
+        "add_standard": "添加常用事由",
+        "standard_detail": "年假、病假、调休以及其他常用事由，按奥地利法律的规定计算。之后可以修改。",
         "retire": "停用",
         "bring_back": "恢复",
         "delete": "删除事由",
@@ -618,6 +629,10 @@
       "title": "节假日",
       "subtitle": "无人上班的日子。节假日计为已工作工时，不会减少应工作工时。此处的更改只影响仍处于打开状态的月份。",
       "subtitle_read_only": "无人上班的日子。节假日计为已工作工时，不会减少应工作工时。",
+      "setup_title": "还没有节假日日历",
+      "setup_detail": "在没有日历之前，每个节假日都按普通工作日计算。设置后会添加 {from} 年至 {to} 年的奥地利法定节假日。之后可以修改或删除其中任何一天，也可以添加公司给的假日。",
+      "setup_button": "设置奥地利节假日",
+      "import": "从文件导入日期",
       "back_to_month": "月度工时",
       "calendar": "日历",
       "previous_year": "上一年",
@@ -640,10 +655,12 @@
       "name_placeholder": "这一天的名称",
       "errors": {
         "date_and_name": "请填写日期和名称。",
-        "already_there": "这一天已有 {day}。"
+        "already_there": "这一天已有 {day}。",
+        "no_calendar": "还没有可以添加这一天的节假日日历。"
       },
       "toasts": {
         "added": "日期已添加",
+        "set_up": "节假日已设置",
         "removed": "日期已删除",
         "refused": "无法保存",
         "try_again": "请重试。"

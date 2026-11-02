@@ -311,15 +311,18 @@
       "kind": {
         "time_entries": "Hours",
         "absences": "Absences",
-        "opening_balances": "Starting balances"
+        "opening_balances": "Starting balances",
+        "holidays": "Public holidays"
       },
       "columns": {
         "time_entries": "Columns: email, date, and either hours or minutes — those exact headings. A note column is kept if there is one. The heading decides what a plain number means: 7.7 under hours and 462 under minutes are both 7 hours 42 minutes. Written as 7:42 it is the same under either heading.",
         "absences": "Columns: email, start_date, end_date and type — those exact headings. Leave end_date out for a single day.",
-        "opening_balances": "Columns: email, date for the day the balance applies from, either hours or minutes for the balance itself, and basis saying where the figure came from — those exact headings. Add a kind column saying time, leave or overtime if the balance is not hours."
+        "opening_balances": "Columns: email, date for the day the balance applies from, either hours or minutes for the balance itself, and basis saying where the figure came from — those exact headings. Add a kind column saying time, leave or overtime if the balance is not hours.",
+        "holidays": "Columns: date and name_de — those exact headings. name_en, half_day and statutory can be added; half_day and statutory take yes or no. Where there is more than one calendar, a calendar column names it. A day already in the calendar is left as it is. A file downloaded from Public holidays already has these headings."
       },
       "preview_title": "{filename}, read as {kind}",
       "preview_hint": "Nothing has been written yet. Rows are added to whatever is already recorded for those days, so a day brought in twice counts twice. To correct a file that is already in, undo it first instead of bringing in a corrected copy.",
+      "preview_hint_holidays": "Nothing has been written yet. A day already in the calendar is skipped rather than changed, so bringing the same file in twice adds nothing. A day that is already there is changed on Public holidays.",
       "will_write": "will be written",
       "cannot_read": "cannot be read",
       "skipped": "skipped",
@@ -373,7 +376,13 @@
         "basis_missing": "The basis column is empty. Write where the figure came from, for example: from the old leave spreadsheet.",
         "bad_start_date": "The start date could not be read.",
         "ends_before_it_starts": "It ends before it starts.",
-        "unknown_absence_type": "No reason for being away has the code “{code}”. The codes are on the Absences screen, under Reasons."
+        "unknown_absence_type": "No reason for being away has the code “{code}”. The codes are on the Absences screen, under Reasons.",
+        "no_calendar": "There is no holiday calendar yet. Set one up on Public holidays first.",
+        "unknown_calendar": "No holiday calendar is called {calendar}.",
+        "name_missing": "The day has no name.",
+        "name_too_long": "The name is longer than {limit} characters.",
+        "bad_flag": "The {column} column has to say yes or no.",
+        "holiday_exists": "This day is already in the calendar, so it is left as it is."
       }
     },
     "opening": {
@@ -498,6 +507,8 @@
         "column_leave": "Off the leave account",
         "column_action": "Action",
         "none_yet": "No reasons set up yet.",
+        "add_standard": "Add the usual reasons",
+        "standard_detail": "Annual leave, sick leave, time off in lieu and the other usual reasons, counted the way Austrian law has them. They can be changed afterwards.",
         "retire": "Retire",
         "bring_back": "Bring back",
         "delete": "Delete reason",
@@ -618,6 +629,10 @@
       "title": "Public holidays",
       "subtitle": "The days nobody works. A holiday counts as hours worked; it does not lower what somebody has to work. A change here only reaches months that are still open.",
       "subtitle_read_only": "The days nobody works. A holiday counts as hours worked; it does not lower what somebody has to work.",
+      "setup_title": "There is no holiday calendar yet",
+      "setup_detail": "Until there is one, every public holiday counts as an ordinary working day. Setting it up adds Austria's public holidays from {from} to {to}. Any of them can be changed or removed afterwards, and days the company grants can be added.",
+      "setup_button": "Set up Austria's public holidays",
+      "import": "Bring days in from a file",
       "back_to_month": "The month",
       "calendar": "Calendar",
       "previous_year": "Previous year",
@@ -640,10 +655,12 @@
       "name_placeholder": "What the day is called",
       "errors": {
         "date_and_name": "Give the day a date and a name.",
-        "already_there": "{day} is already on this day."
+        "already_there": "{day} is already on this day.",
+        "no_calendar": "There is no holiday calendar to add this day to yet."
       },
       "toasts": {
         "added": "Day added",
+        "set_up": "Public holidays set up",
         "removed": "Day removed",
         "refused": "That could not be saved",
         "try_again": "Please try again."

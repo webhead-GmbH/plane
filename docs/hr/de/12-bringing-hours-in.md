@@ -7,7 +7,7 @@ Nur wer das Team betreut, kann diese Seite benutzen. Wenn Sie das nicht sind, is
 ## Was auf dieser Seite steht
 
 - [Wo Sie diese Seite finden](#wo-sie-diese-seite-finden)
-- [Die drei Arten von Dateien](#die-drei-arten-von-dateien)
+- [Die Arten von Dateien](#die-arten-von-dateien)
 - [Mit der Vorlage anfangen](#mit-der-vorlage-anfangen)
 - [Was die einzelnen Spalten bedeuten](#was-die-einzelnen-spalten-bedeuten)
 - [Wie eine Dauer gelesen wird](#wie-eine-dauer-gelesen-wird)
@@ -34,15 +34,16 @@ Steht dort statt der Karte **Sie haben keine Berechtigung für diese Ansicht**, 
 
 Ziehen Sie keine Datei auf die Karte. Hier fängt nichts eine fallen gelassene Datei auf; der Browser verlässt deshalb diese Seite und öffnet stattdessen die Datei, und Sie müssen sich zurückfinden. Nehmen Sie die Schaltfläche **Datei auswählen**.
 
-## Die drei Arten von Dateien
+## Die Arten von Dateien
 
-Das Auswahlfeld heißt **Inhalt der Datei**. Es hat drei Möglichkeiten, und es entscheidet, wie Ihre Datei gelesen wird.
+Das Auswahlfeld heißt **Inhalt der Datei**. Es hat vier Möglichkeiten, und es entscheidet, wie Ihre Datei gelesen wird.
 
 | Möglichkeit       | Was geschrieben wird                                                                         | Wo es danach zu sehen ist                                                                         |
 | ----------------- | -------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
 | **Stunden**       | Stunden, die jemand an einem bestimmten Tag gearbeitet hat, ohne ein Arbeitselement dahinter | Am Tag dieser Person, unter **Stunden ohne Arbeitselement**, mit der Kennzeichnung **Importiert** |
 | **Abwesenheiten** | Tage, an denen jemand abwesend war und die bereits genehmigt sind                            | Auf der Seite **Abwesenheiten**, im Status **Genehmigt**                                          |
 | **Anfangssalden** | Der Wert, von dem der laufende Saldo einer Person ausgeht                                    | Im Datensatz dieser Person, unter **Anfangssaldo**                                                |
+| **Feiertage**     | Freie Tage für alle, im Feiertagskalender                                                    | Auf der Seite **Feiertage**                                                                       |
 
 Zwei Dinge über dieses Auswahlfeld sollten Sie wissen, bevor Sie anfangen.
 
@@ -52,7 +53,7 @@ Die Prüfung, die danach kommt, nennt die Art, mit der sie gelesen hat. Über de
 
 ## Mit der Vorlage anfangen
 
-Drücken Sie **Vorlage herunterladen**, wenn die richtige Art eingestellt ist. Eine kleine CSV-Datei landet in Ihren Downloads, benannt nach der Art: `time_entries-template.csv`, `absences-template.csv` oder `opening_balances-template.csv`. Sie enthält die Überschriftenzeile und eine Beispielzeile, damit Sie den Aufbau sehen.
+Drücken Sie **Vorlage herunterladen**, wenn die richtige Art eingestellt ist. Eine kleine CSV-Datei landet in Ihren Downloads, benannt nach der Art: `time_entries-template.csv`, `absences-template.csv`, `opening_balances-template.csv` oder `holidays-template.csv`. Sie enthält die Überschriftenzeile und eine Beispielzeile, damit Sie den Aufbau sehen.
 
 Öffnen Sie sie, löschen Sie die Beispielzeile, fügen Sie Ihre eigenen Zeilen ein und speichern Sie. Die Vorlage ist so geschrieben, dass Excel sie öffnet, ohne Umlaute in Namen zu verstümmeln.
 
@@ -104,6 +105,19 @@ Wie viel eine Abwesenheit wert ist, ergibt sich aus der Arbeitswoche dieser Pers
 | `confidence`               | Nein                 | Wie sicher die Zahl ist: `documented` oder `exact` wird als **Aus Aufzeichnungen übernommen** erfasst, `reconstructed` als **Aus anderen Aufzeichnungen ermittelt**, `estimated` als **Geschätzt**, `agreed` als **Aus einem Gespräch mit der Person**. Eine leere Zelle oder irgendein anderes Wort wird als **Aus einem Gespräch mit der Person** erfasst, und ein Tippfehler an dieser Stelle wird nicht gemeldet. |
 
 **Nur ein Saldo der Art `time` wird irgendwo mitgezählt.** Ein Saldo, der als `leave` oder `overtime` importiert wird, wird gespeichert und im Datensatz der Person angezeigt, und keine Berechnung liest ihn. Der Urlaub für das Jahr wird pro Person auf der Seite **Personen** festgelegt, mit **Urlaubsjahr hinzufügen** und **Urlaub für das Jahr**. Wenn Sie den Resturlaub aller Personen aus der alten Tabelle als Anfangssaldo übernehmen, sieht das nach Erfolg aus und bewirkt nichts.
+
+### Feiertage
+
+| Überschrift | Pflicht | Was hineingehört                                                                                                 |
+| ----------- | ------- | ---------------------------------------------------------------------------------------------------------------- |
+| `date`      | Ja      | Der Tag. `datum` geht auch.                                                                                      |
+| `name_de`   | Ja      | Der deutsche Name. `name` geht auch.                                                                             |
+| `name_en`   | Nein    | Der englische Name. Leer heißt, der deutsche Name gilt für beide.                                                |
+| `half_day`  | Nein    | `yes` für einen halben Tag. Leer oder `no` heißt ganzer Tag.                                                     |
+| `statutory` | Nein    | `yes` für einen gesetzlichen Feiertag. Leer oder `no` heißt ein Tag, den das Unternehmen gewährt.                |
+| `calendar`  | Nein    | Nur wenn es mehr als einen Kalender gibt: sein Name oder Ländercode, etwa `AT`. Leer heißt der Standardkalender. |
+
+`half_day` und `statutory` verstehen auch `ja`, `nein`, `true`, `false`, `1` und `0`. Ein Tag, der schon im Kalender steht, wird übersprungen und nicht geändert. Es muss einen Kalender geben, in den die Tage kommen; auf einer Installation ohne Kalender richten Sie ihn zuerst unter **Feiertage** ein. Das Rückgängigmachen einer Feiertagsdatei wird nie abgelehnt: Ein abgeschlossener Monat behält die Zahlen, mit denen er abgeschlossen wurde, also kann ein wieder entfernter Tag keinen erreichen.
 
 ## Wie eine Dauer gelesen wird
 
@@ -200,6 +214,12 @@ Das sind die genauen Sätze, die Sie in der Spalte **Details** sehen.
 | Die Spalte basis ist leer. Schreiben Sie hinein, woher die Zahl stammt, zum Beispiel: aus der alten Urlaubstabelle.                     | Die Zelle `basis` ist leer, wird aber gebraucht                                                                | Schreiben Sie in Worten, woher die Zahl stammt                                                                                                                                 |
 | Es endet, bevor es beginnt.                                                                                                             | `end_date` liegt vor `start_date`                                                                              | Tauschen Sie die beiden, oder leeren Sie das Enddatum für einen einzelnen Tag                                                                                                  |
 | Kein Abwesenheitsgrund hat den Code „{code}“. Die Codes finden Sie auf der Seite **Abwesenheiten** unter **Gründe**.                    | In der Zelle `type` steht keiner der hier eingerichteten Codes                                                 | Nehmen Sie einen davon, oder legen Sie den Grund zuerst an                                                                                                                     |
+| Es gibt noch keinen Feiertagskalender. Richten Sie zuerst unter Feiertage einen ein.                                                    | Eine Feiertagsdatei auf einer Installation ohne Feiertagskalender                                              | Unter **Feiertage** auf **Österreichische Feiertage einrichten** drücken und die Datei erneut hochladen                                                                        |
+| Es gibt keinen Feiertagskalender namens {calendar}.                                                                                     | Die Zelle `calendar` nennt keinen Kalender, den es hier gibt                                                   | Namen oder Ländercode des Kalenders verwenden oder die Zelle für den Standardkalender leer lassen                                                                              |
+| Der Tag hat keinen Namen.                                                                                                               | Die Zelle `name_de` ist leer                                                                                   | Dem Tag einen Namen geben                                                                                                                                                      |
+| Der Name ist länger als 120 Zeichen.                                                                                                    | Eine Namenszelle ist zu lang                                                                                   | Kürzen                                                                                                                                                                         |
+| Die Spalte {column} muss yes oder no enthalten.                                                                                         | `half_day` oder `statutory` enthält ein anderes Wort                                                           | `yes` oder `no` schreiben oder leer lassen                                                                                                                                     |
+| Dieser Tag steht schon im Kalender und bleibt so, wie er ist.                                                                           | Im Kalender steht an diesem Datum schon ein Tag. Das ist ein Fall von **Übersprungen** und kein Fehler         | Nichts – außer der Tag im Kalender ist falsch: dann unter **Feiertage** ändern                                                                                                 |
 
 Beachten Sie: „Dieser Monat ist nicht mehr offen“ wird auch über einen Monat gesagt, der bloß **Abgegeben** ist, genauso wie über einen, der **Genehmigt** oder **Abgeschlossen** ist. Bei allen dreien wird nicht mehr neu gerechnet, es kann also in keinen davon etwas Neues mitgezählt werden.
 

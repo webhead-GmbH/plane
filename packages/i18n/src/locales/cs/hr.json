@@ -306,6 +306,10 @@
       "title": "Státní svátky",
       "subtitle": "Dny, kdy nikdo nepracuje. Svátek se počítá jako odpracované hodiny; nesnižuje to, co má někdo odpracovat. Změna se projeví jen v měsících, které jsou stále otevřené.",
       "subtitle_read_only": "Dny, kdy nikdo nepracuje. Svátek se počítá jako odpracované hodiny; nesnižuje to, co má někdo odpracovat.",
+      "setup_title": "Zatím neexistuje kalendář svátků",
+      "setup_detail": "Dokud neexistuje, počítá se každý svátek jako běžný pracovní den. Nastavení přidá rakouské státní svátky od {from} do {to}. Každý z nich lze potom změnit nebo odstranit a přidat dny, které poskytuje firma.",
+      "setup_button": "Nastavit rakouské státní svátky",
+      "import": "Importovat dny ze souboru",
       "back_to_month": "Měsíc",
       "calendar": "Kalendář",
       "previous_year": "Předchozí rok",
@@ -328,10 +332,12 @@
       "name_placeholder": "Jak se tento den jmenuje",
       "errors": {
         "date_and_name": "Zadejte u tohoto dne datum a název.",
-        "already_there": "V tento den už je {day}."
+        "already_there": "V tento den už je {day}.",
+        "no_calendar": "Zatím neexistuje kalendář svátků, do kterého by šlo tento den přidat."
       },
       "toasts": {
         "added": "Den přidán",
+        "set_up": "Státní svátky nastaveny",
         "removed": "Den odebrán",
         "refused": "Uložení se nezdařilo",
         "try_again": "Zkuste to prosím znovu."
@@ -429,15 +435,18 @@
       "kind": {
         "time_entries": "Hodiny",
         "absences": "Nepřítomnosti",
-        "opening_balances": "Počáteční salda"
+        "opening_balances": "Počáteční salda",
+        "holidays": "Státní svátky"
       },
       "columns": {
         "time_entries": "Sloupce: email, date a buď hours, nebo minutes — přesně tyto názvy záhlaví. Sloupec note se převezme, pokud v souboru je. Význam samotného čísla určuje záhlaví: 7,7 ve sloupci hours a 462 ve sloupci minutes znamenají shodně 7 hodin a 42 minut. Zapsáno jako 7:42 to platí pod oběma záhlavími.",
         "absences": "Sloupce: email, start_date, end_date a type — přesně tyto názvy záhlaví. U jednodenní nepřítomnosti sloupec end_date vynechte.",
-        "opening_balances": "Sloupce: email, date se dnem, od kterého saldo platí, buď hours, nebo minutes se samotným saldem, a basis s tím, odkud číslo pochází — přesně tyto názvy záhlaví. Pokud saldo nejsou hodiny, přidejte sloupec kind s hodnotou time, leave nebo overtime."
+        "opening_balances": "Sloupce: email, date se dnem, od kterého saldo platí, buď hours, nebo minutes se samotným saldem, a basis s tím, odkud číslo pochází — přesně tyto názvy záhlaví. Pokud saldo nejsou hodiny, přidejte sloupec kind s hodnotou time, leave nebo overtime.",
+        "holidays": "Sloupce: date a name_de – přesně s těmito nadpisy. Lze přidat name_en, half_day a statutory; half_day a statutory obsahují yes nebo no. Je-li kalendářů více, sloupec calendar určuje který. Den, který už v kalendáři je, zůstane beze změny. Soubor stažený ve Státní svátky už tyto nadpisy má."
       },
       "preview_title": "{filename}, načteno jako {kind}",
       "preview_hint": "Zatím nebylo nic zapsáno. Řádky se přičtou k tomu, co už je pro dané dny zaznamenáno, takže dvakrát importovaný den se započítá dvakrát. Opravu už importovaného souboru začněte tím, že jej vrátíte zpět; neimportujte opravenou kopii.",
+      "preview_hint_holidays": "Zatím nebylo nic zapsáno. Den, který už v kalendáři je, se přeskočí a nezmění, takže dvojí import stejného souboru nic nepřidá. Den, který už v kalendáři je, se mění ve Státní svátky.",
       "will_write": "bude zapsáno",
       "cannot_read": "nelze přečíst",
       "skipped": "přeskočeno",
@@ -491,7 +500,13 @@
         "basis_missing": "Sloupec basis je prázdný. Napište, odkud číslo pochází, například: ze staré tabulky dovolených.",
         "bad_start_date": "Datum začátku se nepodařilo přečíst.",
         "ends_before_it_starts": "Končí dřív, než začne.",
-        "unknown_absence_type": "Žádný důvod nepřítomnosti nemá kód „{code}“. Kódy najdete na stránce Nepřítomnosti v sekci Důvody."
+        "unknown_absence_type": "Žádný důvod nepřítomnosti nemá kód „{code}“. Kódy najdete na stránce Nepřítomnosti v sekci Důvody.",
+        "no_calendar": "Zatím neexistuje kalendář svátků. Nejprve ho nastavte ve Státní svátky.",
+        "unknown_calendar": "Žádný kalendář svátků se nejmenuje {calendar}.",
+        "name_missing": "Den nemá název.",
+        "name_too_long": "Název je delší než {limit} znaků.",
+        "bad_flag": "Sloupec {column} musí obsahovat yes nebo no.",
+        "holiday_exists": "Tento den už v kalendáři je, takže zůstane beze změny."
       }
     },
     "opening": {
@@ -616,6 +631,8 @@
         "column_leave": "Z fondu dovolené",
         "column_action": "Akce",
         "none_yet": "Zatím nejsou nastaveny žádné důvody.",
+        "add_standard": "Přidat obvyklé důvody",
+        "standard_detail": "Dovolená, nemoc, náhradní volno a další obvyklé důvody, počítané tak, jak stanoví rakouské právo. Lze je později změnit.",
         "retire": "Vyřadit",
         "bring_back": "Obnovit",
         "delete": "Smazat důvod",

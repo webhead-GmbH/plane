@@ -306,6 +306,10 @@
       "title": "Jours fériés",
       "subtitle": "Les jours où personne ne travaille. Un jour férié compte comme des heures travaillées ; il ne réduit pas ce qu’une personne doit travailler. Une modification ici n’atteint que les mois encore ouverts.",
       "subtitle_read_only": "Les jours où personne ne travaille. Un jour férié compte comme des heures travaillées ; il ne réduit pas ce qu’une personne doit travailler.",
+      "setup_title": "Il n’y a pas encore de calendrier des jours fériés",
+      "setup_detail": "Tant qu’il n’existe pas, chaque jour férié compte comme un jour ouvré ordinaire. Le configurer ajoute les jours fériés autrichiens de {from} à {to}. Chacun peut ensuite être modifié ou supprimé, et les jours accordés par l’entreprise peuvent être ajoutés.",
+      "setup_button": "Configurer les jours fériés autrichiens",
+      "import": "Importer des jours depuis un fichier",
       "back_to_month": "Le mois",
       "calendar": "Calendrier",
       "previous_year": "Année précédente",
@@ -328,10 +332,12 @@
       "name_placeholder": "Le nom de ce jour férié",
       "errors": {
         "date_and_name": "Indiquez une date et un nom pour ce jour.",
-        "already_there": "{day} occupe déjà cette date."
+        "already_there": "{day} occupe déjà cette date.",
+        "no_calendar": "Il n’y a pas encore de calendrier des jours fériés où ajouter ce jour."
       },
       "toasts": {
         "added": "Jour ajouté",
+        "set_up": "Jours fériés configurés",
         "removed": "Jour supprimé",
         "refused": "Impossible d’enregistrer",
         "try_again": "Veuillez réessayer."
@@ -429,15 +435,18 @@
       "kind": {
         "time_entries": "Heures",
         "absences": "Absences",
-        "opening_balances": "Soldes initiaux"
+        "opening_balances": "Soldes initiaux",
+        "holidays": "Jours fériés"
       },
       "columns": {
         "time_entries": "Colonnes : email, date, et hours ou minutes — exactement ces intitulés de colonnes. Une colonne note est conservée s’il y en a une. L’intitulé décide de ce que vaut un nombre seul : 7,7 sous hours et 462 sous minutes font tous deux 7 heures 42 minutes. Écrit 7:42, c’est pareil sous l’un ou l’autre intitulé.",
         "absences": "Colonnes : email, start_date, end_date et type — exactement ces intitulés de colonnes. Pour une seule journée, omettez end_date.",
-        "opening_balances": "Colonnes : email, date pour le jour à partir duquel le solde s’applique, hours ou minutes pour le solde lui-même, et basis pour dire d’où vient le chiffre — exactement ces intitulés de colonnes. Ajoutez une colonne kind indiquant time, leave ou overtime si le solde n’est pas en heures."
+        "opening_balances": "Colonnes : email, date pour le jour à partir duquel le solde s’applique, hours ou minutes pour le solde lui-même, et basis pour dire d’où vient le chiffre — exactement ces intitulés de colonnes. Ajoutez une colonne kind indiquant time, leave ou overtime si le solde n’est pas en heures.",
+        "holidays": "Colonnes : date et name_de, avec exactement ces en-têtes. name_en, half_day et statutory peuvent s’y ajouter ; half_day et statutory contiennent yes ou no. S’il y a plusieurs calendriers, une colonne calendar indique lequel. Un jour déjà présent dans le calendrier est laissé tel quel. Un fichier téléchargé depuis Jours fériés a déjà ces en-têtes."
       },
       "preview_title": "{filename}, lu comme {kind}",
       "preview_hint": "Rien n’a encore été écrit. Les lignes s’ajoutent à ce qui est déjà enregistré pour ces jours : un jour importé deux fois compte donc deux fois. Pour corriger un fichier déjà importé, annulez-le d’abord au lieu d’en importer une copie corrigée.",
+      "preview_hint_holidays": "Rien n’a encore été écrit. Un jour déjà présent dans le calendrier est ignoré plutôt que modifié : importer deux fois le même fichier n’ajoute donc rien. Un jour déjà présent se modifie dans Jours fériés.",
       "will_write": "à écrire",
       "cannot_read": "illisibles",
       "skipped": "ignorées",
@@ -491,7 +500,13 @@
         "basis_missing": "La colonne basis est vide. Indiquez d’où vient le chiffre, par exemple : de l’ancienne feuille de calcul des congés.",
         "bad_start_date": "La date de début n’a pas pu être lue.",
         "ends_before_it_starts": "Cela finit avant de commencer.",
-        "unknown_absence_type": "Aucun motif d’absence n’a le code « {code} ». Les codes se trouvent sur l’écran Absences, sous Motifs."
+        "unknown_absence_type": "Aucun motif d’absence n’a le code « {code} ». Les codes se trouvent sur l’écran Absences, sous Motifs.",
+        "no_calendar": "Il n’y a pas encore de calendrier des jours fériés. Configurez-en d’abord un dans Jours fériés.",
+        "unknown_calendar": "Aucun calendrier des jours fériés ne s’appelle {calendar}.",
+        "name_missing": "Le jour n’a pas de nom.",
+        "name_too_long": "Le nom dépasse {limit} caractères.",
+        "bad_flag": "La colonne {column} doit contenir yes ou no.",
+        "holiday_exists": "Ce jour est déjà dans le calendrier ; il est laissé tel quel."
       }
     },
     "opening": {
@@ -616,6 +631,8 @@
         "column_leave": "Déduit des congés",
         "column_action": "Action",
         "none_yet": "Aucun motif configuré.",
+        "add_standard": "Ajouter les motifs habituels",
+        "standard_detail": "Congés annuels, maladie, récupération et les autres motifs habituels, comptés comme le prévoit le droit autrichien. Ils peuvent être modifiés ensuite.",
         "retire": "Archiver",
         "bring_back": "Réactiver",
         "delete": "Supprimer le motif",

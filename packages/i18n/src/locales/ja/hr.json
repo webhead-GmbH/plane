@@ -306,6 +306,10 @@
       "title": "祝日",
       "subtitle": "誰も勤務しない日です。祝日は実働時間として数えられ、所定時間が減るわけではありません。ここでの変更が反映されるのは、まだ開いている月だけです。",
       "subtitle_read_only": "誰も勤務しない日です。祝日は実働時間として数えられ、所定時間が減るわけではありません。",
+      "setup_title": "祝日カレンダーがまだありません",
+      "setup_detail": "カレンダーがない間は、すべての祝日が通常の勤務日として数えられます。設定すると、{from}年から{to}年までのオーストリアの祝日が追加されます。追加後はどの日も変更・削除でき、会社独自の休日も追加できます。",
+      "setup_button": "オーストリアの祝日を設定",
+      "import": "ファイルから日を取り込む",
       "back_to_month": "月の勤怠",
       "calendar": "カレンダー",
       "previous_year": "前の年",
@@ -328,10 +332,12 @@
       "name_placeholder": "祝日の名称",
       "errors": {
         "date_and_name": "日付と名称を入力してください。",
-        "already_there": "この日にはすでに {day} があります。"
+        "already_there": "この日にはすでに {day} があります。",
+        "no_calendar": "この日を追加できる祝日カレンダーがまだありません。"
       },
       "toasts": {
         "added": "祝日を追加しました",
+        "set_up": "祝日を設定しました",
         "removed": "祝日を削除しました",
         "refused": "保存できませんでした",
         "try_again": "もう一度お試しください。"
@@ -429,15 +435,18 @@
       "kind": {
         "time_entries": "時間数",
         "absences": "休暇",
-        "opening_balances": "開始時の過不足"
+        "opening_balances": "開始時の過不足",
+        "holidays": "祝日"
       },
       "columns": {
         "time_entries": "見出しはemail、date、およびhoursかminutesのいずれかで、この表記のまま入力してください。note列があればそのまま取り込みます。数字だけの場合は見出しで意味が決まり、hoursの7.7とminutesの462はどちらも7時間42分です。7:42と書けば、どちらの見出しでも同じ長さになります。",
         "absences": "見出しはemail、start_date、end_date、typeで、この表記のまま入力してください。1日だけの休暇はend_dateを省略します。",
-        "opening_balances": "見出しはemail、適用開始日を表すdate、過不足そのものを表すhoursかminutesのいずれか、数値の出どころを表すbasisで、この表記のまま入力してください。過不足が時間でない場合は、time、leave、overtimeのいずれかを入れたkind列を追加します。"
+        "opening_balances": "見出しはemail、適用開始日を表すdate、過不足そのものを表すhoursかminutesのいずれか、数値の出どころを表すbasisで、この表記のまま入力してください。過不足が時間でない場合は、time、leave、overtimeのいずれかを入れたkind列を追加します。",
+        "holidays": "列：date と name_de（この見出しのとおりに）。name_en、half_day、statutory も追加できます。half_day と statutory には yes または no を入れます。カレンダーが複数ある場合は calendar 列で指定します。すでにカレンダーにある日はそのまま残ります。祝日ページからダウンロードしたファイルには、すでにこれらの見出しがあります。"
       },
       "preview_title": "{filename}を{kind}として読み取りました",
       "preview_hint": "まだ何も書き込まれていません。各行はその日にすでに記録されている内容に追加されるため、同じ日を2回取り込むと2回分になります。取り込み済みのファイルを直すときは、修正版を取り込むのではなく、先に取り消してください。",
+      "preview_hint_holidays": "まだ何も書き込まれていません。すでにカレンダーにある日は変更されずに飛ばされるため、同じファイルを2回取り込んでも何も増えません。すでにある日は祝日ページで変更します。",
       "will_write": "書き込み予定",
       "cannot_read": "読み取り不可",
       "skipped": "スキップ",
@@ -491,7 +500,13 @@
         "basis_missing": "basis列が空です。数値の出どころを記入してください。例：以前の休暇管理スプレッドシートから。",
         "bad_start_date": "開始日を読み取れませんでした。",
         "ends_before_it_starts": "開始より前に終了しています。",
-        "unknown_absence_type": "「{code}」というコードの不在理由はありません。コードは「休暇・欠勤」画面の「理由」で確認できます。"
+        "unknown_absence_type": "「{code}」というコードの不在理由はありません。コードは「休暇・欠勤」画面の「理由」で確認できます。",
+        "no_calendar": "祝日カレンダーがまだありません。先に祝日ページで設定してください。",
+        "unknown_calendar": "{calendar} という祝日カレンダーはありません。",
+        "name_missing": "日の名前がありません。",
+        "name_too_long": "名前が {limit} 文字を超えています。",
+        "bad_flag": "{column} 列には yes または no を入れてください。",
+        "holiday_exists": "この日はすでにカレンダーにあるため、そのまま残ります。"
       }
     },
     "opening": {
@@ -616,6 +631,8 @@
         "column_leave": "年次休暇から控除",
         "column_action": "操作",
         "none_yet": "理由がまだ登録されていません。",
+        "add_standard": "よく使う理由を追加",
+        "standard_detail": "年次有給休暇、病気休暇、代休など、よく使う理由をオーストリアの法律どおりに数える設定で追加します。後から変更できます。",
         "retire": "無効化",
         "bring_back": "有効化",
         "delete": "理由を削除",

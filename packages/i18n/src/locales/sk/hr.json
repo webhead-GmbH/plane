@@ -311,15 +311,18 @@
       "kind": {
         "time_entries": "Hodiny",
         "absences": "Neprítomnosti",
-        "opening_balances": "Počiatočné saldá"
+        "opening_balances": "Počiatočné saldá",
+        "holidays": "Sviatky"
       },
       "columns": {
         "time_entries": "Stĺpce: email, date a buď hours, alebo minutes — hlavičky musia znieť presne takto. Stĺpec note sa zachová, ak v súbore je. Význam holého čísla určuje hlavička: 7,7 v stĺpci hours a 462 v stĺpci minutes sú obe 7 hodín a 42 minút. Zápis 7:42 znamená pod oboma hlavičkami to isté.",
         "absences": "Stĺpce: email, start_date, end_date a type — hlavičky musia znieť presne takto. Pri jednodňovej neprítomnosti stĺpec end_date vynechajte.",
-        "opening_balances": "Stĺpce: email, date s dňom, od ktorého saldo platí, buď hours, alebo minutes so samotným saldom, a basis s tým, odkiaľ číslo pochádza — hlavičky musia znieť presne takto. Ak nejde o saldo hodín, pridajte stĺpec kind s hodnotou time, leave alebo overtime."
+        "opening_balances": "Stĺpce: email, date s dňom, od ktorého saldo platí, buď hours, alebo minutes so samotným saldom, a basis s tým, odkiaľ číslo pochádza — hlavičky musia znieť presne takto. Ak nejde o saldo hodín, pridajte stĺpec kind s hodnotou time, leave alebo overtime.",
+        "holidays": "Stĺpce: date a name_de – presne s týmito nadpismi. Dajú sa pridať name_en, half_day a statutory; half_day a statutory obsahujú yes alebo no. Ak je kalendárov viac, stĺpec calendar určuje ktorý. Deň, ktorý už v kalendári je, zostane bez zmeny. Súbor stiahnutý v Sviatky už tieto nadpisy má."
       },
       "preview_title": "{filename} – načítané ako {kind}",
       "preview_hint": "Zatiaľ sa nič nezapísalo. Riadky sa pripočítajú k tomu, čo je pre tie dni už zaznamenané, takže deň importovaný dvakrát sa aj dvakrát započíta. Ak treba opraviť súbor, ktorý už je vnútri, najprv ho vráťte späť, namiesto importu opravenej kópie.",
+      "preview_hint_holidays": "Zatiaľ sa nič nezapísalo. Deň, ktorý už v kalendári je, sa preskočí a nezmení, takže dvojitý import toho istého súboru nič nepridá. Deň, ktorý už v kalendári je, sa mení v Sviatky.",
       "will_write": "na zápis",
       "cannot_read": "nečitateľné",
       "skipped": "preskočené",
@@ -373,7 +376,13 @@
         "basis_missing": "Stĺpec basis je prázdny. Napíšte, odkiaľ číslo pochádza, napríklad: zo starej tabuľky dovoleniek.",
         "bad_start_date": "Dátum začiatku sa nepodarilo prečítať.",
         "ends_before_it_starts": "Končí skôr, než začne.",
-        "unknown_absence_type": "Dôvod neprítomnosti s kódom „{code}“ neexistuje. Kódy nájdete na obrazovke Neprítomnosti v sekcii Dôvody."
+        "unknown_absence_type": "Dôvod neprítomnosti s kódom „{code}“ neexistuje. Kódy nájdete na obrazovke Neprítomnosti v sekcii Dôvody.",
+        "no_calendar": "Zatiaľ neexistuje kalendár sviatkov. Najprv ho nastavte v Sviatky.",
+        "unknown_calendar": "Žiadny kalendár sviatkov sa nevolá {calendar}.",
+        "name_missing": "Deň nemá názov.",
+        "name_too_long": "Názov je dlhší ako {limit} znakov.",
+        "bad_flag": "Stĺpec {column} musí obsahovať yes alebo no.",
+        "holiday_exists": "Tento deň už v kalendári je, takže zostane bez zmeny."
       }
     },
     "opening": {
@@ -498,6 +507,8 @@
         "column_leave": "Z konta dovolenky",
         "column_action": "Akcia",
         "none_yet": "Zatiaľ nie sú nastavené žiadne dôvody.",
+        "add_standard": "Pridať obvyklé dôvody",
+        "standard_detail": "Dovolenka, choroba, náhradné voľno a ďalšie obvyklé dôvody, počítané tak, ako stanovuje rakúske právo. Neskôr sa dajú zmeniť.",
         "retire": "Vyradiť",
         "bring_back": "Obnoviť",
         "delete": "Odstrániť dôvod",
@@ -618,6 +629,10 @@
       "title": "Sviatky",
       "subtitle": "Dni, keď sa nepracuje. Sviatok sa počíta ako odpracované hodiny; neznižuje to, čo má niekto odpracovať. Zmena tu zasiahne len mesiace, ktoré sú ešte otvorené.",
       "subtitle_read_only": "Dni, keď sa nepracuje. Sviatok sa počíta ako odpracované hodiny; neznižuje to, čo má niekto odpracovať.",
+      "setup_title": "Zatiaľ neexistuje kalendár sviatkov",
+      "setup_detail": "Kým neexistuje, každý sviatok sa počíta ako bežný pracovný deň. Nastavenie pridá rakúske štátne sviatky od {from} do {to}. Každý z nich sa dá potom zmeniť alebo odstrániť a pridať dni, ktoré poskytuje firma.",
+      "setup_button": "Nastaviť rakúske štátne sviatky",
+      "import": "Importovať dni zo súboru",
       "back_to_month": "Mesiac",
       "calendar": "Kalendár",
       "previous_year": "Predchádzajúci rok",
@@ -640,10 +655,12 @@
       "name_placeholder": "Ako sa tento deň volá",
       "errors": {
         "date_and_name": "Zadajte dátum a názov dňa.",
-        "already_there": "V tento deň už je {day}."
+        "already_there": "V tento deň už je {day}.",
+        "no_calendar": "Zatiaľ neexistuje kalendár sviatkov, do ktorého by sa dal tento deň pridať."
       },
       "toasts": {
         "added": "Deň pridaný",
+        "set_up": "Sviatky nastavené",
         "removed": "Deň odstránený",
         "refused": "Nepodarilo sa uložiť",
         "try_again": "Skúste to prosím znova."

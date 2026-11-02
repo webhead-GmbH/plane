@@ -356,6 +356,7 @@ export enum EHrImportKind {
   TIME_ENTRIES = 10,
   ABSENCES = 20,
   OPENING_BALANCES = 30,
+  HOLIDAYS = 40,
 }
 
 export enum EHrImportState {
@@ -722,6 +723,11 @@ export class HrService extends APIService {
     return this.fileUrl(`/periods/${periodId}/export/?file_format=${fileFormat}`);
   }
 
+  /** One year of a holiday calendar, with the headings the holiday import reads back. */
+  holidayExportUrl(calendarId: string, year: number, fileFormat: "csv" | "xlsx"): string {
+    return this.fileUrl(`/holidays/export/?calendar=${calendarId}&year=${year}&file_format=${fileFormat}`);
+  }
+
   async periods(year?: number): Promise<THrPeriod[]> {
     const query = year ? `?year=${year}` : "";
     return this.get(`${this.base}/periods/${query}`)
@@ -1053,6 +1059,15 @@ export class HrService extends APIService {
       });
   }
 
+  /** The usual reasons for being away, added to a list that has none yet. */
+  async addStandardAbsenceTypes(): Promise<{ created: number; absence_types: THrAbsenceType[] }> {
+    return this.post(`${this.base}/absence-types/standard/`)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw withStatus(error);
+      });
+  }
+
   async createAbsenceType(payload: Partial<THrAbsenceType>) {
     return this.post(`${this.base}/absence-types/`, payload)
       .then((response) => response?.data)
@@ -1195,6 +1210,19 @@ export class HrService extends APIService {
 
   async holidayCalendars(): Promise<THrHolidayCalendar[]> {
     return this.get(`${this.base}/holiday-calendars/`)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw withStatus(error);
+      });
+  }
+
+  /** The default holiday calendar, made and filled in with the statutory days if there is none. */
+  async setUpDefaultHolidayCalendar(): Promise<{
+    calendar: THrHolidayCalendar;
+    created: boolean;
+    holidays_added: number;
+  }> {
+    return this.post(`${this.base}/holiday-calendars/default/`)
       .then((response) => response?.data)
       .catch((error) => {
         throw withStatus(error);

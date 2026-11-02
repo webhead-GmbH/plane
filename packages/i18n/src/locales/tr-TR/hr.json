@@ -311,15 +311,18 @@
       "kind": {
         "time_entries": "Saatler",
         "absences": "İzinler",
-        "opening_balances": "Açılış bakiyeleri"
+        "opening_balances": "Açılış bakiyeleri",
+        "holidays": "Resmi tatiller"
       },
       "columns": {
         "time_entries": "Sütunlar: email, date, bir de hours ya da minutes — başlıklar tam olarak böyle yazılmalı. Varsa note sütunu da korunur. Düz bir sayının ne anlama geldiğine başlık karar verir: hours altında 7,7 ile minutes altında 462 aynı şeydir, 7 saat 42 dakika. 7:42 biçiminde yazıldığındaysa iki başlık altında da aynı okunur.",
         "absences": "Sütunlar: email, start_date, end_date ve type — başlıklar tam olarak böyle yazılmalı. Tek günlük bir izinde end_date sütununu hiç eklemeyin.",
-        "opening_balances": "Sütunlar: email, bakiyenin geçerli olmaya başladığı günü taşıyan date, bakiyenin kendisini taşıyan hours ya da minutes, bir de rakamın nereden geldiğini yazan basis — başlıklar tam olarak böyle yazılmalı. Bakiye saat değilse time, leave ya da overtime yazan bir kind sütunu ekleyin."
+        "opening_balances": "Sütunlar: email, bakiyenin geçerli olmaya başladığı günü taşıyan date, bakiyenin kendisini taşıyan hours ya da minutes, bir de rakamın nereden geldiğini yazan basis — başlıklar tam olarak böyle yazılmalı. Bakiye saat değilse time, leave ya da overtime yazan bir kind sütunu ekleyin.",
+        "holidays": "Sütunlar: date ve name_de — tam olarak bu başlıklarla. name_en, half_day ve statutory eklenebilir; half_day ve statutory yes ya da no içerir. Birden fazla takvim varsa calendar sütunu hangisi olduğunu belirtir. Takvimde zaten olan bir gün olduğu gibi bırakılır. Resmi tatiller sayfasından indirilen bir dosyada bu başlıklar zaten vardır."
       },
       "preview_title": "{filename}, {kind} olarak okundu",
       "preview_hint": "Henüz hiçbir şey yazılmadı. Satırlar, o günler için hâlihazırda kayıtlı olanın üzerine eklenir; bu yüzden iki kez aktarılan bir gün iki kez sayılır. İçe aktarılmış bir dosyayı düzeltmek için düzeltilmiş bir kopyasını aktarmayın, önce dosyayı geri alın.",
+      "preview_hint_holidays": "Henüz hiçbir şey yazılmadı. Takvimde zaten olan bir gün değiştirilmez, atlanır; bu yüzden aynı dosyayı iki kez aktarmak hiçbir şey eklemez. Zaten olan bir gün Resmi tatiller sayfasında değiştirilir.",
       "will_write": "yazılacak",
       "cannot_read": "okunamıyor",
       "skipped": "atlandı",
@@ -373,7 +376,13 @@
         "basis_missing": "Dosyadaki basis sütunu boş. Rakamın nereden geldiğini yazın, örneğin: eski izin hesap tablosundan.",
         "bad_start_date": "Başlangıç tarihi okunamadı.",
         "ends_before_it_starts": "Başlamadan önce bitiyor.",
-        "unknown_absence_type": "“{code}” kodlu bir devamsızlık nedeni yok. Kodlar Devamsızlıklar ekranında, Nedenler altında."
+        "unknown_absence_type": "“{code}” kodlu bir devamsızlık nedeni yok. Kodlar Devamsızlıklar ekranında, Nedenler altında.",
+        "no_calendar": "Henüz bir tatil takvimi yok. Önce Resmi tatiller sayfasında bir takvim kurun.",
+        "unknown_calendar": "{calendar} adında bir tatil takvimi yok.",
+        "name_missing": "Günün adı yok.",
+        "name_too_long": "Ad {limit} karakterden uzun.",
+        "bad_flag": "{column} sütunu yes ya da no içermelidir.",
+        "holiday_exists": "Bu gün zaten takvimde, bu yüzden olduğu gibi bırakılıyor."
       }
     },
     "opening": {
@@ -498,6 +507,8 @@
         "column_leave": "İzin hakkından düşer",
         "column_action": "İşlem",
         "none_yet": "Henüz neden tanımlanmadı.",
+        "add_standard": "Olağan nedenleri ekle",
+        "standard_detail": "Yıllık izin, hastalık izni, fazla mesai karşılığı izin ve diğer olağan nedenler, Avusturya hukukunun öngördüğü şekilde sayılır. Sonradan değiştirilebilirler.",
         "retire": "Pasife al",
         "bring_back": "Aktife al",
         "delete": "Nedeni sil",
@@ -618,6 +629,10 @@
       "title": "Resmi tatiller",
       "subtitle": "Kimsenin çalışmadığı günler. Tatil, çalışılmış saat olarak sayılır; kişinin çalışması gereken süreyi düşürmez. Buradaki bir değişiklik yalnızca hâlâ açık olan aylara ulaşır.",
       "subtitle_read_only": "Kimsenin çalışmadığı günler. Tatil, çalışılmış saat olarak sayılır; kişinin çalışması gereken süreyi düşürmez.",
+      "setup_title": "Henüz bir tatil takvimi yok",
+      "setup_detail": "Takvim olmadığı sürece her resmi tatil olağan bir iş günü sayılır. Kurulum, {from} ile {to} arasındaki Avusturya resmi tatillerini ekler. Bunların her biri sonradan değiştirilebilir veya kaldırılabilir; şirketin verdiği günler de eklenebilir.",
+      "setup_button": "Avusturya resmi tatillerini kur",
+      "import": "Günleri bir dosyadan içe aktar",
       "back_to_month": "Ay",
       "calendar": "Takvim",
       "previous_year": "Önceki yıl",
@@ -640,10 +655,12 @@
       "name_placeholder": "Günün adı",
       "errors": {
         "date_and_name": "Güne bir tarih ve bir ad verin.",
-        "already_there": "Bu tarihte zaten {day} var."
+        "already_there": "Bu tarihte zaten {day} var.",
+        "no_calendar": "Bu günün ekleneceği bir tatil takvimi henüz yok."
       },
       "toasts": {
         "added": "Gün eklendi",
+        "set_up": "Resmi tatiller kuruldu",
         "removed": "Gün kaldırıldı",
         "refused": "Bu kaydedilemedi",
         "try_again": "Lütfen tekrar deneyin."

@@ -20,6 +20,8 @@ from .master_data import (
     HrLeaveEntitlementEndpoint,
     HrWorkScheduleEndpoint,
     HrSetupEndpoint,
+    HrDefaultHolidayCalendarEndpoint,
+    HrStandardAbsenceTypesEndpoint,
 )
 from .period import (
     HrAccessEndpoint,
@@ -44,6 +46,7 @@ from .transfer import (
     HrOpeningBalanceAcknowledgeEndpoint,
     HrOpeningBalanceEndpoint,
     HrPeriodExportEndpoint,
+    HrHolidayExportEndpoint,
 )
 from .records import (
     HrAbsenceCalendarEndpoint,
@@ -93,5 +96,8 @@ __all__ = [
     "HrTimeEntryEndpoint",
     "HrWorkScheduleEndpoint",
     "HrSetupEndpoint",
+    "HrDefaultHolidayCalendarEndpoint",
+    "HrStandardAbsenceTypesEndpoint",
+    "HrHolidayExportEndpoint",
     "HrWorkspaceConfigEndpoint",
 ]
