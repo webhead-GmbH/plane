@@ -293,9 +293,9 @@ You typed a **Code** that already exists exactly. Codes are stored in capitals, 
 
 One trap worth knowing: the codes that came with the system are in small letters — `urlaub`, `krankenstand` and so on — so typing `urlaub` does **not** clash with the existing one. It quietly creates a _second_, different reason that does not come off the leave account. Check the list before you add anything.
 
-### There is no way for most people to reach the **Absences** screen
+### **Ask for time off** is not on **My time**
 
-Only somebody who looks after the team has a link to it. If you want a day off, there is at present no button of your own to press: tell whoever looks after the team, and they will record it. This is not a fault on your side and nothing you do will find the screen.
+The button is there if your terms keep a leave account. Somebody who invoices their own hours has no leave to ask for, so it is not offered to them. If you are employed and do not see it, ask whoever looks after the team to check your terms.
 
 ---
 

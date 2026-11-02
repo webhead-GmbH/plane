@@ -32,7 +32,9 @@ Wenn Sie das Team betreuen:
 2. Klicken Sie oben auf dieser Seite auf die Schaltfläche **…** und wählen Sie **Stunden aller Personen**. Sie sind jetzt auf **Teamzeit**.
 3. Klicken Sie in der Linkzeile neben dem Monatsnamen auf **Abwesenheiten**.
 
-Wenn Sie das Team nicht betreuen, führt kein Link im Produkt auf diese Seite. Fragen Sie nach der Webadresse und legen Sie sie als Lesezeichen ab; es ist die Adresse Ihres Workspace, gefolgt von `/team-time/absences`. Die Seite öffnet sich für Sie und zeigt Ihre eigenen Abwesenheiten und die von niemandem sonst.
+Wenn Sie das Team nicht betreuen, klicken Sie oben auf **Meine Zeit** auf **Abwesenheit beantragen**. Damit kommen Sie hierher, und die Seite zeigt Ihre eigenen Abwesenheiten und die von niemandem sonst.
+
+Die Schaltfläche gibt es, wenn Ihre Bedingungen ein Urlaubskonto führen. Wer die eigenen Stunden selbst abrechnet, hat keinen Urlaub zu beantragen; ihm wird sie weder hier noch auf **Meine Zeit** angeboten.
 
 Was Sie sehen, unterscheidet sich in drei Punkten:
 

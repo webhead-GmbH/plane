@@ -23,7 +23,7 @@ import { HrService, type THrHoliday, type THrHolidayCalendar } from "@/services/
 // local imports
 import { HrRowAction } from "./row-action";
 import { formatDayWithYear, localName, refusalMessage } from "./utils";
-import { HrManagerPage } from "./hr-manager-only";
+import { useHrAccess } from "./hr-manager-only";
 
 const hrService = new HrService();
 
@@ -73,19 +73,32 @@ const defaultCalendar = (calendars: THrHolidayCalendar[]) => calendars.find((row
  * hours without anything on the screen looking unusual.
  */
 /**
- * The public holidays, for whoever runs HR to change. Everybody may read the
- * calendar, since their month is measured against it, so the server cannot be what
- * keeps this page to them.
+ * The public holidays: for whoever runs HR to change, and for anybody with a leave
+ * account to read, since they plan their time off around them. Somebody who invoices
+ * their own hours is credited nothing by a holiday, so there is nothing here for them.
+ *
+ * The server answers these reads for every employee, so it cannot be what keeps the
+ * page to these people. It does refuse every change from anybody else, and if the
+ * question below fails the page renders and the server has the last word.
  */
 export function HrHolidaysRoot() {
+  const { data: access, error: accessFailed } = useHrAccess();
+  const isManager = Boolean(access?.is_hr_manager);
+  const { data: me, error: meFailed } = useSWR(access && !isManager ? "HR_ME_ROLE" : null, () => hrService.me());
+
+  if (isManager || accessFailed) return <HolidaysCalendar canChange />;
+  if (me?.contract?.records_leave_account) return <HolidaysCalendar canChange={false} />;
+  if (meFailed) return <HolidaysUnavailable notAllowed onRetry={() => undefined} />;
+  if (me) return <HolidaysUnavailable notAllowed managerOnly onRetry={() => undefined} />;
   return (
-    <HrManagerPage refused={<HolidaysUnavailable notAllowed managerOnly onRetry={() => undefined} />}>
-      <HolidaysManagement />
-    </HrManagerPage>
+    <Loader className="flex w-full flex-col gap-7">
+      <Loader.Item height="48px" />
+      <Loader.Item height="280px" />
+    </Loader>
   );
 }
 
-const HolidaysManagement = observer(function HolidaysManagement() {
+const HolidaysCalendar = observer(function HolidaysCalendar({ canChange }: { canChange: boolean }) {
   const { t, currentLocale } = useTranslation();
   const now = new Date();
   const [year, setYear] = useState(now.getFullYear());
@@ -224,7 +237,9 @@ const HolidaysManagement = observer(function HolidaysManagement() {
   return (
     <div className="flex w-full flex-col gap-7">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="text-13 text-tertiary">{t("hr.holidays.subtitle")}</p>
+        <p className="text-13 text-tertiary">
+          {t(canChange ? "hr.holidays.subtitle" : "hr.holidays.subtitle_read_only")}
+        </p>
       </div>
 
       <HolidayScope
@@ -235,17 +250,19 @@ const HolidaysManagement = observer(function HolidaysManagement() {
         onYear={setYear}
       />
 
-      <AddHolidayForm
-        date={date}
-        name={name}
-        half={half}
-        problem={problem}
-        isBusy={isBusy}
-        onDate={setDate}
-        onName={setName}
-        onHalf={setHalf}
-        onAdd={() => void handleAdd()}
-      />
+      {canChange ? (
+        <AddHolidayForm
+          date={date}
+          name={name}
+          half={half}
+          problem={problem}
+          isBusy={isBusy}
+          onDate={setDate}
+          onName={setName}
+          onHalf={setHalf}
+          onAdd={() => void handleAdd()}
+        />
+      ) : null}
 
       {/* A granted day is somebody's agreement with the team, and removing it
           silently lengthens their target for that day. */}
@@ -269,6 +286,7 @@ const HolidaysManagement = observer(function HolidaysManagement() {
       ) : (
         <HolidayTable
           rows={rows}
+          canChange={canChange}
           isBusy={isBusy}
           onToggleHalf={(holiday) => void handleToggleHalf(holiday)}
           onRemove={setRemoving}
@@ -467,12 +485,13 @@ const AddHolidayForm = ({ date, name, half, problem, isBusy, onDate, onName, onH
 
 type TTableProps = {
   rows: THrHoliday[];
+  canChange: boolean;
   isBusy: boolean;
   onToggleHalf: (holiday: THrHoliday) => void;
   onRemove: (holiday: THrHoliday) => void;
 };
 
-const HolidayTable = ({ rows, isBusy, onToggleHalf, onRemove }: TTableProps) => {
+const HolidayTable = ({ rows, canChange, isBusy, onToggleHalf, onRemove }: TTableProps) => {
   const { t } = useTranslation();
   return (
     <div className="overflow-x-auto rounded-md border border-subtle">
@@ -483,7 +502,9 @@ const HolidayTable = ({ rows, isBusy, onToggleHalf, onRemove }: TTableProps) => 
             <th className="px-4 py-2.5 text-left font-medium">{t("hr.holidays.column_name")}</th>
             <th className="px-4 py-2.5 text-left font-medium">{t("hr.holidays.column_kind")}</th>
             <th className="px-4 py-2.5 text-left font-medium">{t("hr.holidays.column_length")}</th>
-            <th className="px-4 py-2.5 text-right font-medium">{t("hr.holidays.column_action")}</th>
+            {canChange ? (
+              <th className="px-4 py-2.5 text-right font-medium">{t("hr.holidays.column_action")}</th>
+            ) : null}
           </tr>
         </thead>
         <tbody>
@@ -491,6 +512,7 @@ const HolidayTable = ({ rows, isBusy, onToggleHalf, onRemove }: TTableProps) => 
             <HolidayRow
               key={holiday.id}
               holiday={holiday}
+              canChange={canChange}
               isBusy={isBusy}
               onToggleHalf={onToggleHalf}
               onRemove={onRemove}
@@ -504,12 +526,13 @@ const HolidayTable = ({ rows, isBusy, onToggleHalf, onRemove }: TTableProps) => 
 
 type TRowProps = {
   holiday: THrHoliday;
+  canChange: boolean;
   isBusy: boolean;
   onToggleHalf: (holiday: THrHoliday) => void;
   onRemove: (holiday: THrHoliday) => void;
 };
 
-const HolidayRow = ({ holiday, isBusy, onToggleHalf, onRemove }: TRowProps) => {
+const HolidayRow = ({ holiday, canChange, isBusy, onToggleHalf, onRemove }: TRowProps) => {
   const { t, currentLocale } = useTranslation();
   const day = localName(holiday, currentLocale);
   return (
@@ -538,22 +561,24 @@ const HolidayRow = ({ holiday, isBusy, onToggleHalf, onRemove }: TRowProps) => {
           {isHalf(holiday.day_fraction) ? t("hr.holidays.half_day") : t("hr.holidays.whole_day")}
         </span>
       </td>
-      <td className="px-4 py-2">
-        <div className="flex items-center justify-end gap-0.5">
-          <HolidayRowActions
-            holiday={holiday}
-            day={day}
-            isBusy={isBusy}
-            onToggleHalf={onToggleHalf}
-            onRemove={onRemove}
-          />
-        </div>
-      </td>
+      {canChange ? (
+        <td className="px-4 py-2">
+          <div className="flex items-center justify-end gap-0.5">
+            <HolidayRowActions
+              holiday={holiday}
+              day={day}
+              isBusy={isBusy}
+              onToggleHalf={onToggleHalf}
+              onRemove={onRemove}
+            />
+          </div>
+        </td>
+      ) : null}
     </tr>
   );
 };
 
-type TRowActionsProps = TRowProps & {
+type TRowActionsProps = Omit<TRowProps, "canChange"> & {
   /** The day by the name the reader knows it by. */
   day: string;
 };

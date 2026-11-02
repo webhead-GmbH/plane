@@ -297,6 +297,7 @@
     "holidays": {
       "title": "Jours fériés",
       "subtitle": "Les jours où personne ne travaille. Un jour férié compte comme des heures travaillées ; il ne réduit pas ce qu’une personne doit travailler. Une modification ici n’atteint que les mois encore ouverts.",
+      "subtitle_read_only": "Les jours où personne ne travaille. Un jour férié compte comme des heures travaillées ; il ne réduit pas ce qu’une personne doit travailler.",
       "back_to_month": "Le mois",
       "calendar": "Calendrier",
       "previous_year": "Année précédente",

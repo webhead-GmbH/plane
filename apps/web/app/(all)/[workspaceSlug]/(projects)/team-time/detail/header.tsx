@@ -5,14 +5,14 @@
  */
 
 import { observer } from "mobx-react";
-import { Link } from "react-router";
-import { ListTree, Users } from "lucide-react";
+import { ListTree } from "lucide-react";
 // plane imports
 import { useTranslation } from "@plane/i18n";
 import { Breadcrumbs } from "@plane/blocks/breadcrumb";
 import { Header } from "@plane/blocks/layout";
 // components
 import { BreadcrumbLink } from "@/components/common/breadcrumb-link";
+import { HrParentCrumb } from "@/components/hr/parent-crumb";
 
 export const HrWorklogDetailHeader = observer(function HrWorklogDetailHeader({
   workspaceSlug,
@@ -26,13 +26,7 @@ export const HrWorklogDetailHeader = observer(function HrWorklogDetailHeader({
       <Header.LeftItem>
         <div className="flex items-center gap-2">
           <Breadcrumbs>
-            <Breadcrumbs.Item
-              component={
-                <Link to={`/${workspaceSlug}/team-time`}>
-                  <BreadcrumbLink label={t("hr.team_time.title")} icon={<Users className="size-4 text-tertiary" />} />
-                </Link>
-              }
-            />
+            <Breadcrumbs.Item component={<HrParentCrumb workspaceSlug={workspaceSlug} />} />
             <Breadcrumbs.Item
               component={
                 <BreadcrumbLink label={t("hr.detail.title")} icon={<ListTree className="size-4 text-tertiary" />} />

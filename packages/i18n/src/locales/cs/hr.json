@@ -297,6 +297,7 @@
     "holidays": {
       "title": "Státní svátky",
       "subtitle": "Dny, kdy nikdo nepracuje. Svátek se počítá jako odpracované hodiny; nesnižuje to, co má někdo odpracovat. Změna se projeví jen v měsících, které jsou stále otevřené.",
+      "subtitle_read_only": "Dny, kdy nikdo nepracuje. Svátek se počítá jako odpracované hodiny; nesnižuje to, co má někdo odpracovat.",
       "back_to_month": "Měsíc",
       "calendar": "Kalendář",
       "previous_year": "Předchozí rok",

@@ -609,6 +609,7 @@
     "holidays": {
       "title": "Días festivos",
       "subtitle": "Los días en que no trabaja nadie. Un día festivo cuenta como horas trabajadas; no reduce lo que hay que trabajar. Un cambio aquí solo llega a los meses que siguen abiertos.",
+      "subtitle_read_only": "Los días en que no trabaja nadie. Un día festivo cuenta como horas trabajadas; no reduce lo que hay que trabajar.",
       "back_to_month": "El mes",
       "calendar": "Calendario",
       "previous_year": "Año anterior",

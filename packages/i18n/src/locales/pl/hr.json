@@ -609,6 +609,7 @@
     "holidays": {
       "title": "Dni świąteczne",
       "subtitle": "Dni, w których nikt nie pracuje. Święto liczy się jako godziny przepracowane; nie zmniejsza tego, ile trzeba przepracować. Zmiana tutaj obejmuje tylko miesiące, które są jeszcze otwarte.",
+      "subtitle_read_only": "Dni, w których nikt nie pracuje. Święto liczy się jako godziny przepracowane; nie zmniejsza tego, ile trzeba przepracować.",
       "back_to_month": "Miesiąc",
       "calendar": "Kalendarz",
       "previous_year": "Poprzedni rok",

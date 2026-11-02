@@ -609,6 +609,7 @@
     "holidays": {
       "title": "Sviatky",
       "subtitle": "Dni, keď sa nepracuje. Sviatok sa počíta ako odpracované hodiny; neznižuje to, čo má niekto odpracovať. Zmena tu zasiahne len mesiace, ktoré sú ešte otvorené.",
+      "subtitle_read_only": "Dni, keď sa nepracuje. Sviatok sa počíta ako odpracované hodiny; neznižuje to, čo má niekto odpracovať.",
       "back_to_month": "Mesiac",
       "calendar": "Kalendár",
       "previous_year": "Predchádzajúci rok",

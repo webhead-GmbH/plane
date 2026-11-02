@@ -27,7 +27,11 @@ This page is about the list of days on which nobody in the company is expected t
 
 ## Where the screen is
 
-There is no link to it in the left-hand sidebar. You get there through the team's month.
+There is no link to it in the left-hand sidebar.
+
+If your terms keep a leave account, open **My time** from the sidebar, then open the **⋯** menu at the top right of that screen and choose **Public holidays**.
+
+If you look after the team, you can also get there through the team's month:
 
 1. In the left-hand sidebar, open **My time**. Your own month appears.
 2. At the top right of that screen, open the **⋯** menu and choose **Everyone's hours**. This entry only appears if you look after the team. You land on **Team time**.
@@ -37,15 +41,15 @@ The line at the top of the screen you land on reads:
 
 > **The days nobody works. A holiday counts as hours worked; it does not lower what somebody has to work. A change here only reaches months that are still open.**
 
-That one sentence is the whole rule. The rest of this page is what it means in practice.
+That one sentence is the whole rule. The rest of this page is what it means in practice. If you can only read the list, the last part is left out, since it is about changing it.
 
 ## Who may change it
 
-Anybody who is set up in the time records can open this screen and read the list. That is deliberate: everybody needs to know which days are holidays.
+Anybody whose terms keep a leave account can open this screen and read the list, for any year. That is deliberate: they plan their time off around these days. Somebody who invoices their own hours is credited nothing by a holiday, so the screen is not offered to them, and opening its address answers **This is not yours to see**.
 
 Changing the list is another matter. Only somebody who looks after the team can add a day, change a day's length or remove one.
 
-The screen does not currently hide the buttons from anyone. If you are not a manager, you will still see the **Add** form and the icons at the end of each row, and they will still look as though they work. When you press one, nothing is saved and a message appears reading **That could not be saved**, with the words _You don't have the required permissions._ underneath. Nothing was written. Ask whoever looks after the team to make the change instead of pressing it again.
+Nobody else sees the **Add** form or the icons at the end of each row. If a day looks wrong, ask whoever looks after the team to change it.
 
 If you are not set up in the time records at all, the screen does not load. You see **This is not yours to see** and, under it, **You are not set up in the time records yet, so this list is not shown to you. Ask whoever looks after the team.**
 

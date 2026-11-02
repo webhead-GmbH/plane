@@ -27,7 +27,7 @@ Three things go into what you worked.
 
 1. **Hours from timers on work items.** You start and stop those on the work item itself, inside a project. They arrive on your month by themselves. You never re-enter them.
 2. **Hours you add by hand**, for time that no work item accounts for — meetings, administration, training, travel. On the screen these are called **Hours with no work item**.
-3. **Time off and public holidays.** You do not enter these yourself. An absence is recorded by whoever looks after the team; a public holiday comes from the company calendar. Both count as hours worked. That is deliberate, and [Figures that look wrong and are not](#figures-that-look-wrong-and-are-not) explains why.
+3. **Time off and public holidays.** You do not enter these into your month yourself. You can ask for time off, and whoever looks after the team agrees it or records it; a public holiday comes from the company calendar. Both count as hours worked. That is deliberate, and [Figures that look wrong and are not](#figures-that-look-wrong-and-are-not) explains why.
 
 Separately from all of that, some people's records also keep the plain fact of **when you were at work** — the time you started, the time you stopped, and how long you broke for. That is a record the law asks to be kept. It is not part of the hours arithmetic and is never added to it.
 
@@ -59,14 +59,14 @@ Two things decide what you see, and neither of them is your role in the workspac
 - **Whether you have an employment record.** Without one, there is nothing to show you. You will see **No employment record here** and, under it, _"Your hours are not being tracked yet. If they should be, ask whoever looks after the team to set you up."_ Ask them; nothing you can press will fix it.
 - **Whether your record says you look after the team.** That is a setting on your own record. It is not the same as being a workspace administrator, and creating a workspace does not give it to you.
 
-| Screen                                                                    | If you look after only your own hours                                                  | If you look after the team                                  |
-| ------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
-| **My time** — your own month, day by day                                  | Yours                                                                                  | Yours. Other people's months are on **Team time**, not here |
-| **Team time** — everybody's month                                         | Refused                                                                                | Everybody, in every workspace                               |
-| **People** — who is employed, on what terms, and what their time is worth | Refused                                                                                | Everybody                                                   |
-| **Absences** — time away from work                                        | Your own absences only, and there is no link to the screen from anywhere you can reach | Everybody's, and only you can agree or refuse a request     |
-| **Public holidays** — the company calendar                                | You can read it                                                                        | You can read it and change it                               |
-| **Hours in detail** — your hours entry by entry                           | Your own                                                                               | Anybody's; you choose whose                                 |
+| Screen                                                                    | If you look after only your own hours                                | If you look after the team                                  |
+| ------------------------------------------------------------------------- | -------------------------------------------------------------------- | ----------------------------------------------------------- |
+| **My time** — your own month, day by day                                  | Yours                                                                | Yours. Other people's months are on **Team time**, not here |
+| **Team time** — everybody's month                                         | Refused                                                              | Everybody, in every workspace                               |
+| **People** — who is employed, on what terms, and what their time is worth | Refused                                                              | Everybody                                                   |
+| **Absences** — time away from work                                        | Your own absences only. **Ask for time off** on **My time** opens it | Everybody's, and only you can agree or refuse a request     |
+| **Public holidays** — the company calendar                                | You can read it, from the **…** menu on **My time**                  | You can read it and change it                               |
+| **Hours in detail** — your hours entry by entry                           | Your own                                                             | Anybody's; you choose whose                                 |
 
 If you open **Team time** without being set up to look after the team, you get **This is not yours to see**, and under it _"Everyone's hours are only readable by whoever looks after the team. Your own month is on My time."_ That is not a fault and there is nothing to retry. It is the system telling you the screen is not yours.
 

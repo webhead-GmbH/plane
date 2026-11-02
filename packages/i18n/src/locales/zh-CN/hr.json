@@ -609,6 +609,7 @@
     "holidays": {
       "title": "节假日",
       "subtitle": "无人上班的日子。节假日计为已工作工时，不会减少应工作工时。此处的更改只影响仍处于打开状态的月份。",
+      "subtitle_read_only": "无人上班的日子。节假日计为已工作工时，不会减少应工作工时。",
       "back_to_month": "月度工时",
       "calendar": "日历",
       "previous_year": "上一年",

@@ -32,7 +32,9 @@ If you look after the team:
 2. Press the **…** button at the top of that page and choose **Everyone’s hours**. You are now on **Team time**.
 3. In the row of links beside the month name, press **Absences**.
 
-If you do not look after the team, nothing in the product links to this page. Ask for its web address and keep it as a bookmark; it is the address of your workspace followed by `/team-time/absences`. The page will open for you, and it will show your own absences and nobody else's.
+If you do not look after the team, press **Ask for time off** at the top of **My time**. It brings you here, and the page shows your own absences and nobody else's.
+
+The button is there if your terms keep a leave account. Somebody who invoices their own hours has no leave to ask for, so it is not offered to them, here or on **My time**.
 
 What you see differs in three ways:
 

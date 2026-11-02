@@ -609,6 +609,7 @@
     "holidays": {
       "title": "Public holidays",
       "subtitle": "The days nobody works. A holiday counts as hours worked; it does not lower what somebody has to work. A change here only reaches months that are still open.",
+      "subtitle_read_only": "The days nobody works. A holiday counts as hours worked; it does not lower what somebody has to work.",
       "back_to_month": "The month",
       "calendar": "Calendar",
       "previous_year": "Previous year",

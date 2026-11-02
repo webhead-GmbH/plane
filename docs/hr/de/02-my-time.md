@@ -263,6 +263,7 @@ Rechts neben den Schaltflächen oben steht eine kleine Schaltfläche mit drei Pu
 | **Als Excel herunterladen** | Dieselbe Datei als Excel-Arbeitsmappe.                                                                                 |
 | **Neu berechnen**           | Rechnet den Monat noch einmal durch. Wird nur angeboten, solange der Monat noch geändert werden kann.                  |
 | **Stunden im Detail**       | Ihre eigenen Stunden, Eintrag für Eintrag, für diesen Monat. Siehe „Stunden im Detail“.                                |
+| **Feiertage**               | Der Firmenkalender, zum Lesen. Wird angeboten, wenn Ihre Bedingungen ein Urlaubskonto führen. Siehe „Feiertage“.       |
 | **Stunden aller Personen**  | Nur für die Teamleitung. Siehe „Teamzeit — der Monat aller“.                                                           |
 
 Zwei Hinweise.

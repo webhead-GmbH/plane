@@ -609,6 +609,7 @@
     "holidays": {
       "title": "Feestdagen",
       "subtitle": "De dagen waarop niemand werkt. Een feestdag telt als gewerkte uren; hij verlaagt niet wat iemand moet werken. Een wijziging hier geldt alleen voor maanden die nog open zijn.",
+      "subtitle_read_only": "De dagen waarop niemand werkt. Een feestdag telt als gewerkte uren; hij verlaagt niet wat iemand moet werken.",
       "back_to_month": "De maand",
       "calendar": "Kalender",
       "previous_year": "Vorig jaar",
