@@ -80,6 +80,8 @@ On a work item of a linked project, the attachments section says **Stored in Goo
 - Click an image to see it larger; **Open in Google Drive** opens any file in Drive.
 - An image pasted, dropped or added with `/image` in the description or a comment appears as an image, as before. Any other file appears as a link with the file's name where you dropped it, and opens in Drive.
 - While files from the text are uploading, they are listed under it with their progress and a button to stop each one. A comment cannot be sent until its files are in Drive, and closing or reloading the tab asks first.
+- Dragging files over a comment marks the whole comment box as the place to drop them.
+- A work item's folder is named after its ID, so images added to the description in **Create new work item** go to the Plane server at first. A few seconds after the work item is created, they are moved to its folder in Drive and deleted from the server. An editor that was opened before they moved and still points at the old copies is put right when it saves.
 
 ## Removing a file
 

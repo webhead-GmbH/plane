@@ -4,12 +4,13 @@
  * See the LICENSE file for details.
  */
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import type { DragEvent } from "react";
 // plane imports
 import { CircularProgress } from "@makeplane/propel/components/circular-progress";
 import { Icon } from "@makeplane/propel/components/icon";
 import { IconButton } from "@makeplane/propel/components/icon-button";
-import { CloseOutline } from "@makeplane/propel/icons";
+import { CloseOutline, UploadOutline } from "@makeplane/propel/icons";
 import { useTranslation } from "@plane/i18n";
 import { cn, convertBytesToSize, getFileExtension } from "@plane/utils";
 // components
@@ -89,6 +90,42 @@ export const DriveEditorUploads = ({
           onStop={() => stopEditorUpload(row.id)}
         />
       ))}
+    </div>
+  );
+};
+
+const carriesFiles = (event: DragEvent) => Array.from(event.dataTransfer.types).includes("Files");
+
+/**
+ * Whether files are being dragged over an element, for showing where they can
+ * be dropped. Drop is caught on the way down, since the editor inside handles
+ * the drop itself and may not let it bubble back up.
+ */
+export const useFilesDraggedOver = (enabled: boolean) => {
+  const [isOver, setIsOver] = useState(false);
+  const handlers = {
+    onDragEnter: (event: DragEvent) => {
+      if (enabled && carriesFiles(event)) setIsOver(true);
+    },
+    onDragLeave: (event: DragEvent) => {
+      // Moving onto a child also leaves the parent; only leaving it for outside counts.
+      if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setIsOver(false);
+    },
+    onDropCapture: () => setIsOver(false),
+  };
+  return { isOver: enabled && isOver, handlers };
+};
+
+/** Over a box files can be dropped on, while they are dragged over it; drops pass through to what is under it. */
+export const DriveDropHint = ({ show }: { show: boolean }) => {
+  const { t } = useTranslation();
+  if (!show) return null;
+  return (
+    <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center rounded-sm border-2 border-dashed border-accent-strong bg-surface-2/75">
+      <span className="flex items-center gap-2 text-13 font-medium text-secondary">
+        <UploadOutline className="size-4" aria-hidden />
+        {t(`${I18N}.attachments.drop_here`)}
+      </span>
     </div>
   );
 };

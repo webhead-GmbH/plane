@@ -18,7 +18,7 @@ import { EditorMentionsRoot } from "@/components/editor/embeds/mentions";
 import { IssueCommentToolbar } from "@/components/editor/lite-text/toolbar";
 import { useEditorUploadGate } from "@/components/google-drive/editor-uploads";
 import type { TDriveUploadTarget } from "@/components/google-drive/upload";
-import { DriveEditorUploads } from "@/components/google-drive/upload-row";
+import { DriveDropHint, DriveEditorUploads, useFilesDraggedOver } from "@/components/google-drive/upload-row";
 // hooks
 import { useEditorConfig, useEditorMention } from "@/hooks/editor";
 import { useMember } from "@/hooks/store/use-member";
@@ -127,6 +127,8 @@ export const LiteTextEditor = React.forwardRef(function LiteTextEditor(
   const drive = editable ? driveTarget : undefined;
   // Files on their way there: listed under the text, and the comment waits for them.
   const { uploadsKey, isUploading, submit } = useEditorUploadGate(props.id, Boolean(drive), rest.onEnterKeyPress);
+  // Where dragged files can go: the whole box, since an empty comment has no line to point at.
+  const { isOver: isDraggingFiles, handlers: dragHandlers } = useFilesDraggedOver(Boolean(drive));
 
   return (
     <div
@@ -139,7 +141,9 @@ export const LiteTextEditor = React.forwardRef(function LiteTextEditor(
       )}
       onFocus={() => isFullVariant && !showToolbarInitially && setIsFocused(true)}
       onBlur={() => isFullVariant && !showToolbarInitially && setIsFocused(false)}
+      {...dragHandlers}
     >
+      <DriveDropHint show={isDraggingFiles} />
       {/* Wrapper for lite toolbar layout */}
       <div className={cn(isLiteVariant && editable ? "flex items-end gap-1" : "")}>
         {/* Main Editor - always rendered once */}
