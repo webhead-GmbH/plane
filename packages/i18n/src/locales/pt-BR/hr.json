@@ -79,7 +79,8 @@
       "leave_left_days": "Restam {amount} dias de férias",
       "leave_left_hours": "Restam {amount} de férias",
       "behind_so_far": "{duration} atrasado neste mês",
-      "ahead_so_far": "{duration} adiantado neste mês"
+      "ahead_so_far": "{duration} adiantado neste mês",
+      "timer_counted": "Um cronômetro está ativo. Os {duration} até agora já contam nos números e continuam somando; pare-o antes de entregar o mês."
     },
     "day_table": {
       "day": "Dia",
@@ -96,7 +97,8 @@
       "nothing_yet": "Ainda não foi calculado nada para este mês.",
       "rest_of_month": "{count, plural, one {Mostrar o resto do mês (# dia)} other {Mostrar o resto do mês (# dias)}}",
       "open_day": "Registrar tempo em {day}",
-      "hide_rest_of_month": "Ocultar o resto do mês"
+      "hide_rest_of_month": "Ocultar o resto do mês",
+      "timer_counting": "Um cronômetro está ativo: os minutos até agora contam neste dia"
     },
     "overview_table": {
       "person": "Pessoa",
@@ -662,7 +664,10 @@
       "refuse_placeholder": "Duas pessoas já estarão fora nessa semana",
       "refuse_cancel": "Cancelar",
       "request": "Solicitar ausência",
-      "errors": {}
+      "errors": {},
+      "confirm_reopen_title": "Excluir de um mês já fechado?",
+      "confirm_reopen_body": "Meses já entregues ou fechados de {person}: {months}. Excluir esta ausência os devolve para que sejam recalculados sem ela, e depois eles precisam ser entregues ou fechados novamente.",
+      "delete_and_reopen": "Excluir e reabrir"
     },
     "statement": {
       "title": "Antes de emitir a nota fiscal",

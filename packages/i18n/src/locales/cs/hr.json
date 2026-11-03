@@ -79,7 +79,8 @@
       "leave_left_days": "Zbývá {amount} dní dovolené",
       "leave_left_hours": "Zbývá {amount} dovolené",
       "behind_so_far": "{duration} manko za tento měsíc",
-      "ahead_so_far": "{duration} přesčas za tento měsíc"
+      "ahead_so_far": "{duration} přesčas za tento měsíc",
+      "timer_counted": "Běží časovač. Jeho dosavadních {duration} je započteno v údajích a dál se připočítává; než měsíc odevzdáte, zastavte ho."
     },
     "day_table": {
       "day": "Den",
@@ -96,7 +97,8 @@
       "nothing_yet": "Za tento měsíc zatím nebylo nic vypočítáno.",
       "rest_of_month": "{count, plural, one {Zobrazit zbytek měsíce (# den)} few {Zobrazit zbytek měsíce (# dny)} many {Zobrazit zbytek měsíce (# dne)} other {Zobrazit zbytek měsíce (# dnů)}}",
       "open_day": "Zaznamenat čas pro {day}",
-      "hide_rest_of_month": "Skrýt zbytek měsíce"
+      "hide_rest_of_month": "Skrýt zbytek měsíce",
+      "timer_counting": "Běží časovač: jeho dosavadní minuty se počítají v tomto dni"
     },
     "overview_table": {
       "person": "Osoba",
@@ -662,7 +664,10 @@
       "refuse_placeholder": "Ten týden už jsou dva lidé pryč",
       "refuse_cancel": "Zrušit",
       "request": "Požádat o nepřítomnost",
-      "errors": {}
+      "errors": {},
+      "confirm_reopen_title": "Smazat ji z již vyřízeného měsíce?",
+      "confirm_reopen_body": "Měsíce, které už byly za osobu {person} odevzdány nebo uzavřeny: {months}. Smazáním této nepřítomnosti se vrátí, aby se přepočítaly bez ní, a poté je bude nutné znovu odevzdat nebo uzavřít.",
+      "delete_and_reopen": "Smazat a znovu otevřít"
     },
     "statement": {
       "title": "Než vystavíte fakturu",

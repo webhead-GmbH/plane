@@ -79,7 +79,8 @@
       "leave_left_days": "Quedan {amount} días de vacaciones",
       "leave_left_hours": "Quedan {amount} de vacaciones",
       "behind_so_far": "{duration} de retraso este mes",
-      "ahead_so_far": "{duration} de adelanto este mes"
+      "ahead_so_far": "{duration} de adelanto este mes",
+      "timer_counted": "Hay un temporizador en marcha. Sus {duration} hasta ahora ya cuentan en las cifras y siguen sumando; deténgalo antes de entregar el mes."
     },
     "day_table": {
       "day": "Día",
@@ -96,7 +97,8 @@
       "nothing_yet": "Todavía no se ha calculado nada para este mes.",
       "rest_of_month": "{count, plural, one {Mostrar el resto del mes (# día)} other {Mostrar el resto del mes (# días)}}",
       "open_day": "Registrar tiempo para {day}",
-      "hide_rest_of_month": "Ocultar el resto del mes"
+      "hide_rest_of_month": "Ocultar el resto del mes",
+      "timer_counting": "Hay un temporizador en marcha: sus minutos hasta ahora cuentan en este día"
     },
     "overview_table": {
       "person": "Persona",
@@ -538,7 +540,10 @@
       "refuse_placeholder": "Esa semana ya hay dos personas ausentes",
       "refuse_cancel": "Cancelar",
       "request": "Solicitar ausencia",
-      "errors": {}
+      "errors": {},
+      "confirm_reopen_title": "¿Eliminarla de un mes ya cerrado?",
+      "confirm_reopen_body": "Meses ya entregados o cerrados de {person}: {months}. Al eliminar esta ausencia, vuelven atrás para calcularse de nuevo sin ella, y después habrá que entregarlos o cerrarlos otra vez.",
+      "delete_and_reopen": "Eliminar y reabrir"
     },
     "rates": {
       "title": "Lo que vale el tiempo de {person}",

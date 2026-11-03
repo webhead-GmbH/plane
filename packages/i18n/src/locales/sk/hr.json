@@ -79,7 +79,8 @@
       "leave_left_days": "Zostáva {amount} dní dovolenky",
       "leave_left_hours": "Zostáva {amount} dovolenky",
       "behind_so_far": "{duration} manko za tento mesiac",
-      "ahead_so_far": "{duration} nadčas za tento mesiac"
+      "ahead_so_far": "{duration} nadčas za tento mesiac",
+      "timer_counted": "Beží časovač. Jeho doterajších {duration} je započítaných v údajoch a ďalej sa pripočítava; pred odovzdaním mesiaca ho zastavte."
     },
     "day_table": {
       "day": "Deň",
@@ -96,7 +97,8 @@
       "nothing_yet": "Za tento mesiac zatiaľ nebolo nič vypočítané.",
       "rest_of_month": "{count, plural, one {Zobraziť zvyšok mesiaca (# deň)} few {Zobraziť zvyšok mesiaca (# dni)} many {Zobraziť zvyšok mesiaca (# dňa)} other {Zobraziť zvyšok mesiaca (# dní)}}",
       "open_day": "Zaznamenať čas pre {day}",
-      "hide_rest_of_month": "Skryť zvyšok mesiaca"
+      "hide_rest_of_month": "Skryť zvyšok mesiaca",
+      "timer_counting": "Beží časovač: jeho doterajšie minúty sa počítajú v tomto dni"
     },
     "overview_table": {
       "person": "Osoba",
@@ -538,7 +540,10 @@
       "refuse_placeholder": "Ten týždeň sú už dvaja preč",
       "refuse_cancel": "Zrušiť",
       "request": "Požiadať o neprítomnosť",
-      "errors": {}
+      "errors": {},
+      "confirm_reopen_title": "Odstrániť ju z už vybaveného mesiaca?",
+      "confirm_reopen_body": "Mesiace, ktoré už boli za osobu {person} odovzdané alebo uzavreté: {months}. Odstránením tejto neprítomnosti sa vrátia, aby sa prepočítali bez nej, a potom ich bude treba znova odovzdať alebo uzavrieť.",
+      "delete_and_reopen": "Odstrániť a znova otvoriť"
     },
     "rates": {
       "title": "Hodnota času používateľa {person}",

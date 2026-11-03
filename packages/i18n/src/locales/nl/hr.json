@@ -79,7 +79,8 @@
       "leave_left_days": "Nog {amount} dagen verlof over",
       "leave_left_hours": "Nog {amount} verlof over",
       "behind_so_far": "Tot nu toe deze maand {duration} achter",
-      "ahead_so_far": "Tot nu toe deze maand {duration} voor"
+      "ahead_so_far": "Tot nu toe deze maand {duration} voor",
+      "timer_counted": "Er loopt een timer. De {duration} tot nu toe telt al mee in de cijfers en loopt door; stop hem voordat je de maand inlevert."
     },
     "day_table": {
       "day": "Dag",
@@ -96,7 +97,8 @@
       "nothing_yet": "Voor deze maand is nog niets berekend.",
       "rest_of_month": "{count, plural, one {Rest van de maand tonen (# dag)} other {Rest van de maand tonen (# dagen)}}",
       "open_day": "Tijd vastleggen voor {day}",
-      "hide_rest_of_month": "Rest van de maand verbergen"
+      "hide_rest_of_month": "Rest van de maand verbergen",
+      "timer_counting": "Er loopt een timer: de minuten tot nu toe tellen mee op deze dag"
     },
     "overview_table": {
       "person": "Persoon",
@@ -538,7 +540,10 @@
       "refuse_placeholder": "Die week zijn er al twee mensen afwezig",
       "refuse_cancel": "Annuleren",
       "request": "Verlof aanvragen",
-      "errors": {}
+      "errors": {},
+      "confirm_reopen_title": "Verwijderen uit een al afgeronde maand?",
+      "confirm_reopen_body": "Maanden die voor {person} al zijn ingeleverd of afgesloten: {months}. Als je deze afwezigheid verwijdert, gaan ze terug zodat ze zonder haar opnieuw worden berekend; daarna moeten ze opnieuw worden ingeleverd of afgesloten.",
+      "delete_and_reopen": "Verwijderen en heropenen"
     },
     "rates": {
       "title": "Wat de tijd van {person} waard is",

@@ -79,7 +79,8 @@
       "leave_left_days": "Còn {amount} ngày phép",
       "leave_left_hours": "Còn {amount} phép",
       "behind_so_far": "Thiếu {duration} trong tháng này",
-      "ahead_so_far": "Dư {duration} trong tháng này"
+      "ahead_so_far": "Dư {duration} trong tháng này",
+      "timer_counted": "Bộ đếm giờ đang chạy. {duration} tính đến giờ đã được cộng vào số liệu và tiếp tục tăng; hãy dừng nó trước khi nộp tháng."
     },
     "day_table": {
       "day": "Ngày",
@@ -96,7 +97,8 @@
       "nothing_yet": "Chưa có số liệu nào cho tháng này.",
       "rest_of_month": "{count, plural, other {Hiện phần còn lại của tháng (# ngày)}}",
       "open_day": "Ghi giờ cho {day}",
-      "hide_rest_of_month": "Ẩn phần còn lại của tháng"
+      "hide_rest_of_month": "Ẩn phần còn lại của tháng",
+      "timer_counting": "Bộ đếm giờ đang chạy: số phút tính đến giờ được cộng vào ngày này"
     },
     "overview_table": {
       "person": "Nhân viên",
@@ -662,7 +664,10 @@
       "refuse_placeholder": "Tuần đó đã có hai người nghỉ",
       "refuse_cancel": "Hủy",
       "request": "Xin nghỉ",
-      "errors": {}
+      "errors": {},
+      "confirm_reopen_title": "Xóa khỏi tháng đã chốt?",
+      "confirm_reopen_body": "Các tháng của {person} đã nộp hoặc đã chốt: {months}. Xóa vắng mặt này sẽ trả các tháng đó lại để tính lại mà không có nó, sau đó cần nộp hoặc chốt lại một lần nữa.",
+      "delete_and_reopen": "Xóa và mở lại"
     },
     "statement": {
       "title": "Trước khi xuất hóa đơn",

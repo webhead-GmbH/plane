@@ -79,7 +79,8 @@
       "leave_left_days": "{amount} giorni di ferie rimasti",
       "leave_left_hours": "{amount} di ferie rimaste",
       "behind_so_far": "{duration} di arretrato questo mese",
-      "ahead_so_far": "{duration} di anticipo questo mese"
+      "ahead_so_far": "{duration} di anticipo questo mese",
+      "timer_counted": "Un timer è in funzione. I suoi {duration} finora sono già contati nelle cifre e continuano ad aumentare; lo fermi prima di consegnare il mese."
     },
     "day_table": {
       "day": "Giorno",
@@ -96,7 +97,8 @@
       "nothing_yet": "Non è ancora stato calcolato nulla per questo mese.",
       "rest_of_month": "{count, plural, one {Mostra il resto del mese (# giorno)} other {Mostra il resto del mese (# giorni)}}",
       "open_day": "Registra il tempo per {day}",
-      "hide_rest_of_month": "Nascondi il resto del mese"
+      "hide_rest_of_month": "Nascondi il resto del mese",
+      "timer_counting": "Un timer è in funzione: i suoi minuti finora contano in questo giorno"
     },
     "overview_table": {
       "person": "Persona",
@@ -538,7 +540,10 @@
       "refuse_placeholder": "Quella settimana ci sono già due persone assenti",
       "refuse_cancel": "Annulla",
       "request": "Richiedi assenza",
-      "errors": {}
+      "errors": {},
+      "confirm_reopen_title": "Eliminarla da un mese già definito?",
+      "confirm_reopen_body": "Mesi già consegnati o chiusi per {person}: {months}. Eliminando questa assenza tornano indietro per essere ricalcolati senza di essa, e poi dovranno essere consegnati o chiusi di nuovo.",
+      "delete_and_reopen": "Elimina e riapri"
     },
     "rates": {
       "title": "Quanto vale il tempo di {person}",

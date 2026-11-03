@@ -79,7 +79,8 @@
       "leave_left_days": "剩余假期 {amount} 天",
       "leave_left_hours": "剩余假期 {amount}",
       "behind_so_far": "本月落后 {duration}",
-      "ahead_so_far": "本月超出 {duration}"
+      "ahead_so_far": "本月超出 {duration}",
+      "timer_counted": "有计时器正在运行。到目前为止的 {duration} 已计入数据，并会继续累加；提交该月之前请先停止它。"
     },
     "day_table": {
       "day": "日期",
@@ -96,7 +97,8 @@
       "nothing_yet": "本月尚未计算任何数据。",
       "rest_of_month": "{count, plural, other {显示本月剩余（# 天）}}",
       "open_day": "记录 {day} 的工时",
-      "hide_rest_of_month": "隐藏本月剩余"
+      "hide_rest_of_month": "隐藏本月剩余",
+      "timer_counting": "有计时器正在运行：到目前为止的时间计入这一天"
     },
     "overview_table": {
       "person": "成员",
@@ -538,7 +540,10 @@
       "refuse_placeholder": "那一周已经有两个人休假",
       "refuse_cancel": "取消",
       "request": "申请休假",
-      "errors": {}
+      "errors": {},
+      "confirm_reopen_title": "要从已确定的月份中删除吗？",
+      "confirm_reopen_body": "{person}已提交或已关闭的月份：{months}。删除这条缺勤会将这些月份退回，按删除后的情况重新计算，之后需要重新提交或关闭。",
+      "delete_and_reopen": "删除并重新打开"
     },
     "rates": {
       "title": "{person} 的工时价值",

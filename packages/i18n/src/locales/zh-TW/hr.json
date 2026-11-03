@@ -79,7 +79,8 @@
       "leave_left_days": "剩餘假期 {amount} 天",
       "leave_left_hours": "剩餘假期 {amount}",
       "behind_so_far": "本月落後 {duration}",
-      "ahead_so_far": "本月超出 {duration}"
+      "ahead_so_far": "本月超出 {duration}",
+      "timer_counted": "有計時器正在執行。到目前為止的 {duration} 已計入數據，並會繼續累加；送出這個月份之前請先停止它。"
     },
     "day_table": {
       "day": "日期",
@@ -96,7 +97,8 @@
       "nothing_yet": "本月尚未計算任何資料。",
       "rest_of_month": "{count, plural, other {顯示本月剩餘（# 天）}}",
       "open_day": "記錄 {day} 的工時",
-      "hide_rest_of_month": "隱藏本月剩餘"
+      "hide_rest_of_month": "隱藏本月剩餘",
+      "timer_counting": "有計時器正在執行：到目前為止的時間計入這一天"
     },
     "overview_table": {
       "person": "人員",
@@ -662,7 +664,10 @@
       "refuse_placeholder": "那一週已經有兩個人休假",
       "refuse_cancel": "取消",
       "request": "申請休假",
-      "errors": {}
+      "errors": {},
+      "confirm_reopen_title": "要從已確定的月份中刪除嗎？",
+      "confirm_reopen_body": "{person}已提交或已關閉的月份：{months}。刪除這筆缺勤會將這些月份退回，依刪除後的情況重新計算，之後需要重新提交或關閉。",
+      "delete_and_reopen": "刪除並重新開啟"
     },
     "statement": {
       "title": "開立發票前",

@@ -79,7 +79,8 @@
       "leave_left_days": "Sisa cuti {amount} hari",
       "leave_left_hours": "Sisa cuti {amount}",
       "behind_so_far": "Kurang {duration} bulan ini",
-      "ahead_so_far": "Lebih {duration} bulan ini"
+      "ahead_so_far": "Lebih {duration} bulan ini",
+      "timer_counted": "Pengatur waktu sedang berjalan. {duration} sejauh ini sudah dihitung dalam angka dan terus bertambah; hentikan sebelum Anda menyerahkan bulan ini."
     },
     "day_table": {
       "day": "Hari",
@@ -96,7 +97,8 @@
       "nothing_yet": "Belum ada perhitungan untuk bulan ini.",
       "rest_of_month": "{count, plural, other {Tampilkan sisa bulan (# hari)}}",
       "open_day": "Catat waktu untuk {day}",
-      "hide_rest_of_month": "Sembunyikan sisa bulan"
+      "hide_rest_of_month": "Sembunyikan sisa bulan",
+      "timer_counting": "Pengatur waktu sedang berjalan: menitnya sejauh ini dihitung pada hari ini"
     },
     "overview_table": {
       "person": "Orang",
@@ -538,7 +540,10 @@
       "refuse_placeholder": "Minggu itu sudah ada dua orang yang tidak masuk",
       "refuse_cancel": "Batal",
       "request": "Ajukan cuti",
-      "errors": {}
+      "errors": {},
+      "confirm_reopen_title": "Hapus dari bulan yang sudah diselesaikan?",
+      "confirm_reopen_body": "Bulan yang sudah diserahkan atau ditutup untuk {person}: {months}. Menghapus ketidakhadiran ini mengembalikannya agar dihitung ulang tanpanya, lalu bulan tersebut harus diserahkan atau ditutup sekali lagi.",
+      "delete_and_reopen": "Hapus dan buka kembali"
     },
     "rates": {
       "title": "Nilai waktu kerja {person}",
