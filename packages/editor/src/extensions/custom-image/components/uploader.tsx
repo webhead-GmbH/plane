@@ -171,9 +171,20 @@ export function CustomImageUploader(props: CustomImageUploaderProps) {
       // The failure keeps the file for "Try again". Its queued entry must go, or the uploader that
       // shows the failure would find it on mount and upload it again, over and over.
       if (imageEntityId) imageComponentImageFileMap?.delete(imageEntityId);
+      // Stopped on purpose by the person uploading it: the image goes, with nothing to retry.
+      if ((error as { name?: string } | undefined)?.name === "AbortError") {
+        const pos = getPos();
+        if (pos !== undefined && editor.isEditable) {
+          editor
+            .chain()
+            .deleteRange({ from: pos, to: pos + node.nodeSize })
+            .run();
+        }
+        return;
+      }
       onUploadFailure({ file, message: getUploadFailureMessage(error) });
     },
-    [imageComponentImageFileMap, imageEntityId, onUploadFailure]
+    [editor, getPos, imageComponentImageFileMap, imageEntityId, node.nodeSize, onUploadFailure]
   );
 
   const handleProgressStatus = useCallback(

@@ -88,6 +88,7 @@ export const RichTextEditor = forwardRef(function RichTextEditor(
         workspaceId,
         workspaceSlug,
         drive: editable ? driveTarget : undefined,
+        uploadsKey: props.id,
       })}
       getEditorMetaData={getEditorMetaData}
       mentionHandler={{

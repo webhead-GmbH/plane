@@ -16,7 +16,9 @@ import { cn, isCommentEmpty } from "@plane/utils";
 // components
 import { EditorMentionsRoot } from "@/components/editor/embeds/mentions";
 import { IssueCommentToolbar } from "@/components/editor/lite-text/toolbar";
+import { useEditorUploadGate } from "@/components/google-drive/editor-uploads";
 import type { TDriveUploadTarget } from "@/components/google-drive/upload";
+import { DriveEditorUploads } from "@/components/google-drive/upload-row";
 // hooks
 import { useEditorConfig, useEditorMention } from "@/hooks/editor";
 import { useMember } from "@/hooks/store/use-member";
@@ -121,6 +123,10 @@ export const LiteTextEditor = React.forwardRef(function LiteTextEditor(
   const { getEditorFileHandlers } = useEditorConfig();
   // derived values
   const isEmpty = isCommentEmpty(props.initialValue);
+  // Only an editor that can take files sends them to Google Drive.
+  const drive = editable ? driveTarget : undefined;
+  // Files on their way there: listed under the text, and the comment waits for them.
+  const { uploadsKey, isUploading, submit } = useEditorUploadGate(props.id, Boolean(drive), rest.onEnterKeyPress);
 
   return (
     <div
@@ -149,7 +155,8 @@ export const LiteTextEditor = React.forwardRef(function LiteTextEditor(
               duplicateFile: editable ? props.duplicateFile : async () => "",
               workspaceId,
               workspaceSlug,
-              drive: editable ? driveTarget : undefined,
+              drive,
+              uploadsKey,
             })}
             getEditorMetaData={getEditorMetaData}
             handleEditorReady={(ready) => {
@@ -190,12 +197,15 @@ export const LiteTextEditor = React.forwardRef(function LiteTextEditor(
                 ...item.extraProps,
               });
             }}
-            onSubmit={(e) => rest.onEnterKeyPress?.(e)}
+            onSubmit={submit}
             isSubmitting={isSubmitting}
+            isUploading={isUploading}
             isEmpty={isEmpty}
           />
         )}
       </div>
+
+      <DriveEditorUploads uploadsKey={uploadsKey} className="mt-2 border-t border-subtle pt-2" />
 
       {/* Full Toolbar - conditionally rendered */}
       {isFullVariant && editable && (
@@ -216,9 +226,10 @@ export const LiteTextEditor = React.forwardRef(function LiteTextEditor(
               });
             }}
             handleAccessChange={handleAccessChange}
-            handleSubmit={(e) => rest.onEnterKeyPress?.(e)}
+            handleSubmit={submit}
             isCommentEmpty={isEmpty}
             isSubmitting={isSubmitting}
+            isUploading={isUploading}
             showAccessSpecifier={showAccessSpecifier}
             editorRef={editorRef}
             showSubmitButton={showSubmitButton}

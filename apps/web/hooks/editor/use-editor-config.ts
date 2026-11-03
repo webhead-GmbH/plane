@@ -12,8 +12,9 @@ import type { TFileHandler } from "@plane/editor";
 import { useTranslation } from "@plane/i18n";
 import { getEditorAssetDownloadSrc, getEditorAssetSrc } from "@plane/utils";
 // components
+import { trackEditorDriveUpload } from "@/components/google-drive/editor-uploads";
 import { driveErrorMessage } from "@/components/google-drive/errors";
-import { uploadFileToDrive } from "@/components/google-drive/upload";
+import { isUploadStopped, uploadFileToDrive } from "@/components/google-drive/upload";
 import type { TDriveUploadTarget } from "@/components/google-drive/upload";
 // helpers
 import {
@@ -39,6 +40,8 @@ type TArgs = {
   workspaceSlug: string;
   /** The work item whose Google Drive folder the files go to, when its project has one. */
   drive?: TDriveUploadTarget;
+  /** The editor's own key for the list of files it is sending to Drive. */
+  uploadsKey?: string;
 };
 
 // What an image in Google Drive is stored as in the text: not an asset id, so
@@ -57,7 +60,7 @@ export const useEditorConfig = () => {
 
   const getEditorFileHandlers = useCallback(
     (args: TArgs): TFileHandler => {
-      const { projectId, uploadFile, duplicateFile, workspaceId, workspaceSlug, drive } = args;
+      const { projectId, uploadFile, duplicateFile, workspaceId, workspaceSlug, drive, uploadsKey = "editor" } = args;
       const driveDownloadSrc = (fileId: string) =>
         `${API_BASE_URL}/api/workspaces/${workspaceSlug}/drive/files/${fileId}/open/`;
 
@@ -127,13 +130,24 @@ export const useEditorConfig = () => {
         upload: async (blockId, file) => {
           try {
             if (drive) {
-              const uploaded = await trackEditorUpload(blockId, file, (onProgress) =>
-                uploadFileToDrive(file, drive, { onProgress: (fraction) => onProgress(Math.round(fraction * 100)) })
+              // Its percentage on the image, and a row with a way to stop it under the text.
+              const uploaded = await trackEditorUpload(blockId, file, (onPercent) =>
+                trackEditorDriveUpload(uploadsKey, file, ({ onProgress, signal }) =>
+                  uploadFileToDrive(file, drive, {
+                    signal,
+                    onProgress: (fraction) => {
+                      onPercent(Math.round(fraction * 100));
+                      onProgress(fraction);
+                    },
+                  })
+                )
               );
               return `${DRIVE_SRC}${uploaded.id}`;
             }
             return await uploadFile(blockId, file);
           } catch (error) {
+            // Stopped on purpose: the editor takes the image away, and there is nothing to report.
+            if (isUploadStopped(error)) throw error;
             showFileUploadError(t, error);
             // The editor shows this next to the image, with a way to try again
             throw new Error(describeFileUploadError(t, error).message, { cause: error });
@@ -144,9 +158,12 @@ export const useEditorConfig = () => {
         uploadAttachment: drive
           ? async (file) => {
               try {
-                const uploaded = await uploadFileToDrive(file, drive);
+                const uploaded = await trackEditorDriveUpload(uploadsKey, file, (options) =>
+                  uploadFileToDrive(file, drive, options)
+                );
                 return { name: uploaded.name, url: uploaded.web_view_link };
               } catch (error) {
+                if (isUploadStopped(error)) throw error;
                 setToast({
                   type: "error",
                   title: t("google_drive_integration.attachments.upload_failed", { name: file.name }),

@@ -17,6 +17,8 @@ import type { TDriveConnection } from "@/services/google-drive.service";
 // local imports
 import { DriveConnectionSection } from "./connection-section";
 import { I18N, driveErrorMessage } from "./errors";
+import { forgetDriveIssues } from "./drive-issue";
+import { DrivePlaneFilesSection } from "./plane-files-section";
 import { DriveProjectFoldersSection } from "./project-folders-section";
 import { DriveRootFolderSection } from "./root-folder-section";
 
@@ -62,7 +64,11 @@ export const GoogleDriveSettingsRoot = ({ workspaceSlug }: TProps) => {
     );
   }, [outcome, setSearchParams, t]);
 
-  const update = (next: TDriveConnection) => void mutate(next, { revalidate: false });
+  const update = (next: TDriveConnection) => {
+    void mutate(next, { revalidate: false });
+    // Connected or not, every open work item's answer about Drive may have changed.
+    void forgetDriveIssues();
+  };
 
   if (isLoading) {
     return (
@@ -84,8 +90,9 @@ export const GoogleDriveSettingsRoot = ({ workspaceSlug }: TProps) => {
         <DriveRootFolderSection workspaceSlug={workspaceSlug} connection={connection} onChange={update} />
       )}
       {connection.connected && connection.root_folder && (
-        <DriveProjectFoldersSection workspaceSlug={workspaceSlug} rootFolderId={connection.root_folder.id} />
+        <DriveProjectFoldersSection workspaceSlug={workspaceSlug} rootFolder={connection.root_folder} />
       )}
+      {connection.connected && connection.root_folder && <DrivePlaneFilesSection workspaceSlug={workspaceSlug} />}
     </div>
   );
 };

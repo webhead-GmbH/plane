@@ -70,7 +70,16 @@ export type TDriveFile = {
   uploaded_at: string | null;
 };
 
-export type TDriveIssue = { enabled: boolean; folder_url: string; files: TDriveFile[] };
+export type TDriveIssue = {
+  enabled: boolean;
+  folder_url: string;
+  files: TDriveFile[];
+  /** Its attachments from before the folder are being moved there. */
+  moving: boolean;
+};
+
+/** Attachments in linked projects still on the Plane server. */
+export type TDrivePlaneFiles = { count: number; size: number; moving: boolean };
 
 export type TDriveUploadStart = {
   file: TDriveFile;
@@ -166,11 +175,31 @@ export class GoogleDriveService extends APIService {
       .catch(fail);
   }
 
+  async planeFiles(slug: string): Promise<TDrivePlaneFiles> {
+    return this.get(`${this.workspace(slug)}/plane-files/`)
+      .then((response) => response?.data)
+      .catch(fail);
+  }
+
+  /** Move every attachment in a linked project from the Plane server to Drive, in the background. */
+  async moveAllPlaneFiles(slug: string): Promise<void> {
+    return this.post(`${this.workspace(slug)}/plane-files/`)
+      .then(() => undefined)
+      .catch(fail);
+  }
+
   // ─── A work item's files ─────────────────────────────────────────────────
 
   async issueFiles(slug: string, projectId: string, issueId: string): Promise<TDriveIssue> {
     return this.get(`${this.issue(slug, projectId, issueId)}/`)
       .then((response) => response?.data)
+      .catch(fail);
+  }
+
+  /** Move the work item's attachments from the Plane server into its Drive folder, in the background. */
+  async movePlaneFiles(slug: string, projectId: string, issueId: string): Promise<void> {
+    return this.post(`${this.issue(slug, projectId, issueId)}/move-plane-files/`)
+      .then(() => undefined)
       .catch(fail);
   }
 

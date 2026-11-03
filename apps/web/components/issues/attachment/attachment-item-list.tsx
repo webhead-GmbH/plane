@@ -13,8 +13,9 @@ import { useTranslation } from "@plane/i18n";
 import { setToast } from "@plane/blocks/toast";
 import type { TIssueServiceType } from "@plane/types";
 import { EIssueServiceType } from "@plane/types";
+import { cn } from "@plane/utils";
 // components
-import { DriveAttachmentList } from "@/components/google-drive/drive-attachment-list";
+import { DriveAttachmentList, PlaneAttachmentsHeader } from "@/components/google-drive/drive-attachment-list";
 import { attachFilesToDrive, useDriveIssue } from "@/components/google-drive/drive-issue";
 // hooks
 import { useIssueDetail } from "@/hooks/store/use-issue-detail";
@@ -113,58 +114,94 @@ export const IssueAttachmentItemList = observer(function IssueAttachmentItemList
     maxSize: toDrive ? undefined : maxFileSize,
     multiple: toDrive,
     disabled: isUploading || disabled,
+    // With Drive the list is for opening and removing files, and Attach is the way to add one:
+    // a click anywhere on it, even in a dialog it opened, must not ask for files.
+    noClick: toDrive,
+    noKeyboard: toDrive,
   });
 
-  return (
-    <>
-      {uploadStatus?.map((fileStatus) => (
-        <IssueAttachmentsUploadItem key={fileStatus.id} uploadStatus={fileStatus} />
-      ))}
-      {toDrive && (
-        <div {...getRootProps()} className={disabled ? "cursor-not-allowed" : "cursor-pointer"}>
+  const dropOverlay = isDragActive && (
+    <div className="absolute top-0 left-0 z-30 flex h-full w-full items-center justify-center bg-surface-2/75">
+      <div className="flex items-center justify-center rounded-md bg-surface-1 p-1">
+        <div className="flex flex-col items-center justify-center rounded-md border border-dashed border-strong px-5 py-6">
+          <UploadOutline className="size-7" />
+          <span className="text-13 text-tertiary">
+            {toDrive ? t("google_drive_integration.attachments.drop_here") : t("attachment.drag_and_drop")}
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+
+  const deleteModal = attachmentDeleteModalId && (
+    <IssueAttachmentDeleteModal
+      isOpen={Boolean(attachmentDeleteModalId)}
+      onClose={() => toggleDeleteAttachmentModal(null)}
+      attachmentOperations={attachmentOperations}
+      attachmentId={attachmentDeleteModalId}
+      issueServiceType={issueServiceType}
+    />
+  );
+
+  const planeAttachments = issueAttachments?.map((attachmentId) => (
+    <IssueAttachmentsListItem
+      key={attachmentId}
+      attachmentId={attachmentId}
+      disabled={disabled}
+      issueServiceType={issueServiceType}
+    />
+  ));
+
+  // One drop area for the whole list: the files in Drive first, then any from before the folder.
+  if (toDrive)
+    return (
+      <>
+        {deleteModal}
+        <div
+          {...getRootProps()}
+          className={cn("relative flex flex-col", { "min-h-[200px]": isDragActive && !issueAttachments?.length })}
+        >
           <input {...getInputProps()} />
+          {dropOverlay}
           <DriveAttachmentList
             workspaceSlug={workspaceSlug}
             projectId={projectId}
             issueId={issueId}
             disabled={disabled}
           />
+          {!!issueAttachments?.length && (
+            <>
+              <PlaneAttachmentsHeader
+                workspaceSlug={workspaceSlug}
+                projectId={projectId}
+                issueId={issueId}
+                issueServiceType={issueServiceType}
+                disabled={disabled}
+              />
+              {planeAttachments}
+            </>
+          )}
         </div>
-      )}
+      </>
+    );
+
+  return (
+    <>
+      {uploadStatus?.map((fileStatus) => (
+        <IssueAttachmentsUploadItem key={fileStatus.id} uploadStatus={fileStatus} />
+      ))}
       {issueAttachments && (
         <>
-          {attachmentDeleteModalId && (
-            <IssueAttachmentDeleteModal
-              isOpen={Boolean(attachmentDeleteModalId)}
-              onClose={() => toggleDeleteAttachmentModal(null)}
-              attachmentOperations={attachmentOperations}
-              attachmentId={attachmentDeleteModalId}
-              issueServiceType={issueServiceType}
-            />
-          )}
+          {deleteModal}
           <div
             {...getRootProps()}
-            className={`relative flex flex-col ${isDragActive && issueAttachments.length < 3 ? "min-h-[200px]" : ""} ${disabled ? "cursor-not-allowed" : "cursor-pointer"}`}
+            className={cn("relative flex flex-col", disabled ? "cursor-not-allowed" : "cursor-pointer", {
+              "min-h-[200px]": isDragActive && issueAttachments.length < 3,
+            })}
           >
             <input {...getInputProps()} />
-            {isDragActive && (
-              <div className="absolute top-0 left-0 z-30 flex h-full w-full items-center justify-center bg-surface-2/75">
-                <div className="flex items-center justify-center rounded-md bg-surface-1 p-1">
-                  <div className="flex flex-col items-center justify-center rounded-md border border-dashed border-strong px-5 py-6">
-                    <UploadOutline className="size-7" />
-                    <span className="text-13 text-tertiary">{t("attachment.drag_and_drop")}</span>
-                  </div>
-                </div>
-              </div>
-            )}
-            {issueAttachments?.map((attachmentId) => (
-              <IssueAttachmentsListItem
-                key={attachmentId}
-                attachmentId={attachmentId}
-                disabled={disabled}
-                issueServiceType={issueServiceType}
-              />
-            ))}
+            {dropOverlay}
+            {planeAttachments}
           </div>
         </>
       )}

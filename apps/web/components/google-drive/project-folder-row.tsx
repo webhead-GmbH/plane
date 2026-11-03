@@ -18,7 +18,7 @@ import { useTranslation } from "@plane/i18n";
 import { cn } from "@plane/utils";
 // services
 import { GoogleDriveService } from "@/services/google-drive.service";
-import type { TDriveProjectRow } from "@/services/google-drive.service";
+import type { TDriveFolderRef, TDriveProjectRow } from "@/services/google-drive.service";
 // local imports
 import { I18N, driveErrorMessage } from "./errors";
 import { DriveFolderBrowser } from "./folder-browser";
@@ -32,11 +32,13 @@ type TProps = {
   row: TDriveProjectRow;
   /** Every folder in the projects folder, to choose from. */
   folders: { id: string; name: string }[];
+  /** The projects folder: choosing from Drive starts there and stays inside it. */
+  rootFolder: TDriveFolderRef;
   onChange: () => void;
 };
 
 /** One project and its folder: linked, or the folders that look like its own and the means to pick one. */
-export const DriveProjectFolderRow = ({ workspaceSlug, row, folders, onChange }: TProps) => {
+export const DriveProjectFolderRow = ({ workspaceSlug, row, folders, rootFolder, onChange }: TProps) => {
   const { t } = useTranslation();
   const [isEditing, setIsEditing] = useState(false);
   const [isBrowsing, setIsBrowsing] = useState(false);
@@ -212,6 +214,7 @@ export const DriveProjectFolderRow = ({ workspaceSlug, row, folders, onChange }:
 
       <DriveFolderBrowser
         workspaceSlug={workspaceSlug}
+        within={rootFolder}
         isOpen={isBrowsing}
         onClose={() => setIsBrowsing(false)}
         onChoose={link}

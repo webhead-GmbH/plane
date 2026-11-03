@@ -14,7 +14,7 @@ import { useTranslation } from "@plane/i18n";
 import { Loader } from "@plane/blocks/skeleton";
 // services
 import { GoogleDriveService } from "@/services/google-drive.service";
-import type { TDriveBrowseItem } from "@/services/google-drive.service";
+import type { TDriveBrowseItem, TDriveFolderRef } from "@/services/google-drive.service";
 // local imports
 import { I18N, driveErrorMessage } from "./errors";
 
@@ -22,6 +22,8 @@ const driveService = new GoogleDriveService();
 
 type TProps = {
   workspaceSlug: string;
+  /** A folder to start in and stay inside, such as the projects folder. Without it, all of Drive. */
+  within?: TDriveFolderRef;
   isOpen: boolean;
   onClose: () => void;
   onChoose: (folderId: string) => void;
@@ -34,17 +36,19 @@ const ICONS = { my_drive: HardDrive, shared_with_me: Users, shared_drive: HardDr
  *
  * The top level is My Drive, Shared with me and each shared drive, because a
  * company's project folders are as likely to be in a shared drive as in one
- * person's Drive.
+ * person's Drive. Given a folder to stay inside, the top is that folder instead.
  */
-export const DriveFolderBrowser = ({ workspaceSlug, isOpen, onClose, onChoose }: TProps) => {
+export const DriveFolderBrowser = ({ workspaceSlug, within, isOpen, onClose, onChoose }: TProps) => {
   const { t } = useTranslation();
   // The trail from the top down to the folder being looked into.
   const [trail, setTrail] = useState<TDriveBrowseItem[]>([]);
   const current = trail[trail.length - 1];
-  const { data, error, isLoading } = useSWR(isOpen ? ["GDRIVE_FOLDERS", workspaceSlug, current?.id ?? ""] : null, () =>
-    driveService.folders(workspaceSlug, current?.id ?? "")
+  const parent = current?.id ?? within?.id ?? "";
+  const { data, error, isLoading } = useSWR(isOpen ? ["GDRIVE_FOLDERS", workspaceSlug, parent] : null, () =>
+    driveService.folders(workspaceSlug, parent)
   );
-  // "Shared with me" is a list, not a folder, so there is nothing to choose while in it.
+  // "Shared with me" is a list, not a folder, so there is nothing to choose while in it; nor
+  // is the folder being stayed inside, which holds the choices rather than being one.
   const canChoose = Boolean(current) && current.kind !== "shared_with_me";
 
   const close = () => {
@@ -59,8 +63,12 @@ export const DriveFolderBrowser = ({ workspaceSlug, isOpen, onClose, onChoose }:
           <DialogTitle>{t(`${I18N}.browser.title`)}</DialogTitle>
 
           <nav aria-label={t(`${I18N}.browser.top`)} className="flex flex-wrap items-center gap-1 text-13">
-            <button type="button" className="text-secondary hover:text-primary" onClick={() => setTrail([])}>
-              {t(`${I18N}.browser.top`)}
+            <button
+              type="button"
+              className={trail.length ? "text-secondary hover:text-primary" : "font-medium text-primary"}
+              onClick={() => setTrail([])}
+            >
+              {within?.name ?? t(`${I18N}.browser.top`)}
             </button>
             {trail.map((item, index) => (
               <span key={item.id} className="flex items-center gap-1">

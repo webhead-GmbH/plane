@@ -26,6 +26,7 @@ export type TAttachmentUploadStatus = {
 export interface IIssueAttachmentStoreActions {
   // actions
   addAttachments: (issueId: string, attachments: TIssueAttachment[]) => void;
+  forgetAttachments: (issueId: string, attachmentIds: string[]) => void;
   fetchAttachments: (workspaceSlug: string, projectId: string, issueId: string) => Promise<TIssueAttachment[]>;
   createAttachment: (
     workspaceSlug: string,
@@ -77,6 +78,7 @@ export class IssueAttachmentStore implements IIssueAttachmentStore {
       // actions
       addAttachments: action.bound,
       fetchAttachments: action,
+      forgetAttachments: action,
       createAttachment: action,
       removeAttachment: action,
     });
@@ -125,6 +127,19 @@ export class IssueAttachmentStore implements IIssueAttachmentStore {
         attachments.forEach((attachment) => set(this.attachmentMap, attachment.id, attachment));
       });
     }
+  };
+
+  /** Stop showing attachments Plane no longer keeps, such as ones moved to Google Drive. */
+  forgetAttachments = (issueId: string, attachmentIds: string[]) => {
+    if (!attachmentIds.length) return;
+    const gone = new Set(attachmentIds);
+    runInAction(() => {
+      update(this.attachments, [issueId], (ids: string[] = []) => ids.filter((id) => !gone.has(id)));
+      attachmentIds.forEach((id) => delete this.attachmentMap[id]);
+      this.rootIssueStore.issues.updateIssue(issueId, {
+        attachment_count: this.getAttachmentsCountByIssueId(issueId),
+      });
+    });
   };
 
   fetchAttachments = async (workspaceSlug: string, projectId: string, issueId: string) => {

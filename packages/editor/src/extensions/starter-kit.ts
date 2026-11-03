@@ -44,8 +44,10 @@ export const CustomStarterKitExtension = (args: TArgs) => {
       },
     },
     dropcursor: {
+      // Where a dragged file or block will land: the accent colour, thick enough to see on any theme
+      width: 2,
       class:
-        "text-tertiary transition-all motion-reduce:transition-none motion-reduce:hover:transform-none duration-200 ease-[cubic-bezier(0.165, 0.84, 0.44, 1)]",
+        "text-accent-primary transition-all motion-reduce:transition-none motion-reduce:hover:transform-none duration-200 ease-[cubic-bezier(0.165, 0.84, 0.44, 1)]",
     },
     // v3 bundles these; Plane registers its own versions
     link: false,

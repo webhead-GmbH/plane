@@ -15,6 +15,7 @@ import { cn, isCommentEmpty } from "@plane/utils";
 // components
 import { LiteTextEditor } from "@/components/editor/lite-text";
 import { useDriveTarget } from "@/components/google-drive/drive-issue";
+import { useEditorUploads } from "@/components/google-drive/editor-uploads";
 
 type Props = {
   activityOperations: TCommentsOperations;
@@ -40,6 +41,8 @@ export const CommentCardEditForm = observer(function CommentCardEditForm(props: 
   } = props;
   // On a work item whose project has a Google Drive folder, images and files in the comment go there.
   const { driveTarget, isDriveLoading } = useDriveTarget(workspaceSlug, projectId, comment?.issue, "comment");
+  // The edit is saved once its files are in Drive, not with a link that leads nowhere.
+  const isUploading = useEditorUploads(driveTarget ? comment.id : undefined).length > 0;
   // refs
   const editorRef = useRef<EditorRefApi>(null);
   // form info
@@ -56,7 +59,7 @@ export const CommentCardEditForm = observer(function CommentCardEditForm(props: 
 
   const isEmpty = isCommentEmpty(commentHTML);
   const isEditorReadyToDiscard = editorRef.current?.isEditorReadyToDiscard();
-  const isSubmitButtonDisabled = isSubmitting || !isEditorReadyToDiscard;
+  const isSubmitButtonDisabled = isSubmitting || !isEditorReadyToDiscard || isUploading;
   const isDisabled = isSubmitting || isEmpty || isSubmitButtonDisabled;
 
   const onEnter = async (formData: Partial<TIssueComment>) => {
@@ -83,10 +86,12 @@ export const CommentCardEditForm = observer(function CommentCardEditForm(props: 
       <div
         role="presentation"
         onKeyDown={(e) => {
-          if (e.key === "Enter" && !e.shiftKey && !e.ctrlKey && !e.metaKey && !isEmpty) handleSubmit(onEnter)(e);
+          if (e.key === "Enter" && !e.shiftKey && !e.ctrlKey && !e.metaKey && !isEmpty && !isUploading)
+            handleSubmit(onEnter)(e);
         }}
       >
         <LiteTextEditor
+          key={driveTarget ? "drive" : "plane"}
           editable
           workspaceId={workspaceId}
           workspaceSlug={workspaceSlug}
@@ -96,7 +101,7 @@ export const CommentCardEditForm = observer(function CommentCardEditForm(props: 
           value={null}
           onChange={(_comment_json, comment_html) => setValue("comment_html", comment_html)}
           onEnterKeyPress={(e) => {
-            if (!isEmpty && !isSubmitting) {
+            if (!isEmpty && !isSubmitting && !isUploading) {
               handleSubmit(onEnter)(e);
             }
           }}

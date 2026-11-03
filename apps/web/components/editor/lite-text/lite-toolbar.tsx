@@ -13,11 +13,13 @@ import { IMAGE_ITEM } from "@plane/editor";
 type LiteToolbarProps = {
   onSubmit: (e: React.KeyboardEvent<HTMLDivElement> | React.MouseEvent<HTMLButtonElement>) => void;
   isSubmitting: boolean;
+  /** Files are still on their way to Google Drive; the comment waits for them. */
+  isUploading?: boolean;
   isEmpty: boolean;
   executeCommand: (item: ToolbarMenuItem) => void;
 };
 
-export function LiteToolbar({ onSubmit, isSubmitting, isEmpty, executeCommand }: LiteToolbarProps) {
+export function LiteToolbar({ onSubmit, isSubmitting, isUploading, isEmpty, executeCommand }: LiteToolbarProps) {
   return (
     <div className="flex items-center gap-2 pb-1">
       <button
@@ -30,7 +32,7 @@ export function LiteToolbar({ onSubmit, isSubmitting, isEmpty, executeCommand }:
       <button
         type="button"
         onClick={(e) => onSubmit(e)}
-        disabled={isEmpty || isSubmitting}
+        disabled={isEmpty || isSubmitting || isUploading}
         className="rounded-sm bg-accent-primary p-1 text-primary transition-colors hover:bg-accent-primary/80 disabled:bg-layer-1 disabled:text-secondary"
       >
         <TopArrowOutline className="size-3" />

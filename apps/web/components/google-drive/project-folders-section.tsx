@@ -15,8 +15,9 @@ import { setToast } from "@plane/blocks/toast";
 import { useTranslation } from "@plane/i18n";
 // services
 import { GoogleDriveService } from "@/services/google-drive.service";
-import type { TDriveProjectRow } from "@/services/google-drive.service";
+import type { TDriveFolderRef, TDriveProjectRow } from "@/services/google-drive.service";
 // local imports
+import { forgetDriveIssues } from "./drive-issue";
 import { I18N, driveErrorMessage } from "./errors";
 import { DriveProjectFolderRow } from "./project-folder-row";
 
@@ -32,20 +33,20 @@ const plain = (text: string) =>
 const matches = (row: TDriveProjectRow, query: string) =>
   [row.project.name, row.project.identifier, row.folder?.name ?? ""].some((text) => plain(text).includes(query));
 
-type TProps = { workspaceSlug: string; rootFolderId: string };
+type TProps = { workspaceSlug: string; rootFolder: TDriveFolderRef };
 
 /**
  * Every project and the folder it keeps its files in. The folders that look
  * like a project's own are offered first, and the projects whose folder is
  * beyond doubt can all be linked at once.
  */
-export const DriveProjectFoldersSection = ({ workspaceSlug, rootFolderId }: TProps) => {
+export const DriveProjectFoldersSection = ({ workspaceSlug, rootFolder }: TProps) => {
   const { t } = useTranslation();
   const [query, setQuery] = useState("");
   const [isLinking, setIsLinking] = useState(false);
   // Keyed by the root folder too: choosing another one changes every row's suggestions.
   const { data, error, isLoading, mutate } = useSWR(
-    ["GDRIVE_PROJECTS", workspaceSlug, rootFolderId],
+    ["GDRIVE_PROJECTS", workspaceSlug, rootFolder.id],
     () => driveService.projects(workspaceSlug),
     { revalidateOnFocus: false, shouldRetryOnError: false }
   );
@@ -60,6 +61,7 @@ export const DriveProjectFoldersSection = ({ workspaceSlug, rootFolderId }: TPro
     try {
       const { linked } = await driveService.linkSuggested(workspaceSlug);
       setToast({ type: "success", title: t(`${I18N}.projects.linked_clear`, { count: linked }) });
+      void forgetDriveIssues();
       await mutate();
     } catch (failure) {
       setToast({ type: "error", title: t(`${I18N}.projects.save_failed`), message: driveErrorMessage(failure, t) });
@@ -125,7 +127,11 @@ export const DriveProjectFoldersSection = ({ workspaceSlug, rootFolderId }: TPro
               workspaceSlug={workspaceSlug}
               row={row}
               folders={data?.folders ?? []}
-              onChange={() => void mutate()}
+              rootFolder={rootFolder}
+              onChange={() => {
+                void forgetDriveIssues();
+                void mutate();
+              }}
             />
           ))}
         </ul>

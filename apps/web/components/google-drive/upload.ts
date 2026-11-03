@@ -33,6 +33,9 @@ export class DriveUploadError extends Error {
   }
 }
 
+/** Whether an upload ended because somebody stopped it, which is nothing to report. */
+export const isUploadStopped = (failure: unknown) => failure instanceof DOMException && failure.name === "AbortError";
+
 const asUploadError = (failure: unknown) => {
   if (failure instanceof DriveUploadError) return failure;
   if (failure instanceof DOMException && failure.name === "AbortError") return failure;
@@ -169,6 +172,8 @@ export async function uploadFileToDrive(
   } catch (failure) {
     // A file that never arrived leaves no record behind. Best effort: the failure is what gets reported.
     if (uploadId) void driveService.removeFile(workspaceSlug, projectId, issueId, uploadId).catch(() => undefined);
+    // However it surfaced (an aborted request, or a cancelled one through the server), it was stopped.
+    if (signal?.aborted) throw new DOMException("The upload was stopped.", "AbortError");
     throw asUploadError(failure);
   }
 }

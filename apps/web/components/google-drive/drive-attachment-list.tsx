@@ -6,7 +6,7 @@
 
 import { useState } from "react";
 import { observer } from "mobx-react";
-import { ExternalLink, FolderOpen } from "lucide-react";
+import { ExternalLink, FolderOpen, Server } from "lucide-react";
 // plane imports
 import { Button } from "@makeplane/propel/components/button";
 import { Dialog, DialogContent, DialogTitle } from "@makeplane/propel/components/dialog";
@@ -18,20 +18,22 @@ import { DeleteOutline, MoreHorizontalOutline } from "@makeplane/propel/icons";
 import { ConfirmDialog } from "@plane/blocks/dialog";
 import { setToast } from "@plane/blocks/toast";
 import { useTranslation } from "@plane/i18n";
+import type { TIssueServiceType } from "@plane/types";
 import { convertBytesToSize, getFileExtension, renderFormattedDate } from "@plane/utils";
 // components
 import { ButtonAvatars } from "@/components/dropdowns/member/avatar";
 import { getFileIcon } from "@/components/icons";
-import { IssueAttachmentsUploadItem } from "@/components/issues/attachment/attachment-list-upload-item";
 // hooks
+import { useIssueDetail } from "@/hooks/store/use-issue-detail";
 import { useMember } from "@/hooks/store/use-member";
 import { usePlatformOS } from "@/hooks/use-platform-os";
 // services
 import { GoogleDriveService } from "@/services/google-drive.service";
 import type { TDriveFile } from "@/services/google-drive.service";
 // local imports
-import { driveUploads, refreshDriveIssue, useDriveIssue } from "./drive-issue";
+import { driveUploads, refreshDriveIssue, stopDriveUpload, useDriveIssue } from "./drive-issue";
 import { I18N, driveErrorMessage } from "./errors";
+import { DriveUploadRow, useWarnBeforeLeaving } from "./upload-row";
 
 const driveService = new GoogleDriveService();
 
@@ -51,6 +53,7 @@ export const DriveAttachmentList = observer(function DriveAttachmentList(props: 
   const [removing, setRemoving] = useState<TDriveFile | null>(null);
   const [isRemoving, setIsRemoving] = useState(false);
   const uploads = driveUploads.get(issueId) ?? [];
+  useWarnBeforeLeaving(uploads.length > 0);
 
   if (!data?.enabled) return null;
 
@@ -95,7 +98,14 @@ export const DriveAttachmentList = observer(function DriveAttachmentList(props: 
       </div>
 
       {uploads.map((upload) => (
-        <IssueAttachmentsUploadItem key={upload.id} uploadStatus={upload} />
+        <DriveUploadRow
+          key={upload.id}
+          name={upload.name}
+          size={upload.size}
+          progress={upload.progress}
+          onStop={() => stopDriveUpload(upload.id)}
+          className="h-11 bg-surface-2 px-3"
+        />
       ))}
 
       {data.files.map((file) => (
@@ -121,6 +131,81 @@ export const DriveAttachmentList = observer(function DriveAttachmentList(props: 
         primaryButtonText={{ default: t(`${I18N}.attachments.remove`), loading: t(`${I18N}.attachments.removing`) }}
         secondaryButtonText={t("common.cancel")}
       />
+    </div>
+  );
+});
+
+type TPlaneFilesProps = {
+  workspaceSlug: string;
+  projectId: string;
+  issueId: string;
+  issueServiceType: TIssueServiceType;
+  disabled?: boolean;
+};
+
+const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+/**
+ * Above the attachments that were added before the project had a folder: they
+ * are on the Plane server, not in Drive, and can be moved there.
+ */
+export const PlaneAttachmentsHeader = observer(function PlaneAttachmentsHeader(props: TPlaneFilesProps) {
+  const { workspaceSlug, projectId, issueId, issueServiceType, disabled } = props;
+  const { t } = useTranslation();
+  const { data } = useDriveIssue(workspaceSlug, projectId, issueId);
+  const {
+    attachment: { fetchAttachments, forgetAttachments, getAttachmentsByIssueId },
+  } = useIssueDetail(issueServiceType);
+  const [isMoving, setIsMoving] = useState(false);
+  const moving = isMoving || Boolean(data?.moving);
+
+  const move = async () => {
+    setIsMoving(true);
+    try {
+      await driveService.movePlaneFiles(workspaceSlug, projectId, issueId);
+      // The server moves them in the background and says when it is done.
+      let state = await refreshDriveIssue(workspaceSlug, projectId, issueId);
+      while (state?.moving) {
+        // oxlint-disable-next-line no-await-in-loop -- one look every two seconds until the move ends
+        await wait(2000);
+        // oxlint-disable-next-line no-await-in-loop
+        state = await refreshDriveIssue(workspaceSlug, projectId, issueId);
+      }
+      // The ones that moved are no longer Plane's to list; any left behind failed and stay.
+      const before = getAttachmentsByIssueId(issueId) ?? [];
+      const left = new Set((await fetchAttachments(workspaceSlug, projectId, issueId)).map((item) => item.id));
+      forgetAttachments(
+        issueId,
+        before.filter((id) => !left.has(id))
+      );
+      if (left.size) setToast({ type: "error", title: t(`${I18N}.attachments.move_failed`) });
+    } catch (failure) {
+      setToast({ type: "error", title: t(`${I18N}.attachments.move_failed`), message: driveErrorMessage(failure, t) });
+    } finally {
+      setIsMoving(false);
+    }
+  };
+
+  return (
+    <div className="flex items-center justify-between gap-3 border-t border-subtle px-3 py-1.5 text-12 text-tertiary">
+      <span className="inline-flex items-center gap-1.5">
+        <Server className="size-3.5" aria-hidden />
+        {t(`${I18N}.attachments.in_plane`)}
+      </span>
+      {!disabled && (
+        <Button
+          variant="ghost"
+          size="sm"
+          stretch="auto"
+          label={moving ? t(`${I18N}.attachments.moving`) : t(`${I18N}.attachments.move_to_drive`)}
+          loading={moving}
+          disabled={moving}
+          onClick={(event) => {
+            event.stopPropagation();
+            void move();
+          }}
+        />
+      )}
     </div>
   );
 });
