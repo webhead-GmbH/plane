@@ -55,8 +55,11 @@ function PersonMonth() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [year, month] = monthFromAddress(searchParams.get("month"));
 
-  const { data, isLoading, error, mutate } = useSWR(`HR_PERSON_MONTH_${profileId}_${year}_${month}`, () =>
-    hrService.me(year, month, profileId)
+  const { data, isLoading, error, mutate } = useSWR(
+    `HR_PERSON_MONTH_${profileId}_${year}_${month}`,
+    () => hrService.me(year, month, profileId),
+    // While their timer runs, asked again every minute, so a stopped one stops counting here too.
+    { refreshInterval: (latest) => (latest?.running_timer ? 60_000 : 0) }
   );
 
   // The address holds the month, so a link from Team time opens on the month it was on.

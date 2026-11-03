@@ -25,6 +25,8 @@ import { HrFigure } from "./figure";
 type TProps = {
   period: THrPeriod | null;
   hasRunningTimer: boolean;
+  /** The minutes of the running timer counted into the figures so far, or null when none is counted. */
+  runningMinutes?: number | null;
   contractedWeeklyMinutes?: number | null;
   /** Days worked from home so far this calendar year. Null where none are kept. */
   teleworkDaysThisYear?: number | null;
@@ -47,6 +49,7 @@ type TFigures = ReturnType<typeof figuresToShow>;
 export const HrMonthSummary = ({
   period,
   hasRunningTimer,
+  runningMinutes,
   contractedWeeklyMinutes,
   teleworkDaysThisYear,
   leave,
@@ -77,6 +80,7 @@ export const HrMonthSummary = ({
         period={period}
         shown={shown}
         hasRunningTimer={hasRunningTimer}
+        runningMinutes={runningMinutes}
         teleworkDaysThisYear={teleworkDaysThisYear}
         leave={leave}
         schedule={schedule}
@@ -173,6 +177,7 @@ const MonthNotes = ({
   period,
   shown,
   hasRunningTimer,
+  runningMinutes,
   teleworkDaysThisYear,
   leave,
   schedule,
@@ -180,6 +185,7 @@ const MonthNotes = ({
   period: THrPeriod;
   shown: TFigures;
   hasRunningTimer: boolean;
+  runningMinutes?: number | null;
   teleworkDaysThisYear?: number | null;
   leave?: THrLeaveStanding | null;
   schedule?: THrWorkSchedule | null;
@@ -195,8 +201,10 @@ const MonthNotes = ({
 
       {hasRunningTimer ? (
         <span className="inline-flex items-center gap-1 text-tertiary">
-          <Timer className="size-3" />
-          {t("hr.summary.timer_running")}
+          <Timer className="size-3 animate-pulse text-success-primary" />
+          {runningMinutes === null || runningMinutes === undefined
+            ? t("hr.summary.timer_running")
+            : t("hr.summary.timer_counted", { duration: formatMinutes(runningMinutes) })}
         </span>
       ) : null}
 
