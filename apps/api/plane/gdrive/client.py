@@ -274,6 +274,9 @@ class DriveClient:
     def trash(self, file_id):
         self._request("PATCH", f"{API}/files/{file_id}", params={"supportsAllDrives": "true"}, json={"trashed": True})
 
+    def untrash(self, file_id):
+        self._request("PATCH", f"{API}/files/{file_id}", params={"supportsAllDrives": "true"}, json={"trashed": False})
+
     # ─── Uploads ───────────────────────────────────────────────────────────
 
     def start_upload(self, parent_id, name, mime_type, size, origin=None):

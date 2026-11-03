@@ -5,6 +5,7 @@
 """The Google Drive endpoints, with Google itself replaced by a small in-memory Drive."""
 
 # Python imports
+import io
 from unittest import mock
 from uuid import uuid4
 
@@ -15,10 +16,12 @@ from rest_framework.test import APIClient
 
 # Module imports
 from plane.app.permissions import ROLE
-from plane.db.models import Issue, State
+from plane.db.models import FileAsset, Issue, IssueComment, State
 from plane.gdrive.client import FOLDER_MIME, DriveError
 from plane.gdrive.models import DriveConnection, DriveFile, DriveIssueFolder, DriveProjectFolder
+from plane.gdrive.references import follow_text
 from plane.gdrive.services import link_new_project
+from plane.gdrive.tasks import move_plane_attachments_to_drive
 from plane.tests.factories import (
     ProjectFactory,
     ProjectMemberFactory,
@@ -39,6 +42,7 @@ class FakeDrive:
         self.items = {ROOT: {"id": ROOT, "name": "webhead", "mimeType": FOLDER_MIME, "parents": []}}
         self.sessions = {}
         self.trashed = []
+        self.untrashed = []
 
     def add_folder(self, name, parent=ROOT):
         folder_id = f"folder-id-{len(self.items):04d}"
@@ -106,6 +110,9 @@ class FakeDrive:
     def trash(self, file_id):
         self.trashed.append(file_id)
 
+    def untrash(self, file_id):
+        self.untrashed.append(file_id)
+
 
 @pytest.fixture
 def drive():
@@ -113,6 +120,7 @@ def drive():
     with (
         mock.patch("plane.gdrive.views.DriveClient", return_value=fake),
         mock.patch("plane.gdrive.services.DriveClient", return_value=fake),
+        mock.patch("plane.gdrive.references.DriveClient", return_value=fake),
         mock.patch("plane.gdrive.services._lock"),
     ):
         yield fake
@@ -262,15 +270,16 @@ class TestProjectFolders:
         assert link_new_project(project) == "skipped"
 
 
-class TestUploads:
-    @pytest.fixture
-    def linked(self, setup, drive):
-        folder = drive.add_folder("Fisch Gruber")
-        DriveProjectFolder.objects.create(
-            workspace=setup["workspace"], project=setup["project"], folder_id=folder, folder_name="Fisch Gruber"
-        )
-        return folder
+@pytest.fixture
+def linked(setup, drive):
+    folder = drive.add_folder("Fisch Gruber")
+    DriveProjectFolder.objects.create(
+        workspace=setup["workspace"], project=setup["project"], folder_id=folder, folder_name="Fisch Gruber"
+    )
+    return folder
 
+
+class TestUploads:
     def test_without_a_project_folder_drive_is_off_for_the_work_item(self, setup, drive):
         assert client_for(setup["member"]).get(issue_url(setup)).json()["enabled"] is False
 
@@ -377,3 +386,212 @@ class TestUploads:
         outsider = UserFactory(username=uuid4().hex)
         WorkspaceMemberFactory(workspace=setup["workspace"], member=outsider, role=ROLE.MEMBER.value)
         assert client_for(outsider).get(url).status_code == 404
+
+
+def in_drive(setup, source, name="brief.pdf"):
+    """A file that has arrived in the work item's Drive folder."""
+    google_id = f"g-{uuid4().hex[:12]}"
+    return DriveFile.objects.create(
+        workspace=setup["workspace"],
+        project=setup["project"],
+        issue=setup["issue"],
+        source=source,
+        state=DriveFile.State.UPLOADED,
+        name=name,
+        size=1,
+        drive_file_id=google_id,
+        web_view_link=f"https://drive.google.com/file/d/{google_id}/view?usp=drivesdk",
+    )
+
+
+def link_to(drive_file):
+    return f'<p><a href="{drive_file.web_view_link}" target="_blank">{drive_file.name}</a></p>'
+
+
+def image_of(drive_file):
+    return f'<image-component src="gdrive-{drive_file.id}" status="uploaded"></image-component>'
+
+
+class TestFilesInText:
+    @pytest.fixture(autouse=True)
+    def follow_now(self):
+        """The task the text hands its files to, run on the spot."""
+        with mock.patch("plane.gdrive.tasks.follow_text_files.delay", side_effect=follow_text):
+            yield
+
+    def comment(self, setup, html, capture):
+        with capture(execute=True):
+            made = IssueComment.objects.create(
+                workspace=setup["workspace"],
+                project=setup["project"],
+                issue=setup["issue"],
+                actor=setup["member"],
+                comment_html=html,
+            )
+        return made
+
+    def edit_description(self, setup, html, capture):
+        with capture(execute=True):
+            issue = Issue.objects.get(pk=setup["issue"].pk)
+            issue.description_html = html
+            issue.save()
+
+    def test_a_file_taken_out_of_a_comment_goes_to_the_bin(
+        self, setup, drive, linked, django_capture_on_commit_callbacks
+    ):
+        drive_file = in_drive(setup, DriveFile.Source.COMMENT)
+        made = self.comment(setup, link_to(drive_file), django_capture_on_commit_callbacks)
+        with django_capture_on_commit_callbacks(execute=True):
+            comment = IssueComment.objects.get(pk=made.pk)
+            comment.comment_html = "<p>No file after all</p>"
+            comment.save()
+        assert drive.trashed == [drive_file.drive_file_id]
+        assert not DriveFile.objects.filter(pk=drive_file.pk).exists()
+
+    def test_deleting_a_comment_bins_its_files(self, setup, drive, linked, django_capture_on_commit_callbacks):
+        image = in_drive(setup, DriveFile.Source.COMMENT, "logo.png")
+        made = self.comment(setup, image_of(image), django_capture_on_commit_callbacks)
+        with django_capture_on_commit_callbacks(execute=True):
+            IssueComment.objects.get(pk=made.pk).delete()
+        assert drive.trashed == [image.drive_file_id]
+
+    def test_a_file_still_mentioned_elsewhere_stays(self, setup, drive, linked, django_capture_on_commit_callbacks):
+        drive_file = in_drive(setup, DriveFile.Source.COMMENT)
+        made = self.comment(setup, link_to(drive_file), django_capture_on_commit_callbacks)
+        self.edit_description(setup, link_to(drive_file), django_capture_on_commit_callbacks)
+        with django_capture_on_commit_callbacks(execute=True):
+            IssueComment.objects.get(pk=made.pk).delete()
+        assert drive.trashed == []
+        assert DriveFile.objects.filter(pk=drive_file.pk).exists()
+
+    def test_an_image_back_in_the_description_comes_out_of_the_bin(
+        self, setup, drive, linked, django_capture_on_commit_callbacks
+    ):
+        image = in_drive(setup, DriveFile.Source.DESCRIPTION, "logo.png")
+        self.edit_description(setup, image_of(image), django_capture_on_commit_callbacks)
+        self.edit_description(setup, "<p></p>", django_capture_on_commit_callbacks)
+        assert drive.trashed == [image.drive_file_id]
+        # An undo, or an older version restored.
+        self.edit_description(setup, image_of(image), django_capture_on_commit_callbacks)
+        assert drive.untrashed == [image.drive_file_id]
+        assert DriveFile.objects.filter(pk=image.pk).exists()
+
+    def test_attachments_are_left_alone(self, setup, drive, linked, django_capture_on_commit_callbacks):
+        attachment = in_drive(setup, DriveFile.Source.ATTACHMENT)
+        self.edit_description(setup, link_to(attachment), django_capture_on_commit_callbacks)
+        self.edit_description(setup, "<p></p>", django_capture_on_commit_callbacks)
+        assert drive.trashed == []
+
+
+class FakeStorage:
+    """Plane's own storage, holding a few objects."""
+
+    aws_storage_bucket_name = "uploads"
+
+    def __init__(self):
+        self.objects = {}
+        self.deleted = []
+        self.s3_client = self
+
+    def get_object(self, Bucket, Key):
+        data = self.objects[Key]
+        return {"ContentLength": len(data), "ContentType": "application/pdf", "Body": io.BytesIO(data)}
+
+    def delete_files(self, names):
+        self.deleted.extend(names)
+        return True
+
+
+class TestMovingPlaneAttachments:
+    @pytest.fixture
+    def storage(self):
+        fake = FakeStorage()
+        # The move runs in a worker, after the request and with nobody signed in: queued here
+        # and run by post(), outside the request, the way the worker would.
+        fake.queued = []
+        with (
+            mock.patch("plane.settings.storage.S3Storage", return_value=fake),
+            mock.patch(
+                "plane.gdrive.tasks.move_plane_attachments_to_drive.delay",
+                side_effect=lambda *args: fake.queued.append(args),
+            ),
+        ):
+            yield fake
+
+    def post(self, client, url, storage):
+        response = client.post(url)
+        while storage.queued:
+            move_plane_attachments_to_drive(*storage.queued.pop(0))
+        return response
+
+    def stored(self, setup, storage, name="report.pdf", data=b"0123456789", project=None, issue=None):
+        key = f"{setup['workspace'].id}/{uuid4().hex}-{name}"
+        storage.objects[key] = data
+        asset = FileAsset.objects.create(
+            asset=key,
+            attributes={"name": name, "type": "application/pdf", "size": len(data)},
+            size=len(data),
+            entity_type=FileAsset.EntityTypeContext.ISSUE_ATTACHMENT,
+            is_uploaded=True,
+            workspace=setup["workspace"],
+            project=project or setup["project"],
+            issue=issue or setup["issue"],
+        )
+        # Uploaded by the member: set after the save, which clears it with nobody signed in.
+        FileAsset.objects.filter(pk=asset.pk).update(created_by=setup["member"])
+        asset.refresh_from_db()
+        return asset
+
+    def test_a_work_items_attachments_move_to_its_folder(self, setup, drive, linked, storage):
+        asset = self.stored(setup, storage)
+        with mock.patch("plane.gdrive.services.MOVE_CHUNK", 4):
+            response = self.post(client_for(setup["member"]), issue_url(setup, "move-plane-files/"), storage)
+        assert response.status_code == 202
+
+        body = client_for(setup["member"]).get(issue_url(setup)).json()
+        assert [item["name"] for item in body["files"]] == ["report.pdf"]
+        assert body["moving"] is False
+        moved = DriveFile.objects.get(issue=setup["issue"])
+        assert drive.items[moved.drive_file_id]["size"] == "10"
+        assert drive.items[drive.items[moved.drive_file_id]["parents"][0]]["name"] == "FISCH-1"
+        assert moved.created_by_id == setup["member"].id
+        # Off the Plane server: the record removed the way Plane removes it, the bytes deleted.
+        asset.refresh_from_db()
+        assert asset.is_deleted is True
+        assert storage.deleted == [asset.asset.name]
+
+    def test_a_piece_google_only_partly_kept_is_sent_again(self, setup, drive, linked, storage):
+        self.stored(setup, storage, data=b"abcdefghij")
+        received = {}
+
+        def keep_three(url, data, start, total):
+            session = drive.sessions[url]
+            assert start == session["got"], "the move must carry on from what Google has"
+            kept = data if start + len(data) == total else data[:3]
+            received[url] = received.get(url, b"") + kept
+            session["got"] = start + len(kept)
+            return drive._answer(session)
+
+        with mock.patch("plane.gdrive.services.MOVE_CHUNK", 4), mock.patch.object(drive, "upload_chunk", keep_three):
+            self.post(client_for(setup["member"]), issue_url(setup, "move-plane-files/"), storage)
+        assert list(received.values()) == [b"abcdefghij"]
+
+    def test_the_workspace_count_covers_linked_projects_only(self, setup, drive, linked, storage):
+        other = ProjectFactory(workspace=setup["workspace"], name="Elsewhere", identifier="ELSE")
+        state = State.objects.create(name="Todo", project=other, workspace=setup["workspace"], group="unstarted")
+        elsewhere = Issue.objects.create(project=other, workspace=setup["workspace"], name="Other", state=state)
+        self.stored(setup, storage, data=b"12345")
+        self.stored(setup, storage, data=b"123", project=other, issue=elsewhere)
+        url = f"/api/workspaces/{setup['workspace'].slug}/drive/plane-files/"
+
+        assert client_for(setup["member"]).get(url).status_code == 403
+        admin = client_for(setup["admin"])
+        assert admin.get(url).json() == {"count": 1, "size": 5, "moving": False}
+        assert self.post(admin, url, storage).status_code == 202
+        assert admin.get(url).json() == {"count": 0, "size": 0, "moving": False}
+        assert FileAsset.objects.filter(issue=elsewhere, is_deleted=False).count() == 1
+
+    def test_a_project_without_a_folder_cannot_move_anything(self, setup, drive, storage):
+        self.stored(setup, storage)
+        response = self.post(client_for(setup["member"]), issue_url(setup, "move-plane-files/"), storage)
+        assert response.status_code == 409

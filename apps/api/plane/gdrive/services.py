@@ -17,11 +17,15 @@ The layout in Drive is the team's existing one:
 import logging
 from contextlib import contextmanager
 
+# Third party imports
+from botocore.exceptions import BotoCoreError, ClientError
+
 # Django imports
 from django.core.cache import cache
 from django.utils import timezone
 
 # Module imports
+from plane.db.models import FileAsset, Issue
 from plane.gdrive.client import FOLDER_MIME, DriveClient, DriveError
 from plane.gdrive.matching import confident_match, rank, same_name
 from plane.gdrive.models import DriveConnection, DriveFile, DriveIssueFolder, DriveProjectFolder
@@ -29,6 +33,10 @@ from plane.gdrive.models import DriveConnection, DriveFile, DriveIssueFolder, Dr
 logger = logging.getLogger(__name__)
 
 TASKS_FOLDER = "Tasks"
+# Pieces of a file moved from Plane's storage: a whole number of Google's 256 KiB units.
+MOVE_CHUNK = 32 * 256 * 1024
+# How long a move is taken to be running, at most, if its worker never says it ended.
+MOVE_TIMEOUT = 6 * 3600
 
 
 @contextmanager
@@ -222,3 +230,113 @@ def finish_upload(drive_file, meta):
     drive_file.uploaded_at = timezone.now()
     drive_file.save()
     return drive_file
+
+
+# ─── Attachments from before the folder ─────────────────────────────────────
+
+
+def plane_attachments(workspace_id, issue_id=None):
+    """Attachments still in Plane's own storage, on work items whose project has a Drive folder."""
+    linked = DriveProjectFolder.objects.filter(workspace_id=workspace_id).values("project_id")
+    attachments = FileAsset.objects.filter(
+        workspace_id=workspace_id,
+        entity_type=FileAsset.EntityTypeContext.ISSUE_ATTACHMENT,
+        is_uploaded=True,
+        is_deleted=False,
+        issue__isnull=False,
+        issue__deleted_at__isnull=True,
+        project_id__in=linked,
+    )
+    return attachments.filter(issue_id=issue_id) if issue_id else attachments
+
+
+def moving_key(workspace_id, issue_id=None):
+    """Set while a move runs: for one work item, or for the whole workspace."""
+    return f"gdrive:moving:{workspace_id}:{issue_id or 'all'}"
+
+
+def is_moving(workspace_id, issue_id=None):
+    keys = [moving_key(workspace_id)] + ([moving_key(workspace_id, issue_id)] if issue_id else [])
+    return any(cache.get(key) for key in keys)
+
+
+def _read(stream, amount):
+    """Up to ``amount`` bytes, fewer only at the end: a stream may hand them over in smaller pieces."""
+    parts, left = [], amount
+    while left > 0:
+        part = stream.read(left)
+        if not part:
+            break
+        parts.append(part)
+        left -= len(part)
+    return b"".join(parts)
+
+
+def move_attachment_to_drive(connection, asset, storage):
+    """Put one of Plane's own attachments in its work item's Drive folder, and free its space on the server.
+
+    The bytes go from storage to Google piece by piece, so a file of any size moves
+    without being held whole. Plane's record is removed the way its own delete does
+    it, and the stored object is deleted only once Google has the whole file.
+    """
+    issue = Issue.all_objects.select_related("project").get(pk=asset.issue_id)
+    folder = ensure_issue_folder(connection, issue)
+    key = asset.asset.name
+    stored = storage.s3_client.get_object(Bucket=storage.aws_storage_bucket_name, Key=key)
+    size = int(stored["ContentLength"])
+    if size == 0:
+        # Nothing to free, and Google takes no empty piece; it stays where it is.
+        return None
+    name = asset.attributes.get("name") or key.rsplit("/", 1)[-1]
+    mime_type = asset.attributes.get("type") or stored.get("ContentType") or "application/octet-stream"
+
+    drive = DriveClient(connection)
+    session = drive.start_upload(folder.folder_id, name, mime_type, size)
+    body, buffer, start, meta = stored["Body"], b"", 0, None
+    while meta is None:
+        buffer += _read(body, MOVE_CHUNK - len(buffer))
+        if not buffer:
+            raise DriveError("The file in Plane's storage ended before Google had all of it.")
+        finished, received, meta = drive.upload_chunk(session, buffer, start, size)
+        if not finished:
+            # Google may keep less than it was sent; the rest goes again with the next piece.
+            buffer, start = buffer[received - start :], received
+
+    drive_file = DriveFile.objects.create(
+        workspace_id=asset.workspace_id,
+        project_id=issue.project_id,
+        issue=issue,
+        source=DriveFile.Source.ATTACHMENT,
+        name=name,
+        mime_type=mime_type,
+        size=size,
+    )
+    finish_upload(drive_file, meta)
+    # Who added it and when, as before: listed in its old place, under its uploader. Set
+    # afterwards, since a save in a worker, with nobody signed in, clears who made it.
+    DriveFile.objects.filter(pk=drive_file.pk).update(created_at=asset.created_at, created_by_id=asset.created_by_id)
+
+    asset.is_deleted = True
+    asset.deleted_at = timezone.now()
+    asset.save(update_fields=["is_deleted", "deleted_at", "updated_at"])
+    storage.delete_files([key])
+    return drive_file
+
+
+def move_plane_attachments(workspace_id, issue_id=None):
+    """Move every attachment still in Plane's storage to Drive; returns (moved, failed)."""
+    from plane.settings.storage import S3Storage
+
+    connection = ready_connection_for(workspace_id)
+    if connection is None:
+        return 0, 0
+    storage = S3Storage()
+    moved = failed = 0
+    for asset in plane_attachments(workspace_id, issue_id).order_by("created_at").iterator():
+        try:
+            if move_attachment_to_drive(connection, asset, storage):
+                moved += 1
+        except (DriveError, ClientError, BotoCoreError) as error:
+            failed += 1
+            logger.warning("Could not move attachment %s to Google Drive: %s", asset.id, error)
+    return moved, failed

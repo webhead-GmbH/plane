@@ -12,6 +12,7 @@ from urllib.parse import urlencode
 from django.conf import settings
 from django.core import signing
 from django.core.cache import cache
+from django.db.models import Sum
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.utils import timezone
@@ -34,7 +35,11 @@ from plane.gdrive.services import (
     create_project_folder,
     finish_upload,
     forget_root_folders,
+    is_moving,
     link_project,
+    MOVE_TIMEOUT,
+    moving_key,
+    plane_attachments,
     ready_connection_for,
     root_folders,
     start_upload,
@@ -413,8 +418,64 @@ class DriveIssueEndpoint(BaseAPIView):
                 if folder
                 else (_folder_url(link.folder_id) if link else ""),
                 "files": [_file_payload(item, slug) for item in files],
+                # Its attachments from before the folder are on their way there.
+                "moving": is_moving(workspace.id, issue_id),
             }
         )
+
+
+def _start_move(workspace_id, issue_id=None):
+    """Start moving attachments from Plane's storage to Drive, unless that is already going on."""
+    from plane.gdrive.tasks import move_plane_attachments_to_drive
+
+    if is_moving(workspace_id, issue_id):
+        return False
+    cache.set(moving_key(workspace_id, issue_id), True, MOVE_TIMEOUT)
+    move_plane_attachments_to_drive.delay(str(workspace_id), str(issue_id) if issue_id else None)
+    return True
+
+
+class DriveIssueMoveEndpoint(BaseAPIView):
+    """Move a work item's attachments from Plane's storage into its Drive folder."""
+
+    @allow_permission([ROLE.ADMIN, ROLE.MEMBER])
+    def post(self, request, slug, project_id, issue_id):
+        issue = _issue(slug, project_id, issue_id)
+        if issue is None:
+            return Response({"error": "Not found."}, status=status.HTTP_404_NOT_FOUND)
+        if (
+            ready_connection_for(issue.workspace_id) is None
+            or not DriveProjectFolder.objects.filter(project_id=project_id).exists()
+        ):
+            return _drive_error_response(
+                DriveError("This project has no Google Drive folder yet.", reason="project_not_linked")
+            )
+        _start_move(issue.workspace_id, issue.id)
+        return Response({"moving": True}, status=status.HTTP_202_ACCEPTED)
+
+
+class DrivePlaneFilesEndpoint(BaseAPIView):
+    """Attachments in linked projects that are still on the Plane server, and moving them all."""
+
+    @allow_permission([ROLE.ADMIN], level="WORKSPACE")
+    def get(self, request, slug):
+        workspace = Workspace.objects.get(slug=slug)
+        totals = plane_attachments(workspace.id).aggregate(size=Sum("size"))
+        return Response(
+            {
+                "count": plane_attachments(workspace.id).count(),
+                "size": int(totals["size"] or 0),
+                "moving": is_moving(workspace.id),
+            }
+        )
+
+    @allow_permission([ROLE.ADMIN], level="WORKSPACE")
+    def post(self, request, slug):
+        workspace = Workspace.objects.get(slug=slug)
+        if ready_connection_for(workspace.id) is None:
+            return _drive_error_response(DriveError("Google Drive is not connected.", reason="not_connected"))
+        _start_move(workspace.id)
+        return Response({"moving": True}, status=status.HTTP_202_ACCEPTED)
 
 
 class DriveUploadEndpoint(BaseAPIView):
