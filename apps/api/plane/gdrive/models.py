@@ -126,6 +126,8 @@ class DriveFile(BaseModel):
     # file, so it is never sent to anybody but the person uploading it.
     upload_session_url = models.TextField(blank=True, default="")
     uploaded_at = models.DateTimeField(null=True, blank=True)
+    # The Plane asset it was moved from, so text still pointing at that asset can be pointed here.
+    moved_from = models.UUIDField(null=True, blank=True, db_index=True)
 
     class Meta:
         db_table = "gdrive_files"

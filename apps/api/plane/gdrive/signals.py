@@ -6,12 +6,14 @@
 
 # Django imports
 from django.db import transaction
-from django.db.models.signals import post_init, post_save
+from django.db.models.signals import post_init, post_save, pre_save
 from django.dispatch import receiver
 
 # Module imports
 from plane.db.models import Issue, IssueComment, Project
+from plane.gdrive.models import DriveFile
 from plane.gdrive.references import references
+from plane.gdrive.services import in_drive_instead, stored_images
 
 
 @receiver(post_save, sender=Project)
@@ -67,3 +69,28 @@ def follow_description_files(sender, instance, created, update_fields=None, **kw
     if created or before is None or after is None:
         return
     _follow(instance.id, before, after)
+
+
+@receiver(post_save, sender=Issue)
+def move_new_issue_images_to_drive(sender, instance, created, **kwargs):
+    if not created or "<image-component" not in (instance.__dict__.get("description_html") or ""):
+        return
+    from plane.gdrive.tasks import move_new_issue_images
+
+    issue = str(instance.id)
+    # A few seconds on: the page that made the work item attaches its images to it right after.
+    transaction.on_commit(lambda: move_new_issue_images.apply_async(args=[issue], countdown=3))
+
+
+@receiver(pre_save, sender=Issue)
+def keep_moved_images_in_drive(sender, instance, update_fields=None, **kwargs):
+    """An editor opened before its images moved saves them by their old ids; point them at Drive again."""
+    if instance._state.adding or (update_fields is not None and "description_html" not in update_fields):
+        return
+    html = instance.__dict__.get("description_html")
+    old_ids = stored_images(html)
+    if not old_ids:
+        return
+    moved = DriveFile.all_objects.filter(issue_id=instance.id, moved_from__in=old_ids).values_list("moved_from", "id")
+    if moved:
+        instance.description_html = in_drive_instead(html, {str(old): str(new) for old, new in moved})

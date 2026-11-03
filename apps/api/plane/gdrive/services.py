@@ -14,7 +14,9 @@ The layout in Drive is the team's existing one:
 """
 
 # Python imports
+import json
 import logging
+import re
 from contextlib import contextmanager
 
 # Third party imports
@@ -22,6 +24,8 @@ from botocore.exceptions import BotoCoreError, ClientError
 
 # Django imports
 from django.core.cache import cache
+from django.db import transaction
+from django.db.models import Q
 from django.utils import timezone
 
 # Module imports
@@ -272,20 +276,25 @@ def _read(stream, amount):
     return b"".join(parts)
 
 
-def move_attachment_to_drive(connection, asset, storage):
-    """Put one of Plane's own attachments in its work item's Drive folder, and free its space on the server.
+def _forget_stored_file(asset, storage):
+    """Remove Plane's copy of a file now in Drive, the way Plane's own delete does it, and free its space."""
+    # In place: a save in a worker, with nobody signed in, would clear who uploaded it.
+    FileAsset.objects.filter(pk=asset.pk).update(is_deleted=True, deleted_at=timezone.now())
+    storage.delete_files([asset.asset.name])
+
+
+def _copy_stored_file(connection, asset, storage, issue, source):
+    """Copy one of Plane's stored files into the work item's Drive folder, and record it there.
 
     The bytes go from storage to Google piece by piece, so a file of any size moves
-    without being held whole. Plane's record is removed the way its own delete does
-    it, and the stored object is deleted only once Google has the whole file.
+    without being held whole. Returns the file as recorded, or None for an empty
+    one, which frees nothing and which Google takes no piece of.
     """
-    issue = Issue.all_objects.select_related("project").get(pk=asset.issue_id)
     folder = ensure_issue_folder(connection, issue)
     key = asset.asset.name
     stored = storage.s3_client.get_object(Bucket=storage.aws_storage_bucket_name, Key=key)
     size = int(stored["ContentLength"])
     if size == 0:
-        # Nothing to free, and Google takes no empty piece; it stays where it is.
         return None
     name = asset.attributes.get("name") or key.rsplit("/", 1)[-1]
     mime_type = asset.attributes.get("type") or stored.get("ContentType") or "application/octet-stream"
@@ -306,20 +315,28 @@ def move_attachment_to_drive(connection, asset, storage):
         workspace_id=asset.workspace_id,
         project_id=issue.project_id,
         issue=issue,
-        source=DriveFile.Source.ATTACHMENT,
+        source=source,
         name=name,
         mime_type=mime_type,
         size=size,
+        moved_from=asset.id,
     )
     finish_upload(drive_file, meta)
     # Who added it and when, as before: listed in its old place, under its uploader. Set
     # afterwards, since a save in a worker, with nobody signed in, clears who made it.
     DriveFile.objects.filter(pk=drive_file.pk).update(created_at=asset.created_at, created_by_id=asset.created_by_id)
+    return drive_file
 
-    asset.is_deleted = True
-    asset.deleted_at = timezone.now()
-    asset.save(update_fields=["is_deleted", "deleted_at", "updated_at"])
-    storage.delete_files([key])
+
+def move_attachment_to_drive(connection, asset, storage):
+    """Put one of Plane's own attachments in its work item's Drive folder, and free its space on the server.
+
+    The stored object is deleted only once Google has the whole file.
+    """
+    issue = Issue.all_objects.select_related("project").get(pk=asset.issue_id)
+    drive_file = _copy_stored_file(connection, asset, storage, issue, DriveFile.Source.ATTACHMENT)
+    if drive_file:
+        _forget_stored_file(asset, storage)
     return drive_file
 
 
@@ -340,3 +357,84 @@ def move_plane_attachments(workspace_id, issue_id=None):
             failed += 1
             logger.warning("Could not move attachment %s to Google Drive: %s", asset.id, error)
     return moved, failed
+
+
+# ─── Images in a new work item's description ────────────────────────────────
+
+# An image Plane keeps itself is in the text by its asset id; one in Drive is "gdrive-<id>".
+STORED_IMAGE = re.compile(
+    r'<image-component\b[^>]*?\ssrc="([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})"'
+)
+DESCRIPTION_ASSETS = (
+    FileAsset.EntityTypeContext.ISSUE_DESCRIPTION,
+    FileAsset.EntityTypeContext.DRAFT_ISSUE_DESCRIPTION,
+)
+
+
+def stored_images(html):
+    """The asset ids of the images a description keeps in Plane's storage."""
+    return set(STORED_IMAGE.findall(html or ""))
+
+
+def in_drive_instead(html, moved):
+    """The text with each moved image pointing at its copy in Drive; ``moved`` maps asset id to Drive file id."""
+    for asset_id, file_id in moved.items():
+        html = html.replace(f'src="{asset_id}"', f'src="gdrive-{file_id}"')
+    return html
+
+
+def move_description_images(issue_id):
+    """Move the images a work item's description keeps in Plane's storage into its Drive folder.
+
+    A work item's folder is named after its id, so the images put in its
+    description while it was being created could only go to Plane's storage;
+    they follow it into Drive once it exists. Returns how many moved, and how many
+    are not uploaded yet, for the caller to come back for.
+    """
+    from plane.settings.storage import S3Storage
+
+    issue = Issue.objects.select_related("project").filter(pk=issue_id).first()
+    if issue is None or not DriveProjectFolder.objects.filter(project_id=issue.project_id).exists():
+        return 0, 0
+    connection = ready_connection_for(issue.workspace_id)
+    wanted = stored_images(issue.description_html)
+    if connection is None or not wanted:
+        return 0, 0
+    assets = FileAsset.objects.filter(
+        Q(project_id__isnull=True) | Q(project_id=issue.project_id),
+        pk__in=wanted,
+        workspace_id=issue.workspace_id,
+        entity_type__in=DESCRIPTION_ASSETS,
+    )
+    storage = S3Storage()
+    moved, pending = {}, 0
+    for asset in assets:
+        if not asset.is_uploaded:
+            pending += 1
+            continue
+        try:
+            drive_file = _copy_stored_file(connection, asset, storage, issue, DriveFile.Source.DESCRIPTION)
+        except (DriveError, ClientError, BotoCoreError) as error:
+            logger.warning("Could not move image %s to Google Drive: %s", asset.id, error)
+            continue
+        if drive_file:
+            moved[asset] = drive_file
+    if not moved:
+        return 0, pending
+
+    ids = {str(asset.id): str(drive_file.id) for asset, drive_file in moved.items()}
+    with transaction.atomic():
+        # The text as it is now, which may have changed while the images moved.
+        current = Issue.objects.select_for_update().get(pk=issue.pk)
+        description_json = json.dumps(current.description_json)
+        for asset_id, file_id in ids.items():
+            description_json = description_json.replace(f'"{asset_id}"', f'"gdrive-{file_id}"')
+        # In place, so nothing else a save does runs again; the binary copy would still show the old images.
+        Issue.objects.filter(pk=issue.pk).update(
+            description_html=in_drive_instead(current.description_html, ids),
+            description_json=json.loads(description_json),
+            description_binary=None,
+        )
+    for asset in moved:
+        _forget_stored_file(asset, storage)
+    return len(moved), pending

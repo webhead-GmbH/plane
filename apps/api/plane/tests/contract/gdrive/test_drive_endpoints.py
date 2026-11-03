@@ -20,7 +20,7 @@ from plane.db.models import FileAsset, Issue, IssueComment, State
 from plane.gdrive.client import FOLDER_MIME, DriveError
 from plane.gdrive.models import DriveConnection, DriveFile, DriveIssueFolder, DriveProjectFolder
 from plane.gdrive.references import follow_text
-from plane.gdrive.services import link_new_project
+from plane.gdrive.services import link_new_project, move_description_images
 from plane.gdrive.tasks import move_plane_attachments_to_drive
 from plane.tests.factories import (
     ProjectFactory,
@@ -595,3 +595,102 @@ class TestMovingPlaneAttachments:
         self.stored(setup, storage)
         response = self.post(client_for(setup["member"]), issue_url(setup, "move-plane-files/"), storage)
         assert response.status_code == 409
+
+
+class TestImagesOfNewWorkItems:
+    """Images put in the description while a work item was being made follow it into Drive."""
+
+    @pytest.fixture
+    def storage(self):
+        fake = FakeStorage()
+        fake.queued = []
+        with (
+            mock.patch("plane.settings.storage.S3Storage", return_value=fake),
+            mock.patch(
+                "plane.gdrive.tasks.move_new_issue_images.apply_async",
+                side_effect=lambda args, countdown=None: fake.queued.append(args),
+            ),
+        ):
+            yield fake
+
+    def image(self, setup, storage, uploaded=True):
+        key = f"{setup['workspace'].id}/{uuid4().hex}-logo.png"
+        storage.objects[key] = b"\x89PNG-bytes"
+        asset = FileAsset.objects.create(
+            asset=key,
+            attributes={"name": "logo.png", "type": "image/png", "size": 10},
+            size=10,
+            entity_type=FileAsset.EntityTypeContext.ISSUE_DESCRIPTION,
+            is_uploaded=uploaded,
+            workspace=setup["workspace"],
+            project=setup["project"],
+        )
+        FileAsset.objects.filter(pk=asset.pk).update(created_by=setup["member"])
+        asset.refresh_from_db()
+        return asset
+
+    def make_issue(self, setup, html, capture):
+        with capture(execute=True):
+            return Issue.objects.create(
+                project=setup["project"],
+                workspace=setup["workspace"],
+                name="New logo",
+                state=setup["issue"].state,
+                description_html=html,
+            )
+
+    @staticmethod
+    def html_with(asset):
+        return f'<p>Logo:</p><image-component src="{asset.id}" status="uploaded"></image-component>'
+
+    def test_they_move_once_the_work_item_exists(
+        self, setup, drive, linked, storage, django_capture_on_commit_callbacks
+    ):
+        asset = self.image(setup, storage)
+        issue = self.make_issue(setup, self.html_with(asset), django_capture_on_commit_callbacks)
+        assert storage.queued == [[str(issue.id)]]
+        assert move_description_images(issue.id) == (1, 0)
+
+        moved = DriveFile.objects.get(issue=issue)
+        assert moved.source == DriveFile.Source.DESCRIPTION
+        assert moved.moved_from == asset.id
+        assert moved.created_by_id == setup["member"].id
+        assert drive.items[drive.items[moved.drive_file_id]["parents"][0]]["name"] == "FISCH-2"
+        issue.refresh_from_db()
+        assert f'src="gdrive-{moved.id}"' in issue.description_html
+        assert str(asset.id) not in issue.description_html
+        assert storage.deleted == [asset.asset.name]
+        assert FileAsset.all_objects.get(pk=asset.pk).is_deleted is True
+
+    def test_an_editor_opened_before_the_move_saves_them_in_drive(
+        self, setup, drive, linked, storage, django_capture_on_commit_callbacks
+    ):
+        asset = self.image(setup, storage)
+        stale = self.html_with(asset)
+        issue = self.make_issue(setup, stale, django_capture_on_commit_callbacks)
+        move_description_images(issue.id)
+        moved = DriveFile.objects.get(issue=issue)
+
+        issue = Issue.objects.get(pk=issue.pk)
+        issue.description_html = stale + "<p>typed later</p>"
+        issue.save()
+        issue.refresh_from_db()
+        assert f'src="gdrive-{moved.id}"' in issue.description_html
+        assert "typed later" in issue.description_html
+        # Still in the text, so not sent to the bin.
+        assert drive.trashed == []
+
+    def test_an_image_still_uploading_is_left_for_later(
+        self, setup, drive, linked, storage, django_capture_on_commit_callbacks
+    ):
+        asset = self.image(setup, storage, uploaded=False)
+        issue = self.make_issue(setup, self.html_with(asset), django_capture_on_commit_callbacks)
+        assert move_description_images(issue.id) == (0, 1)
+        assert not DriveFile.objects.filter(issue=issue).exists()
+
+    def test_a_project_without_a_folder_keeps_them(self, setup, drive, storage, django_capture_on_commit_callbacks):
+        asset = self.image(setup, storage)
+        issue = self.make_issue(setup, self.html_with(asset), django_capture_on_commit_callbacks)
+        assert move_description_images(issue.id) == (0, 0)
+        issue.refresh_from_db()
+        assert str(asset.id) in issue.description_html

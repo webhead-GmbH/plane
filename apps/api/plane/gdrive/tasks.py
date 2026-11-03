@@ -15,7 +15,7 @@ from django.core.cache import cache
 from plane.db.models import Project, User
 from plane.gdrive.client import DriveError
 from plane.gdrive.references import follow_text
-from plane.gdrive.services import link_new_project, move_plane_attachments, moving_key
+from plane.gdrive.services import link_new_project, move_description_images, move_plane_attachments, moving_key
 
 logger = logging.getLogger(__name__)
 
@@ -50,3 +50,14 @@ def move_plane_attachments_to_drive(workspace_id, issue_id=None):
         logger.info("Moved %s attachment(s) to Google Drive, %s failed.", moved, failed)
     finally:
         cache.delete(moving_key(workspace_id, issue_id))
+
+
+@shared_task(bind=True, max_retries=3)
+def move_new_issue_images(self, issue_id):
+    """Move the images put in a new work item's description into its Drive folder, once it has one."""
+    moved, pending = move_description_images(issue_id)
+    if moved:
+        logger.info("Moved %s image(s) of work item %s to Google Drive.", moved, issue_id)
+    if pending:
+        # An image whose upload has not been confirmed yet: once more a little later.
+        raise self.retry(countdown=30)
