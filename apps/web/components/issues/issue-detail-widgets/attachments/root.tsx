@@ -36,7 +36,13 @@ export const AttachmentsCollapsible = observer(function AttachmentsCollapsible(p
     <Collapsible
       open={isCollapsibleOpen}
       onOpenChange={() => toggleOpenWidget("attachments")}
-      trigger={<IssueAttachmentsCollapsibleTitle issueId={issueId} issueServiceType={issueServiceType} />}
+      trigger={
+        <IssueAttachmentsCollapsibleTitle
+          workspaceSlug={workspaceSlug}
+          issueId={issueId}
+          issueServiceType={issueServiceType}
+        />
+      }
       trailing={
         isCollapsibleOpen && !disabled ? (
           <IssueAttachmentActionButton

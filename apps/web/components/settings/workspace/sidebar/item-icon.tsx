@@ -5,7 +5,7 @@
  */
 
 import type { LucideIcon } from "lucide-react";
-import { LayoutList, RefreshCw, SlidersHorizontal } from "lucide-react";
+import { HardDrive, LayoutList, RefreshCw, SlidersHorizontal } from "lucide-react";
 import {
   BillingsOutline,
   BuildingOutline,
@@ -23,8 +23,9 @@ export const WORKSPACE_SETTINGS_ICONS: Record<TWorkspaceSettingsTabs, LucideIcon
   export: ExportOutline,
   "billing-and-plans": BillingsOutline,
   webhooks: WebhooksOutline,
-  // Ours, and still on lucide: propel ships no icon for these three yet.
+  // Ours, and still on lucide: propel ships no icon for these yet.
   "custom-fields-projects": SlidersHorizontal,
   "custom-fields-work-items": LayoutList,
   "crm-sync": RefreshCw,
+  "google-drive": HardDrive,
 };

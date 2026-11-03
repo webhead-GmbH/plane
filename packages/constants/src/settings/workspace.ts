@@ -89,6 +89,13 @@ export const WORKSPACE_SETTINGS: Record<TWorkspaceSettingsTabs, TWorkspaceSettin
     access: [EUserWorkspaceRoles.ADMIN],
     highlight: (pathname: string, baseUrl: string) => pathname === `${baseUrl}/settings/crm-sync/`,
   },
+  "google-drive": {
+    key: "google-drive",
+    i18n_label: "workspace_settings.settings.google_drive.title",
+    href: `/settings/google-drive`,
+    access: [EUserWorkspaceRoles.ADMIN],
+    highlight: (pathname: string, baseUrl: string) => pathname === `${baseUrl}/settings/google-drive/`,
+  },
 };
 
 export const WORKSPACE_SETTINGS_ACCESS: Record<string, EUserWorkspaceRoles[]> = {
@@ -111,6 +118,6 @@ export const GROUPED_WORKSPACE_SETTINGS: Record<WORKSPACE_SETTINGS_CATEGORY, TWo
     WORKSPACE_SETTINGS["custom-fields-projects"],
     WORKSPACE_SETTINGS["custom-fields-work-items"],
   ],
-  [WORKSPACE_SETTINGS_CATEGORY.INTEGRATIONS]: [WORKSPACE_SETTINGS["crm-sync"]],
+  [WORKSPACE_SETTINGS_CATEGORY.INTEGRATIONS]: [WORKSPACE_SETTINGS["crm-sync"], WORKSPACE_SETTINGS["google-drive"]],
   [WORKSPACE_SETTINGS_CATEGORY.DEVELOPER]: [WORKSPACE_SETTINGS["webhooks"]],
 };

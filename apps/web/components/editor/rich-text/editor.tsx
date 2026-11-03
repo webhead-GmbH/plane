@@ -12,6 +12,7 @@ import type { MakeOptional, TSearchEntityRequestPayload, TSearchResponse } from 
 import { cn } from "@plane/utils";
 // components
 import { EditorMentionsRoot } from "@/components/editor/embeds/mentions";
+import type { TDriveUploadTarget } from "@/components/google-drive/upload";
 // hooks
 import { useEditorConfig, useEditorMention } from "@/hooks/editor";
 import { useMember } from "@/hooks/store/use-member";
@@ -27,6 +28,8 @@ type RichTextEditorWrapperProps = MakeOptional<
   workspaceId: string;
   projectId?: string;
   issueSequenceId?: number;
+  /** The work item whose Google Drive folder images and files go to, when its project has one. */
+  driveTarget?: TDriveUploadTarget;
 } & (
     | {
         editable: false;
@@ -50,6 +53,7 @@ export const RichTextEditor = forwardRef(function RichTextEditor(
     workspaceId,
     projectId,
     disabledExtensions: additionalDisabledExtensions = [],
+    driveTarget,
     ...rest
   } = props;
   // store hooks
@@ -83,6 +87,7 @@ export const RichTextEditor = forwardRef(function RichTextEditor(
         duplicateFile: editable ? props.duplicateFile : async () => "",
         workspaceId,
         workspaceSlug,
+        drive: editable ? driveTarget : undefined,
       })}
       getEditorMetaData={getEditorMetaData}
       mentionHandler={{

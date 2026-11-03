@@ -11,14 +11,16 @@ import type { TIssueServiceType } from "@plane/types";
 import { EIssueServiceType } from "@plane/types";
 // hooks
 import { useIssueDetail } from "@/hooks/store/use-issue-detail";
+import { useDriveIssue } from "@/components/google-drive/drive-issue";
 
 type Props = {
+  workspaceSlug?: string;
   issueId: string;
   issueServiceType?: TIssueServiceType;
 };
 
 export const IssueAttachmentsCollapsibleTitle = observer(function IssueAttachmentsCollapsibleTitle(props: Props) {
-  const { issueId, issueServiceType = EIssueServiceType.ISSUES } = props;
+  const { workspaceSlug, issueId, issueServiceType = EIssueServiceType.ISSUES } = props;
   const { t } = useTranslation();
   // store hooks
   const {
@@ -27,7 +29,8 @@ export const IssueAttachmentsCollapsibleTitle = observer(function IssueAttachmen
 
   // derived values
   const issue = getIssueById(issueId);
-  const attachmentCount = issue?.attachment_count ?? 0;
+  const { data: drive } = useDriveIssue(workspaceSlug, issue?.project_id ?? undefined, issueId);
+  const attachmentCount = (issue?.attachment_count ?? 0) + (drive?.files.length ?? 0);
 
   return (
     <span className="inline-flex items-center gap-2">

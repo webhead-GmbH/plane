@@ -14,6 +14,7 @@ import type { TIssueComment, TCommentsOperations } from "@plane/types";
 import { cn, isCommentEmpty } from "@plane/utils";
 // components
 import { LiteTextEditor } from "@/components/editor/lite-text";
+import { useDriveTarget } from "@/components/google-drive/drive-issue";
 // hooks
 import { useWorkspace } from "@/hooks/store/use-workspace";
 // services
@@ -48,6 +49,8 @@ export const CommentCreate = observer(function CommentCreate(props: TCommentCrea
   const workspaceStore = useWorkspace();
   // derived values
   const workspaceId = workspaceStore.getWorkspaceBySlug(workspaceSlug)?.id as string;
+  // On a work item whose project has a Google Drive folder, images and files in the comment go there.
+  const { driveTarget, isDriveLoading } = useDriveTarget(workspaceSlug, projectId, entityId, "comment");
   // form info
   const {
     handleSubmit,
@@ -90,8 +93,11 @@ export const CommentCreate = observer(function CommentCreate(props: TCommentCrea
   const commentHTML = watch("comment_html");
   const isEmpty = isCommentEmpty(commentHTML ?? undefined);
 
+  if (isDriveLoading) return null;
+
   return (
     <div
+      role="presentation"
       className={cn("sticky bottom-0 z-[4] bg-surface-1 sm:static")}
       onKeyDown={(e) => {
         if (
@@ -121,6 +127,7 @@ export const CommentCreate = observer(function CommentCreate(props: TCommentCrea
                 value={"<p></p>"}
                 workspaceSlug={workspaceSlug}
                 projectId={projectId}
+                driveTarget={driveTarget}
                 onEnterKeyPress={(e) => {
                   if (!isEmpty && !isSubmitting) {
                     handleSubmit(onSubmit)(e);

@@ -13,6 +13,9 @@ import { useTranslation } from "@plane/i18n";
 import { setToast } from "@plane/blocks/toast";
 import type { TIssueServiceType } from "@plane/types";
 import { EIssueServiceType } from "@plane/types";
+// components
+import { DriveAttachmentList } from "@/components/google-drive/drive-attachment-list";
+import { attachFilesToDrive, useDriveIssue } from "@/components/google-drive/drive-issue";
 // hooks
 import { useIssueDetail } from "@/hooks/store/use-issue-detail";
 // plane web hooks
@@ -60,6 +63,9 @@ export const IssueAttachmentItemList = observer(function IssueAttachmentItemList
   const { maxFileSize } = useFileSize();
   // derived values
   const issueAttachments = getAttachmentsByIssueId(issueId);
+  // A project with a Google Drive folder keeps its files there, with no limit on size or number.
+  const { data: drive } = useDriveIssue(workspaceSlug, projectId, issueId);
+  const toDrive = Boolean(drive?.enabled);
 
   // handlers
   const handleFetchPropertyActivities = useCallback(() => {
@@ -68,6 +74,10 @@ export const IssueAttachmentItemList = observer(function IssueAttachmentItemList
 
   const onDrop = useCallback(
     (acceptedFiles: File[], rejectedFiles: FileRejection[]) => {
+      if (toDrive) {
+        if (acceptedFiles.length) void attachFilesToDrive(acceptedFiles, { workspaceSlug, projectId, issueId }, t);
+        return;
+      }
       const totalAttachedFiles = acceptedFiles.length + rejectedFiles.length;
 
       if (rejectedFiles.length === 0) {
@@ -95,13 +105,13 @@ export const IssueAttachmentItemList = observer(function IssueAttachmentItemList
       });
       return;
     },
-    [createAttachment, maxFileSize, workspaceSlug, handleFetchPropertyActivities, t]
+    [toDrive, projectId, issueId, createAttachment, maxFileSize, workspaceSlug, handleFetchPropertyActivities, t]
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    maxSize: maxFileSize,
-    multiple: false,
+    maxSize: toDrive ? undefined : maxFileSize,
+    multiple: toDrive,
     disabled: isUploading || disabled,
   });
 
@@ -110,6 +120,17 @@ export const IssueAttachmentItemList = observer(function IssueAttachmentItemList
       {uploadStatus?.map((fileStatus) => (
         <IssueAttachmentsUploadItem key={fileStatus.id} uploadStatus={fileStatus} />
       ))}
+      {toDrive && (
+        <div {...getRootProps()} className={disabled ? "cursor-not-allowed" : "cursor-pointer"}>
+          <input {...getInputProps()} />
+          <DriveAttachmentList
+            workspaceSlug={workspaceSlug}
+            projectId={projectId}
+            issueId={issueId}
+            disabled={disabled}
+          />
+        </div>
+      )}
       {issueAttachments && (
         <>
           {attachmentDeleteModalId && (

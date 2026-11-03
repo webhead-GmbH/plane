@@ -11,10 +11,12 @@ import { Controller, useForm } from "react-hook-form";
 // plane imports
 import type { EditorRefApi, TExtensions } from "@plane/editor";
 import { useTranslation } from "@plane/i18n";
-import type { EFileAssetType, TNameDescriptionLoader } from "@plane/types";
+import { EFileAssetType } from "@plane/types";
+import type { TNameDescriptionLoader } from "@plane/types";
 import { getDescriptionPlaceholderI18n } from "@plane/utils";
 // components
 import { RichTextEditor } from "@/components/editor/rich-text";
+import { useDriveTarget } from "@/components/google-drive/drive-issue";
 // hooks
 import { useEditorAsset } from "@/hooks/store/use-editor-asset";
 import { useWorkspace } from "@/hooks/store/use-workspace";
@@ -122,6 +124,13 @@ export const DescriptionInput = observer(function DescriptionInput(props: Props)
     swrDescription,
     workspaceSlug,
   } = props;
+  // A work item whose project has a Google Drive folder keeps the images and files put in its description there.
+  const { driveTarget, isDriveLoading } = useDriveTarget(
+    workspaceSlug,
+    fileAssetType === EFileAssetType.ISSUE_DESCRIPTION ? projectId : undefined,
+    entityId,
+    "description"
+  );
   // states
   const [localDescription, setLocalDescription] = useState<TFormData>({
     id: entityId,
@@ -222,7 +231,7 @@ export const DescriptionInput = observer(function DescriptionInput(props: Props)
 
   if (!workspaceDetails) return null;
 
-  if (!localDescription.description_html) return <DescriptionInputLoader />;
+  if (!localDescription.description_html || isDriveLoading) return <DescriptionInputLoader />;
 
   return (
     <Controller
@@ -259,6 +268,7 @@ export const DescriptionInput = observer(function DescriptionInput(props: Props)
             })
           }
           containerClassName={containerClassName}
+          driveTarget={driveTarget}
           uploadFile={async (blockId, file) => {
             try {
               const { asset_id } = await uploadEditorAsset({

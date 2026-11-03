@@ -16,6 +16,7 @@ import { cn, isCommentEmpty } from "@plane/utils";
 // components
 import { EditorMentionsRoot } from "@/components/editor/embeds/mentions";
 import { IssueCommentToolbar } from "@/components/editor/lite-text/toolbar";
+import type { TDriveUploadTarget } from "@/components/google-drive/upload";
 // hooks
 import { useEditorConfig, useEditorMention } from "@/hooks/editor";
 import { useMember } from "@/hooks/store/use-member";
@@ -45,6 +46,8 @@ type LiteTextEditorWrapperProps = MakeOptional<
   parentClassName?: string;
   editorClassName?: string;
   submitButtonText?: string;
+  /** The work item whose Google Drive folder images and files go to, when its project has one. */
+  driveTarget?: TDriveUploadTarget;
 } & (
     | {
         editable: false;
@@ -55,6 +58,10 @@ type LiteTextEditorWrapperProps = MakeOptional<
         duplicateFile: TFileHandler["duplicate"];
       }
   );
+
+function isMutableRefObject<T>(value: React.ForwardedRef<T>): value is React.MutableRefObject<T | null> {
+  return !!value && typeof value === "object" && "current" in value;
+}
 
 export const LiteTextEditor = React.forwardRef(function LiteTextEditor(
   props: LiteTextEditorWrapperProps,
@@ -68,6 +75,7 @@ export const LiteTextEditor = React.forwardRef(function LiteTextEditor(
     workspaceId,
     projectId,
     issue_id,
+    driveTarget,
     accessSpecifier,
     handleAccessChange,
     showAccessSpecifier = false,
@@ -111,9 +119,6 @@ export const LiteTextEditor = React.forwardRef(function LiteTextEditor(
   });
   // editor config
   const { getEditorFileHandlers } = useEditorConfig();
-  function isMutableRefObject<T>(ref: React.ForwardedRef<T>): ref is React.MutableRefObject<T | null> {
-    return !!ref && typeof ref === "object" && "current" in ref;
-  }
   // derived values
   const isEmpty = isCommentEmpty(props.initialValue);
 
@@ -144,6 +149,7 @@ export const LiteTextEditor = React.forwardRef(function LiteTextEditor(
               duplicateFile: editable ? props.duplicateFile : async () => "",
               workspaceId,
               workspaceSlug,
+              drive: editable ? driveTarget : undefined,
             })}
             getEditorMetaData={getEditorMetaData}
             handleEditorReady={(ready) => {

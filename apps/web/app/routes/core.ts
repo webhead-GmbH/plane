@@ -323,6 +323,10 @@ export const coreRoutes: RouteConfigEntry[] = [
             ":workspaceSlug/settings/crm-sync",
             "./(all)/[workspaceSlug]/(settings)/settings/(workspace)/crm-sync/page.tsx"
           ),
+          route(
+            ":workspaceSlug/settings/google-drive",
+            "./(all)/[workspaceSlug]/(settings)/settings/(workspace)/google-drive/page.tsx"
+          ),
         ]),
 
         // --------------------------------------------------------------------

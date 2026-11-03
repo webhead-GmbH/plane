@@ -86,6 +86,7 @@ export const UtilityExtension = (props: Props) => {
           flaggedExtensions,
           editor: this.editor,
           onUnsupportedFiles: fileHandler.onUnsupportedFiles,
+          uploadAttachment: isEditable ? fileHandler.uploadAttachment : undefined,
         }),
       ];
     },
