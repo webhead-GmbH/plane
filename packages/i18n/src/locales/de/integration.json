@@ -327,5 +327,136 @@
     "finished": "Abgeschlossen",
     "error": "Fehler",
     "cancelled": "Abgebrochen"
+  },
+  "google_drive_integration": {
+    "connection": {
+      "heading": "Verbindung",
+      "connected_as": "Verbunden als {email} seit {date}.",
+      "not_connected": "Nicht verbunden. Plane meldet sich mit dem eigenen Client Ihres Unternehmens in Google Cloud bei Google an, sodass Ihre Dateien zwischen Ihnen und Google bleiben.",
+      "steps": {
+        "enable_api": "Erstellen oder wählen Sie in der Google Cloud Console ein Projekt und aktivieren Sie die Google Drive API.",
+        "consent_screen": "Richten Sie den OAuth-Zustimmungsbildschirm ein. Wählen Sie bei einem Konto von Google Workspace „Intern“.",
+        "create_client": "Erstellen Sie eine OAuth-Client-ID vom Typ „Webanwendung“.",
+        "redirect_uri": "Fügen Sie die Adresse unten als autorisierten Weiterleitungs-URI hinzu.",
+        "paste": "Fügen Sie Client-ID und Client-Secret hier ein und stellen Sie dann die Verbindung her."
+      },
+      "redirect_uri": "Autorisierter Weiterleitungs-URI",
+      "redirect_uri_help": "Google leitet Sie nach der Anmeldung zu dieser Adresse zurück. Sie muss genau übereinstimmen.",
+      "copy": "Weiterleitungs-URI kopieren",
+      "redirect_copied": "Weiterleitungs-URI kopiert",
+      "client_id": "Client-ID",
+      "client_secret": "Client-Secret",
+      "client_secret_placeholder": "Client-Secret aus Google Cloud",
+      "client_secret_set": "Gespeichert. Leer lassen, um es beizubehalten.",
+      "client_change_warning": "Eine neue Client-ID trennt das aktuelle Google-Konto. Verbinden Sie es danach erneut.",
+      "connect": "Mit Google verbinden",
+      "reconnect": "Erneut verbinden",
+      "connect_failed": "Die Google-Anmeldung konnte nicht gestartet werden",
+      "disconnect": "Trennen",
+      "disconnecting": "Wird getrennt",
+      "disconnect_title": "Google Drive trennen?",
+      "disconnect_body": "Neue Dateien werden wieder in Plane gespeichert. Dateien, die bereits in Drive liegen, bleiben dort, und die Ordnerverknüpfungen der Projekte bleiben für eine erneute Verbindung erhalten.",
+      "disconnected": "Google Drive getrennt",
+      "disconnect_failed": "Google Drive konnte nicht getrennt werden"
+    },
+    "outcome": {
+      "connected": {
+        "title": "Google Drive verbunden",
+        "message": "Wählen Sie jetzt den Ordner, in dem Ihre Projektordner liegen."
+      },
+      "refused": {
+        "title": "Google Drive nicht verbunden",
+        "message": "Auf der Seite von Google wurde kein Zugriff gewährt. Versuchen Sie es erneut und erlauben Sie den Zugriff auf Drive."
+      },
+      "failed": {
+        "title": "Google Drive nicht verbunden",
+        "message": "Google hat die Anmeldung nicht akzeptiert. Prüfen Sie Client-ID, Client-Secret und Weiterleitungs-URI und versuchen Sie es dann erneut."
+      },
+      "no_refresh_token": {
+        "title": "Google Drive nicht verbunden",
+        "message": "Google hat keinen dauerhaften Zugriff gewährt. Entfernen Sie den Zugriff von Plane in den Einstellungen Ihres Google-Kontos und verbinden Sie dann erneut."
+      }
+    },
+    "root": {
+      "heading": "Hauptordner für Projekte",
+      "description": "Der Ordner in Drive, in dem Ihre Projektordner liegen, etwa projects / webhead. Nur die Ordner darin werden für Projekte angeboten.",
+      "none": "Noch kein Ordner gewählt",
+      "open_in_drive": "In Google Drive öffnen",
+      "choose": "Ordner wählen",
+      "change": "Ordner ändern",
+      "paste_label": "Oder einen Link zum Ordner einfügen",
+      "use_link": "Link verwenden",
+      "saved": "Hauptordner für Projekte gespeichert",
+      "save_failed": "Der Hauptordner für Projekte konnte nicht gespeichert werden",
+      "auto_link": "Neuen Projekten einen Ordner zuweisen",
+      "auto_link_help": "Ein neues Projekt erhält den Ordner, dessen Name mit seinem eigenen übereinstimmt. Gibt es keinen, erstellt Plane einen."
+    },
+    "projects": {
+      "heading": "Projektordner",
+      "description": "Wählen Sie den Ordner für jedes Projekt. Ordner mit ähnlichem Namen werden zuerst vorgeschlagen.",
+      "summary": "Projekte mit Ordner: {linked} von {total}.",
+      "link_clear": "{count, plural, one {# eindeutige Übereinstimmung verknüpfen} other {# eindeutige Übereinstimmungen verknüpfen}}",
+      "linked_clear": "{count, plural, =0 {Keine Projekte verknüpft} one {# Projekt verknüpft} other {# Projekte verknüpft}}",
+      "search": "Projekte suchen",
+      "no_results": "Keine Projekte entsprechen Ihrer Suche.",
+      "no_projects": "Noch keine Projekte in diesem Arbeitsbereich.",
+      "choose_folder": "Ordner wählen",
+      "search_folders": "Ordner suchen",
+      "no_folders": "Keine Ordner gefunden",
+      "suggested": "Vorgeschlagen",
+      "all_folders": "Alle Ordner",
+      "match": "{percent} % Übereinstimmung",
+      "use_suggestion": "„{name}“ verwenden",
+      "more_ways": "Weitere Möglichkeiten, einen Ordner für {project} zu wählen",
+      "create": "Ordner „{name}“ erstellen",
+      "browse": "Aus Google Drive wählen…",
+      "actions": "Aktionen für {project}",
+      "change": "Ordner ändern",
+      "unlink": "Ordnerverknüpfung aufheben",
+      "linked": "{project} mit seinem Ordner verknüpft",
+      "created": "Ordner für {project} erstellt",
+      "unlinked": "Verknüpfung von {project} mit seinem Ordner aufgehoben",
+      "save_failed": "Der Projektordner konnte nicht geändert werden",
+      "method": {
+        "chosen": "Ausgewählt",
+        "matched": "Nach Name zugeordnet",
+        "created": "Von Plane erstellt"
+      }
+    },
+    "browser": {
+      "title": "Ordner wählen",
+      "top": "Google Drive",
+      "open": "{name} öffnen",
+      "empty": "Hier gibt es keine Ordner.",
+      "cancel": "Abbrechen",
+      "use_this": "Diesen Ordner verwenden"
+    },
+    "attachments": {
+      "in_drive": "In Google Drive gespeichert",
+      "open_folder": "Ordner öffnen",
+      "open_in_drive": "In Google Drive öffnen",
+      "uploaded_by": "Hochgeladen von {name} am {date}",
+      "upload_failed": "{name} konnte nicht hochgeladen werden",
+      "close": "Schließen",
+      "remove": "Entfernen",
+      "removing": "Wird entfernt",
+      "remove_title": "Anhang entfernen?",
+      "remove_body": "{name} wird in den Papierkorb von Google Drive verschoben und kann dort 30 Tage lang wiederhergestellt werden.",
+      "remove_failed": "Der Anhang konnte nicht entfernt werden"
+    },
+    "errors": {
+      "DRIVE_NOT_CONNECTED": "Google Drive ist nicht mit diesem Arbeitsbereich verbunden.",
+      "DRIVE_ACCESS_REVOKED": "Plane hat keinen Zugriff mehr auf Google Drive. Ein Arbeitsbereichs-Admin muss die Verbindung erneut herstellen.",
+      "DRIVE_PROJECT_NOT_LINKED": "Dieses Projekt hat noch keinen Ordner in Google Drive.",
+      "DRIVE_NOT_FOUND": "Der Ordner oder die Datei ist nicht mehr in Google Drive vorhanden.",
+      "DRIVE_NOT_A_FOLDER": "Das ist kein Ordner, den Plane verwenden kann.",
+      "DRIVE_NO_PERMISSION": "Das verbundene Google-Konto hat keinen Zugriff auf diesen Ordner.",
+      "DRIVE_STORAGE_FULL": "Der Speicher von Google Drive ist voll.",
+      "DRIVE_BAD_LINK": "Das ist kein Link zu einem Ordner in Google Drive.",
+      "DRIVE_CLIENT_MISSING": "Geben Sie zuerst Client-ID und Client-Secret ein.",
+      "DRIVE_EMPTY_FILE": "Diese Datei ist leer.",
+      "DRIVE_INCOMPLETE": "Google Drive hat nicht die ganze Datei erhalten. Versuchen Sie es erneut.",
+      "DRIVE_ERROR": "Google Drive hat nicht wie erwartet geantwortet. Versuchen Sie es erneut."
+    }
   }
 }

@@ -327,5 +327,136 @@
     "finished": "已完成",
     "error": "錯誤",
     "cancelled": "已取消"
+  },
+  "google_drive_integration": {
+    "connection": {
+      "heading": "連線",
+      "connected_as": "自 {date} 起以 {email} 的身分連線。",
+      "not_connected": "未連線。Plane 會使用貴公司自有的 Google Cloud 用戶端登入 Google，因此您的檔案只會在您與 Google 之間往來。",
+      "steps": {
+        "enable_api": "在 Google Cloud Console 中建立或選擇一個專案，並啟用 Google Drive API。",
+        "consent_screen": "設定 OAuth 同意畫面。如果是 Google Workspace 帳戶，請選擇「內部」。",
+        "create_client": "建立類型為「網頁應用程式」的 OAuth 用戶端 ID。",
+        "redirect_uri": "將下方位址新增為已授權的重新導向 URI。",
+        "paste": "將用戶端 ID 和用戶端密鑰貼到這裡，然後連線。"
+      },
+      "redirect_uri": "已授權的重新導向 URI",
+      "redirect_uri_help": "登入後，Google 會將您導回這個位址。位址必須完全相符。",
+      "copy": "複製重新導向 URI",
+      "redirect_copied": "已複製重新導向 URI",
+      "client_id": "用戶端 ID",
+      "client_secret": "用戶端密鑰",
+      "client_secret_placeholder": "來自 Google Cloud 的用戶端密鑰",
+      "client_secret_set": "已儲存。留空即可保留。",
+      "client_change_warning": "使用新的用戶端 ID 會中斷目前 Google 帳戶的連線。之後請重新連線。",
+      "connect": "使用 Google 連線",
+      "reconnect": "重新連線",
+      "connect_failed": "無法開始 Google 登入",
+      "disconnect": "中斷連線",
+      "disconnecting": "正在中斷連線",
+      "disconnect_title": "要中斷 Google Drive 的連線嗎？",
+      "disconnect_body": "新檔案將重新儲存在 Plane 中。已在 Drive 中的檔案會保留在原處，專案資料夾的連結也會保留，方便您重新連線。",
+      "disconnected": "已中斷 Google Drive 的連線",
+      "disconnect_failed": "無法中斷 Google Drive 的連線"
+    },
+    "outcome": {
+      "connected": {
+        "title": "已連線 Google Drive",
+        "message": "現在請選擇存放專案資料夾的資料夾。"
+      },
+      "refused": {
+        "title": "未連線 Google Drive",
+        "message": "未在 Google 頁面上授予存取權。請再試一次並允許存取 Drive。"
+      },
+      "failed": {
+        "title": "未連線 Google Drive",
+        "message": "Google 未接受這次登入。請檢查用戶端 ID、用戶端密鑰和重新導向 URI，然後再試一次。"
+      },
+      "no_refresh_token": {
+        "title": "未連線 Google Drive",
+        "message": "Google 未授予持續存取權。請在 Google 帳戶設定中移除 Plane 的存取權，然後重新連線。"
+      }
+    },
+    "root": {
+      "heading": "專案總資料夾",
+      "description": "存放專案資料夾的 Drive 資料夾，例如 projects / webhead。只有其中的資料夾會提供給專案使用。",
+      "none": "尚未選擇資料夾",
+      "open_in_drive": "在 Google Drive 中開啟",
+      "choose": "選擇資料夾",
+      "change": "變更資料夾",
+      "paste_label": "或貼上資料夾連結",
+      "use_link": "使用連結",
+      "saved": "已儲存專案總資料夾",
+      "save_failed": "無法儲存專案總資料夾",
+      "auto_link": "為新專案指派資料夾",
+      "auto_link_help": "新專案會取得名稱與其相同的資料夾。如果沒有，Plane 會建立一個。"
+    },
+    "projects": {
+      "heading": "專案資料夾",
+      "description": "為每個專案選擇資料夾。名稱相似的資料夾會優先建議。",
+      "summary": "{total} 個專案中有 {linked} 個已有資料夾。",
+      "link_clear": "{count, plural, other {連結 # 個明確相符項目}}",
+      "linked_clear": "{count, plural, =0 {未連結任何專案} other {已連結 # 個專案}}",
+      "search": "搜尋專案",
+      "no_results": "沒有符合搜尋條件的專案。",
+      "no_projects": "此工作區中還沒有專案。",
+      "choose_folder": "選擇資料夾",
+      "search_folders": "搜尋資料夾",
+      "no_folders": "找不到資料夾",
+      "suggested": "建議",
+      "all_folders": "所有資料夾",
+      "match": "{percent}% 相符",
+      "use_suggestion": "使用「{name}」",
+      "more_ways": "為 {project} 選擇資料夾的其他方式",
+      "create": "建立資料夾「{name}」",
+      "browse": "從 Google Drive 選擇…",
+      "actions": "{project} 的動作",
+      "change": "變更資料夾",
+      "unlink": "取消連結資料夾",
+      "linked": "已將 {project} 連結到其資料夾",
+      "created": "已為 {project} 建立資料夾",
+      "unlinked": "已取消 {project} 與其資料夾的連結",
+      "save_failed": "無法變更專案資料夾",
+      "method": {
+        "chosen": "已選擇",
+        "matched": "依名稱比對",
+        "created": "由 Plane 建立"
+      }
+    },
+    "browser": {
+      "title": "選擇資料夾",
+      "top": "Google Drive",
+      "open": "開啟 {name}",
+      "empty": "這裡沒有資料夾。",
+      "cancel": "取消",
+      "use_this": "使用此資料夾"
+    },
+    "attachments": {
+      "in_drive": "儲存在 Google Drive 中",
+      "open_folder": "開啟資料夾",
+      "open_in_drive": "在 Google Drive 中開啟",
+      "uploaded_by": "由 {name} 於 {date} 上傳",
+      "upload_failed": "無法上傳 {name}",
+      "close": "關閉",
+      "remove": "移除",
+      "removing": "正在移除",
+      "remove_title": "要移除附件嗎？",
+      "remove_body": "{name} 將移至 Google Drive 的垃圾桶，可在 30 天內還原。",
+      "remove_failed": "無法移除附件"
+    },
+    "errors": {
+      "DRIVE_NOT_CONNECTED": "Google Drive 未連線到此工作區。",
+      "DRIVE_ACCESS_REVOKED": "Plane 已無法存取 Google Drive。需要由工作區管理員重新連線。",
+      "DRIVE_PROJECT_NOT_LINKED": "此專案還沒有 Google Drive 資料夾。",
+      "DRIVE_NOT_FOUND": "該資料夾或檔案已不在 Google Drive 中。",
+      "DRIVE_NOT_A_FOLDER": "這不是 Plane 可以使用的資料夾。",
+      "DRIVE_NO_PERMISSION": "已連線的 Google 帳戶無法存取此資料夾。",
+      "DRIVE_STORAGE_FULL": "Google Drive 儲存空間已滿。",
+      "DRIVE_BAD_LINK": "這不是 Google Drive 資料夾的連結。",
+      "DRIVE_CLIENT_MISSING": "請先輸入用戶端 ID 和用戶端密鑰。",
+      "DRIVE_EMPTY_FILE": "此檔案是空的。",
+      "DRIVE_INCOMPLETE": "Google Drive 未收到完整檔案。請再試一次。",
+      "DRIVE_ERROR": "Google Drive 未如預期回應。請再試一次。"
+    }
   }
 }

@@ -327,5 +327,136 @@
     "finished": "Completato",
     "error": "Errore",
     "cancelled": "Annullato"
+  },
+  "google_drive_integration": {
+    "connection": {
+      "heading": "Connessione",
+      "connected_as": "Connesso come {email} dal {date}.",
+      "not_connected": "Non connesso. Plane accede a Google con il client Google Cloud della propria azienda, così i file restano tra l'azienda e Google.",
+      "steps": {
+        "enable_api": "In Google Cloud Console, creare o scegliere un progetto e abilitare Google Drive API.",
+        "consent_screen": "Configurare la schermata di consenso OAuth. Per un account Google Workspace, scegliere \"Interno\".",
+        "create_client": "Creare un ID client OAuth di tipo \"Applicazione web\".",
+        "redirect_uri": "Aggiungere l'indirizzo qui sotto come URI di reindirizzamento autorizzato.",
+        "paste": "Incollare qui l'ID client e il client secret, quindi avviare la connessione."
+      },
+      "redirect_uri": "URI di reindirizzamento autorizzato",
+      "redirect_uri_help": "Dopo l'accesso, Google riporta a questo indirizzo. Deve corrispondere esattamente.",
+      "copy": "Copia URI di reindirizzamento",
+      "redirect_copied": "URI di reindirizzamento copiato",
+      "client_id": "ID client",
+      "client_secret": "Client secret",
+      "client_secret_placeholder": "Client secret di Google Cloud",
+      "client_secret_set": "Salvato. Lasciare vuoto per mantenerlo.",
+      "client_change_warning": "Un nuovo ID client disconnette l'account Google attuale. Connetterlo di nuovo in seguito.",
+      "connect": "Connetti con Google",
+      "reconnect": "Connetti di nuovo",
+      "connect_failed": "Impossibile avviare l'accesso a Google",
+      "disconnect": "Disconnetti",
+      "disconnecting": "Disconnessione",
+      "disconnect_title": "Disconnettere Google Drive?",
+      "disconnect_body": "I nuovi file verranno di nuovo salvati in Plane. I file già presenti in Drive restano lì e i collegamenti alle cartelle dei progetti vengono mantenuti per una nuova connessione.",
+      "disconnected": "Google Drive disconnesso",
+      "disconnect_failed": "Impossibile disconnettere Google Drive"
+    },
+    "outcome": {
+      "connected": {
+        "title": "Google Drive connesso",
+        "message": "Ora scegliere la cartella che contiene le cartelle dei progetti."
+      },
+      "refused": {
+        "title": "Google Drive non connesso",
+        "message": "L'accesso non è stato concesso nella pagina di Google. Riprovare e consentire l'accesso a Drive."
+      },
+      "failed": {
+        "title": "Google Drive non connesso",
+        "message": "Google non ha accettato l'accesso. Verificare l'ID client, il client secret e l'URI di reindirizzamento, quindi riprovare."
+      },
+      "no_refresh_token": {
+        "title": "Google Drive non connesso",
+        "message": "Google non ha concesso un accesso duraturo. Rimuovere l'accesso di Plane dalle impostazioni dell'account Google, quindi connettersi di nuovo."
+      }
+    },
+    "root": {
+      "heading": "Cartella dei progetti",
+      "description": "La cartella di Drive che contiene le cartelle dei progetti, ad esempio projects / webhead. Per i progetti vengono proposte solo le sue cartelle.",
+      "none": "Nessuna cartella ancora scelta",
+      "open_in_drive": "Apri in Google Drive",
+      "choose": "Scegli cartella",
+      "change": "Cambia cartella",
+      "paste_label": "Oppure incollare un link alla cartella",
+      "use_link": "Usa link",
+      "saved": "Cartella dei progetti salvata",
+      "save_failed": "Impossibile salvare la cartella dei progetti",
+      "auto_link": "Assegna una cartella ai nuovi progetti",
+      "auto_link_help": "Un nuovo progetto riceve la cartella con il suo stesso nome. Se non c'è, Plane la crea."
+    },
+    "projects": {
+      "heading": "Cartelle per progetto",
+      "description": "Scegliere la cartella di ciascun progetto. Le cartelle con un nome simile vengono suggerite per prime.",
+      "summary": "Progetti con una cartella: {linked} su {total}.",
+      "link_clear": "{count, plural, one {Collega # corrispondenza certa} many {Collega # corrispondenze certe} other {Collega # corrispondenze certe}}",
+      "linked_clear": "{count, plural, =0 {Nessun progetto collegato} one {# progetto collegato} many {# progetti collegati} other {# progetti collegati}}",
+      "search": "Cerca progetti",
+      "no_results": "Nessun progetto corrisponde alla ricerca.",
+      "no_projects": "Ancora nessun progetto in questo spazio di lavoro.",
+      "choose_folder": "Scegli una cartella",
+      "search_folders": "Cerca cartelle",
+      "no_folders": "Nessuna cartella trovata",
+      "suggested": "Suggerite",
+      "all_folders": "Tutte le cartelle",
+      "match": "{percent}% di corrispondenza",
+      "use_suggestion": "Usa \"{name}\"",
+      "more_ways": "Altri modi per scegliere una cartella per {project}",
+      "create": "Crea cartella \"{name}\"",
+      "browse": "Scegli da Google Drive…",
+      "actions": "Azioni per {project}",
+      "change": "Cambia cartella",
+      "unlink": "Scollega cartella",
+      "linked": "{project} collegato alla sua cartella",
+      "created": "Cartella creata per {project}",
+      "unlinked": "{project} scollegato dalla sua cartella",
+      "save_failed": "Impossibile cambiare la cartella del progetto",
+      "method": {
+        "chosen": "Scelta",
+        "matched": "Associata per nome",
+        "created": "Creata da Plane"
+      }
+    },
+    "browser": {
+      "title": "Scegli una cartella",
+      "top": "Google Drive",
+      "open": "Apri {name}",
+      "empty": "Nessuna cartella qui.",
+      "cancel": "Annulla",
+      "use_this": "Usa questa cartella"
+    },
+    "attachments": {
+      "in_drive": "Archiviato in Google Drive",
+      "open_folder": "Apri cartella",
+      "open_in_drive": "Apri in Google Drive",
+      "uploaded_by": "Caricato da {name} il {date}",
+      "upload_failed": "Impossibile caricare {name}",
+      "close": "Chiudi",
+      "remove": "Rimuovi",
+      "removing": "Rimozione",
+      "remove_title": "Rimuovere l'allegato?",
+      "remove_body": "{name} verrà spostato nel cestino di Google Drive, dove potrà essere ripristinato per 30 giorni.",
+      "remove_failed": "Impossibile rimuovere l'allegato"
+    },
+    "errors": {
+      "DRIVE_NOT_CONNECTED": "Google Drive non è connesso a questo spazio di lavoro.",
+      "DRIVE_ACCESS_REVOKED": "Plane non ha più accesso a Google Drive. Un amministratore dello spazio di lavoro deve connetterlo di nuovo.",
+      "DRIVE_PROJECT_NOT_LINKED": "Questo progetto non ha ancora una cartella Google Drive.",
+      "DRIVE_NOT_FOUND": "La cartella o il file non è più in Google Drive.",
+      "DRIVE_NOT_A_FOLDER": "Non è una cartella che Plane può usare.",
+      "DRIVE_NO_PERMISSION": "L'account Google connesso non può accedere a questa cartella.",
+      "DRIVE_STORAGE_FULL": "Lo spazio di archiviazione di Google Drive è pieno.",
+      "DRIVE_BAD_LINK": "Non è un link a una cartella di Google Drive.",
+      "DRIVE_CLIENT_MISSING": "Inserire prima l'ID client e il client secret.",
+      "DRIVE_EMPTY_FILE": "Questo file è vuoto.",
+      "DRIVE_INCOMPLETE": "Google Drive non ha ricevuto l'intero file. Riprovare.",
+      "DRIVE_ERROR": "Google Drive non ha risposto come previsto. Riprovare."
+    }
   }
 }

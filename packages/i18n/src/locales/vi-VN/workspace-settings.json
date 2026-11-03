@@ -265,6 +265,11 @@
           }
         }
       },
+      "google_drive": {
+        "title": "Google Drive",
+        "heading": "Google Drive",
+        "description": "Lưu tệp của mục công việc trong thư mục Google Drive của từng dự án, không giới hạn kích thước, loại hay số lượng."
+      },
       "webhooks": {
         "heading": "Webhook",
         "description": "Tự động hóa thông báo đến các dịch vụ bên ngoài khi các sự kiện dự án xảy ra.",

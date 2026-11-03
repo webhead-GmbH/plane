@@ -327,5 +327,136 @@
     "finished": "Finalizado",
     "error": "Erro",
     "cancelled": "Cancelado"
+  },
+  "google_drive_integration": {
+    "connection": {
+      "heading": "Conexão",
+      "connected_as": "Conectado como {email} desde {date}.",
+      "not_connected": "Não conectado. O Plane faz login no Google com o cliente do Google Cloud da sua própria empresa, então seus arquivos ficam entre você e o Google.",
+      "steps": {
+        "enable_api": "No Google Cloud Console, crie ou escolha um projeto e ative a Google Drive API.",
+        "consent_screen": "Configure a tela de permissão OAuth. Para uma conta do Google Workspace, escolha \"Interno\".",
+        "create_client": "Crie um ID do cliente OAuth do tipo \"Aplicativo da Web\".",
+        "redirect_uri": "Adicione o endereço abaixo como URI de redirecionamento autorizado.",
+        "paste": "Cole aqui o ID do cliente e a chave secreta do cliente e depois conecte."
+      },
+      "redirect_uri": "URI de redirecionamento autorizado",
+      "redirect_uri_help": "O Google traz você de volta para este endereço depois do login. Ele precisa ser exatamente igual.",
+      "copy": "Copiar URI de redirecionamento",
+      "redirect_copied": "URI de redirecionamento copiado",
+      "client_id": "ID do cliente",
+      "client_secret": "Chave secreta do cliente",
+      "client_secret_placeholder": "Chave secreta do cliente do Google Cloud",
+      "client_secret_set": "Salva. Deixe em branco para mantê-la.",
+      "client_change_warning": "Um novo ID do cliente desconecta a conta do Google atual. Conecte novamente depois.",
+      "connect": "Conectar com o Google",
+      "reconnect": "Conectar novamente",
+      "connect_failed": "Não foi possível iniciar o login no Google",
+      "disconnect": "Desconectar",
+      "disconnecting": "Desconectando",
+      "disconnect_title": "Desconectar o Google Drive?",
+      "disconnect_body": "Os novos arquivos voltarão a ser armazenados no Plane. Os arquivos que já estão no Drive continuam lá, e os vínculos das pastas dos projetos são mantidos para quando você conectar novamente.",
+      "disconnected": "Google Drive desconectado",
+      "disconnect_failed": "Não foi possível desconectar o Google Drive"
+    },
+    "outcome": {
+      "connected": {
+        "title": "Google Drive conectado",
+        "message": "Agora escolha a pasta onde ficam as pastas dos seus projetos."
+      },
+      "refused": {
+        "title": "Google Drive não conectado",
+        "message": "O acesso não foi concedido na página do Google. Tente novamente e permita o acesso ao Drive."
+      },
+      "failed": {
+        "title": "Google Drive não conectado",
+        "message": "O Google não aceitou o login. Verifique o ID do cliente, a chave secreta do cliente e o URI de redirecionamento e tente novamente."
+      },
+      "no_refresh_token": {
+        "title": "Google Drive não conectado",
+        "message": "O Google não concedeu acesso permanente. Remova o acesso do Plane nas configurações da sua Conta do Google e conecte novamente."
+      }
+    },
+    "root": {
+      "heading": "Pasta de projetos",
+      "description": "A pasta do Drive onde ficam as pastas dos seus projetos, como projects / webhead. Somente as pastas dela são oferecidas para os projetos.",
+      "none": "Nenhuma pasta escolhida ainda",
+      "open_in_drive": "Abrir no Google Drive",
+      "choose": "Escolher pasta",
+      "change": "Alterar pasta",
+      "paste_label": "Ou cole um link para a pasta",
+      "use_link": "Usar link",
+      "saved": "Pasta de projetos salva",
+      "save_failed": "Não foi possível salvar a pasta de projetos",
+      "auto_link": "Dar uma pasta aos novos projetos",
+      "auto_link_help": "Um novo projeto recebe a pasta cujo nome corresponde ao dele. Se não houver nenhuma, o Plane cria uma."
+    },
+    "projects": {
+      "heading": "Pastas por projeto",
+      "description": "Escolha a pasta de cada projeto. Pastas com nome parecido são sugeridas primeiro.",
+      "summary": "Projetos com pasta: {linked} de {total}.",
+      "link_clear": "{count, plural, one {Vincular # correspondência clara} many {Vincular # correspondências claras} other {Vincular # correspondências claras}}",
+      "linked_clear": "{count, plural, =0 {Nenhum projeto vinculado} one {# projeto vinculado} many {# projetos vinculados} other {# projetos vinculados}}",
+      "search": "Pesquisar projetos",
+      "no_results": "Nenhum projeto corresponde à sua pesquisa.",
+      "no_projects": "Ainda não há projetos neste espaço de trabalho.",
+      "choose_folder": "Escolher uma pasta",
+      "search_folders": "Pesquisar pastas",
+      "no_folders": "Nenhuma pasta encontrada",
+      "suggested": "Sugeridas",
+      "all_folders": "Todas as pastas",
+      "match": "{percent}% de correspondência",
+      "use_suggestion": "Usar \"{name}\"",
+      "more_ways": "Mais formas de escolher uma pasta para {project}",
+      "create": "Criar pasta \"{name}\"",
+      "browse": "Escolher no Google Drive…",
+      "actions": "Ações para {project}",
+      "change": "Alterar pasta",
+      "unlink": "Desvincular pasta",
+      "linked": "{project} vinculado à sua pasta",
+      "created": "Pasta criada para {project}",
+      "unlinked": "{project} desvinculado da sua pasta",
+      "save_failed": "Não foi possível alterar a pasta do projeto",
+      "method": {
+        "chosen": "Escolhida",
+        "matched": "Correspondência por nome",
+        "created": "Criada pelo Plane"
+      }
+    },
+    "browser": {
+      "title": "Escolher uma pasta",
+      "top": "Google Drive",
+      "open": "Abrir {name}",
+      "empty": "Nenhuma pasta aqui.",
+      "cancel": "Cancelar",
+      "use_this": "Usar esta pasta"
+    },
+    "attachments": {
+      "in_drive": "Armazenado no Google Drive",
+      "open_folder": "Abrir pasta",
+      "open_in_drive": "Abrir no Google Drive",
+      "uploaded_by": "Enviado por {name} em {date}",
+      "upload_failed": "Não foi possível enviar {name}",
+      "close": "Fechar",
+      "remove": "Remover",
+      "removing": "Removendo",
+      "remove_title": "Remover anexo?",
+      "remove_body": "{name} será movido para a lixeira do Google Drive, onde poderá ser restaurado por 30 dias.",
+      "remove_failed": "Não foi possível remover o anexo"
+    },
+    "errors": {
+      "DRIVE_NOT_CONNECTED": "O Google Drive não está conectado a este espaço de trabalho.",
+      "DRIVE_ACCESS_REVOKED": "O Plane não tem mais acesso ao Google Drive. Um administrador do espaço de trabalho precisa conectá-lo novamente.",
+      "DRIVE_PROJECT_NOT_LINKED": "Este projeto ainda não tem uma pasta no Google Drive.",
+      "DRIVE_NOT_FOUND": "A pasta ou o arquivo não está mais no Google Drive.",
+      "DRIVE_NOT_A_FOLDER": "Esta não é uma pasta que o Plane possa usar.",
+      "DRIVE_NO_PERMISSION": "A conta do Google conectada não tem acesso a esta pasta.",
+      "DRIVE_STORAGE_FULL": "O armazenamento do Google Drive está cheio.",
+      "DRIVE_BAD_LINK": "Este não é um link para uma pasta do Google Drive.",
+      "DRIVE_CLIENT_MISSING": "Primeiro insira o ID do cliente e a chave secreta do cliente.",
+      "DRIVE_EMPTY_FILE": "Este arquivo está vazio.",
+      "DRIVE_INCOMPLETE": "O Google Drive não recebeu o arquivo inteiro. Tente novamente.",
+      "DRIVE_ERROR": "O Google Drive não respondeu como esperado. Tente novamente."
+    }
   }
 }

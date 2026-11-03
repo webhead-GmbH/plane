@@ -327,5 +327,136 @@
     "finished": "Завершено",
     "error": "Ошибка",
     "cancelled": "Отменено"
+  },
+  "google_drive_integration": {
+    "connection": {
+      "heading": "Подключение",
+      "connected_as": "Подключено как {email} с {date}.",
+      "not_connected": "Не подключено. Plane входит в Google через собственный клиент Google Cloud вашей компании, поэтому ваши файлы остаются между вами и Google.",
+      "steps": {
+        "enable_api": "В Google Cloud Console создайте или выберите проект и включите Google Drive API.",
+        "consent_screen": "Настройте окно запроса доступа OAuth. Для аккаунта Google Workspace выберите «Внутренний».",
+        "create_client": "Создайте ID клиента OAuth с типом «Веб-приложение».",
+        "redirect_uri": "Добавьте адрес ниже как разрешенный URI перенаправления.",
+        "paste": "Вставьте сюда ID клиента и секрет клиента, затем подключитесь."
+      },
+      "redirect_uri": "Разрешенный URI перенаправления",
+      "redirect_uri_help": "После входа Google возвращает вас на этот адрес. Он должен совпадать в точности.",
+      "copy": "Копировать URI перенаправления",
+      "redirect_copied": "URI перенаправления скопирован",
+      "client_id": "ID клиента",
+      "client_secret": "Секрет клиента",
+      "client_secret_placeholder": "Секрет клиента из Google Cloud",
+      "client_secret_set": "Сохранено. Оставьте поле пустым, чтобы не менять его.",
+      "client_change_warning": "Новый ID клиента отключает текущий аккаунт Google. После этого подключитесь снова.",
+      "connect": "Подключить через Google",
+      "reconnect": "Подключить снова",
+      "connect_failed": "Не удалось начать вход в Google",
+      "disconnect": "Отключить",
+      "disconnecting": "Отключение",
+      "disconnect_title": "Отключить Google Drive?",
+      "disconnect_body": "Новые файлы снова будут храниться в Plane. Файлы, которые уже находятся в Drive, останутся там, а привязки проектов к папкам сохранятся до следующего подключения.",
+      "disconnected": "Google Drive отключен",
+      "disconnect_failed": "Не удалось отключить Google Drive"
+    },
+    "outcome": {
+      "connected": {
+        "title": "Google Drive подключен",
+        "message": "Теперь выберите папку, в которой находятся папки ваших проектов."
+      },
+      "refused": {
+        "title": "Google Drive не подключен",
+        "message": "Доступ не был предоставлен на странице Google. Попробуйте снова и разрешите доступ к Drive."
+      },
+      "failed": {
+        "title": "Google Drive не подключен",
+        "message": "Google не принял вход. Проверьте ID клиента, секрет клиента и URI перенаправления, затем попробуйте снова."
+      },
+      "no_refresh_token": {
+        "title": "Google Drive не подключен",
+        "message": "Google не предоставил постоянный доступ. Отзовите доступ Plane в настройках аккаунта Google, затем подключитесь снова."
+      }
+    },
+    "root": {
+      "heading": "Основная папка проектов",
+      "description": "Папка в Drive, в которой находятся папки ваших проектов, например projects / webhead. Для проектов предлагаются только папки внутри нее.",
+      "none": "Папка еще не выбрана",
+      "open_in_drive": "Открыть в Google Drive",
+      "choose": "Выбрать папку",
+      "change": "Сменить папку",
+      "paste_label": "Или вставьте ссылку на папку",
+      "use_link": "Использовать ссылку",
+      "saved": "Основная папка проектов сохранена",
+      "save_failed": "Не удалось сохранить основную папку проектов",
+      "auto_link": "Назначать папку новым проектам",
+      "auto_link_help": "Новый проект получает папку с таким же названием. Если ее нет, Plane создает новую."
+    },
+    "projects": {
+      "heading": "Папки проектов",
+      "description": "Выберите папку для каждого проекта. Папки с похожим названием предлагаются первыми.",
+      "summary": "Проекты с папкой: {linked} из {total}.",
+      "link_clear": "{count, plural, one {Привязать # однозначное совпадение} few {Привязать # однозначных совпадения} many {Привязать # однозначных совпадений} other {Привязать # однозначного совпадения}}",
+      "linked_clear": "{count, plural, =0 {Ни один проект не привязан} one {Привязан # проект} few {Привязано # проекта} many {Привязано # проектов} other {Привязано # проекта}}",
+      "search": "Поиск проектов",
+      "no_results": "Нет проектов, соответствующих запросу.",
+      "no_projects": "В этом рабочем пространстве пока нет проектов.",
+      "choose_folder": "Выберите папку",
+      "search_folders": "Поиск папок",
+      "no_folders": "Папки не найдены",
+      "suggested": "Рекомендуемые",
+      "all_folders": "Все папки",
+      "match": "Совпадение {percent}%",
+      "use_suggestion": "Использовать «{name}»",
+      "more_ways": "Другие способы выбрать папку для проекта {project}",
+      "create": "Создать папку «{name}»",
+      "browse": "Выбрать в Google Drive…",
+      "actions": "Действия для проекта {project}",
+      "change": "Сменить папку",
+      "unlink": "Отвязать папку",
+      "linked": "Проект {project} привязан к своей папке",
+      "created": "Папка для проекта {project} создана",
+      "unlinked": "Проект {project} отвязан от своей папки",
+      "save_failed": "Не удалось изменить папку проекта",
+      "method": {
+        "chosen": "Выбрана",
+        "matched": "Сопоставлена по названию",
+        "created": "Создана приложением Plane"
+      }
+    },
+    "browser": {
+      "title": "Выберите папку",
+      "top": "Google Drive",
+      "open": "Открыть {name}",
+      "empty": "Здесь нет папок.",
+      "cancel": "Отменить",
+      "use_this": "Использовать эту папку"
+    },
+    "attachments": {
+      "in_drive": "Хранится в Google Drive",
+      "open_folder": "Открыть папку",
+      "open_in_drive": "Открыть в Google Drive",
+      "uploaded_by": "Загружено: {name}, {date}",
+      "upload_failed": "Не удалось загрузить {name}",
+      "close": "Закрыть",
+      "remove": "Удалить",
+      "removing": "Удаление",
+      "remove_title": "Удалить вложение?",
+      "remove_body": "Файл {name} будет перемещен в корзину Google Drive, где его можно восстановить в течение 30 дней.",
+      "remove_failed": "Не удалось удалить вложение"
+    },
+    "errors": {
+      "DRIVE_NOT_CONNECTED": "Google Drive не подключен к этому рабочему пространству.",
+      "DRIVE_ACCESS_REVOKED": "У Plane больше нет доступа к Google Drive. Администратору рабочего пространства нужно подключить его снова.",
+      "DRIVE_PROJECT_NOT_LINKED": "У этого проекта пока нет папки в Google Drive.",
+      "DRIVE_NOT_FOUND": "Папки или файла больше нет в Google Drive.",
+      "DRIVE_NOT_A_FOLDER": "Это не папка, которую может использовать Plane.",
+      "DRIVE_NO_PERMISSION": "У подключенного аккаунта Google нет доступа к этой папке.",
+      "DRIVE_STORAGE_FULL": "Хранилище Google Drive заполнено.",
+      "DRIVE_BAD_LINK": "Это не ссылка на папку в Google Drive.",
+      "DRIVE_CLIENT_MISSING": "Сначала введите ID клиента и секрет клиента.",
+      "DRIVE_EMPTY_FILE": "Этот файл пуст.",
+      "DRIVE_INCOMPLETE": "Google Drive получил файл не полностью. Попробуйте снова.",
+      "DRIVE_ERROR": "Google Drive ответил не так, как ожидалось. Попробуйте снова."
+    }
   }
 }

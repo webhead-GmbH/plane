@@ -265,6 +265,11 @@
           }
         }
       },
+      "google_drive": {
+        "title": "Google Drive",
+        "heading": "Google Drive",
+        "description": "將工作事項的檔案儲存在每個專案的 Google Drive 資料夾中，大小、類型和數量皆不受限制。"
+      },
       "webhooks": {
         "heading": "Webhooks",
         "description": "當專案事件發生時，自動向外部服務傳送通知。",

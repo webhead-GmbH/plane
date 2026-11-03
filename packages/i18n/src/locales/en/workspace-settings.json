@@ -265,6 +265,11 @@
           }
         }
       },
+      "google_drive": {
+        "title": "Google Drive",
+        "heading": "Google Drive",
+        "description": "Keep work item files in each project's Google Drive folder, with no limit on size, type or number."
+      },
       "webhooks": {
         "heading": "Webhooks",
         "description": "Automate notifications to external services when project events occur.",

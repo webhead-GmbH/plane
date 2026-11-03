@@ -327,5 +327,136 @@
     "finished": "Tamamlandı",
     "error": "Hata",
     "cancelled": "İptal Edildi"
+  },
+  "google_drive_integration": {
+    "connection": {
+      "heading": "Bağlantı",
+      "connected_as": "{date} tarihinden beri {email} olarak bağlı.",
+      "not_connected": "Bağlı değil. Plane, Google'da şirketinizin kendi Google Cloud istemcisiyle oturum açar; böylece dosyalarınız sizinle Google arasında kalır.",
+      "steps": {
+        "enable_api": "Google Cloud Console'da bir proje oluşturun veya seçin ve Google Drive API'yi etkinleştirin.",
+        "consent_screen": "OAuth izin ekranını ayarlayın. Google Workspace hesabı için \"Dahili\" seçeneğini belirleyin.",
+        "create_client": "\"Web uygulaması\" türünde bir OAuth istemci ID'si oluşturun.",
+        "redirect_uri": "Aşağıdaki adresi yetkilendirilmiş yönlendirme URI'si olarak ekleyin.",
+        "paste": "İstemci ID'sini ve istemci gizli anahtarını buraya yapıştırın, ardından bağlanın."
+      },
+      "redirect_uri": "Yetkilendirilmiş yönlendirme URI'si",
+      "redirect_uri_help": "Google, oturum açtıktan sonra sizi bu adrese geri gönderir. Adres tam olarak eşleşmelidir.",
+      "copy": "Yönlendirme URI'sini kopyala",
+      "redirect_copied": "Yönlendirme URI'si kopyalandı",
+      "client_id": "İstemci ID'si",
+      "client_secret": "İstemci gizli anahtarı",
+      "client_secret_placeholder": "Google Cloud'dan alınan istemci gizli anahtarı",
+      "client_secret_set": "Kaydedildi. Korumak için boş bırakın.",
+      "client_change_warning": "Yeni bir istemci ID'si mevcut Google hesabının bağlantısını keser. Ardından yeniden bağlanın.",
+      "connect": "Google ile bağlan",
+      "reconnect": "Yeniden bağlan",
+      "connect_failed": "Google oturum açma işlemi başlatılamadı",
+      "disconnect": "Bağlantıyı kes",
+      "disconnecting": "Bağlantı kesiliyor",
+      "disconnect_title": "Google Drive bağlantısı kesilsin mi?",
+      "disconnect_body": "Yeni dosyalar yeniden Plane'de saklanacak. Drive'daki mevcut dosyalar orada kalır ve proje klasörü bağlantıları yeniden bağlandığınızda kullanılmak üzere korunur.",
+      "disconnected": "Google Drive bağlantısı kesildi",
+      "disconnect_failed": "Google Drive bağlantısı kesilemedi"
+    },
+    "outcome": {
+      "connected": {
+        "title": "Google Drive bağlandı",
+        "message": "Şimdi proje klasörlerinizin bulunduğu klasörü seçin."
+      },
+      "refused": {
+        "title": "Google Drive bağlanmadı",
+        "message": "Google sayfasında erişim izni verilmedi. Tekrar deneyin ve Drive'a erişime izin verin."
+      },
+      "failed": {
+        "title": "Google Drive bağlanmadı",
+        "message": "Google oturum açma işlemini kabul etmedi. İstemci ID'sini, istemci gizli anahtarını ve yönlendirme URI'sini kontrol edip tekrar deneyin."
+      },
+      "no_refresh_token": {
+        "title": "Google Drive bağlanmadı",
+        "message": "Google kalıcı erişim vermedi. Google hesap ayarlarınızdan Plane'in erişimini kaldırın, ardından yeniden bağlanın."
+      }
+    },
+    "root": {
+      "heading": "Projeler klasörü",
+      "description": "Proje klasörlerinizin bulunduğu Drive klasörü; örneğin projects / webhead. Projeler için yalnızca bu klasörün içindeki klasörler sunulur.",
+      "none": "Henüz klasör seçilmedi",
+      "open_in_drive": "Google Drive'da aç",
+      "choose": "Klasör seç",
+      "change": "Klasörü değiştir",
+      "paste_label": "Veya klasörün bağlantısını yapıştırın",
+      "use_link": "Bağlantıyı kullan",
+      "saved": "Projeler klasörü kaydedildi",
+      "save_failed": "Projeler klasörü kaydedilemedi",
+      "auto_link": "Yeni projelere klasör ata",
+      "auto_link_help": "Yeni bir proje, adı kendi adıyla eşleşen klasörü alır. Böyle bir klasör yoksa Plane bir tane oluşturur."
+    },
+    "projects": {
+      "heading": "Proje klasörleri",
+      "description": "Her proje için klasörü seçin. Benzer adlı klasörler önce önerilir.",
+      "summary": "{total} projeden {linked} tanesinin klasörü var.",
+      "link_clear": "{count, plural, one {# kesin eşleşmeyi bağla} other {# kesin eşleşmeyi bağla}}",
+      "linked_clear": "{count, plural, =0 {Hiçbir proje bağlanmadı} one {# proje bağlandı} other {# proje bağlandı}}",
+      "search": "Proje ara",
+      "no_results": "Aramanızla eşleşen proje yok.",
+      "no_projects": "Bu çalışma alanında henüz proje yok.",
+      "choose_folder": "Bir klasör seçin",
+      "search_folders": "Klasör ara",
+      "no_folders": "Klasör bulunamadı",
+      "suggested": "Önerilen",
+      "all_folders": "Tüm klasörler",
+      "match": "%{percent} eşleşme",
+      "use_suggestion": "\"{name}\" klasörünü kullan",
+      "more_ways": "{project} için klasör seçmenin diğer yolları",
+      "create": "\"{name}\" klasörünü oluştur",
+      "browse": "Google Drive'dan seç…",
+      "actions": "{project} için işlemler",
+      "change": "Klasörü değiştir",
+      "unlink": "Klasör bağlantısını kaldır",
+      "linked": "{project} kendi klasörüne bağlandı",
+      "created": "{project} için klasör oluşturuldu",
+      "unlinked": "{project} projesinin klasör bağlantısı kaldırıldı",
+      "save_failed": "Proje klasörü değiştirilemedi",
+      "method": {
+        "chosen": "Seçildi",
+        "matched": "Ada göre eşleşti",
+        "created": "Plane tarafından oluşturuldu"
+      }
+    },
+    "browser": {
+      "title": "Bir klasör seçin",
+      "top": "Google Drive",
+      "open": "{name} klasörünü aç",
+      "empty": "Burada klasör yok.",
+      "cancel": "İptal",
+      "use_this": "Bu klasörü kullan"
+    },
+    "attachments": {
+      "in_drive": "Google Drive'da saklanıyor",
+      "open_folder": "Klasörü aç",
+      "open_in_drive": "Google Drive'da aç",
+      "uploaded_by": "{name} tarafından {date} tarihinde yüklendi",
+      "upload_failed": "{name} yüklenemedi",
+      "close": "Kapat",
+      "remove": "Kaldır",
+      "removing": "Kaldırılıyor",
+      "remove_title": "Ek kaldırılsın mı?",
+      "remove_body": "{name}, Google Drive çöp kutusuna taşınacak ve 30 gün boyunca oradan geri yüklenebilecek.",
+      "remove_failed": "Ek kaldırılamadı"
+    },
+    "errors": {
+      "DRIVE_NOT_CONNECTED": "Google Drive bu çalışma alanına bağlı değil.",
+      "DRIVE_ACCESS_REVOKED": "Plane'in artık Google Drive'a erişimi yok. Bir çalışma alanı yöneticisinin yeniden bağlanması gerekiyor.",
+      "DRIVE_PROJECT_NOT_LINKED": "Bu projenin henüz bir Google Drive klasörü yok.",
+      "DRIVE_NOT_FOUND": "Klasör veya dosya artık Google Drive'da değil.",
+      "DRIVE_NOT_A_FOLDER": "Bu, Plane'in kullanabileceği bir klasör değil.",
+      "DRIVE_NO_PERMISSION": "Bağlı Google hesabı bu klasöre erişemiyor.",
+      "DRIVE_STORAGE_FULL": "Google Drive depolama alanı dolu.",
+      "DRIVE_BAD_LINK": "Bu, bir Google Drive klasörünün bağlantısı değil.",
+      "DRIVE_CLIENT_MISSING": "Önce istemci ID'sini ve istemci gizli anahtarını girin.",
+      "DRIVE_EMPTY_FILE": "Bu dosya boş.",
+      "DRIVE_INCOMPLETE": "Google Drive dosyanın tamamını almadı. Tekrar deneyin.",
+      "DRIVE_ERROR": "Google Drive beklendiği gibi yanıt vermedi. Tekrar deneyin."
+    }
   }
 }

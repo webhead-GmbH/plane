@@ -327,5 +327,136 @@
     "finished": "完了",
     "error": "エラー",
     "cancelled": "キャンセル済み"
+  },
+  "google_drive_integration": {
+    "connection": {
+      "heading": "接続",
+      "connected_as": "{email}として{date}から接続しています。",
+      "not_connected": "接続されていません。Planeは組織独自のGoogle Cloudクライアントを使ってGoogleにログインするため、ファイルはお客様とGoogleの間だけでやり取りされます。",
+      "steps": {
+        "enable_api": "Google Cloud Consoleでプロジェクトを作成または選択し、Google Drive APIを有効にします。",
+        "consent_screen": "OAuth同意画面を設定します。Google Workspaceのアカウントの場合は「内部」を選択します。",
+        "create_client": "種類が「ウェブ アプリケーション」のOAuthクライアントIDを作成します。",
+        "redirect_uri": "下のアドレスを承認済みのリダイレクトURIとして追加します。",
+        "paste": "クライアントIDとクライアントシークレットをここに貼り付けてから、接続します。"
+      },
+      "redirect_uri": "承認済みのリダイレクトURI",
+      "redirect_uri_help": "ログインすると、Googleからこのアドレスに戻ります。完全に一致している必要があります。",
+      "copy": "リダイレクトURIをコピー",
+      "redirect_copied": "リダイレクトURIをコピーしました",
+      "client_id": "クライアントID",
+      "client_secret": "クライアントシークレット",
+      "client_secret_placeholder": "Google Cloudのクライアントシークレット",
+      "client_secret_set": "保存済みです。変更しない場合は空欄のままにしてください。",
+      "client_change_warning": "新しいクライアントIDにすると、現在のGoogleアカウントとの接続が解除されます。その後、もう一度接続してください。",
+      "connect": "Googleで接続",
+      "reconnect": "もう一度接続",
+      "connect_failed": "Googleへのログインを開始できませんでした",
+      "disconnect": "切断",
+      "disconnecting": "切断中",
+      "disconnect_title": "Google Driveを切断しますか？",
+      "disconnect_body": "新しいファイルは再びPlaneに保存されます。すでにDriveにあるファイルはそのまま残り、プロジェクトのフォルダーのリンクも再接続に備えて保持されます。",
+      "disconnected": "Google Driveを切断しました",
+      "disconnect_failed": "Google Driveを切断できませんでした"
+    },
+    "outcome": {
+      "connected": {
+        "title": "Google Driveに接続しました",
+        "message": "次に、プロジェクトのフォルダーが入っているフォルダーを選択してください。"
+      },
+      "refused": {
+        "title": "Google Driveに接続されていません",
+        "message": "Googleのページでアクセスが許可されませんでした。もう一度お試しいただき、Driveへのアクセスを許可してください。"
+      },
+      "failed": {
+        "title": "Google Driveに接続されていません",
+        "message": "Googleがログインを受け付けませんでした。クライアントID、クライアントシークレット、リダイレクトURIを確認してから、もう一度お試しください。"
+      },
+      "no_refresh_token": {
+        "title": "Google Driveに接続されていません",
+        "message": "Googleから継続的なアクセスが許可されませんでした。Googleアカウントの設定からPlaneのアクセス権を削除してから、もう一度接続してください。"
+      }
+    },
+    "root": {
+      "heading": "プロジェクトの親フォルダー",
+      "description": "プロジェクトのフォルダーが入っているDriveのフォルダーです（例：projects / webhead）。プロジェクトには、この中のフォルダーだけが候補として表示されます。",
+      "none": "フォルダーはまだ選択されていません",
+      "open_in_drive": "Google Driveで開く",
+      "choose": "フォルダーを選択",
+      "change": "フォルダーを変更",
+      "paste_label": "またはフォルダーへのリンクを貼り付け",
+      "use_link": "リンクを使用",
+      "saved": "プロジェクトの親フォルダーを保存しました",
+      "save_failed": "プロジェクトの親フォルダーを保存できませんでした",
+      "auto_link": "新しいプロジェクトにフォルダーを割り当てる",
+      "auto_link_help": "新しいプロジェクトには、名前が一致するフォルダーが割り当てられます。該当するフォルダーがない場合は、Planeが作成します。"
+    },
+    "projects": {
+      "heading": "プロジェクトのフォルダー",
+      "description": "プロジェクトごとにフォルダーを選択してください。名前が似ているフォルダーが先に提案されます。",
+      "summary": "{total}件中{linked}件のプロジェクトにフォルダーがあります。",
+      "link_clear": "{count, plural, other {確実な一致#件をリンク}}",
+      "linked_clear": "{count, plural, =0 {リンクされたプロジェクトはありません} other {#件のプロジェクトをリンクしました}}",
+      "search": "プロジェクトを検索",
+      "no_results": "検索に一致するプロジェクトはありません。",
+      "no_projects": "このワークスペースにはまだプロジェクトがありません。",
+      "choose_folder": "フォルダーを選択",
+      "search_folders": "フォルダーを検索",
+      "no_folders": "フォルダーが見つかりません",
+      "suggested": "候補",
+      "all_folders": "すべてのフォルダー",
+      "match": "一致度{percent}%",
+      "use_suggestion": "「{name}」を使用",
+      "more_ways": "{project}のフォルダーを選択するその他の方法",
+      "create": "フォルダー「{name}」を作成",
+      "browse": "Google Driveから選択…",
+      "actions": "{project}の操作",
+      "change": "フォルダーを変更",
+      "unlink": "フォルダーのリンクを解除",
+      "linked": "{project}をフォルダーにリンクしました",
+      "created": "{project}のフォルダーを作成しました",
+      "unlinked": "{project}とフォルダーのリンクを解除しました",
+      "save_failed": "プロジェクトのフォルダーを変更できませんでした",
+      "method": {
+        "chosen": "選択済み",
+        "matched": "名前で一致",
+        "created": "Planeが作成"
+      }
+    },
+    "browser": {
+      "title": "フォルダーを選択",
+      "top": "Google Drive",
+      "open": "{name}を開く",
+      "empty": "ここにはフォルダーがありません。",
+      "cancel": "キャンセル",
+      "use_this": "このフォルダーを使用"
+    },
+    "attachments": {
+      "in_drive": "Google Driveに保存済み",
+      "open_folder": "フォルダーを開く",
+      "open_in_drive": "Google Driveで開く",
+      "uploaded_by": "{name}が{date}にアップロード",
+      "upload_failed": "{name}をアップロードできませんでした",
+      "close": "閉じる",
+      "remove": "削除",
+      "removing": "削除中",
+      "remove_title": "添付ファイルを削除しますか？",
+      "remove_body": "{name}はGoogle Driveのゴミ箱に移動され、30日間は復元できます。",
+      "remove_failed": "添付ファイルを削除できませんでした"
+    },
+    "errors": {
+      "DRIVE_NOT_CONNECTED": "このワークスペースはGoogle Driveに接続されていません。",
+      "DRIVE_ACCESS_REVOKED": "PlaneはGoogle Driveにアクセスできなくなりました。ワークスペース管理者がもう一度接続する必要があります。",
+      "DRIVE_PROJECT_NOT_LINKED": "このプロジェクトにはまだGoogle Driveのフォルダーがありません。",
+      "DRIVE_NOT_FOUND": "フォルダーまたはファイルはGoogle Driveにもう存在しません。",
+      "DRIVE_NOT_A_FOLDER": "Planeで使用できるフォルダーではありません。",
+      "DRIVE_NO_PERMISSION": "接続されているGoogleアカウントはこのフォルダーにアクセスできません。",
+      "DRIVE_STORAGE_FULL": "Google Driveの保存容量がいっぱいです。",
+      "DRIVE_BAD_LINK": "Google Driveのフォルダーへのリンクではありません。",
+      "DRIVE_CLIENT_MISSING": "先にクライアントIDとクライアントシークレットを入力してください。",
+      "DRIVE_EMPTY_FILE": "このファイルは空です。",
+      "DRIVE_INCOMPLETE": "Google Driveがファイル全体を受信できませんでした。もう一度お試しください。",
+      "DRIVE_ERROR": "Google Driveから想定どおりの応答がありませんでした。もう一度お試しください。"
+    }
   }
 }

@@ -265,6 +265,11 @@
           }
         }
       },
+      "google_drive": {
+        "title": "Google Drive",
+        "heading": "Google Drive",
+        "description": "Păstrați fișierele activităților în dosarul Google Drive al fiecărui proiect, fără limită de dimensiune, tip sau număr."
+      },
       "webhooks": {
         "heading": "Webhook-uri",
         "description": "Automatizează notificările către servicii externe când se produc evenimente ale proiectului.",

@@ -265,6 +265,11 @@
           }
         }
       },
+      "google_drive": {
+        "title": "Google Drive",
+        "heading": "Google Drive",
+        "description": "İş öğesi dosyalarını her projenin Google Drive klasöründe boyut, tür veya sayı sınırı olmadan saklayın."
+      },
       "webhooks": {
         "heading": "Webhook'lar",
         "description": "Proje olayları gerçekleştiğinde harici hizmetlere bildirimleri otomatikleştirin.",

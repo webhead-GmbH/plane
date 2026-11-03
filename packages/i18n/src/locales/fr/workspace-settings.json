@@ -265,6 +265,11 @@
           }
         }
       },
+      "google_drive": {
+        "title": "Google Drive",
+        "heading": "Google Drive",
+        "description": "Conservez les fichiers des éléments de travail dans le dossier Google Drive de chaque projet, sans limite de taille, de type ni de nombre."
+      },
       "webhooks": {
         "heading": "Webhooks",
         "description": "Automatisez les notifications vers des services externes lors d’événements du projet.",

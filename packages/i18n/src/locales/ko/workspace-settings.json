@@ -265,6 +265,11 @@
           }
         }
       },
+      "google_drive": {
+        "title": "Google Drive",
+        "heading": "Google Drive",
+        "description": "작업 항목 파일을 각 프로젝트의 Google Drive 폴더에 크기, 형식, 개수 제한 없이 보관합니다."
+      },
       "webhooks": {
         "heading": "웹훅",
         "description": "프로젝트 이벤트가 발생할 때 외부 서비스로 알림을 자동화하세요.",
