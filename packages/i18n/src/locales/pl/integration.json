@@ -327,5 +327,153 @@
     "finished": "Zakończono",
     "error": "Błąd",
     "cancelled": "Anulowano"
+  },
+  "google_drive_integration": {
+    "connection": {
+      "heading": "Połączenie",
+      "connected_as": "Połączono jako {email} od {date}.",
+      "not_connected": "Brak połączenia. Plane loguje się do Google przy użyciu własnego klienta Google Cloud twojej firmy, więc twoje pliki pozostają między tobą a Google.",
+      "steps": {
+        "enable_api": "W Google Cloud Console utwórz lub wybierz projekt i włącz Google Drive API.",
+        "consent_screen": "Skonfiguruj ekran zgody OAuth. W przypadku konta Google Workspace wybierz „Wewnętrzny”.",
+        "create_client": "Utwórz ID klienta OAuth typu „Aplikacja internetowa”.",
+        "redirect_uri": "Dodaj poniższy adres jako autoryzowany URI przekierowania.",
+        "paste": "Wklej tutaj ID klienta i tajny klucz klienta, a następnie połącz."
+      },
+      "redirect_uri": "Autoryzowany URI przekierowania",
+      "redirect_uri_help": "Po zalogowaniu Google przekierowuje z powrotem na ten adres. Musi się on dokładnie zgadzać.",
+      "copy": "Kopiuj URI przekierowania",
+      "redirect_copied": "Skopiowano URI przekierowania",
+      "client_id": "ID klienta",
+      "client_secret": "Tajny klucz klienta",
+      "client_secret_placeholder": "Tajny klucz klienta z Google Cloud",
+      "client_secret_set": "Zapisano. Pozostaw puste, aby go zachować.",
+      "client_change_warning": "Nowe ID klienta odłącza bieżące konto Google. Następnie połącz się ponownie.",
+      "connect": "Połącz z Google",
+      "reconnect": "Połącz ponownie",
+      "connect_failed": "Nie udało się rozpocząć logowania do Google",
+      "disconnect": "Odłącz",
+      "disconnecting": "Odłączanie",
+      "disconnect_title": "Odłączyć Google Drive?",
+      "disconnect_body": "Nowe pliki będą znowu przechowywane w Plane. Pliki, które już są w Drive, pozostaną tam, a powiązania projektów z folderami zostaną zachowane na wypadek ponownego połączenia.",
+      "disconnected": "Odłączono Google Drive",
+      "disconnect_failed": "Nie udało się odłączyć Google Drive"
+    },
+    "outcome": {
+      "connected": {
+        "title": "Połączono Google Drive",
+        "message": "Teraz wybierz folder, w którym znajdują się foldery projektów."
+      },
+      "refused": {
+        "title": "Nie połączono Google Drive",
+        "message": "Na stronie Google nie przyznano dostępu. Spróbuj ponownie i zezwól na dostęp do Drive."
+      },
+      "failed": {
+        "title": "Nie połączono Google Drive",
+        "message": "Google nie zaakceptowało logowania. Sprawdź ID klienta, tajny klucz klienta i URI przekierowania, a następnie spróbuj ponownie."
+      },
+      "no_refresh_token": {
+        "title": "Nie połączono Google Drive",
+        "message": "Google nie przyznało trwałego dostępu. Usuń dostęp Plane w ustawieniach konta Google, a następnie połącz ponownie."
+      }
+    },
+    "root": {
+      "heading": "Folder projektów",
+      "description": "Folder w Drive, w którym znajdują się foldery projektów, np. projects / webhead. Dla projektów proponowane są tylko foldery w nim.",
+      "none": "Nie wybrano jeszcze folderu",
+      "open_in_drive": "Otwórz w Google Drive",
+      "choose": "Wybierz folder",
+      "change": "Zmień folder",
+      "paste_label": "Lub wklej link do folderu",
+      "use_link": "Użyj linku",
+      "saved": "Zapisano folder projektów",
+      "save_failed": "Nie udało się zapisać folderu projektów",
+      "auto_link": "Przydzielaj folder nowym projektom",
+      "auto_link_help": "Nowy projekt otrzymuje folder o takiej samej nazwie. Jeśli go nie ma, Plane go tworzy."
+    },
+    "projects": {
+      "heading": "Foldery poszczególnych projektów",
+      "description": "Wybierz folder dla każdego projektu. Foldery o podobnej nazwie są proponowane jako pierwsze.",
+      "summary": "Projekty z folderem: {linked} z {total}.",
+      "link_clear": "{count, plural, one {Powiąż # jednoznaczne dopasowanie} few {Powiąż # jednoznaczne dopasowania} many {Powiąż # jednoznacznych dopasowań} other {Powiąż # jednoznacznego dopasowania}}",
+      "linked_clear": "{count, plural, =0 {Nie powiązano żadnych projektów} one {Powiązano # projekt} few {Powiązano # projekty} many {Powiązano # projektów} other {Powiązano # projektu}}",
+      "search": "Szukaj projektów",
+      "no_results": "Żaden projekt nie pasuje do wyszukiwania.",
+      "no_projects": "W tej przestrzeni roboczej nie ma jeszcze projektów.",
+      "choose_folder": "Wybierz folder",
+      "search_folders": "Szukaj folderów",
+      "no_folders": "Nie znaleziono folderów",
+      "suggested": "Sugerowane",
+      "all_folders": "Wszystkie foldery",
+      "match": "Dopasowanie {percent}%",
+      "use_suggestion": "Użyj „{name}”",
+      "more_ways": "Więcej sposobów wyboru folderu dla projektu {project}",
+      "create": "Utwórz folder „{name}”",
+      "browse": "Wybierz z Google Drive…",
+      "actions": "Akcje dla projektu {project}",
+      "change": "Zmień folder",
+      "unlink": "Odłącz folder",
+      "linked": "Powiązano projekt {project} z jego folderem",
+      "created": "Utworzono folder dla projektu {project}",
+      "unlinked": "Odłączono projekt {project} od jego folderu",
+      "save_failed": "Nie udało się zmienić folderu projektu",
+      "method": {
+        "chosen": "Wybrany",
+        "matched": "Dopasowany po nazwie",
+        "created": "Utworzony przez Plane"
+      }
+    },
+    "browser": {
+      "title": "Wybierz folder",
+      "top": "Google Drive",
+      "open": "Otwórz {name}",
+      "empty": "Brak folderów.",
+      "cancel": "Anuluj",
+      "use_this": "Użyj tego folderu"
+    },
+    "attachments": {
+      "in_drive": "Przechowywany w Google Drive",
+      "open_folder": "Otwórz folder",
+      "open_in_drive": "Otwórz w Google Drive",
+      "uploaded_by": "Przesłane przez {name} dnia {date}",
+      "upload_failed": "Nie udało się przesłać pliku {name}",
+      "close": "Zamknij",
+      "remove": "Usuń",
+      "removing": "Usuwanie",
+      "remove_title": "Usunąć załącznik?",
+      "remove_body": "Plik {name} zostanie przeniesiony do kosza Google Drive, gdzie można go przywrócić przez 30 dni.",
+      "remove_failed": "Nie udało się usunąć załącznika",
+      "drop_here": "Upuść pliki, aby przesłać je do Google Drive",
+      "in_plane": "Przechowywane w Plane",
+      "move_to_drive": "Przenieś do Google Drive",
+      "moving": "Przenoszenie do Google Drive",
+      "move_failed": "Nie udało się przenieść niektórych plików do Google Drive"
+    },
+    "uploads": {
+      "heading": "Przesyłanie do Google Drive",
+      "progress": "Postęp przesyłania pliku {name}",
+      "stop": "Zatrzymaj przesyłanie pliku {name}"
+    },
+    "plane_files": {
+      "heading": "Pliki, które wciąż są na serwerze Plane",
+      "description": "Załączniki sprzed utworzenia folderu projektu: {count}, łącznie {size}. Przeniesienie ich do Google Drive zwolni to miejsce na serwerze.",
+      "moving": "Trwa przenoszenie do Google Drive. Pozostało plików: {count}",
+      "move": "Przenieś do Google Drive",
+      "failed": "Nie udało się przenieść plików do Google Drive"
+    },
+    "errors": {
+      "DRIVE_NOT_CONNECTED": "Google Drive nie jest połączony z tą przestrzenią roboczą.",
+      "DRIVE_ACCESS_REVOKED": "Plane nie ma już dostępu do Google Drive. Administrator przestrzeni roboczej musi połączyć go ponownie.",
+      "DRIVE_PROJECT_NOT_LINKED": "Ten projekt nie ma jeszcze folderu w Google Drive.",
+      "DRIVE_NOT_FOUND": "Folderu lub pliku nie ma już w Google Drive.",
+      "DRIVE_NOT_A_FOLDER": "To nie jest folder, którego Plane może używać.",
+      "DRIVE_NO_PERMISSION": "Połączone konto Google nie ma dostępu do tego folderu.",
+      "DRIVE_STORAGE_FULL": "Miejsce w Google Drive jest zapełnione.",
+      "DRIVE_BAD_LINK": "To nie jest link do folderu Google Drive.",
+      "DRIVE_CLIENT_MISSING": "Najpierw wpisz ID klienta i tajny klucz klienta.",
+      "DRIVE_EMPTY_FILE": "Ten plik jest pusty.",
+      "DRIVE_INCOMPLETE": "Google Drive nie otrzymał całego pliku. Spróbuj ponownie.",
+      "DRIVE_ERROR": "Google Drive nie odpowiedział zgodnie z oczekiwaniami. Spróbuj ponownie."
+    }
   }
 }

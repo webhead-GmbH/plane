@@ -265,6 +265,11 @@
           }
         }
       },
+      "google_drive": {
+        "title": "Google Drive",
+        "heading": "Google Drive",
+        "description": "Bewaar bestanden van werkitems in de Google Drive-map van elk project, zonder limiet op grootte, type of aantal."
+      },
       "webhooks": {
         "heading": "Webhooks",
         "description": "Automatiseer meldingen naar externe services wanneer projectgebeurtenissen plaatsvinden.",

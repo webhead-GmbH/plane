@@ -265,6 +265,11 @@
           }
         }
       },
+      "google_drive": {
+        "title": "Google Drive",
+        "heading": "Google Drive",
+        "description": "Dateien von Arbeitselementen im Ordner des jeweiligen Projekts in Google Drive ablegen, ohne Begrenzung von Größe, Typ oder Anzahl."
+      },
       "webhooks": {
         "heading": "Webhooks",
         "description": "Automatisieren Sie Benachrichtigungen an externe Dienste, wenn Projektereignisse auftreten.",

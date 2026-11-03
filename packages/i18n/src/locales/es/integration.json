@@ -327,5 +327,153 @@
     "finished": "Finalizado",
     "error": "Error",
     "cancelled": "Cancelado"
+  },
+  "google_drive_integration": {
+    "connection": {
+      "heading": "Conexión",
+      "connected_as": "Conectado como {email} desde el {date}.",
+      "not_connected": "Sin conectar. Plane inicia sesión en Google con el cliente de Google Cloud propio de su empresa, por lo que sus archivos quedan entre usted y Google.",
+      "steps": {
+        "enable_api": "En Google Cloud Console, cree o elija un proyecto y habilite Google Drive API.",
+        "consent_screen": "Configure la pantalla de consentimiento de OAuth. Para una cuenta de Google Workspace, elija \"Interno\".",
+        "create_client": "Cree un ID de cliente de OAuth del tipo \"Aplicación web\".",
+        "redirect_uri": "Agregue la dirección de abajo como URI de redireccionamiento autorizado.",
+        "paste": "Pegue aquí el ID de cliente y el secreto de cliente y, a continuación, conéctese."
+      },
+      "redirect_uri": "URI de redireccionamiento autorizado",
+      "redirect_uri_help": "Google le devuelve a esta dirección después de iniciar sesión. Debe coincidir exactamente.",
+      "copy": "Copiar URI de redireccionamiento",
+      "redirect_copied": "URI de redireccionamiento copiado",
+      "client_id": "ID de cliente",
+      "client_secret": "Secreto de cliente",
+      "client_secret_placeholder": "Secreto de cliente de Google Cloud",
+      "client_secret_set": "Guardado. Déjelo en blanco para conservarlo.",
+      "client_change_warning": "Un nuevo ID de cliente desconecta la cuenta de Google actual. Vuelva a conectarla después.",
+      "connect": "Conectar con Google",
+      "reconnect": "Volver a conectar",
+      "connect_failed": "No se pudo iniciar el inicio de sesión con Google",
+      "disconnect": "Desconectar",
+      "disconnecting": "Desconectando",
+      "disconnect_title": "¿Desconectar Google Drive?",
+      "disconnect_body": "Los archivos nuevos volverán a guardarse en Plane. Los archivos que ya están en Drive se quedan allí, y los vínculos de las carpetas de los proyectos se conservan para cuando vuelva a conectar.",
+      "disconnected": "Google Drive desconectado",
+      "disconnect_failed": "No se pudo desconectar Google Drive"
+    },
+    "outcome": {
+      "connected": {
+        "title": "Google Drive conectado",
+        "message": "Ahora elija la carpeta que contiene las carpetas de sus proyectos."
+      },
+      "refused": {
+        "title": "Google Drive no conectado",
+        "message": "No se concedió el acceso en la página de Google. Inténtelo de nuevo y permita el acceso a Drive."
+      },
+      "failed": {
+        "title": "Google Drive no conectado",
+        "message": "Google no aceptó el inicio de sesión. Compruebe el ID de cliente, el secreto de cliente y el URI de redireccionamiento, e inténtelo de nuevo."
+      },
+      "no_refresh_token": {
+        "title": "Google Drive no conectado",
+        "message": "Google no concedió un acceso permanente. Quite el acceso de Plane en la configuración de su cuenta de Google y vuelva a conectar."
+      }
+    },
+    "root": {
+      "heading": "Carpeta de proyectos",
+      "description": "La carpeta de Drive que contiene las carpetas de sus proyectos, por ejemplo projects / webhead. Solo se ofrecen sus carpetas para los proyectos.",
+      "none": "Aún no se ha elegido ninguna carpeta",
+      "open_in_drive": "Abrir en Google Drive",
+      "choose": "Elegir carpeta",
+      "change": "Cambiar carpeta",
+      "paste_label": "O pegue un enlace a la carpeta",
+      "use_link": "Usar enlace",
+      "saved": "Carpeta de proyectos guardada",
+      "save_failed": "No se pudo guardar la carpeta de proyectos",
+      "auto_link": "Asignar una carpeta a los proyectos nuevos",
+      "auto_link_help": "Un proyecto nuevo recibe la carpeta cuyo nombre coincide con el suyo. Si no hay ninguna, Plane la crea."
+    },
+    "projects": {
+      "heading": "Carpetas por proyecto",
+      "description": "Elija la carpeta de cada proyecto. Las carpetas con un nombre parecido se sugieren primero.",
+      "summary": "Proyectos con carpeta: {linked} de {total}.",
+      "link_clear": "{count, plural, one {Vincular # coincidencia clara} many {Vincular # coincidencias claras} other {Vincular # coincidencias claras}}",
+      "linked_clear": "{count, plural, =0 {Ningún proyecto vinculado} one {# proyecto vinculado} many {# proyectos vinculados} other {# proyectos vinculados}}",
+      "search": "Buscar proyectos",
+      "no_results": "Ningún proyecto coincide con su búsqueda.",
+      "no_projects": "Aún no hay proyectos en este espacio de trabajo.",
+      "choose_folder": "Elegir una carpeta",
+      "search_folders": "Buscar carpetas",
+      "no_folders": "No se encontraron carpetas",
+      "suggested": "Sugeridas",
+      "all_folders": "Todas las carpetas",
+      "match": "{percent}% de coincidencia",
+      "use_suggestion": "Usar \"{name}\"",
+      "more_ways": "Más formas de elegir una carpeta para {project}",
+      "create": "Crear carpeta \"{name}\"",
+      "browse": "Elegir de Google Drive…",
+      "actions": "Acciones para {project}",
+      "change": "Cambiar carpeta",
+      "unlink": "Desvincular carpeta",
+      "linked": "{project} vinculado a su carpeta",
+      "created": "Carpeta creada para {project}",
+      "unlinked": "{project} desvinculado de su carpeta",
+      "save_failed": "No se pudo cambiar la carpeta del proyecto",
+      "method": {
+        "chosen": "Elegida",
+        "matched": "Asociada por nombre",
+        "created": "Creada por Plane"
+      }
+    },
+    "browser": {
+      "title": "Elegir una carpeta",
+      "top": "Google Drive",
+      "open": "Abrir {name}",
+      "empty": "No hay carpetas aquí.",
+      "cancel": "Cancelar",
+      "use_this": "Usar esta carpeta"
+    },
+    "attachments": {
+      "in_drive": "Guardado en Google Drive",
+      "open_folder": "Abrir carpeta",
+      "open_in_drive": "Abrir en Google Drive",
+      "uploaded_by": "Subido por {name} el {date}",
+      "upload_failed": "No se pudo subir {name}",
+      "close": "Cerrar",
+      "remove": "Eliminar",
+      "removing": "Eliminando",
+      "remove_title": "¿Eliminar el archivo adjunto?",
+      "remove_body": "{name} se moverá a la papelera de Google Drive, donde podrá restaurarse durante 30 días.",
+      "remove_failed": "No se pudo eliminar el archivo adjunto",
+      "drop_here": "Suelta los archivos para subirlos a Google Drive",
+      "in_plane": "Guardado en Plane",
+      "move_to_drive": "Mover a Google Drive",
+      "moving": "Moviendo a Google Drive",
+      "move_failed": "Algunos archivos no se pudieron mover a Google Drive"
+    },
+    "uploads": {
+      "heading": "Subiendo a Google Drive",
+      "progress": "Progreso de subida de {name}",
+      "stop": "Detener la subida de {name}"
+    },
+    "plane_files": {
+      "heading": "Archivos que siguen en el servidor de Plane",
+      "description": "Adjuntos de antes de que su proyecto tuviera carpeta: {count}, {size} en total. Al moverlos a Google Drive se libera ese espacio en el servidor.",
+      "moving": "Moviéndolos a Google Drive. Archivos restantes: {count}",
+      "move": "Mover a Google Drive",
+      "failed": "No se pudieron mover los archivos a Google Drive"
+    },
+    "errors": {
+      "DRIVE_NOT_CONNECTED": "Google Drive no está conectado a este espacio de trabajo.",
+      "DRIVE_ACCESS_REVOKED": "Plane ya no tiene acceso a Google Drive. Un administrador del espacio de trabajo debe volver a conectarlo.",
+      "DRIVE_PROJECT_NOT_LINKED": "Este proyecto aún no tiene carpeta de Google Drive.",
+      "DRIVE_NOT_FOUND": "La carpeta o el archivo ya no está en Google Drive.",
+      "DRIVE_NOT_A_FOLDER": "No es una carpeta que Plane pueda usar.",
+      "DRIVE_NO_PERMISSION": "La cuenta de Google conectada no puede acceder a esta carpeta.",
+      "DRIVE_STORAGE_FULL": "El almacenamiento de Google Drive está lleno.",
+      "DRIVE_BAD_LINK": "No es un enlace a una carpeta de Google Drive.",
+      "DRIVE_CLIENT_MISSING": "Primero introduzca el ID de cliente y el secreto de cliente.",
+      "DRIVE_EMPTY_FILE": "Este archivo está vacío.",
+      "DRIVE_INCOMPLETE": "Google Drive no recibió el archivo completo. Inténtelo de nuevo.",
+      "DRIVE_ERROR": "Google Drive no respondió como se esperaba. Inténtelo de nuevo."
+    }
   }
 }

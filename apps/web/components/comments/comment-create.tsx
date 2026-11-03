@@ -14,6 +14,8 @@ import type { TIssueComment, TCommentsOperations } from "@plane/types";
 import { cn, isCommentEmpty } from "@plane/utils";
 // components
 import { LiteTextEditor } from "@/components/editor/lite-text";
+import { useDriveTarget } from "@/components/google-drive/drive-issue";
+import { useEditorUploads } from "@/components/google-drive/editor-uploads";
 // hooks
 import { useWorkspace } from "@/hooks/store/use-workspace";
 // services
@@ -48,6 +50,11 @@ export const CommentCreate = observer(function CommentCreate(props: TCommentCrea
   const workspaceStore = useWorkspace();
   // derived values
   const workspaceId = workspaceStore.getWorkspaceBySlug(workspaceSlug)?.id as string;
+  // On a work item whose project has a Google Drive folder, images and files in the comment go there.
+  const { driveTarget, isDriveLoading } = useDriveTarget(workspaceSlug, projectId, entityId, "comment");
+  const editorId = "add_comment_" + entityId;
+  // A comment is sent once its files are in Drive, not with a link that leads nowhere.
+  const isUploading = useEditorUploads(driveTarget ? editorId : undefined).length > 0;
   // form info
   const {
     handleSubmit,
@@ -90,8 +97,11 @@ export const CommentCreate = observer(function CommentCreate(props: TCommentCrea
   const commentHTML = watch("comment_html");
   const isEmpty = isCommentEmpty(commentHTML ?? undefined);
 
+  if (isDriveLoading) return null;
+
   return (
     <div
+      role="presentation"
       className={cn("sticky bottom-0 z-[4] bg-surface-1 sm:static")}
       onKeyDown={(e) => {
         if (
@@ -101,6 +111,7 @@ export const CommentCreate = observer(function CommentCreate(props: TCommentCrea
           !e.metaKey &&
           !isEmpty &&
           !isSubmitting &&
+          !isUploading &&
           editorRef.current?.isEditorReadyToDiscard()
         )
           handleSubmit(onSubmit)(e);
@@ -115,14 +126,16 @@ export const CommentCreate = observer(function CommentCreate(props: TCommentCrea
             control={control}
             render={({ field: { value, onChange } }) => (
               <LiteTextEditor
+                key={driveTarget ? "drive" : "plane"}
                 editable
                 workspaceId={workspaceId}
-                id={"add_comment_" + entityId}
+                id={editorId}
                 value={"<p></p>"}
                 workspaceSlug={workspaceSlug}
                 projectId={projectId}
+                driveTarget={driveTarget}
                 onEnterKeyPress={(e) => {
-                  if (!isEmpty && !isSubmitting) {
+                  if (!isEmpty && !isSubmitting && !isUploading) {
                     handleSubmit(onSubmit)(e);
                   }
                 }}

@@ -18,7 +18,8 @@ export type TWorkspaceSettingsTabs =
   | "webhooks"
   | "custom-fields-projects"
   | "custom-fields-work-items"
-  | "crm-sync";
+  | "crm-sync"
+  | "google-drive";
 export type TWorkspaceSettingsItem = {
   key: TWorkspaceSettingsTabs;
   i18n_label: string;

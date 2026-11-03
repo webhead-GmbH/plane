@@ -327,5 +327,153 @@
     "finished": "已完成",
     "error": "错误",
     "cancelled": "已取消"
+  },
+  "google_drive_integration": {
+    "connection": {
+      "heading": "连接",
+      "connected_as": "自 {date} 起以 {email} 身份连接。",
+      "not_connected": "未连接。Plane 使用贵公司自己的 Google Cloud 客户端登录 Google，因此您的文件仅在您与 Google 之间往来。",
+      "steps": {
+        "enable_api": "在 Google Cloud Console 中创建或选择一个项目，并启用 Google Drive API。",
+        "consent_screen": "设置 OAuth 同意屏幕。如果是 Google Workspace 账户，请选择“内部”。",
+        "create_client": "创建类型为“Web 应用”的 OAuth 客户端 ID。",
+        "redirect_uri": "将下方地址添加为已获授权的重定向 URI。",
+        "paste": "将客户端 ID 和客户端密钥粘贴到此处，然后连接。"
+      },
+      "redirect_uri": "已获授权的重定向 URI",
+      "redirect_uri_help": "登录后，Google 会将您送回此地址。地址必须完全一致。",
+      "copy": "复制重定向 URI",
+      "redirect_copied": "已复制重定向 URI",
+      "client_id": "客户端 ID",
+      "client_secret": "客户端密钥",
+      "client_secret_placeholder": "来自 Google Cloud 的客户端密钥",
+      "client_secret_set": "已保存。留空即可保留。",
+      "client_change_warning": "使用新的客户端 ID 会断开当前 Google 账户的连接。之后请重新连接。",
+      "connect": "使用 Google 连接",
+      "reconnect": "重新连接",
+      "connect_failed": "无法开始 Google 登录",
+      "disconnect": "断开连接",
+      "disconnecting": "正在断开连接",
+      "disconnect_title": "断开 Google Drive 的连接？",
+      "disconnect_body": "新文件将重新存储在 Plane 中。已在 Drive 中的文件会保留在原处，项目文件夹的关联也会保留，以便您重新连接。",
+      "disconnected": "已断开 Google Drive 的连接",
+      "disconnect_failed": "无法断开 Google Drive 的连接"
+    },
+    "outcome": {
+      "connected": {
+        "title": "已连接 Google Drive",
+        "message": "现在请选择存放项目文件夹的文件夹。"
+      },
+      "refused": {
+        "title": "未连接 Google Drive",
+        "message": "未在 Google 页面上授予访问权限。请重试并允许访问 Drive。"
+      },
+      "failed": {
+        "title": "未连接 Google Drive",
+        "message": "Google 未接受此次登录。请检查客户端 ID、客户端密钥和重定向 URI，然后重试。"
+      },
+      "no_refresh_token": {
+        "title": "未连接 Google Drive",
+        "message": "Google 未授予持久访问权限。请在 Google 账户设置中移除 Plane 的访问权限，然后重新连接。"
+      }
+    },
+    "root": {
+      "heading": "项目总文件夹",
+      "description": "存放项目文件夹的 Drive 文件夹，例如 projects / webhead。只有其中的文件夹会提供给项目使用。",
+      "none": "尚未选择文件夹",
+      "open_in_drive": "在 Google Drive 中打开",
+      "choose": "选择文件夹",
+      "change": "更改文件夹",
+      "paste_label": "或粘贴文件夹链接",
+      "use_link": "使用链接",
+      "saved": "项目总文件夹已保存",
+      "save_failed": "无法保存项目总文件夹",
+      "auto_link": "为新项目分配文件夹",
+      "auto_link_help": "新项目会获得名称与其相同的文件夹。如果没有，Plane 会创建一个。"
+    },
+    "projects": {
+      "heading": "项目文件夹",
+      "description": "为每个项目选择文件夹。名称相似的文件夹会优先推荐。",
+      "summary": "{total} 个项目中有 {linked} 个已有文件夹。",
+      "link_clear": "{count, plural, other {关联 # 个明确匹配项}}",
+      "linked_clear": "{count, plural, =0 {未关联任何项目} other {已关联 # 个项目}}",
+      "search": "搜索项目",
+      "no_results": "没有与您的搜索匹配的项目。",
+      "no_projects": "此工作区中还没有项目。",
+      "choose_folder": "选择文件夹",
+      "search_folders": "搜索文件夹",
+      "no_folders": "未找到文件夹",
+      "suggested": "推荐",
+      "all_folders": "所有文件夹",
+      "match": "{percent}% 匹配",
+      "use_suggestion": "使用“{name}”",
+      "more_ways": "为 {project} 选择文件夹的更多方式",
+      "create": "创建文件夹“{name}”",
+      "browse": "从 Google Drive 中选择…",
+      "actions": "{project} 的操作",
+      "change": "更改文件夹",
+      "unlink": "取消关联文件夹",
+      "linked": "已将 {project} 关联到其文件夹",
+      "created": "已为 {project} 创建文件夹",
+      "unlinked": "已取消 {project} 与其文件夹的关联",
+      "save_failed": "无法更改项目文件夹",
+      "method": {
+        "chosen": "已选择",
+        "matched": "按名称匹配",
+        "created": "由 Plane 创建"
+      }
+    },
+    "browser": {
+      "title": "选择文件夹",
+      "top": "Google Drive",
+      "open": "打开 {name}",
+      "empty": "此处没有文件夹。",
+      "cancel": "取消",
+      "use_this": "使用此文件夹"
+    },
+    "attachments": {
+      "in_drive": "存储在 Google Drive 中",
+      "open_folder": "打开文件夹",
+      "open_in_drive": "在 Google Drive 中打开",
+      "uploaded_by": "由 {name} 于 {date} 上传",
+      "upload_failed": "无法上传 {name}",
+      "close": "关闭",
+      "remove": "移除",
+      "removing": "正在移除",
+      "remove_title": "移除附件？",
+      "remove_body": "{name} 将被移至 Google Drive 的回收站，可在 30 天内恢复。",
+      "remove_failed": "无法移除附件",
+      "drop_here": "将文件拖放到此处以上传到 Google Drive",
+      "in_plane": "存储在 Plane 中",
+      "move_to_drive": "移至 Google Drive",
+      "moving": "正在移至 Google Drive",
+      "move_failed": "部分文件无法移至 Google Drive"
+    },
+    "uploads": {
+      "heading": "正在上传到 Google Drive",
+      "progress": "{name} 的上传进度",
+      "stop": "停止上传 {name}"
+    },
+    "plane_files": {
+      "heading": "仍在 Plane 服务器上的文件",
+      "description": "项目设置文件夹之前添加的附件：{count} 个，共 {size}。将它们移至 Google Drive 可释放服务器上的这部分空间。",
+      "moving": "正在移至 Google Drive。剩余文件：{count} 个",
+      "move": "移至 Google Drive",
+      "failed": "无法将文件移至 Google Drive"
+    },
+    "errors": {
+      "DRIVE_NOT_CONNECTED": "Google Drive 未连接到此工作区。",
+      "DRIVE_ACCESS_REVOKED": "Plane 已无法访问 Google Drive。需要工作区管理员重新连接。",
+      "DRIVE_PROJECT_NOT_LINKED": "此项目还没有 Google Drive 文件夹。",
+      "DRIVE_NOT_FOUND": "该文件夹或文件已不在 Google Drive 中。",
+      "DRIVE_NOT_A_FOLDER": "这不是 Plane 可以使用的文件夹。",
+      "DRIVE_NO_PERMISSION": "已连接的 Google 账户无法访问此文件夹。",
+      "DRIVE_STORAGE_FULL": "Google Drive 存储空间已满。",
+      "DRIVE_BAD_LINK": "这不是 Google Drive 文件夹的链接。",
+      "DRIVE_CLIENT_MISSING": "请先输入客户端 ID 和客户端密钥。",
+      "DRIVE_EMPTY_FILE": "此文件为空。",
+      "DRIVE_INCOMPLETE": "Google Drive 未收到完整文件。请重试。",
+      "DRIVE_ERROR": "Google Drive 未按预期响应。请重试。"
+    }
   }
 }

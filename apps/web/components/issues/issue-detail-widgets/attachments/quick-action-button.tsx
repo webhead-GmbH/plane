@@ -11,7 +11,10 @@ import { useDropzone } from "react-dropzone";
 import { AddOutline } from "@makeplane/propel/icons";
 // plane imports
 import { setToast } from "@plane/blocks/toast";
+import { useTranslation } from "@plane/i18n";
 import type { TIssueServiceType } from "@plane/types";
+// components
+import { attachFilesToDrive, useDriveIssue } from "@/components/google-drive/drive-issue";
 // hooks
 import { useIssueDetail } from "@/hooks/store/use-issue-detail";
 // plane web hooks
@@ -30,6 +33,10 @@ type Props = {
 
 export const IssueAttachmentActionButton = observer(function IssueAttachmentActionButton(props: Props) {
   const { workspaceSlug, projectId, issueId, customButton, disabled = false, issueServiceType } = props;
+  const { t } = useTranslation();
+  // A project with a Google Drive folder keeps its files there, with no limit on size or number.
+  const { data: drive } = useDriveIssue(workspaceSlug, projectId, issueId);
+  const toDrive = Boolean(drive?.enabled);
   // state
   const [isLoading, setIsLoading] = useState(false);
   // store hooks
@@ -50,6 +57,12 @@ export const IssueAttachmentActionButton = observer(function IssueAttachmentActi
 
   const onDrop = useCallback(
     (acceptedFiles: File[], rejectedFiles: FileRejection[]) => {
+      if (toDrive) {
+        if (!acceptedFiles.length) return;
+        setLastWidgetAction("attachments");
+        void attachFilesToDrive(acceptedFiles, { workspaceSlug, projectId, issueId }, t);
+        return;
+      }
       const totalAttachedFiles = acceptedFiles.length + rejectedFiles.length;
 
       if (rejectedFiles.length === 0) {
@@ -79,13 +92,23 @@ export const IssueAttachmentActionButton = observer(function IssueAttachmentActi
       });
       return;
     },
-    [attachmentOperations, maxFileSize, workspaceSlug, handleFetchPropertyActivities, setLastWidgetAction]
+    [
+      toDrive,
+      projectId,
+      issueId,
+      t,
+      attachmentOperations,
+      maxFileSize,
+      workspaceSlug,
+      handleFetchPropertyActivities,
+      setLastWidgetAction,
+    ]
   );
 
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
-    maxSize: maxFileSize,
-    multiple: false,
+    maxSize: toDrive ? undefined : maxFileSize,
+    multiple: toDrive,
     disabled: isLoading || disabled,
   });
 

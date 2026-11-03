@@ -327,5 +327,153 @@
     "finished": "Завършено",
     "error": "Грешка",
     "cancelled": "Отменено"
+  },
+  "google_drive_integration": {
+    "connection": {
+      "heading": "Връзка",
+      "connected_as": "Свързано като {email} от {date}.",
+      "not_connected": "Няма връзка. Plane влиза в Google чрез собствения клиент в Google Cloud на вашата компания, така че файловете ви остават между вас и Google.",
+      "steps": {
+        "enable_api": "В Google Cloud Console създайте или изберете проект и активирайте Google Drive API.",
+        "consent_screen": "Настройте екрана за съгласие за OAuth. За акаунт в Google Workspace изберете „Вътрешен“.",
+        "create_client": "Създайте ID на клиент за OAuth от тип „Уеб приложение“.",
+        "redirect_uri": "Добавете адреса по-долу като оторизиран URI за пренасочване.",
+        "paste": "Поставете тук ID на клиента и клиентската тайна, след което се свържете."
+      },
+      "redirect_uri": "Оторизиран URI за пренасочване",
+      "redirect_uri_help": "Google ви връща на този адрес, след като влезете. Той трябва да съвпада точно.",
+      "copy": "Копирай URI за пренасочване",
+      "redirect_copied": "URI за пренасочване е копиран",
+      "client_id": "ID на клиента",
+      "client_secret": "Клиентска тайна",
+      "client_secret_placeholder": "Клиентска тайна от Google Cloud",
+      "client_secret_set": "Запазено. Оставете полето празно, за да я запазите.",
+      "client_change_warning": "Нов ID на клиента прекъсва връзката с текущия акаунт в Google. След това се свържете отново.",
+      "connect": "Свържи с Google",
+      "reconnect": "Свържи отново",
+      "connect_failed": "Влизането в Google не можа да започне",
+      "disconnect": "Прекъсни връзката",
+      "disconnecting": "Прекъсване на връзката",
+      "disconnect_title": "Прекъсване на връзката с Google Drive?",
+      "disconnect_body": "Новите файлове отново ще се съхраняват в Plane. Файловете, които вече са в Drive, остават там, а връзките на проектите с папките се запазват за следващо свързване.",
+      "disconnected": "Връзката с Google Drive е прекъсната",
+      "disconnect_failed": "Връзката с Google Drive не можа да бъде прекъсната"
+    },
+    "outcome": {
+      "connected": {
+        "title": "Google Drive е свързан",
+        "message": "Сега изберете папката, в която са папките на проектите ви."
+      },
+      "refused": {
+        "title": "Google Drive не е свързан",
+        "message": "Достъпът не беше разрешен на страницата на Google. Опитайте отново и разрешете достъп до Drive."
+      },
+      "failed": {
+        "title": "Google Drive не е свързан",
+        "message": "Google не прие влизането. Проверете ID на клиента, клиентската тайна и URI за пренасочване, след което опитайте отново."
+      },
+      "no_refresh_token": {
+        "title": "Google Drive не е свързан",
+        "message": "Google не даде постоянен достъп. Премахнете достъпа на Plane от настройките на акаунта си в Google, след което се свържете отново."
+      }
+    },
+    "root": {
+      "heading": "Папка с проекти",
+      "description": "Папката в Drive, в която са папките на проектите ви, например projects / webhead. За проектите се предлагат само папките в нея.",
+      "none": "Все още няма избрана папка",
+      "open_in_drive": "Отвори в Google Drive",
+      "choose": "Избери папка",
+      "change": "Смени папката",
+      "paste_label": "Или поставете връзка към папката",
+      "use_link": "Използвай връзката",
+      "saved": "Папката с проекти е запазена",
+      "save_failed": "Папката с проекти не можа да бъде запазена",
+      "auto_link": "Задаване на папка за новите проекти",
+      "auto_link_help": "Новият проект получава папката, чието име съвпада с неговото. Ако няма такава, Plane създава нова."
+    },
+    "projects": {
+      "heading": "Папки на проектите",
+      "description": "Изберете папката за всеки проект. Папките с подобно име се предлагат първи.",
+      "summary": "Проекти с папка: {linked} от {total}.",
+      "link_clear": "{count, plural, one {Свържи # сигурно съвпадение} other {Свържи # сигурни съвпадения}}",
+      "linked_clear": "{count, plural, =0 {Няма свързани проекти} one {Свързан е # проект} other {Свързани са # проекта}}",
+      "search": "Търсене на проекти",
+      "no_results": "Няма проекти, които отговарят на търсенето.",
+      "no_projects": "Все още няма проекти в това работно пространство.",
+      "choose_folder": "Изберете папка",
+      "search_folders": "Търсене на папки",
+      "no_folders": "Няма намерени папки",
+      "suggested": "Предложени",
+      "all_folders": "Всички папки",
+      "match": "{percent}% съвпадение",
+      "use_suggestion": "Използвай „{name}“",
+      "more_ways": "Още начини за избор на папка за {project}",
+      "create": "Създай папка „{name}“",
+      "browse": "Избери от Google Drive…",
+      "actions": "Действия за {project}",
+      "change": "Смени папката",
+      "unlink": "Прекъсни връзката с папката",
+      "linked": "{project} е свързан с папката си",
+      "created": "Създадена е папка за {project}",
+      "unlinked": "Връзката на {project} с папката му е прекъсната",
+      "save_failed": "Папката на проекта не можа да бъде сменена",
+      "method": {
+        "chosen": "Избрана",
+        "matched": "Съвпадение по име",
+        "created": "Създадена от Plane"
+      }
+    },
+    "browser": {
+      "title": "Изберете папка",
+      "top": "Google Drive",
+      "open": "Отвори {name}",
+      "empty": "Тук няма папки.",
+      "cancel": "Отказ",
+      "use_this": "Използвай тази папка"
+    },
+    "attachments": {
+      "in_drive": "Съхранено в Google Drive",
+      "open_folder": "Отвори папката",
+      "open_in_drive": "Отвори в Google Drive",
+      "uploaded_by": "Качено от {name} на {date}",
+      "upload_failed": "Файлът {name} не можа да бъде качен",
+      "close": "Затвори",
+      "remove": "Премахни",
+      "removing": "Премахване",
+      "remove_title": "Премахване на прикачения файл?",
+      "remove_body": "Файлът {name} ще бъде преместен в кошчето на Google Drive, откъдето може да бъде възстановен в рамките на 30 дни.",
+      "remove_failed": "Прикаченият файл не можа да бъде премахнат",
+      "drop_here": "Пуснете файловете тук, за да ги качите в Google Drive",
+      "in_plane": "Съхранено в Plane",
+      "move_to_drive": "Премести в Google Drive",
+      "moving": "Преместване в Google Drive",
+      "move_failed": "Някои файлове не можаха да бъдат преместени в Google Drive"
+    },
+    "uploads": {
+      "heading": "Качване в Google Drive",
+      "progress": "Напредък на качването на {name}",
+      "stop": "Спри качването на {name}"
+    },
+    "plane_files": {
+      "heading": "Файлове, които все още са на сървъра на Plane",
+      "description": "Прикачени файлове отпреди проектът им да има папка: {count}, общо {size}. Преместването им в Google Drive освобождава това място на сървъра.",
+      "moving": "Преместват се в Google Drive. Остават файлове: {count}",
+      "move": "Премести в Google Drive",
+      "failed": "Файловете не можаха да бъдат преместени в Google Drive"
+    },
+    "errors": {
+      "DRIVE_NOT_CONNECTED": "Google Drive не е свързан с това работно пространство.",
+      "DRIVE_ACCESS_REVOKED": "Plane вече няма достъп до Google Drive. Администратор на работното пространство трябва да го свърже отново.",
+      "DRIVE_PROJECT_NOT_LINKED": "Този проект все още няма папка в Google Drive.",
+      "DRIVE_NOT_FOUND": "Папката или файлът вече не е в Google Drive.",
+      "DRIVE_NOT_A_FOLDER": "Това не е папка, която Plane може да използва.",
+      "DRIVE_NO_PERMISSION": "Свързаният акаунт в Google няма достъп до тази папка.",
+      "DRIVE_STORAGE_FULL": "Хранилището в Google Drive е пълно.",
+      "DRIVE_BAD_LINK": "Това не е връзка към папка в Google Drive.",
+      "DRIVE_CLIENT_MISSING": "Първо въведете ID на клиента и клиентската тайна.",
+      "DRIVE_EMPTY_FILE": "Този файл е празен.",
+      "DRIVE_INCOMPLETE": "Google Drive не получи целия файл. Опитайте отново.",
+      "DRIVE_ERROR": "Google Drive не отговори както се очакваше. Опитайте отново."
+    }
   }
 }

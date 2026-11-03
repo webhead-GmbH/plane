@@ -33,6 +33,12 @@ export interface IEditorAssetStore {
     projectId?: string;
     workspaceSlug: string;
   }) => Promise<TFileSignedURLResponse>;
+  /** Shows an upload that goes somewhere else (Google Drive) in the editor like any other. */
+  trackEditorUpload: <T>(
+    blockId: string,
+    file: File,
+    run: (onProgress: (percent: number) => void) => Promise<T>
+  ) => Promise<T>;
   duplicateEditorAsset: ({
     assetId,
     entityId,
@@ -62,6 +68,7 @@ export class EditorAssetStore implements IEditorAssetStore {
       assetsUploadPercentage: computed,
       // actions
       uploadEditorAsset: action,
+      trackEditorUpload: action,
     });
     // services
     this.fileService = new FileService();
@@ -136,6 +143,25 @@ export class EditorAssetStore implements IEditorAssetStore {
       });
     }
   };
+  trackEditorUpload: IEditorAssetStore["trackEditorUpload"] = async (blockId, file, run) => {
+    runInAction(() => {
+      set(this.assetsUploadStatus, [blockId], {
+        id: uuidv4(),
+        name: file.name,
+        progress: 0,
+        size: file.size,
+        type: file.type,
+      });
+    });
+    try {
+      return await run((percent) => this.debouncedUpdateProgress(blockId, percent));
+    } finally {
+      runInAction(() => {
+        delete this.assetsUploadStatus[blockId];
+      });
+    }
+  };
+
   duplicateEditorAsset: IEditorAssetStore["duplicateEditorAsset"] = async (args) => {
     const { assetId, entityId, entityType, projectId, workspaceSlug } = args;
     const { asset_id } = await this.fileService.duplicateAsset(workspaceSlug, assetId, {

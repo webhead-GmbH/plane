@@ -265,6 +265,11 @@
           }
         }
       },
+      "google_drive": {
+        "title": "Google Drive",
+        "heading": "Google Drive",
+        "description": "I file degli elementi di lavoro vengono conservati nella cartella Google Drive di ciascun progetto, senza limiti di dimensione, tipo o numero."
+      },
       "webhooks": {
         "heading": "Webhook",
         "description": "Automatizza le notifiche verso servizi esterni quando si verificano eventi del progetto.",

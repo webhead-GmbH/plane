@@ -327,5 +327,153 @@
     "finished": "Hoàn thành",
     "error": "Lỗi",
     "cancelled": "Đã hủy"
+  },
+  "google_drive_integration": {
+    "connection": {
+      "heading": "Kết nối",
+      "connected_as": "Đã kết nối với tư cách {email} từ {date}.",
+      "not_connected": "Chưa kết nối. Plane đăng nhập vào Google bằng ứng dụng khách Google Cloud riêng của công ty bạn, nên tệp của bạn chỉ ở giữa bạn và Google.",
+      "steps": {
+        "enable_api": "Trong Google Cloud Console, hãy tạo hoặc chọn một dự án và bật Google Drive API.",
+        "consent_screen": "Thiết lập màn hình xin phép OAuth. Với tài khoản Google Workspace, hãy chọn \"Nội bộ\".",
+        "create_client": "Tạo một ID ứng dụng khách OAuth thuộc loại \"Ứng dụng web\".",
+        "redirect_uri": "Thêm địa chỉ bên dưới làm URI chuyển hướng được cho phép.",
+        "paste": "Dán ID ứng dụng khách và mật khẩu ứng dụng khách vào đây, sau đó kết nối."
+      },
+      "redirect_uri": "URI chuyển hướng được cho phép",
+      "redirect_uri_help": "Google sẽ đưa bạn trở lại địa chỉ này sau khi bạn đăng nhập. Địa chỉ phải khớp chính xác.",
+      "copy": "Sao chép URI chuyển hướng",
+      "redirect_copied": "Đã sao chép URI chuyển hướng",
+      "client_id": "ID ứng dụng khách",
+      "client_secret": "Mật khẩu ứng dụng khách",
+      "client_secret_placeholder": "Mật khẩu ứng dụng khách từ Google Cloud",
+      "client_secret_set": "Đã lưu. Để trống để giữ nguyên.",
+      "client_change_warning": "ID ứng dụng khách mới sẽ ngắt kết nối tài khoản Google hiện tại. Hãy kết nối lại sau đó.",
+      "connect": "Kết nối với Google",
+      "reconnect": "Kết nối lại",
+      "connect_failed": "Không thể bắt đầu đăng nhập Google",
+      "disconnect": "Ngắt kết nối",
+      "disconnecting": "Đang ngắt kết nối",
+      "disconnect_title": "Ngắt kết nối Google Drive?",
+      "disconnect_body": "Tệp mới sẽ lại được lưu trong Plane. Các tệp đã có trong Drive vẫn ở đó, và liên kết thư mục của các dự án được giữ lại để dùng khi bạn kết nối lại.",
+      "disconnected": "Đã ngắt kết nối Google Drive",
+      "disconnect_failed": "Không thể ngắt kết nối Google Drive"
+    },
+    "outcome": {
+      "connected": {
+        "title": "Đã kết nối Google Drive",
+        "message": "Bây giờ hãy chọn thư mục chứa các thư mục dự án của bạn."
+      },
+      "refused": {
+        "title": "Chưa kết nối Google Drive",
+        "message": "Quyền truy cập chưa được cấp trên trang của Google. Hãy thử lại và cho phép truy cập Drive."
+      },
+      "failed": {
+        "title": "Chưa kết nối Google Drive",
+        "message": "Google không chấp nhận đăng nhập. Hãy kiểm tra ID ứng dụng khách, mật khẩu ứng dụng khách và URI chuyển hướng, rồi thử lại."
+      },
+      "no_refresh_token": {
+        "title": "Chưa kết nối Google Drive",
+        "message": "Google không cấp quyền truy cập lâu dài. Hãy xóa quyền truy cập của Plane trong phần cài đặt tài khoản Google của bạn, rồi kết nối lại."
+      }
+    },
+    "root": {
+      "heading": "Thư mục chứa dự án",
+      "description": "Thư mục Drive chứa các thư mục dự án của bạn, ví dụ projects / webhead. Chỉ các thư mục bên trong nó mới được đề xuất cho dự án.",
+      "none": "Chưa chọn thư mục nào",
+      "open_in_drive": "Mở trong Google Drive",
+      "choose": "Chọn thư mục",
+      "change": "Đổi thư mục",
+      "paste_label": "Hoặc dán đường liên kết đến thư mục",
+      "use_link": "Dùng liên kết",
+      "saved": "Đã lưu thư mục chứa dự án",
+      "save_failed": "Không thể lưu thư mục chứa dự án",
+      "auto_link": "Gán thư mục cho dự án mới",
+      "auto_link_help": "Dự án mới sẽ nhận thư mục có tên trùng với tên của dự án. Nếu không có, Plane sẽ tạo một thư mục."
+    },
+    "projects": {
+      "heading": "Thư mục dự án",
+      "description": "Chọn thư mục cho từng dự án. Các thư mục có tên tương tự sẽ được đề xuất trước.",
+      "summary": "{linked} trên {total} dự án đã có thư mục.",
+      "link_clear": "{count, plural, other {Liên kết # kết quả khớp rõ ràng}}",
+      "linked_clear": "{count, plural, =0 {Không có dự án nào được liên kết} other {Đã liên kết # dự án}}",
+      "search": "Tìm kiếm dự án",
+      "no_results": "Không có dự án nào khớp với tìm kiếm của bạn.",
+      "no_projects": "Chưa có dự án nào trong không gian làm việc này.",
+      "choose_folder": "Chọn một thư mục",
+      "search_folders": "Tìm kiếm thư mục",
+      "no_folders": "Không tìm thấy thư mục nào",
+      "suggested": "Đề xuất",
+      "all_folders": "Tất cả thư mục",
+      "match": "Khớp {percent}%",
+      "use_suggestion": "Dùng \"{name}\"",
+      "more_ways": "Các cách khác để chọn thư mục cho {project}",
+      "create": "Tạo thư mục \"{name}\"",
+      "browse": "Chọn từ Google Drive…",
+      "actions": "Thao tác cho {project}",
+      "change": "Đổi thư mục",
+      "unlink": "Hủy liên kết thư mục",
+      "linked": "Đã liên kết {project} với thư mục của dự án",
+      "created": "Đã tạo thư mục cho {project}",
+      "unlinked": "Đã hủy liên kết {project} khỏi thư mục của dự án",
+      "save_failed": "Không thể đổi thư mục của dự án",
+      "method": {
+        "chosen": "Đã chọn",
+        "matched": "Khớp theo tên",
+        "created": "Do Plane tạo"
+      }
+    },
+    "browser": {
+      "title": "Chọn một thư mục",
+      "top": "Google Drive",
+      "open": "Mở {name}",
+      "empty": "Không có thư mục nào ở đây.",
+      "cancel": "Hủy",
+      "use_this": "Dùng thư mục này"
+    },
+    "attachments": {
+      "in_drive": "Được lưu trong Google Drive",
+      "open_folder": "Mở thư mục",
+      "open_in_drive": "Mở trong Google Drive",
+      "uploaded_by": "Được tải lên bởi {name} vào {date}",
+      "upload_failed": "Không thể tải lên {name}",
+      "close": "Đóng",
+      "remove": "Xóa",
+      "removing": "Đang xóa",
+      "remove_title": "Xóa tệp đính kèm?",
+      "remove_body": "{name} sẽ được chuyển vào thùng rác của Google Drive, nơi có thể khôi phục trong vòng 30 ngày.",
+      "remove_failed": "Không thể xóa tệp đính kèm",
+      "drop_here": "Thả tệp vào đây để tải lên Google Drive",
+      "in_plane": "Được lưu trong Plane",
+      "move_to_drive": "Chuyển sang Google Drive",
+      "moving": "Đang chuyển sang Google Drive",
+      "move_failed": "Không thể chuyển một số tệp sang Google Drive"
+    },
+    "uploads": {
+      "heading": "Đang tải lên Google Drive",
+      "progress": "Tiến độ tải lên {name}",
+      "stop": "Dừng tải lên {name}"
+    },
+    "plane_files": {
+      "heading": "Tệp vẫn còn trên máy chủ Plane",
+      "description": "Tệp đính kèm từ trước khi dự án có thư mục: {count}, tổng cộng {size}. Chuyển chúng sang Google Drive sẽ giải phóng dung lượng đó trên máy chủ.",
+      "moving": "Đang chuyển sang Google Drive. Số tệp còn lại: {count}",
+      "move": "Chuyển sang Google Drive",
+      "failed": "Không thể chuyển các tệp sang Google Drive"
+    },
+    "errors": {
+      "DRIVE_NOT_CONNECTED": "Google Drive chưa được kết nối với không gian làm việc này.",
+      "DRIVE_ACCESS_REVOKED": "Plane không còn quyền truy cập Google Drive. Quản trị viên không gian làm việc cần kết nối lại.",
+      "DRIVE_PROJECT_NOT_LINKED": "Dự án này chưa có thư mục Google Drive.",
+      "DRIVE_NOT_FOUND": "Thư mục hoặc tệp không còn trong Google Drive.",
+      "DRIVE_NOT_A_FOLDER": "Đó không phải là thư mục mà Plane có thể dùng.",
+      "DRIVE_NO_PERMISSION": "Tài khoản Google đã kết nối không thể truy cập thư mục này.",
+      "DRIVE_STORAGE_FULL": "Bộ nhớ Google Drive đã đầy.",
+      "DRIVE_BAD_LINK": "Đó không phải là liên kết đến một thư mục Google Drive.",
+      "DRIVE_CLIENT_MISSING": "Hãy nhập ID ứng dụng khách và mật khẩu ứng dụng khách trước.",
+      "DRIVE_EMPTY_FILE": "Tệp này trống.",
+      "DRIVE_INCOMPLETE": "Google Drive không nhận được toàn bộ tệp. Hãy thử lại.",
+      "DRIVE_ERROR": "Google Drive không phản hồi như mong đợi. Hãy thử lại."
+    }
   }
 }

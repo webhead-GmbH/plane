@@ -16,6 +16,9 @@ import { cn, isCommentEmpty } from "@plane/utils";
 // components
 import { EditorMentionsRoot } from "@/components/editor/embeds/mentions";
 import { IssueCommentToolbar } from "@/components/editor/lite-text/toolbar";
+import { useEditorUploadGate } from "@/components/google-drive/editor-uploads";
+import type { TDriveUploadTarget } from "@/components/google-drive/upload";
+import { DriveDropHint, DriveEditorUploads, useFilesDraggedOver } from "@/components/google-drive/upload-row";
 // hooks
 import { useEditorConfig, useEditorMention } from "@/hooks/editor";
 import { useMember } from "@/hooks/store/use-member";
@@ -45,6 +48,8 @@ type LiteTextEditorWrapperProps = MakeOptional<
   parentClassName?: string;
   editorClassName?: string;
   submitButtonText?: string;
+  /** The work item whose Google Drive folder images and files go to, when its project has one. */
+  driveTarget?: TDriveUploadTarget;
 } & (
     | {
         editable: false;
@@ -55,6 +60,10 @@ type LiteTextEditorWrapperProps = MakeOptional<
         duplicateFile: TFileHandler["duplicate"];
       }
   );
+
+function isMutableRefObject<T>(value: React.ForwardedRef<T>): value is React.MutableRefObject<T | null> {
+  return !!value && typeof value === "object" && "current" in value;
+}
 
 export const LiteTextEditor = React.forwardRef(function LiteTextEditor(
   props: LiteTextEditorWrapperProps,
@@ -68,6 +77,7 @@ export const LiteTextEditor = React.forwardRef(function LiteTextEditor(
     workspaceId,
     projectId,
     issue_id,
+    driveTarget,
     accessSpecifier,
     handleAccessChange,
     showAccessSpecifier = false,
@@ -111,11 +121,14 @@ export const LiteTextEditor = React.forwardRef(function LiteTextEditor(
   });
   // editor config
   const { getEditorFileHandlers } = useEditorConfig();
-  function isMutableRefObject<T>(ref: React.ForwardedRef<T>): ref is React.MutableRefObject<T | null> {
-    return !!ref && typeof ref === "object" && "current" in ref;
-  }
   // derived values
   const isEmpty = isCommentEmpty(props.initialValue);
+  // Only an editor that can take files sends them to Google Drive.
+  const drive = editable ? driveTarget : undefined;
+  // Files on their way there: listed under the text, and the comment waits for them.
+  const { uploadsKey, isUploading, submit } = useEditorUploadGate(props.id, Boolean(drive), rest.onEnterKeyPress);
+  // Where dragged files can go: the whole box, since an empty comment has no line to point at.
+  const { isOver: isDraggingFiles, handlers: dragHandlers } = useFilesDraggedOver(Boolean(drive));
 
   return (
     <div
@@ -128,7 +141,9 @@ export const LiteTextEditor = React.forwardRef(function LiteTextEditor(
       )}
       onFocus={() => isFullVariant && !showToolbarInitially && setIsFocused(true)}
       onBlur={() => isFullVariant && !showToolbarInitially && setIsFocused(false)}
+      {...dragHandlers}
     >
+      <DriveDropHint show={isDraggingFiles} />
       {/* Wrapper for lite toolbar layout */}
       <div className={cn(isLiteVariant && editable ? "flex items-end gap-1" : "")}>
         {/* Main Editor - always rendered once */}
@@ -144,6 +159,8 @@ export const LiteTextEditor = React.forwardRef(function LiteTextEditor(
               duplicateFile: editable ? props.duplicateFile : async () => "",
               workspaceId,
               workspaceSlug,
+              drive,
+              uploadsKey,
             })}
             getEditorMetaData={getEditorMetaData}
             handleEditorReady={(ready) => {
@@ -184,12 +201,15 @@ export const LiteTextEditor = React.forwardRef(function LiteTextEditor(
                 ...item.extraProps,
               });
             }}
-            onSubmit={(e) => rest.onEnterKeyPress?.(e)}
+            onSubmit={submit}
             isSubmitting={isSubmitting}
+            isUploading={isUploading}
             isEmpty={isEmpty}
           />
         )}
       </div>
+
+      <DriveEditorUploads uploadsKey={uploadsKey} className="mt-2 border-t border-subtle pt-2" />
 
       {/* Full Toolbar - conditionally rendered */}
       {isFullVariant && editable && (
@@ -210,9 +230,10 @@ export const LiteTextEditor = React.forwardRef(function LiteTextEditor(
               });
             }}
             handleAccessChange={handleAccessChange}
-            handleSubmit={(e) => rest.onEnterKeyPress?.(e)}
+            handleSubmit={submit}
             isCommentEmpty={isEmpty}
             isSubmitting={isSubmitting}
+            isUploading={isUploading}
             showAccessSpecifier={showAccessSpecifier}
             editorRef={editorRef}
             showSubmitButton={showSubmitButton}

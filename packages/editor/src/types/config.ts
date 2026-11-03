@@ -18,6 +18,12 @@ export type TFileHandler = {
   duplicate: (assetId: string) => Promise<string>;
   /** Receives the files dropped or pasted into the editor that it cannot add, so the host can say so */
   onUnsupportedFiles?: (files: File[]) => void;
+  /**
+   * Keeps a file that is not an image somewhere and answers with a link to it.
+   * Where given, any file can be dropped or pasted into the text: images still
+   * become image blocks, and everything else a link to the file where it was put.
+   */
+  uploadAttachment?: (file: File) => Promise<{ name: string; url: string }>;
   validation: {
     /**
      * @description max file size in bytes

@@ -327,5 +327,153 @@
     "finished": "Selesai",
     "error": "Kesalahan",
     "cancelled": "Dibatalkan"
+  },
+  "google_drive_integration": {
+    "connection": {
+      "heading": "Koneksi",
+      "connected_as": "Terhubung sebagai {email} sejak {date}.",
+      "not_connected": "Tidak terhubung. Plane masuk ke Google dengan klien Google Cloud milik perusahaan Anda sendiri, sehingga file Anda tetap berada di antara Anda dan Google.",
+      "steps": {
+        "enable_api": "Di Google Cloud Console, buat atau pilih proyek dan aktifkan Google Drive API.",
+        "consent_screen": "Siapkan layar izin OAuth. Untuk akun Google Workspace, pilih \"Internal\".",
+        "create_client": "Buat ID klien OAuth dengan jenis \"Aplikasi web\".",
+        "redirect_uri": "Tambahkan alamat di bawah sebagai URI pengalihan yang diizinkan.",
+        "paste": "Tempel ID klien dan rahasia klien di sini, lalu hubungkan."
+      },
+      "redirect_uri": "URI pengalihan yang diizinkan",
+      "redirect_uri_help": "Google mengarahkan Anda kembali ke alamat ini setelah Anda masuk. Alamatnya harus sama persis.",
+      "copy": "Salin URI pengalihan",
+      "redirect_copied": "URI pengalihan disalin",
+      "client_id": "ID klien",
+      "client_secret": "Rahasia klien",
+      "client_secret_placeholder": "Rahasia klien dari Google Cloud",
+      "client_secret_set": "Tersimpan. Biarkan kosong untuk mempertahankannya.",
+      "client_change_warning": "ID klien baru akan memutuskan akun Google saat ini. Hubungkan lagi setelahnya.",
+      "connect": "Hubungkan dengan Google",
+      "reconnect": "Hubungkan lagi",
+      "connect_failed": "Tidak dapat memulai proses masuk Google",
+      "disconnect": "Putuskan",
+      "disconnecting": "Memutuskan",
+      "disconnect_title": "Putuskan Google Drive?",
+      "disconnect_body": "File baru akan disimpan di Plane lagi. File yang sudah ada di Drive tetap di sana, dan tautan folder proyek dipertahankan untuk saat Anda menghubungkan lagi.",
+      "disconnected": "Google Drive diputuskan",
+      "disconnect_failed": "Tidak dapat memutuskan Google Drive"
+    },
+    "outcome": {
+      "connected": {
+        "title": "Google Drive terhubung",
+        "message": "Sekarang pilih folder tempat folder proyek Anda berada."
+      },
+      "refused": {
+        "title": "Google Drive tidak terhubung",
+        "message": "Akses tidak diberikan di halaman Google. Coba lagi dan izinkan akses ke Drive."
+      },
+      "failed": {
+        "title": "Google Drive tidak terhubung",
+        "message": "Google tidak menerima proses masuk. Periksa ID klien, rahasia klien, dan URI pengalihan, lalu coba lagi."
+      },
+      "no_refresh_token": {
+        "title": "Google Drive tidak terhubung",
+        "message": "Google tidak memberikan akses yang bertahan lama. Hapus akses Plane dari setelan akun Google Anda, lalu hubungkan lagi."
+      }
+    },
+    "root": {
+      "heading": "Folder induk proyek",
+      "description": "Folder Drive tempat folder proyek Anda berada, misalnya projects / webhead. Hanya folder di dalamnya yang ditawarkan untuk proyek.",
+      "none": "Belum ada folder yang dipilih",
+      "open_in_drive": "Buka di Google Drive",
+      "choose": "Pilih folder",
+      "change": "Ganti folder",
+      "paste_label": "Atau tempel tautan ke folder",
+      "use_link": "Gunakan tautan",
+      "saved": "Folder induk proyek disimpan",
+      "save_failed": "Tidak dapat menyimpan folder induk proyek",
+      "auto_link": "Beri folder untuk proyek baru",
+      "auto_link_help": "Proyek baru mendapatkan folder yang namanya sama dengan nama proyek tersebut. Jika tidak ada, Plane akan membuatnya."
+    },
+    "projects": {
+      "heading": "Folder proyek",
+      "description": "Pilih folder untuk setiap proyek. Folder dengan nama yang mirip disarankan lebih dulu.",
+      "summary": "{linked} dari {total} proyek memiliki folder.",
+      "link_clear": "{count, plural, other {Tautkan # kecocokan pasti}}",
+      "linked_clear": "{count, plural, =0 {Tidak ada proyek yang ditautkan} other {# proyek ditautkan}}",
+      "search": "Cari proyek",
+      "no_results": "Tidak ada proyek yang cocok dengan pencarian Anda.",
+      "no_projects": "Belum ada proyek di ruang kerja ini.",
+      "choose_folder": "Pilih folder",
+      "search_folders": "Cari folder",
+      "no_folders": "Tidak ada folder yang ditemukan",
+      "suggested": "Disarankan",
+      "all_folders": "Semua folder",
+      "match": "Cocok {percent}%",
+      "use_suggestion": "Gunakan \"{name}\"",
+      "more_ways": "Cara lain memilih folder untuk {project}",
+      "create": "Buat folder \"{name}\"",
+      "browse": "Pilih dari Google Drive…",
+      "actions": "Tindakan untuk {project}",
+      "change": "Ganti folder",
+      "unlink": "Lepas tautan folder",
+      "linked": "{project} ditautkan ke foldernya",
+      "created": "Folder dibuat untuk {project}",
+      "unlinked": "Tautan {project} ke foldernya dilepas",
+      "save_failed": "Tidak dapat mengganti folder proyek",
+      "method": {
+        "chosen": "Dipilih",
+        "matched": "Dicocokkan berdasarkan nama",
+        "created": "Dibuat oleh Plane"
+      }
+    },
+    "browser": {
+      "title": "Pilih folder",
+      "top": "Google Drive",
+      "open": "Buka {name}",
+      "empty": "Tidak ada folder di sini.",
+      "cancel": "Batal",
+      "use_this": "Gunakan folder ini"
+    },
+    "attachments": {
+      "in_drive": "Disimpan di Google Drive",
+      "open_folder": "Buka folder",
+      "open_in_drive": "Buka di Google Drive",
+      "uploaded_by": "Diunggah oleh {name} pada {date}",
+      "upload_failed": "Tidak dapat mengunggah {name}",
+      "close": "Tutup",
+      "remove": "Hapus",
+      "removing": "Menghapus",
+      "remove_title": "Hapus lampiran?",
+      "remove_body": "{name} akan dipindahkan ke sampah Google Drive, tempat file tersebut dapat dipulihkan selama 30 hari.",
+      "remove_failed": "Tidak dapat menghapus lampiran",
+      "drop_here": "Lepaskan file untuk mengunggahnya ke Google Drive",
+      "in_plane": "Disimpan di Plane",
+      "move_to_drive": "Pindahkan ke Google Drive",
+      "moving": "Memindahkan ke Google Drive",
+      "move_failed": "Beberapa file tidak dapat dipindahkan ke Google Drive"
+    },
+    "uploads": {
+      "heading": "Mengunggah ke Google Drive",
+      "progress": "Progres unggahan {name}",
+      "stop": "Hentikan unggahan {name}"
+    },
+    "plane_files": {
+      "heading": "File yang masih ada di server Plane",
+      "description": "Lampiran dari sebelum proyeknya memiliki folder: {count}, total {size}. Memindahkannya ke Google Drive akan mengosongkan ruang tersebut di server.",
+      "moving": "Sedang dipindahkan ke Google Drive. File tersisa: {count}",
+      "move": "Pindahkan ke Google Drive",
+      "failed": "File tidak dapat dipindahkan ke Google Drive"
+    },
+    "errors": {
+      "DRIVE_NOT_CONNECTED": "Google Drive tidak terhubung ke ruang kerja ini.",
+      "DRIVE_ACCESS_REVOKED": "Plane tidak lagi memiliki akses ke Google Drive. Admin ruang kerja perlu menghubungkannya lagi.",
+      "DRIVE_PROJECT_NOT_LINKED": "Proyek ini belum memiliki folder Google Drive.",
+      "DRIVE_NOT_FOUND": "Folder atau file tersebut sudah tidak ada di Google Drive.",
+      "DRIVE_NOT_A_FOLDER": "Itu bukan folder yang dapat digunakan Plane.",
+      "DRIVE_NO_PERMISSION": "Akun Google yang terhubung tidak dapat mengakses folder ini.",
+      "DRIVE_STORAGE_FULL": "Penyimpanan Google Drive penuh.",
+      "DRIVE_BAD_LINK": "Itu bukan tautan ke folder Google Drive.",
+      "DRIVE_CLIENT_MISSING": "Masukkan ID klien dan rahasia klien terlebih dahulu.",
+      "DRIVE_EMPTY_FILE": "File ini kosong.",
+      "DRIVE_INCOMPLETE": "Google Drive tidak menerima seluruh file. Coba lagi.",
+      "DRIVE_ERROR": "Google Drive tidak merespons seperti yang diharapkan. Coba lagi."
+    }
   }
 }

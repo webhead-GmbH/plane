@@ -327,5 +327,153 @@
     "finished": "Dokončeno",
     "error": "Chyba",
     "cancelled": "Zrušeno"
+  },
+  "google_drive_integration": {
+    "connection": {
+      "heading": "Připojení",
+      "connected_as": "Připojeno jako {email} od {date}.",
+      "not_connected": "Nepřipojeno. Plane se přihlašuje ke službám Google přes vlastního klienta Google Cloud vaší firmy, takže vaše soubory zůstávají mezi vámi a společností Google.",
+      "steps": {
+        "enable_api": "V Google Cloud Console vytvořte nebo vyberte projekt a povolte Google Drive API.",
+        "consent_screen": "Nastavte obrazovku souhlasu OAuth. U účtu Google Workspace zvolte „Interní“.",
+        "create_client": "Vytvořte ID klienta OAuth typu „Webová aplikace“.",
+        "redirect_uri": "Přidejte níže uvedenou adresu jako autorizovaný URI přesměrování.",
+        "paste": "Sem vložte ID klienta a tajný klíč klienta a poté se připojte."
+      },
+      "redirect_uri": "Autorizovaný URI přesměrování",
+      "redirect_uri_help": "Po přihlášení vás Google vrátí na tuto adresu. Musí se přesně shodovat.",
+      "copy": "Kopírovat URI přesměrování",
+      "redirect_copied": "URI přesměrování zkopírován",
+      "client_id": "ID klienta",
+      "client_secret": "Tajný klíč klienta",
+      "client_secret_placeholder": "Tajný klíč klienta z Google Cloud",
+      "client_secret_set": "Uloženo. Ponechte prázdné, chcete-li jej zachovat.",
+      "client_change_warning": "Nové ID klienta odpojí aktuální účet Google. Poté se připojte znovu.",
+      "connect": "Připojit přes Google",
+      "reconnect": "Připojit znovu",
+      "connect_failed": "Přihlášení přes Google se nepodařilo spustit",
+      "disconnect": "Odpojit",
+      "disconnecting": "Odpojování",
+      "disconnect_title": "Odpojit Google Drive?",
+      "disconnect_body": "Nové soubory se budou opět ukládat v Plane. Soubory, které už jsou na Drive, tam zůstanou a propojení projektů se složkami se zachová pro případ, že se znovu připojíte.",
+      "disconnected": "Google Drive odpojen",
+      "disconnect_failed": "Google Drive se nepodařilo odpojit"
+    },
+    "outcome": {
+      "connected": {
+        "title": "Google Drive připojen",
+        "message": "Nyní zvolte složku, ve které jsou složky vašich projektů."
+      },
+      "refused": {
+        "title": "Google Drive nepřipojen",
+        "message": "Na stránce Google nebyl udělen přístup. Zkuste to znovu a povolte přístup k Drive."
+      },
+      "failed": {
+        "title": "Google Drive nepřipojen",
+        "message": "Google přihlášení nepřijal. Zkontrolujte ID klienta, tajný klíč klienta a URI přesměrování a zkuste to znovu."
+      },
+      "no_refresh_token": {
+        "title": "Google Drive nepřipojen",
+        "message": "Google neudělil trvalý přístup. Odeberte přístup Plane v nastavení svého účtu Google a poté se připojte znovu."
+      }
+    },
+    "root": {
+      "heading": "Složka projektů",
+      "description": "Složka na Drive, ve které jsou složky vašich projektů, například projects / webhead. Projektům se nabízejí jen složky v ní.",
+      "none": "Zatím není zvolena žádná složka",
+      "open_in_drive": "Otevřít v Google Drive",
+      "choose": "Zvolit složku",
+      "change": "Změnit složku",
+      "paste_label": "Nebo vložte odkaz na složku",
+      "use_link": "Použít odkaz",
+      "saved": "Složka projektů uložena",
+      "save_failed": "Složku projektů se nepodařilo uložit",
+      "auto_link": "Přidělovat novým projektům složku",
+      "auto_link_help": "Nový projekt dostane složku se stejným názvem. Pokud žádná není, Plane ji vytvoří."
+    },
+    "projects": {
+      "heading": "Složky jednotlivých projektů",
+      "description": "Zvolte složku pro každý projekt. Složky s podobným názvem se navrhují jako první.",
+      "summary": "Projekty se složkou: {linked} z {total}.",
+      "link_clear": "{count, plural, one {Propojit # jasnou shodu} few {Propojit # jasné shody} many {Propojit # jasné shody} other {Propojit # jasných shod}}",
+      "linked_clear": "{count, plural, =0 {Nebyl propojen žádný projekt} one {Propojen # projekt} few {Propojeny # projekty} many {Propojeno # projektu} other {Propojeno # projektů}}",
+      "search": "Hledat projekty",
+      "no_results": "Vašemu hledání neodpovídají žádné projekty.",
+      "no_projects": "V tomto pracovním prostoru zatím nejsou žádné projekty.",
+      "choose_folder": "Zvolte složku",
+      "search_folders": "Hledat složky",
+      "no_folders": "Nebyly nalezeny žádné složky",
+      "suggested": "Navrhované",
+      "all_folders": "Všechny složky",
+      "match": "Shoda {percent} %",
+      "use_suggestion": "Použít „{name}“",
+      "more_ways": "Další způsoby výběru složky pro projekt {project}",
+      "create": "Vytvořit složku „{name}“",
+      "browse": "Vybrat z Google Drive…",
+      "actions": "Akce pro projekt {project}",
+      "change": "Změnit složku",
+      "unlink": "Zrušit propojení složky",
+      "linked": "Projekt {project} propojen se svou složkou",
+      "created": "Složka pro projekt {project} vytvořena",
+      "unlinked": "Propojení projektu {project} se složkou zrušeno",
+      "save_failed": "Složku projektu se nepodařilo změnit",
+      "method": {
+        "chosen": "Zvoleno",
+        "matched": "Shoda podle názvu",
+        "created": "Vytvořeno aplikací Plane"
+      }
+    },
+    "browser": {
+      "title": "Zvolte složku",
+      "top": "Google Drive",
+      "open": "Otevřít {name}",
+      "empty": "Žádné složky.",
+      "cancel": "Zrušit",
+      "use_this": "Použít tuto složku"
+    },
+    "attachments": {
+      "in_drive": "Uloženo na Google Drive",
+      "open_folder": "Otevřít složku",
+      "open_in_drive": "Otevřít v Google Drive",
+      "uploaded_by": "Nahráno uživatelem {name} dne {date}",
+      "upload_failed": "Soubor {name} se nepodařilo nahrát",
+      "close": "Zavřít",
+      "remove": "Odebrat",
+      "removing": "Odebírání",
+      "remove_title": "Odebrat přílohu?",
+      "remove_body": "Soubor {name} bude přesunut do koše na Google Drive, kde ho bude možné 30 dní obnovit.",
+      "remove_failed": "Přílohu se nepodařilo odebrat",
+      "drop_here": "Přetáhněte sem soubory a nahrajte je na Google Drive",
+      "in_plane": "Uloženo v Plane",
+      "move_to_drive": "Přesunout na Google Drive",
+      "moving": "Přesouvání na Google Drive",
+      "move_failed": "Některé soubory se nepodařilo přesunout na Google Drive"
+    },
+    "uploads": {
+      "heading": "Nahrávání na Google Drive",
+      "progress": "Průběh nahrávání souboru {name}",
+      "stop": "Zastavit nahrávání souboru {name}"
+    },
+    "plane_files": {
+      "heading": "Soubory, které jsou stále na serveru Plane",
+      "description": "Přílohy z doby, kdy projekt ještě neměl složku: {count}, celkem {size}. Přesunem na Google Drive se toto místo na serveru uvolní.",
+      "moving": "Přesouvají se na Google Drive. Zbývá souborů: {count}",
+      "move": "Přesunout na Google Drive",
+      "failed": "Soubory se nepodařilo přesunout na Google Drive"
+    },
+    "errors": {
+      "DRIVE_NOT_CONNECTED": "Google Drive není k tomuto pracovnímu prostoru připojen.",
+      "DRIVE_ACCESS_REVOKED": "Plane už nemá přístup ke Google Drive. Administrátor pracovního prostoru ho musí znovu připojit.",
+      "DRIVE_PROJECT_NOT_LINKED": "Tento projekt zatím nemá složku na Google Drive.",
+      "DRIVE_NOT_FOUND": "Složka nebo soubor už na Google Drive není.",
+      "DRIVE_NOT_A_FOLDER": "Tohle není složka, kterou může Plane použít.",
+      "DRIVE_NO_PERMISSION": "Připojený účet Google nemá k této složce přístup.",
+      "DRIVE_STORAGE_FULL": "Úložiště Google Drive je plné.",
+      "DRIVE_BAD_LINK": "Tohle není odkaz na složku na Google Drive.",
+      "DRIVE_CLIENT_MISSING": "Nejprve zadejte ID klienta a tajný klíč klienta.",
+      "DRIVE_EMPTY_FILE": "Tento soubor je prázdný.",
+      "DRIVE_INCOMPLETE": "Google Drive nepřijal celý soubor. Zkuste to znovu.",
+      "DRIVE_ERROR": "Google Drive neodpověděl podle očekávání. Zkuste to znovu."
+    }
   }
 }

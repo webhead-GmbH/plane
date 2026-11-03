@@ -327,5 +327,153 @@
     "finished": "Finalizat",
     "error": "Eroare",
     "cancelled": "Anulat"
+  },
+  "google_drive_integration": {
+    "connection": {
+      "heading": "Conexiune",
+      "connected_as": "Conectat ca {email} din {date}.",
+      "not_connected": "Neconectat. Plane se conectează la Google cu clientul Google Cloud propriu al companiei dumneavoastră, astfel încât fișierele rămân între dumneavoastră și Google.",
+      "steps": {
+        "enable_api": "În Google Cloud Console, creați sau alegeți un proiect și activați Google Drive API.",
+        "consent_screen": "Configurați ecranul de consimțământ OAuth. Pentru un cont Google Workspace, alegeți „Intern”.",
+        "create_client": "Creați un ID client OAuth de tipul „Aplicație web”.",
+        "redirect_uri": "Adăugați adresa de mai jos ca URI de redirecționare autorizat.",
+        "paste": "Lipiți aici ID-ul clientului și secretul clientului, apoi conectați-vă."
+      },
+      "redirect_uri": "URI de redirecționare autorizat",
+      "redirect_uri_help": "Google vă trimite înapoi la această adresă după autentificare. Trebuie să corespundă exact.",
+      "copy": "Copiază URI-ul de redirecționare",
+      "redirect_copied": "URI-ul de redirecționare a fost copiat",
+      "client_id": "ID client",
+      "client_secret": "Secretul clientului",
+      "client_secret_placeholder": "Secretul clientului din Google Cloud",
+      "client_secret_set": "Salvat. Lăsați gol pentru a-l păstra.",
+      "client_change_warning": "Un ID client nou deconectează contul Google actual. Conectați-vă din nou după aceea.",
+      "connect": "Conectează cu Google",
+      "reconnect": "Conectează din nou",
+      "connect_failed": "Nu s-a putut porni autentificarea Google",
+      "disconnect": "Deconectează",
+      "disconnecting": "Se deconectează",
+      "disconnect_title": "Deconectați Google Drive?",
+      "disconnect_body": "Fișierele noi vor fi stocate din nou în Plane. Fișierele aflate deja în Drive rămân acolo, iar legăturile proiectelor cu dosarele se păstrează pentru o nouă conectare.",
+      "disconnected": "Google Drive a fost deconectat",
+      "disconnect_failed": "Nu s-a putut deconecta Google Drive"
+    },
+    "outcome": {
+      "connected": {
+        "title": "Google Drive conectat",
+        "message": "Acum alegeți dosarul în care se află dosarele proiectelor."
+      },
+      "refused": {
+        "title": "Google Drive neconectat",
+        "message": "Accesul nu a fost acordat pe pagina Google. Încercați din nou și permiteți accesul la Drive."
+      },
+      "failed": {
+        "title": "Google Drive neconectat",
+        "message": "Google nu a acceptat autentificarea. Verificați ID-ul clientului, secretul clientului și URI-ul de redirecționare, apoi încercați din nou."
+      },
+      "no_refresh_token": {
+        "title": "Google Drive neconectat",
+        "message": "Google nu a acordat acces permanent. Eliminați accesul Plane din setările contului Google, apoi conectați-vă din nou."
+      }
+    },
+    "root": {
+      "heading": "Dosarul proiectelor",
+      "description": "Dosarul din Drive în care se află dosarele proiectelor, de exemplu projects / webhead. Pentru proiecte sunt oferite doar dosarele din el.",
+      "none": "Niciun dosar ales încă",
+      "open_in_drive": "Deschide în Google Drive",
+      "choose": "Alege dosarul",
+      "change": "Schimbă dosarul",
+      "paste_label": "Sau lipiți un link către dosar",
+      "use_link": "Folosește linkul",
+      "saved": "Dosarul proiectelor a fost salvat",
+      "save_failed": "Nu s-a putut salva dosarul proiectelor",
+      "auto_link": "Atribuie un dosar proiectelor noi",
+      "auto_link_help": "Un proiect nou primește dosarul al cărui nume se potrivește cu al său. Dacă nu există, Plane creează unul."
+    },
+    "projects": {
+      "heading": "Dosare pe proiecte",
+      "description": "Alegeți dosarul pentru fiecare proiect. Dosarele cu nume asemănător sunt sugerate primele.",
+      "summary": "Proiecte cu dosar: {linked} din {total}.",
+      "link_clear": "{count, plural, one {Leagă # potrivire sigură} few {Leagă # potriviri sigure} other {Leagă # de potriviri sigure}}",
+      "linked_clear": "{count, plural, =0 {Niciun proiect legat} one {# proiect legat} few {# proiecte legate} other {# de proiecte legate}}",
+      "search": "Caută proiecte",
+      "no_results": "Niciun proiect nu corespunde căutării.",
+      "no_projects": "Încă nu există proiecte în acest spațiu de lucru.",
+      "choose_folder": "Alege un dosar",
+      "search_folders": "Caută dosare",
+      "no_folders": "Nu s-au găsit dosare",
+      "suggested": "Sugerate",
+      "all_folders": "Toate dosarele",
+      "match": "Potrivire {percent}%",
+      "use_suggestion": "Folosește „{name}”",
+      "more_ways": "Mai multe moduri de a alege un dosar pentru {project}",
+      "create": "Creează dosarul „{name}”",
+      "browse": "Alege din Google Drive…",
+      "actions": "Acțiuni pentru {project}",
+      "change": "Schimbă dosarul",
+      "unlink": "Elimină legătura cu dosarul",
+      "linked": "{project} a fost legat de dosarul său",
+      "created": "Dosar creat pentru {project}",
+      "unlinked": "Legătura dintre {project} și dosarul său a fost eliminată",
+      "save_failed": "Nu s-a putut schimba dosarul proiectului",
+      "method": {
+        "chosen": "Ales",
+        "matched": "Potrivit după nume",
+        "created": "Creat de Plane"
+      }
+    },
+    "browser": {
+      "title": "Alege un dosar",
+      "top": "Google Drive",
+      "open": "Deschide {name}",
+      "empty": "Niciun dosar aici.",
+      "cancel": "Anulează",
+      "use_this": "Folosește acest dosar"
+    },
+    "attachments": {
+      "in_drive": "Stocat în Google Drive",
+      "open_folder": "Deschide dosarul",
+      "open_in_drive": "Deschide în Google Drive",
+      "uploaded_by": "Încărcat de {name} pe {date}",
+      "upload_failed": "Nu s-a putut încărca {name}",
+      "close": "Închide",
+      "remove": "Elimină",
+      "removing": "Se elimină",
+      "remove_title": "Eliminați atașamentul?",
+      "remove_body": "{name} va fi mutat în coșul de gunoi din Google Drive, de unde poate fi restabilit timp de 30 de zile.",
+      "remove_failed": "Nu s-a putut elimina atașamentul",
+      "drop_here": "Plasează fișierele aici pentru a le încărca în Google Drive",
+      "in_plane": "Stocat în Plane",
+      "move_to_drive": "Mută în Google Drive",
+      "moving": "Se mută în Google Drive",
+      "move_failed": "Unele fișiere nu au putut fi mutate în Google Drive"
+    },
+    "uploads": {
+      "heading": "Se încarcă în Google Drive",
+      "progress": "Progresul încărcării pentru {name}",
+      "stop": "Oprește încărcarea pentru {name}"
+    },
+    "plane_files": {
+      "heading": "Fișiere aflate încă pe serverul Plane",
+      "description": "Atașamente de dinainte ca proiectul lor să aibă un folder: {count}, în total {size}. Mutarea lor în Google Drive eliberează acest spațiu pe server.",
+      "moving": "Se mută în Google Drive. Fișiere rămase: {count}",
+      "move": "Mută în Google Drive",
+      "failed": "Fișierele nu au putut fi mutate în Google Drive"
+    },
+    "errors": {
+      "DRIVE_NOT_CONNECTED": "Google Drive nu este conectat la acest spațiu de lucru.",
+      "DRIVE_ACCESS_REVOKED": "Plane nu mai are acces la Google Drive. Un administrator al spațiului de lucru trebuie să îl conecteze din nou.",
+      "DRIVE_PROJECT_NOT_LINKED": "Acest proiect nu are încă un dosar în Google Drive.",
+      "DRIVE_NOT_FOUND": "Dosarul sau fișierul nu mai există în Google Drive.",
+      "DRIVE_NOT_A_FOLDER": "Acesta nu este un dosar pe care Plane îl poate folosi.",
+      "DRIVE_NO_PERMISSION": "Contul Google conectat nu are acces la acest dosar.",
+      "DRIVE_STORAGE_FULL": "Spațiul de stocare Google Drive este plin.",
+      "DRIVE_BAD_LINK": "Acesta nu este un link către un dosar Google Drive.",
+      "DRIVE_CLIENT_MISSING": "Introduceți mai întâi ID-ul clientului și secretul clientului.",
+      "DRIVE_EMPTY_FILE": "Acest fișier este gol.",
+      "DRIVE_INCOMPLETE": "Google Drive nu a primit întregul fișier. Încercați din nou.",
+      "DRIVE_ERROR": "Google Drive nu a răspuns conform așteptărilor. Încercați din nou."
+    }
   }
 }

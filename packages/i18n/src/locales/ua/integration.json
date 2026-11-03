@@ -327,5 +327,153 @@
     "finished": "Завершено",
     "error": "Помилка",
     "cancelled": "Скасовано"
+  },
+  "google_drive_integration": {
+    "connection": {
+      "heading": "Підключення",
+      "connected_as": "Підключено як {email} з {date}.",
+      "not_connected": "Не підключено. Plane входить у Google через власний клієнт Google Cloud вашої компанії, тому ваші файли залишаються між вами та Google.",
+      "steps": {
+        "enable_api": "У Google Cloud Console створіть або виберіть проєкт і ввімкніть Google Drive API.",
+        "consent_screen": "Налаштуйте вікно згоди OAuth. Для облікового запису Google Workspace виберіть «Внутрішній».",
+        "create_client": "Створіть ID клієнта OAuth типу «Веб-додаток».",
+        "redirect_uri": "Додайте адресу нижче як дозволений URI переспрямування.",
+        "paste": "Вставте сюди ID клієнта та секрет клієнта, а потім підключіться."
+      },
+      "redirect_uri": "Дозволений URI переспрямування",
+      "redirect_uri_help": "Після входу Google повертає вас на цю адресу. Вона має точно збігатися.",
+      "copy": "Копіювати URI переспрямування",
+      "redirect_copied": "URI переспрямування скопійовано",
+      "client_id": "ID клієнта",
+      "client_secret": "Секрет клієнта",
+      "client_secret_placeholder": "Секрет клієнта з Google Cloud",
+      "client_secret_set": "Збережено. Залиште поле порожнім, щоб не змінювати його.",
+      "client_change_warning": "Новий ID клієнта відключає поточний обліковий запис Google. Після цього підключіться знову.",
+      "connect": "Підключити через Google",
+      "reconnect": "Підключити знову",
+      "connect_failed": "Не вдалося розпочати вхід у Google",
+      "disconnect": "Відключити",
+      "disconnecting": "Відключення",
+      "disconnect_title": "Відключити Google Drive?",
+      "disconnect_body": "Нові файли знову зберігатимуться в Plane. Файли, які вже є в Drive, залишаться там, а прив'язки проєктів до папок збережуться до наступного підключення.",
+      "disconnected": "Google Drive відключено",
+      "disconnect_failed": "Не вдалося відключити Google Drive"
+    },
+    "outcome": {
+      "connected": {
+        "title": "Google Drive підключено",
+        "message": "Тепер виберіть папку, у якій містяться папки ваших проєктів."
+      },
+      "refused": {
+        "title": "Google Drive не підключено",
+        "message": "Доступ не було надано на сторінці Google. Спробуйте ще раз і дозвольте доступ до Drive."
+      },
+      "failed": {
+        "title": "Google Drive не підключено",
+        "message": "Google не прийняв вхід. Перевірте ID клієнта, секрет клієнта та URI переспрямування, а потім спробуйте ще раз."
+      },
+      "no_refresh_token": {
+        "title": "Google Drive не підключено",
+        "message": "Google не надав постійного доступу. Скасуйте доступ Plane у налаштуваннях облікового запису Google, а потім підключіться знову."
+      }
+    },
+    "root": {
+      "heading": "Основна папка проєктів",
+      "description": "Папка в Drive, у якій містяться папки ваших проєктів, наприклад projects / webhead. Для проєктів пропонуються лише папки в ній.",
+      "none": "Папку ще не вибрано",
+      "open_in_drive": "Відкрити в Google Drive",
+      "choose": "Вибрати папку",
+      "change": "Змінити папку",
+      "paste_label": "Або вставте посилання на папку",
+      "use_link": "Використати посилання",
+      "saved": "Основну папку проєктів збережено",
+      "save_failed": "Не вдалося зберегти основну папку проєктів",
+      "auto_link": "Призначати папку новим проєктам",
+      "auto_link_help": "Новий проєкт отримує папку з такою самою назвою. Якщо її немає, Plane створює нову."
+    },
+    "projects": {
+      "heading": "Папки проєктів",
+      "description": "Виберіть папку для кожного проєкту. Папки зі схожою назвою пропонуються першими.",
+      "summary": "Проєкти з папкою: {linked} з {total}.",
+      "link_clear": "{count, plural, one {Прив'язати # однозначний збіг} few {Прив'язати # однозначні збіги} many {Прив'язати # однозначних збігів} other {Прив'язати # однозначного збігу}}",
+      "linked_clear": "{count, plural, =0 {Жоден проєкт не прив'язано} one {Прив'язано # проєкт} few {Прив'язано # проєкти} many {Прив'язано # проєктів} other {Прив'язано # проєкту}}",
+      "search": "Пошук проєктів",
+      "no_results": "Немає проєктів, що відповідають пошуку.",
+      "no_projects": "У цьому робочому просторі ще немає проєктів.",
+      "choose_folder": "Виберіть папку",
+      "search_folders": "Пошук папок",
+      "no_folders": "Папок не знайдено",
+      "suggested": "Рекомендовані",
+      "all_folders": "Усі папки",
+      "match": "Збіг {percent}%",
+      "use_suggestion": "Використати «{name}»",
+      "more_ways": "Інші способи вибрати папку для проєкту {project}",
+      "create": "Створити папку «{name}»",
+      "browse": "Вибрати в Google Drive…",
+      "actions": "Дії для проєкту {project}",
+      "change": "Змінити папку",
+      "unlink": "Від'єднати папку",
+      "linked": "Проєкт {project} прив'язано до його папки",
+      "created": "Папку для проєкту {project} створено",
+      "unlinked": "Проєкт {project} від'єднано від його папки",
+      "save_failed": "Не вдалося змінити папку проєкту",
+      "method": {
+        "chosen": "Вибрана",
+        "matched": "Зіставлена за назвою",
+        "created": "Створена застосунком Plane"
+      }
+    },
+    "browser": {
+      "title": "Виберіть папку",
+      "top": "Google Drive",
+      "open": "Відкрити {name}",
+      "empty": "Тут немає папок.",
+      "cancel": "Скасувати",
+      "use_this": "Використати цю папку"
+    },
+    "attachments": {
+      "in_drive": "Зберігається в Google Drive",
+      "open_folder": "Відкрити папку",
+      "open_in_drive": "Відкрити в Google Drive",
+      "uploaded_by": "Завантажено: {name}, {date}",
+      "upload_failed": "Не вдалося завантажити {name}",
+      "close": "Закрити",
+      "remove": "Вилучити",
+      "removing": "Вилучення",
+      "remove_title": "Вилучити вкладення?",
+      "remove_body": "Файл {name} буде переміщено в кошик Google Drive, де його можна відновити протягом 30 днів.",
+      "remove_failed": "Не вдалося вилучити вкладення",
+      "drop_here": "Перетягніть файли сюди, щоб завантажити їх у Google Drive",
+      "in_plane": "Зберігається в Plane",
+      "move_to_drive": "Перенести в Google Drive",
+      "moving": "Перенесення в Google Drive",
+      "move_failed": "Не вдалося перенести деякі файли в Google Drive"
+    },
+    "uploads": {
+      "heading": "Завантаження в Google Drive",
+      "progress": "Перебіг завантаження файлу {name}",
+      "stop": "Зупинити завантаження файлу {name}"
+    },
+    "plane_files": {
+      "heading": "Файли, які досі на сервері Plane",
+      "description": "Вкладення, додані до того, як у проєкту з'явилася тека: {count}, усього {size}. Перенесення в Google Drive звільнить це місце на сервері.",
+      "moving": "Триває перенесення в Google Drive. Залишилося файлів: {count}",
+      "move": "Перенести в Google Drive",
+      "failed": "Не вдалося перенести файли в Google Drive"
+    },
+    "errors": {
+      "DRIVE_NOT_CONNECTED": "Google Drive не підключено до цього робочого простору.",
+      "DRIVE_ACCESS_REVOKED": "Plane більше не має доступу до Google Drive. Адміністратор робочого простору має підключити його знову.",
+      "DRIVE_PROJECT_NOT_LINKED": "У цього проєкту ще немає папки в Google Drive.",
+      "DRIVE_NOT_FOUND": "Папки або файлу більше немає в Google Drive.",
+      "DRIVE_NOT_A_FOLDER": "Це не папка, яку може використовувати Plane.",
+      "DRIVE_NO_PERMISSION": "Підключений обліковий запис Google не має доступу до цієї папки.",
+      "DRIVE_STORAGE_FULL": "Сховище Google Drive заповнене.",
+      "DRIVE_BAD_LINK": "Це не посилання на папку в Google Drive.",
+      "DRIVE_CLIENT_MISSING": "Спочатку введіть ID клієнта та секрет клієнта.",
+      "DRIVE_EMPTY_FILE": "Цей файл порожній.",
+      "DRIVE_INCOMPLETE": "Google Drive отримав файл не повністю. Спробуйте ще раз.",
+      "DRIVE_ERROR": "Google Drive відповів не так, як очікувалося. Спробуйте ще раз."
+    }
   }
 }

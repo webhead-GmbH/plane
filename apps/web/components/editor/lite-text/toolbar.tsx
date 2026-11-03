@@ -30,6 +30,8 @@ type Props = {
   handleSubmit: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   isCommentEmpty: boolean;
   isSubmitting: boolean;
+  /** Files are still on their way to Google Drive; the comment waits for them. */
+  isUploading?: boolean;
   showAccessSpecifier: boolean;
   showSubmitButton: boolean;
   editorRef: EditorRefApi | null;
@@ -66,6 +68,7 @@ export function IssueCommentToolbar(props: Props) {
     handleSubmit,
     isCommentEmpty,
     isSubmitting,
+    isUploading = false,
     showAccessSpecifier,
     showSubmitButton,
     editorRef,
@@ -100,7 +103,7 @@ export function IssueCommentToolbar(props: Props) {
   }, [editorRef, updateActiveStates]);
 
   const isEditorReadyToDiscard = editorRef?.isEditorReadyToDiscard();
-  const isSubmitButtonDisabled = isCommentEmpty || !isEditorReadyToDiscard;
+  const isSubmitButtonDisabled = isCommentEmpty || !isEditorReadyToDiscard || isUploading;
 
   return (
     <div className="flex h-9 w-full items-stretch gap-1.5 overflow-x-scroll bg-surface-2">

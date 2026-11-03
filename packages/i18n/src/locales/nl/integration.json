@@ -327,5 +327,153 @@
     "finished": "Voltooid",
     "error": "Fout",
     "cancelled": "Geannuleerd"
+  },
+  "google_drive_integration": {
+    "connection": {
+      "heading": "Verbinding",
+      "connected_as": "Verbonden als {email} sinds {date}.",
+      "not_connected": "Niet verbonden. Plane meldt zich bij Google aan met de eigen Google Cloud-client van je bedrijf, zodat je bestanden tussen jou en Google blijven.",
+      "steps": {
+        "enable_api": "Maak of kies in Google Cloud Console een project en schakel de Google Drive API in.",
+        "consent_screen": "Stel het OAuth-toestemmingsscherm in. Kies voor een Google Workspace-account \"Intern\".",
+        "create_client": "Maak een OAuth-client-ID van het type \"Webapplicatie\".",
+        "redirect_uri": "Voeg het adres hieronder toe als geautoriseerde omleidings-URI.",
+        "paste": "Plak hier de client-ID en het clientgeheim en maak daarna verbinding."
+      },
+      "redirect_uri": "Geautoriseerde omleidings-URI",
+      "redirect_uri_help": "Google stuurt je na het inloggen terug naar dit adres. Het moet exact overeenkomen.",
+      "copy": "Omleidings-URI kopiëren",
+      "redirect_copied": "Omleidings-URI gekopieerd",
+      "client_id": "Client-ID",
+      "client_secret": "Clientgeheim",
+      "client_secret_placeholder": "Clientgeheim uit Google Cloud",
+      "client_secret_set": "Opgeslagen. Laat dit leeg om het te behouden.",
+      "client_change_warning": "Een nieuwe client-ID verbreekt de verbinding met het huidige Google-account. Maak daarna opnieuw verbinding.",
+      "connect": "Verbinden met Google",
+      "reconnect": "Opnieuw verbinden",
+      "connect_failed": "Kan het inloggen bij Google niet starten",
+      "disconnect": "Verbinding verbreken",
+      "disconnecting": "Verbinding wordt verbroken",
+      "disconnect_title": "Verbinding met Google Drive verbreken?",
+      "disconnect_body": "Nieuwe bestanden worden weer in Plane opgeslagen. Bestanden die al in Drive staan, blijven daar, en de koppelingen met projectmappen blijven bewaard voor als je opnieuw verbinding maakt.",
+      "disconnected": "Verbinding met Google Drive verbroken",
+      "disconnect_failed": "Kan de verbinding met Google Drive niet verbreken"
+    },
+    "outcome": {
+      "connected": {
+        "title": "Google Drive verbonden",
+        "message": "Kies nu de map waarin je projectmappen staan."
+      },
+      "refused": {
+        "title": "Google Drive niet verbonden",
+        "message": "Er is geen toegang verleend op de pagina van Google. Probeer het opnieuw en sta toegang tot Drive toe."
+      },
+      "failed": {
+        "title": "Google Drive niet verbonden",
+        "message": "Google heeft het inloggen niet geaccepteerd. Controleer de client-ID, het clientgeheim en de omleidings-URI en probeer het opnieuw."
+      },
+      "no_refresh_token": {
+        "title": "Google Drive niet verbonden",
+        "message": "Google heeft geen blijvende toegang verleend. Verwijder de toegang van Plane in de instellingen van je Google-account en maak daarna opnieuw verbinding."
+      }
+    },
+    "root": {
+      "heading": "Projectenmap",
+      "description": "De map in Drive waarin je projectmappen staan, zoals projects / webhead. Alleen de mappen daarin worden voor projecten aangeboden.",
+      "none": "Nog geen map gekozen",
+      "open_in_drive": "Openen in Google Drive",
+      "choose": "Map kiezen",
+      "change": "Map wijzigen",
+      "paste_label": "Of plak een link naar de map",
+      "use_link": "Link gebruiken",
+      "saved": "Projectenmap opgeslagen",
+      "save_failed": "Kan de projectenmap niet opslaan",
+      "auto_link": "Nieuwe projecten een map geven",
+      "auto_link_help": "Een nieuw project krijgt de map waarvan de naam overeenkomt met die van het project. Is die er niet, dan maakt Plane er een aan."
+    },
+    "projects": {
+      "heading": "Projectmappen",
+      "description": "Kies de map voor elk project. Mappen met een vergelijkbare naam worden eerst voorgesteld.",
+      "summary": "Projecten met een map: {linked} van {total}.",
+      "link_clear": "{count, plural, one {# duidelijke overeenkomst koppelen} other {# duidelijke overeenkomsten koppelen}}",
+      "linked_clear": "{count, plural, =0 {Geen projecten gekoppeld} one {# project gekoppeld} other {# projecten gekoppeld}}",
+      "search": "Projecten zoeken",
+      "no_results": "Geen projecten gevonden voor je zoekopdracht.",
+      "no_projects": "Nog geen projecten in deze werkruimte.",
+      "choose_folder": "Kies een map",
+      "search_folders": "Mappen zoeken",
+      "no_folders": "Geen mappen gevonden",
+      "suggested": "Voorgesteld",
+      "all_folders": "Alle mappen",
+      "match": "{percent}% overeenkomst",
+      "use_suggestion": "\"{name}\" gebruiken",
+      "more_ways": "Meer manieren om een map te kiezen voor {project}",
+      "create": "Map \"{name}\" maken",
+      "browse": "Kiezen uit Google Drive…",
+      "actions": "Acties voor {project}",
+      "change": "Map wijzigen",
+      "unlink": "Map ontkoppelen",
+      "linked": "{project} gekoppeld aan zijn map",
+      "created": "Map gemaakt voor {project}",
+      "unlinked": "{project} ontkoppeld van zijn map",
+      "save_failed": "Kan de projectmap niet wijzigen",
+      "method": {
+        "chosen": "Gekozen",
+        "matched": "Gekoppeld op naam",
+        "created": "Gemaakt door Plane"
+      }
+    },
+    "browser": {
+      "title": "Kies een map",
+      "top": "Google Drive",
+      "open": "{name} openen",
+      "empty": "Hier staan geen mappen.",
+      "cancel": "Annuleren",
+      "use_this": "Deze map gebruiken"
+    },
+    "attachments": {
+      "in_drive": "Opgeslagen in Google Drive",
+      "open_folder": "Map openen",
+      "open_in_drive": "Openen in Google Drive",
+      "uploaded_by": "Geüpload door {name} op {date}",
+      "upload_failed": "Kan {name} niet uploaden",
+      "close": "Sluiten",
+      "remove": "Verwijderen",
+      "removing": "Wordt verwijderd",
+      "remove_title": "Bijlage verwijderen?",
+      "remove_body": "{name} wordt naar de prullenbak van Google Drive verplaatst, waar je het 30 dagen lang kunt terugzetten.",
+      "remove_failed": "Kan de bijlage niet verwijderen",
+      "drop_here": "Zet bestanden hier neer om ze naar Google Drive te uploaden",
+      "in_plane": "Opgeslagen in Plane",
+      "move_to_drive": "Naar Google Drive verplaatsen",
+      "moving": "Wordt naar Google Drive verplaatst",
+      "move_failed": "Sommige bestanden konden niet naar Google Drive worden verplaatst"
+    },
+    "uploads": {
+      "heading": "Uploaden naar Google Drive",
+      "progress": "Uploadvoortgang van {name}",
+      "stop": "Uploaden van {name} stoppen"
+    },
+    "plane_files": {
+      "heading": "Bestanden die nog op de Plane-server staan",
+      "description": "Bijlagen van voordat hun project een map had: {count}, in totaal {size}. Door ze naar Google Drive te verplaatsen komt die ruimte op de server vrij.",
+      "moving": "Ze worden naar Google Drive verplaatst. Resterende bestanden: {count}",
+      "move": "Naar Google Drive verplaatsen",
+      "failed": "De bestanden konden niet naar Google Drive worden verplaatst"
+    },
+    "errors": {
+      "DRIVE_NOT_CONNECTED": "Google Drive is niet verbonden met deze werkruimte.",
+      "DRIVE_ACCESS_REVOKED": "Plane heeft geen toegang meer tot Google Drive. Een werkruimtebeheerder moet opnieuw verbinding maken.",
+      "DRIVE_PROJECT_NOT_LINKED": "Dit project heeft nog geen map in Google Drive.",
+      "DRIVE_NOT_FOUND": "De map of het bestand staat niet meer in Google Drive.",
+      "DRIVE_NOT_A_FOLDER": "Dat is geen map die Plane kan gebruiken.",
+      "DRIVE_NO_PERMISSION": "Het verbonden Google-account heeft geen toegang tot deze map.",
+      "DRIVE_STORAGE_FULL": "De opslag van Google Drive is vol.",
+      "DRIVE_BAD_LINK": "Dat is geen link naar een map in Google Drive.",
+      "DRIVE_CLIENT_MISSING": "Vul eerst de client-ID en het clientgeheim in.",
+      "DRIVE_EMPTY_FILE": "Dit bestand is leeg.",
+      "DRIVE_INCOMPLETE": "Google Drive heeft niet het hele bestand ontvangen. Probeer het opnieuw.",
+      "DRIVE_ERROR": "Google Drive reageerde niet zoals verwacht. Probeer het opnieuw."
+    }
   }
 }

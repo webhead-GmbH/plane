@@ -327,5 +327,153 @@
     "finished": "Finished",
     "error": "Error",
     "cancelled": "Cancelled"
+  },
+  "google_drive_integration": {
+    "connection": {
+      "heading": "Connection",
+      "connected_as": "Connected as {email} since {date}.",
+      "not_connected": "Not connected. Plane signs in to Google with your company's own Google Cloud client, so your files stay between you and Google.",
+      "steps": {
+        "enable_api": "In Google Cloud Console, create or choose a project and enable the Google Drive API.",
+        "consent_screen": "Set up the OAuth consent screen. For a Google Workspace account, choose Internal.",
+        "create_client": "Create an OAuth client ID of the type Web application.",
+        "redirect_uri": "Add the address below as an authorized redirect URI.",
+        "paste": "Paste the client ID and client secret here, then connect."
+      },
+      "redirect_uri": "Authorized redirect URI",
+      "redirect_uri_help": "Google sends you back to this address after you sign in. It must match exactly.",
+      "copy": "Copy redirect URI",
+      "redirect_copied": "Redirect URI copied",
+      "client_id": "Client ID",
+      "client_secret": "Client secret",
+      "client_secret_placeholder": "Client secret from Google Cloud",
+      "client_secret_set": "Saved. Leave empty to keep it.",
+      "client_change_warning": "A new client ID disconnects the current Google account. Connect again afterwards.",
+      "connect": "Connect with Google",
+      "reconnect": "Connect again",
+      "connect_failed": "Couldn't start the Google sign-in",
+      "disconnect": "Disconnect",
+      "disconnecting": "Disconnecting",
+      "disconnect_title": "Disconnect Google Drive?",
+      "disconnect_body": "New files will be stored in Plane again. Files already in Drive stay there, and project folder links are kept for when you connect again.",
+      "disconnected": "Google Drive disconnected",
+      "disconnect_failed": "Couldn't disconnect Google Drive"
+    },
+    "outcome": {
+      "connected": {
+        "title": "Google Drive connected",
+        "message": "Now choose the folder your project folders are in."
+      },
+      "refused": {
+        "title": "Google Drive not connected",
+        "message": "Access wasn't granted on Google's page. Try again and allow access to Drive."
+      },
+      "failed": {
+        "title": "Google Drive not connected",
+        "message": "Google didn't accept the sign-in. Check the client ID, client secret and redirect URI, then try again."
+      },
+      "no_refresh_token": {
+        "title": "Google Drive not connected",
+        "message": "Google didn't grant lasting access. Remove Plane's access from your Google account settings, then connect again."
+      }
+    },
+    "root": {
+      "heading": "Projects folder",
+      "description": "The Drive folder your project folders are in, such as projects / webhead. Only its folders are offered for projects.",
+      "none": "No folder chosen yet",
+      "open_in_drive": "Open in Google Drive",
+      "choose": "Choose folder",
+      "change": "Change folder",
+      "paste_label": "Or paste a link to the folder",
+      "use_link": "Use link",
+      "saved": "Projects folder saved",
+      "save_failed": "Couldn't save the projects folder",
+      "auto_link": "Give new projects a folder",
+      "auto_link_help": "A new project gets the folder whose name matches its own. If there's none, Plane creates one."
+    },
+    "projects": {
+      "heading": "Project folders",
+      "description": "Choose the folder for each project. Folders with a similar name are suggested first.",
+      "summary": "{linked} of {total} projects have a folder.",
+      "link_clear": "{count, plural, one {Link # clear match} other {Link # clear matches}}",
+      "linked_clear": "{count, plural, =0 {No projects linked} one {# project linked} other {# projects linked}}",
+      "search": "Search projects",
+      "no_results": "No projects match your search.",
+      "no_projects": "No projects in this workspace yet.",
+      "choose_folder": "Choose a folder",
+      "search_folders": "Search folders",
+      "no_folders": "No folders found",
+      "suggested": "Suggested",
+      "all_folders": "All folders",
+      "match": "{percent}% match",
+      "use_suggestion": "Use \"{name}\"",
+      "more_ways": "More ways to choose a folder for {project}",
+      "create": "Create folder \"{name}\"",
+      "browse": "Choose from Google Drive…",
+      "actions": "Actions for {project}",
+      "change": "Change folder",
+      "unlink": "Unlink folder",
+      "linked": "{project} linked to its folder",
+      "created": "Folder created for {project}",
+      "unlinked": "{project} unlinked from its folder",
+      "save_failed": "Couldn't change the project folder",
+      "method": {
+        "chosen": "Chosen",
+        "matched": "Matched by name",
+        "created": "Created by Plane"
+      }
+    },
+    "browser": {
+      "title": "Choose a folder",
+      "top": "Google Drive",
+      "open": "Open {name}",
+      "empty": "No folders here.",
+      "cancel": "Cancel",
+      "use_this": "Use this folder"
+    },
+    "attachments": {
+      "in_drive": "Stored in Google Drive",
+      "open_folder": "Open folder",
+      "open_in_drive": "Open in Google Drive",
+      "uploaded_by": "Uploaded by {name} on {date}",
+      "upload_failed": "Couldn't upload {name}",
+      "close": "Close",
+      "remove": "Remove",
+      "removing": "Removing",
+      "remove_title": "Remove attachment?",
+      "remove_body": "{name} will be moved to Google Drive's bin, where it can be restored for 30 days.",
+      "remove_failed": "Couldn't remove the attachment",
+      "drop_here": "Drop files to upload them to Google Drive",
+      "in_plane": "Stored in Plane",
+      "move_to_drive": "Move to Google Drive",
+      "moving": "Moving to Google Drive",
+      "move_failed": "Some files couldn't be moved to Google Drive"
+    },
+    "uploads": {
+      "heading": "Uploading to Google Drive",
+      "progress": "Upload progress of {name}",
+      "stop": "Stop uploading {name}"
+    },
+    "plane_files": {
+      "heading": "Files still on the Plane server",
+      "description": "Attachments from before their project had a folder: {count}, {size} in total. Moving them to Google Drive frees that space on the server.",
+      "moving": "Moving them to Google Drive. Files left: {count}",
+      "move": "Move to Google Drive",
+      "failed": "The files couldn't be moved to Google Drive"
+    },
+    "errors": {
+      "DRIVE_NOT_CONNECTED": "Google Drive isn't connected to this workspace.",
+      "DRIVE_ACCESS_REVOKED": "Plane no longer has access to Google Drive. A workspace admin needs to connect it again.",
+      "DRIVE_PROJECT_NOT_LINKED": "This project has no Google Drive folder yet.",
+      "DRIVE_NOT_FOUND": "The folder or file is no longer in Google Drive.",
+      "DRIVE_NOT_A_FOLDER": "That isn't a folder Plane can use.",
+      "DRIVE_NO_PERMISSION": "The connected Google account can't access this folder.",
+      "DRIVE_STORAGE_FULL": "The Google Drive storage is full.",
+      "DRIVE_BAD_LINK": "That isn't a link to a Google Drive folder.",
+      "DRIVE_CLIENT_MISSING": "Enter the client ID and client secret first.",
+      "DRIVE_EMPTY_FILE": "This file is empty.",
+      "DRIVE_INCOMPLETE": "Google Drive didn't receive the whole file. Try again.",
+      "DRIVE_ERROR": "Google Drive didn't respond as expected. Try again."
+    }
   }
 }

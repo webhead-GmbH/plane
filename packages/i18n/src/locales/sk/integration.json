@@ -327,5 +327,153 @@
     "finished": "Dokončené",
     "error": "Chyba",
     "cancelled": "Zrušené"
+  },
+  "google_drive_integration": {
+    "connection": {
+      "heading": "Pripojenie",
+      "connected_as": "Pripojené ako {email} od {date}.",
+      "not_connected": "Nepripojené. Plane sa prihlasuje do služieb Google cez vlastného klienta Google Cloud vašej firmy, takže vaše súbory zostávajú medzi vami a spoločnosťou Google.",
+      "steps": {
+        "enable_api": "V Google Cloud Console vytvorte alebo vyberte projekt a povoľte Google Drive API.",
+        "consent_screen": "Nastavte obrazovku súhlasu OAuth. Pri účte Google Workspace zvoľte „Interné“.",
+        "create_client": "Vytvorte ID klienta OAuth typu „Webová aplikácia“.",
+        "redirect_uri": "Pridajte adresu nižšie ako autorizovaný URI presmerovania.",
+        "paste": "Sem vložte ID klienta a tajný kľúč klienta a potom sa pripojte."
+      },
+      "redirect_uri": "Autorizovaný URI presmerovania",
+      "redirect_uri_help": "Po prihlásení vás Google vráti na túto adresu. Musí sa presne zhodovať.",
+      "copy": "Kopírovať URI presmerovania",
+      "redirect_copied": "URI presmerovania skopírovaný",
+      "client_id": "ID klienta",
+      "client_secret": "Tajný kľúč klienta",
+      "client_secret_placeholder": "Tajný kľúč klienta z Google Cloud",
+      "client_secret_set": "Uložené. Ponechajte prázdne, ak ho chcete zachovať.",
+      "client_change_warning": "Nové ID klienta odpojí aktuálny účet Google. Potom sa pripojte znova.",
+      "connect": "Pripojiť cez Google",
+      "reconnect": "Pripojiť znova",
+      "connect_failed": "Prihlásenie cez Google sa nepodarilo spustiť",
+      "disconnect": "Odpojiť",
+      "disconnecting": "Odpájanie",
+      "disconnect_title": "Odpojiť Google Drive?",
+      "disconnect_body": "Nové súbory sa budú opäť ukladať v Plane. Súbory, ktoré už sú na Drive, tam zostanú a prepojenia projektov s priečinkami sa zachovajú pre prípad, že sa znova pripojíte.",
+      "disconnected": "Google Drive odpojený",
+      "disconnect_failed": "Google Drive sa nepodarilo odpojiť"
+    },
+    "outcome": {
+      "connected": {
+        "title": "Google Drive pripojený",
+        "message": "Teraz zvoľte priečinok, v ktorom sú priečinky vašich projektov."
+      },
+      "refused": {
+        "title": "Google Drive nepripojený",
+        "message": "Na stránke Google nebol udelený prístup. Skúste to znova a povoľte prístup k Drive."
+      },
+      "failed": {
+        "title": "Google Drive nepripojený",
+        "message": "Google prihlásenie neprijal. Skontrolujte ID klienta, tajný kľúč klienta a URI presmerovania a skúste to znova."
+      },
+      "no_refresh_token": {
+        "title": "Google Drive nepripojený",
+        "message": "Google neudelil trvalý prístup. Odstráňte prístup Plane v nastaveniach svojho účtu Google a potom sa pripojte znova."
+      }
+    },
+    "root": {
+      "heading": "Priečinok projektov",
+      "description": "Priečinok na Drive, v ktorom sú priečinky vašich projektov, napríklad projects / webhead. Projektom sa ponúkajú iba priečinky v ňom.",
+      "none": "Zatiaľ nie je zvolený žiadny priečinok",
+      "open_in_drive": "Otvoriť v Google Drive",
+      "choose": "Zvoliť priečinok",
+      "change": "Zmeniť priečinok",
+      "paste_label": "Alebo vložte odkaz na priečinok",
+      "use_link": "Použiť odkaz",
+      "saved": "Priečinok projektov uložený",
+      "save_failed": "Priečinok projektov sa nepodarilo uložiť",
+      "auto_link": "Prideľovať novým projektom priečinok",
+      "auto_link_help": "Nový projekt dostane priečinok s rovnakým názvom. Ak žiadny nie je, Plane ho vytvorí."
+    },
+    "projects": {
+      "heading": "Priečinky jednotlivých projektov",
+      "description": "Zvoľte priečinok pre každý projekt. Priečinky s podobným názvom sa navrhujú ako prvé.",
+      "summary": "Projekty s priečinkom: {linked} z {total}.",
+      "link_clear": "{count, plural, one {Prepojiť # jasnú zhodu} few {Prepojiť # jasné zhody} many {Prepojiť # jasnej zhody} other {Prepojiť # jasných zhôd}}",
+      "linked_clear": "{count, plural, =0 {Neprepojil sa žiadny projekt} one {Prepojil sa # projekt} few {Prepojili sa # projekty} many {Prepojilo sa # projektu} other {Prepojilo sa # projektov}}",
+      "search": "Hľadať projekty",
+      "no_results": "Vášmu hľadaniu nezodpovedajú žiadne projekty.",
+      "no_projects": "V tomto pracovnom priestore zatiaľ nie sú žiadne projekty.",
+      "choose_folder": "Zvoľte priečinok",
+      "search_folders": "Hľadať priečinky",
+      "no_folders": "Nenašli sa žiadne priečinky",
+      "suggested": "Navrhované",
+      "all_folders": "Všetky priečinky",
+      "match": "Zhoda {percent} %",
+      "use_suggestion": "Použiť „{name}“",
+      "more_ways": "Ďalšie spôsoby výberu priečinka pre projekt {project}",
+      "create": "Vytvoriť priečinok „{name}“",
+      "browse": "Vybrať z Google Drive…",
+      "actions": "Akcie pre projekt {project}",
+      "change": "Zmeniť priečinok",
+      "unlink": "Zrušiť prepojenie priečinka",
+      "linked": "Projekt {project} prepojený so svojím priečinkom",
+      "created": "Priečinok pre projekt {project} vytvorený",
+      "unlinked": "Prepojenie projektu {project} s priečinkom zrušené",
+      "save_failed": "Priečinok projektu sa nepodarilo zmeniť",
+      "method": {
+        "chosen": "Zvolené",
+        "matched": "Zhoda podľa názvu",
+        "created": "Vytvorené aplikáciou Plane"
+      }
+    },
+    "browser": {
+      "title": "Zvoľte priečinok",
+      "top": "Google Drive",
+      "open": "Otvoriť {name}",
+      "empty": "Žiadne priečinky.",
+      "cancel": "Zrušiť",
+      "use_this": "Použiť tento priečinok"
+    },
+    "attachments": {
+      "in_drive": "Uložené na Google Drive",
+      "open_folder": "Otvoriť priečinok",
+      "open_in_drive": "Otvoriť v Google Drive",
+      "uploaded_by": "Nahrané používateľom {name} dňa {date}",
+      "upload_failed": "Súbor {name} sa nepodarilo nahrať",
+      "close": "Zatvoriť",
+      "remove": "Odstrániť",
+      "removing": "Odstraňovanie",
+      "remove_title": "Odstrániť prílohu?",
+      "remove_body": "Súbor {name} sa presunie do koša na Google Drive, kde ho bude možné 30 dní obnoviť.",
+      "remove_failed": "Prílohu sa nepodarilo odstrániť",
+      "drop_here": "Pretiahnite sem súbory a nahrajte ich na Google Drive",
+      "in_plane": "Uložené v Plane",
+      "move_to_drive": "Presunúť na Google Drive",
+      "moving": "Presúvanie na Google Drive",
+      "move_failed": "Niektoré súbory sa nepodarilo presunúť na Google Drive"
+    },
+    "uploads": {
+      "heading": "Nahrávanie na Google Drive",
+      "progress": "Priebeh nahrávania súboru {name}",
+      "stop": "Zastaviť nahrávanie súboru {name}"
+    },
+    "plane_files": {
+      "heading": "Súbory, ktoré sú stále na serveri Plane",
+      "description": "Prílohy z obdobia, keď projekt ešte nemal priečinok: {count}, spolu {size}. Presunom na Google Drive sa toto miesto na serveri uvoľní.",
+      "moving": "Presúvajú sa na Google Drive. Zostáva súborov: {count}",
+      "move": "Presunúť na Google Drive",
+      "failed": "Súbory sa nepodarilo presunúť na Google Drive"
+    },
+    "errors": {
+      "DRIVE_NOT_CONNECTED": "Google Drive nie je pripojený k tomuto pracovnému priestoru.",
+      "DRIVE_ACCESS_REVOKED": "Plane už nemá prístup ku Google Drive. Administrátor pracovného priestoru ho musí znova pripojiť.",
+      "DRIVE_PROJECT_NOT_LINKED": "Tento projekt zatiaľ nemá priečinok na Google Drive.",
+      "DRIVE_NOT_FOUND": "Priečinok alebo súbor už na Google Drive nie je.",
+      "DRIVE_NOT_A_FOLDER": "Toto nie je priečinok, ktorý môže Plane použiť.",
+      "DRIVE_NO_PERMISSION": "Pripojený účet Google nemá prístup k tomuto priečinku.",
+      "DRIVE_STORAGE_FULL": "Úložisko Google Drive je plné.",
+      "DRIVE_BAD_LINK": "Toto nie je odkaz na priečinok na Google Drive.",
+      "DRIVE_CLIENT_MISSING": "Najprv zadajte ID klienta a tajný kľúč klienta.",
+      "DRIVE_EMPTY_FILE": "Tento súbor je prázdny.",
+      "DRIVE_INCOMPLETE": "Google Drive neprijal celý súbor. Skúste to znova.",
+      "DRIVE_ERROR": "Google Drive neodpovedal podľa očakávania. Skúste to znova."
+    }
   }
 }

@@ -11,6 +11,7 @@ import type { TIssueServiceType, TWorkItemWidgets } from "@plane/types";
 // hooks
 import { useIssueDetail } from "@/hooks/store/use-issue-detail";
 import { useTimeLineRelationOptions } from "@/components/relations";
+import { useDriveFileCount } from "@/components/google-drive/drive-issue";
 // local imports
 import { AttachmentsCollapsible } from "./attachments";
 import { LinksCollapsible } from "./links";
@@ -45,7 +46,8 @@ export const IssueDetailWidgetCollapsibles = observer(function IssueDetailWidget
   const shouldRenderRelations = issueRelationsCount > 0 && !hideWidgets?.includes("relations");
   const shouldRenderLinks = !!issue?.link_count && issue?.link_count > 0 && !hideWidgets?.includes("links");
   const attachmentUploads = getAttachmentsUploadStatusByIssueId(issueId);
-  const attachmentsCount = getAttachmentsCountByIssueId(issueId);
+  // Files in Google Drive count too, and so do the ones still on their way there.
+  const attachmentsCount = getAttachmentsCountByIssueId(issueId) + useDriveFileCount(workspaceSlug, projectId, issueId);
   const shouldRenderAttachments =
     attachmentsCount > 0 ||
     (!!attachmentUploads && attachmentUploads.length > 0 && !hideWidgets?.includes("attachments"));
