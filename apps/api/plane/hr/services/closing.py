@@ -401,6 +401,25 @@ def reopen(period, actor, reason):
     return period
 
 
+@transaction.atomic
+def return_for_correction(period, actor, reason):
+    """Put a settled month back into play so a record in it can be corrected.
+
+    A closed month is reopened, as above. One that was only handed in or agreed was
+    never closed, so it simply goes back to open: the person hands it in again
+    once it is right, and the hand-in it had is on the record.
+    """
+    if period.state == HrPeriod.State.LOCKED:
+        return reopen(period, actor, reason)
+    if period.state not in (HrPeriod.State.SUBMITTED, HrPeriod.State.APPROVED):
+        return period
+    before = period.state
+    period.state = HrPeriod.State.OPEN
+    period.save()
+    _audit(period, actor, "period_returned", {"state": {"from": before, "to": period.state}}, reason=reason)
+    return period
+
+
 def _release_contributing_records(period):
     """Let the records that fed a reopened month be edited again."""
     HrAbsence.objects.filter(locked_period=period).update(locked_period=None)

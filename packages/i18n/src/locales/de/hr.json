@@ -79,7 +79,8 @@
       "leave_left_days": "{amount} Urlaubstage übrig",
       "leave_left_hours": "{amount} Urlaub übrig",
       "behind_so_far": "{duration} Rückstand in diesem Monat",
-      "ahead_so_far": "{duration} Vorsprung in diesem Monat"
+      "ahead_so_far": "{duration} Vorsprung in diesem Monat",
+      "timer_counted": "Ein Timer läuft. Seine bisherigen {duration} sind in den Zahlen enthalten und zählen weiter; stoppen Sie ihn, bevor Sie den Monat einreichen."
     },
     "day_table": {
       "day": "Tag",
@@ -96,7 +97,8 @@
       "nothing_yet": "Für diesen Monat wurde noch nichts berechnet.",
       "rest_of_month": "{count, plural, one {Rest des Monats anzeigen (# Tag)} other {Rest des Monats anzeigen (# Tage)}}",
       "open_day": "Zeit für {day} erfassen",
-      "hide_rest_of_month": "Rest des Monats ausblenden"
+      "hide_rest_of_month": "Rest des Monats ausblenden",
+      "timer_counting": "Ein Timer läuft: seine bisherigen Minuten zählen an diesem Tag"
     },
     "overview_table": {
       "person": "Person",
@@ -538,7 +540,10 @@
       "refuse_placeholder": "In der Woche sind bereits zwei Personen abwesend",
       "refuse_cancel": "Abbrechen",
       "request": "Abwesenheit beantragen",
-      "errors": {}
+      "errors": {},
+      "confirm_reopen_title": "Aus einem bereits erledigten Monat löschen?",
+      "confirm_reopen_body": "Bereits eingereichte oder abgeschlossene Monate von {person}: {months}. Wenn Sie diese Abwesenheit löschen, gehen sie zurück und werden ohne sie neu berechnet; danach müssen sie erneut eingereicht oder abgeschlossen werden.",
+      "delete_and_reopen": "Löschen und wieder öffnen"
     },
     "rates": {
       "title": "Was die Zeit von {person} wert ist",

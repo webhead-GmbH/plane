@@ -6,10 +6,12 @@
 
 import useSWR from "swr";
 // plane imports
+import { Collapsible } from "@makeplane/propel/components/collapsible";
 import { useTranslation } from "@plane/i18n";
 import { cn } from "@plane/utils";
 // services
 import { EHrArrangement, EHrRateBasis, HrService } from "@/services/hr.service";
+import type { THrStatement } from "@/services/hr.service";
 // local imports
 import { formatMinutes, tidyAmount } from "./utils";
 
@@ -40,6 +42,10 @@ type TProps = {
  * It says plainly whether the month is settled. An open month still moves, and a
  * figure that quietly changed between being read and being invoiced is exactly
  * the disagreement this is meant to prevent.
+ *
+ * Closed until opened: it matters on the day the invoice is written, and on every
+ * other day it stood between somebody and their days. The hours stay in the
+ * heading, so the figure is there at a glance.
  */
 export const HrStatementPanel = ({ periodId, arrangement }: TProps) => {
   const { t } = useTranslation();
@@ -52,11 +58,28 @@ export const HrStatementPanel = ({ periodId, arrangement }: TProps) => {
   if (!shows || !data) return null;
 
   return (
-    <div className="flex flex-col gap-3 rounded-md border border-subtle p-4">
-      <div>
-        <h2 className="text-13 font-semibold text-primary">{t("hr.statement.title")}</h2>
-        <p className="text-13 text-tertiary">{t("hr.statement.hint")}</p>
-      </div>
+    <div className="rounded-md border border-subtle px-2 py-1">
+      <Collapsible
+        defaultOpen={false}
+        trigger={
+          <span className="inline-flex items-center gap-2">
+            <span className="text-13 font-semibold text-primary">{t("hr.statement.title")}</span>
+            <span className="text-13 text-tertiary tabular-nums">{formatMinutes(data.minutes)}</span>
+          </span>
+        }
+      >
+        <StatementBody data={data} />
+      </Collapsible>
+    </div>
+  );
+};
+
+const StatementBody = ({ data }: { data: THrStatement }) => {
+  const { t } = useTranslation();
+
+  return (
+    <div className="flex flex-col gap-3 px-2 pb-3">
+      <p className="text-13 text-tertiary">{t("hr.statement.hint")}</p>
 
       <div className="flex flex-wrap items-end gap-x-8 gap-y-3">
         <div>

@@ -9,6 +9,7 @@ import type { THrAttendanceDay, THrMe } from "@/services/hr.service";
 // local imports
 import { HrDayTable } from "./day-table";
 import { HrMonthSummary } from "./month-summary";
+import { useRunningMinutes, withRunningTimer } from "./running-timer";
 import { HrStatementPanel } from "./statement-panel";
 
 /** Contracted hours as the schedule in force has them, and only failing that as the contract does. */
@@ -27,13 +28,16 @@ type TProps = {
  * come to show different figures for the same month.
  */
 export const HrMonthFigures = ({ me, onPickDay, attendance }: TProps) => {
-  const period = me.period;
+  // A timer still running counts as it goes, so nobody has to stop it to see where they stand.
+  const runningMinutes = useRunningMinutes(me.running_timer);
+  const period = withRunningTimer(me.period, me.running_timer, runningMinutes);
 
   return (
     <>
       <HrMonthSummary
         period={period}
         hasRunningTimer={me.has_running_timer}
+        runningMinutes={me.running_timer ? runningMinutes : null}
         contractedWeeklyMinutes={contractedWeeklyMinutes(me)}
         teleworkDaysThisYear={me.telework_days_this_year}
         leave={me.leave}
@@ -47,6 +51,7 @@ export const HrMonthFigures = ({ me, onPickDay, attendance }: TProps) => {
         countedThrough={period?.to_date ? period.to_date.counted_through : undefined}
         onPickDay={onPickDay}
         attendance={attendance}
+        runningDay={me.running_timer?.day ?? null}
       />
     </>
   );

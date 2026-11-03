@@ -350,3 +350,83 @@ class TestNothingIsDraggedInOrOut:
 
         assert response.status_code == 409
         assert HrTimeEntry.objects.filter(pk=entry.id).exists()
+
+
+class TestAnAbsenceInASettledMonthCanStillBeDeleted:
+    """By whoever looks after the team, once they have said the month goes back to be counted again."""
+
+    def absence_in(self, profile, day=IN_JANUARY, end=None):
+        return HrAbsence.objects.create(
+            workspace=profile.workspace,
+            profile=profile,
+            absence_type=a_kind_of_absence(profile.workspace),
+            start_date=day,
+            end_date=end or day,
+            state=HrAbsence.State.APPROVED,
+            total_minutes=FULL,
+        )
+
+    @pytest.mark.parametrize("state", SETTLED)
+    def test_without_saying_so_it_is_refused_and_says_it_can_be_done(self, person, state):
+        profile = employed(person)
+        month_of(profile, JANUARY, state)
+        absence = self.absence_in(profile)
+
+        response = client_for(person).delete(f"/api/hr/absences/{absence.id}/")
+
+        assert response.status_code == 409
+        assert response.json()["can_reopen"] is True
+        assert response.json()["months"] == ["2026-01-01"]
+        assert HrAbsence.objects.filter(pk=absence.id).exists()
+
+    @pytest.mark.parametrize(
+        "state, back_to",
+        [
+            (HrPeriod.State.SUBMITTED, HrPeriod.State.OPEN),
+            (HrPeriod.State.APPROVED, HrPeriod.State.OPEN),
+            (HrPeriod.State.LOCKED, HrPeriod.State.REOPENED),
+        ],
+    )
+    def test_saying_so_deletes_it_and_sends_the_month_back(self, person, state, back_to):
+        profile = employed(person)
+        january = month_of(profile, JANUARY, state)
+        absence = self.absence_in(profile)
+        if state == HrPeriod.State.LOCKED:
+            HrAbsence.objects.filter(pk=absence.pk).update(locked_period=january)
+
+        response = client_for(person).delete(f"/api/hr/absences/{absence.id}/?reopen=1")
+
+        assert response.status_code == 204
+        assert not HrAbsence.objects.filter(pk=absence.id).exists()
+        january.refresh_from_db()
+        assert january.state == back_to
+
+    def test_every_settled_month_it_runs_through_goes_back(self, person):
+        profile = employed(person)
+        january = month_of(profile, JANUARY, HrPeriod.State.LOCKED)
+        february = month_of(profile, date(2026, 2, 1), HrPeriod.State.SUBMITTED)
+        absence = self.absence_in(profile, IN_JANUARY, IN_FEBRUARY)
+
+        response = client_for(person).delete(f"/api/hr/absences/{absence.id}/?reopen=1")
+
+        assert response.status_code == 204
+        january.refresh_from_db()
+        february.refresh_from_db()
+        assert (january.state, february.state) == (HrPeriod.State.REOPENED, HrPeriod.State.OPEN)
+
+    def test_somebody_who_does_not_look_after_the_team_cannot(self, person):
+        manager = employed(person)
+        colleague_user = UserFactory(username=uuid4().hex)
+        colleague = HrEmploymentProfile.objects.create(
+            workspace=manager.workspace,
+            member=colleague_user,
+            timezone="Europe/Vienna",
+            hire_date=date(2024, 1, 1),
+        )
+        month_of(colleague, JANUARY, HrPeriod.State.APPROVED)
+        absence = self.absence_in(colleague)
+
+        response = client_for(colleague_user).delete(f"/api/hr/absences/{absence.id}/?reopen=1")
+
+        assert response.status_code == 403
+        assert HrAbsence.objects.filter(pk=absence.id).exists()

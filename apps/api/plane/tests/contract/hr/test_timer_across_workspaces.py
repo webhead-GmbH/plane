@@ -30,7 +30,7 @@ from rest_framework.test import APIClient
 from plane.app.permissions import ROLE
 from plane.db.models import Issue, IssueAssignee, IssueWorkLog, State
 from plane.hr.models import HrEmploymentProfile
-from plane.hr.services.ledger import has_running_timer, period_totals, rebuild_period
+from plane.hr.services.ledger import has_running_timer, period_totals, rebuild_period, running_timer_in
 from plane.hr.utils.calendar import hr_local_date
 from plane.tests.factories import (
     ProjectFactory,
@@ -138,6 +138,22 @@ class TestOneTimerPerPerson:
         assert has_running_timer(profile, today.year, today.month) is False
         client_for(person).post(timer_url(*elsewhere))
         assert has_running_timer(profile, today.year, today.month) is True
+
+    def test_my_time_says_when_the_running_timer_started_and_which_day_it_counts_on(self, person):
+        # So the screen can add its minutes as they go, rather than showing the day
+        # as though nothing were being worked until the clock is stopped.
+        profile = employed(person)
+        today = hr_local_date(timezone.now(), "Europe/Vienna")
+        assert running_timer_in(profile, today.year, today.month) is None
+        client = client_for(person)
+        started = client.post(timer_url(*a_workspace_with_work_for(person)))
+        begun = timezone.now() - timedelta(minutes=50)
+        IssueWorkLog.objects.filter(pk=started.json()["id"]).update(started_at=begun)
+
+        body = client.get(f"/api/hr/me/?year={today.year}&month={today.month}").json()
+
+        assert body["running_timer"]["day"] == hr_local_date(begun, "Europe/Vienna").isoformat()
+        assert body["running_timer"]["started_at"].startswith(begun.isoformat()[:19])
 
     def test_hours_from_every_workspace_land_in_the_same_month(self, person):
         # The point of the whole arrangement: one month, all of somebody's hours.

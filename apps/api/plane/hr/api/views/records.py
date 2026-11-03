@@ -13,6 +13,7 @@ records that fed it stop accepting changes.
 from datetime import date
 
 # Django imports
+from django.db import transaction
 from django.utils import timezone
 
 # Third-party imports
@@ -39,8 +40,9 @@ from plane.hr.permissions import (
 from plane.hr.services.absences import resolve_total_minutes
 from plane.hr.services.attendance import net_minutes_for, problem_with
 from plane.hr.services.audit import differences, record, snapshot
+from plane.hr.services.closing import return_for_correction
 from plane.hr.services.ledger import rebuild_period
-from plane.hr.services.settled import settled_month_across, settled_month_for_profile
+from plane.hr.services.settled import settled_month_across, settled_month_for_profile, settled_months_across
 from plane.hr.utils.resolve import effective
 
 _LOCKED = {"error": ("The month this belongs to has been closed. Reopen it if the record genuinely needs to change.")}
@@ -241,20 +243,36 @@ class HrAbsenceEndpoint(BaseAPIView):
 
     @hr_permission(MANAGER)
     def delete(self, request, pk):
-        row = HrAbsence.objects.filter(profile__in=visible_profiles(request), pk=pk).first()
+        row = HrAbsence.objects.filter(profile__in=visible_profiles(request), pk=pk).select_related("profile").first()
         if row is None:
             return Response({"error": "Not found."}, status=status.HTTP_404_NOT_FOUND)
-        if row.locked_period_id:
+        settled = settled_months_across(row.profile, row.start_date, row.end_date)
+        if row.locked_period_id and not settled:
             return Response(_LOCKED, status=status.HTTP_409_CONFLICT)
-        refusal = _refuse_settled(settled_month_across(row.profile, row.start_date, row.end_date))
-        if refusal:
+        if settled and request.query_params.get("reopen") not in ("1", "true"):
+            # Its months have been handed in, agreed or closed, so deleting it changes
+            # figures somebody has already read. Possible all the same — an absence
+            # recorded by mistake must be able to go — but only once whoever looks
+            # after the team has said so, knowing those months go back to be counted
+            # again and handed in or closed once more.
+            refusal = _refuse_settled(settled[0])
+            refusal["can_reopen"] = True
+            refusal["months"] = [period.period_start.isoformat() for period in settled]
             return Response(refusal, status=status.HTTP_409_CONFLICT)
-        # Read before it goes: afterwards there is nothing left to describe, and
-        # the row cannot even say which one it was — deleting clears its key.
-        gone = snapshot(row, WATCHED["absence"])
-        profile, gone_id = row.profile, row.id
-        row.delete()
-        record(profile, request.user, row, "absence_removed", gone, request=request, object_id=gone_id)
+
+        with transaction.atomic():
+            reason = f"Deleting an absence from {row.start_date.isoformat()} to {row.end_date.isoformat()}."
+            for period in settled:
+                return_for_correction(period, request.user, reason)
+            # Read before it goes: afterwards there is nothing left to describe, and
+            # the row cannot even say which one it was — deleting clears its key.
+            gone = snapshot(row, WATCHED["absence"])
+            profile, gone_id = row.profile, row.id
+            row.delete()
+            record(profile, request.user, row, "absence_removed", gone, request=request, object_id=gone_id)
+            # The months it was taken out of, counted again without it.
+            for period in settled:
+                rebuild_period(profile, period.period_start.year, period.period_start.month, actor=request.user)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 

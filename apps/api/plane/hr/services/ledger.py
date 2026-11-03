@@ -583,3 +583,26 @@ def has_running_timer(profile, year, month):
         .filter(occurred__gte=lo, occurred__lt=hi)
         .exists()
     )
+
+
+def running_timer_in(profile, year, month):
+    """The timer still going in this month: when it started, and the day it will count on.
+
+    Its minutes are not in any figure until it stops, and then they all count on
+    the day it started. A screen adds them as they go, so somebody can see how the
+    day stands without stopping the clock to find out. None when nothing is running.
+    """
+    tz = _profile_timezone(profile)
+    lo, hi = hr_month_bounds_utc(year, month, tz)
+    timer = (
+        IssueWorkLog.objects.filter(logged_by_id=profile.member_id, duration__isnull=True)
+        .annotate(occurred=Coalesce("started_at", F("logged_at")))
+        .filter(occurred__gte=lo, occurred__lt=hi)
+        .order_by("-occurred")
+        .values("occurred")
+        .first()
+    )
+    if timer is None:
+        return None
+    day = hr_local_date(timer["occurred"], tz)
+    return {"started_at": timer["occurred"].isoformat(), "day": day.isoformat() if day else None}

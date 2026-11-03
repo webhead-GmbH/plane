@@ -79,7 +79,8 @@
       "leave_left_days": "남은 휴가 {amount}일",
       "leave_left_hours": "남은 휴가 {amount}",
       "behind_so_far": "이번 달 {duration} 부족",
-      "ahead_so_far": "이번 달 {duration} 초과"
+      "ahead_so_far": "이번 달 {duration} 초과",
+      "timer_counted": "타이머가 실행 중입니다. 지금까지의 {duration}이(가) 수치에 포함되어 계속 늘어납니다. 월을 제출하기 전에 타이머를 중지하세요."
     },
     "day_table": {
       "day": "날짜",
@@ -96,7 +97,8 @@
       "nothing_yet": "이번 달은 아직 집계되지 않았습니다.",
       "rest_of_month": "{count, plural, other {이번 달 남은 날 표시 (#일)}}",
       "open_day": "{day} 시간 기록",
-      "hide_rest_of_month": "이번 달 남은 날 숨기기"
+      "hide_rest_of_month": "이번 달 남은 날 숨기기",
+      "timer_counting": "타이머가 실행 중입니다. 지금까지의 시간이 이 날에 계산됩니다"
     },
     "overview_table": {
       "person": "구성원",
@@ -538,7 +540,10 @@
       "refuse_placeholder": "그 주에 이미 두 명이 부재입니다",
       "refuse_cancel": "취소",
       "request": "휴가 신청",
-      "errors": {}
+      "errors": {},
+      "confirm_reopen_title": "이미 확정된 월에서 삭제할까요?",
+      "confirm_reopen_body": "{person}님의 이미 제출되었거나 마감된 월: {months}. 이 부재를 삭제하면 해당 월이 되돌려져 부재 없이 다시 계산되며, 이후 다시 제출하거나 마감해야 합니다.",
+      "delete_and_reopen": "삭제하고 다시 열기"
     },
     "rates": {
       "title": "{person}님의 시간 단가",

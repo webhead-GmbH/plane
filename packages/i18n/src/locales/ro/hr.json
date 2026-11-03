@@ -79,7 +79,8 @@
       "leave_left_days": "Au rămas {amount} zile de concediu",
       "leave_left_hours": "A rămas {amount} de concediu",
       "behind_so_far": "{duration} în urmă luna aceasta",
-      "ahead_so_far": "{duration} în avans luna aceasta"
+      "ahead_so_far": "{duration} în avans luna aceasta",
+      "timer_counted": "Un cronometru rulează. Cele {duration} de până acum sunt deja incluse în cifre și continuă să se adune; opriți-l înainte să predați luna."
     },
     "day_table": {
       "day": "Zi",
@@ -96,7 +97,8 @@
       "nothing_yet": "Pentru această lună nu s-a calculat încă nimic.",
       "rest_of_month": "{count, plural, one {Afișați restul lunii (# zi)} few {Afișați restul lunii (# zile)} other {Afișați restul lunii (# de zile)}}",
       "open_day": "Înregistrează timp pentru {day}",
-      "hide_rest_of_month": "Ascunde restul lunii"
+      "hide_rest_of_month": "Ascunde restul lunii",
+      "timer_counting": "Un cronometru rulează: minutele de până acum se socotesc în această zi"
     },
     "overview_table": {
       "person": "Persoană",
@@ -538,7 +540,10 @@
       "refuse_placeholder": "În acea săptămână deja lipsesc două persoane",
       "refuse_cancel": "Anulează",
       "request": "Solicitați absență",
-      "errors": {}
+      "errors": {},
+      "confirm_reopen_title": "O ștergeți dintr-o lună deja încheiată?",
+      "confirm_reopen_body": "Luni deja predate sau închise pentru {person}: {months}. Ștergerea acestei absențe le trimite înapoi, ca să fie recalculate fără ea, iar apoi trebuie predate sau închise din nou.",
+      "delete_and_reopen": "Ștergeți și redeschideți"
     },
     "rates": {
       "title": "Cât valorează timpul lucrat de {person}",

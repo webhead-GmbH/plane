@@ -79,7 +79,8 @@
       "leave_left_days": "残りの休暇 {amount} 日",
       "leave_left_hours": "残りの休暇 {amount}",
       "behind_so_far": "今月は {duration} 不足",
-      "ahead_so_far": "今月は {duration} 超過"
+      "ahead_so_far": "今月は {duration} 超過",
+      "timer_counted": "タイマーが動いています。ここまでの{duration}は数値に含まれ、引き続き加算されます。月を提出する前に停止してください。"
     },
     "day_table": {
       "day": "日付",
@@ -96,7 +97,8 @@
       "nothing_yet": "今月の集計はまだありません。",
       "rest_of_month": "{count, plural, other {今月の残りを表示（#日）}}",
       "open_day": "{day} の時間を記録",
-      "hide_rest_of_month": "今月の残りを隠す"
+      "hide_rest_of_month": "今月の残りを隠す",
+      "timer_counting": "タイマーが動いています。ここまでの時間はこの日に加算されます"
     },
     "overview_table": {
       "person": "メンバー",
@@ -662,7 +664,10 @@
       "refuse_placeholder": "その週はすでに 2 名が不在です",
       "refuse_cancel": "キャンセル",
       "request": "休みを申請",
-      "errors": {}
+      "errors": {},
+      "confirm_reopen_title": "確定済みの月から削除しますか？",
+      "confirm_reopen_body": "{person}さんの提出済みまたは締め済みの月: {months}。この休暇・欠勤を削除すると、それらの月は差し戻され、削除後の内容で再計算されます。その後、もう一度提出または締める必要があります。",
+      "delete_and_reopen": "削除して再度開く"
     },
     "statement": {
       "title": "請求書を発行する前に",

@@ -79,6 +79,25 @@ const monthWindow = (year: number, month: number) => ({
  *
  * A dash while the roster is still on its way, so a row is never blank.
  */
+// One formatter per language, made once: building one is not cheap, and the dialog re-renders.
+const listFormats = new Map<string, Intl.ListFormat>();
+
+/** "October 2026 and November 2026", in the reader's language. */
+const listOf = (items: string[], locale: string) => {
+  let format = listFormats.get(locale);
+  if (!format) {
+    format = new Intl.ListFormat(locale, { type: "conjunction" });
+    listFormats.set(locale, format);
+  }
+  return format.format(items);
+};
+
+/** The months a refused delete names as settled, when the server says they can be sent back. */
+const monthsToReopen = (failure: unknown) => {
+  const body = failure as { can_reopen?: boolean; months?: unknown } | undefined;
+  return body?.can_reopen && Array.isArray(body.months) ? (body.months as string[]) : null;
+};
+
 const nameOf = (people: THrEmploymentProfile[], profileId: string) =>
   people.find((person: THrEmploymentProfile) => person.id === profileId)?.member_display_name ?? "—";
 
@@ -98,6 +117,8 @@ export const HrAbsencesRoot = observer(function HrAbsencesRoot() {
   const [month, setMonth] = useState(now.getMonth() + 1);
   const [personFilter, setPersonFilter] = useState("");
   const [removing, setRemoving] = useState<THrAbsence | null>(null);
+  // Set once the server has said the absence is in a settled month: asked again, naming it.
+  const [reopenMonths, setReopenMonths] = useState<string[] | null>(null);
   const [refusing, setRefusing] = useState<THrAbsence | null>(null);
   const [recording, setRecording] = useState(false);
   const [editing, setEditing] = useState<THrAbsence | null>(null);
@@ -184,12 +205,15 @@ export const HrAbsencesRoot = observer(function HrAbsencesRoot() {
     if (!removing) return;
     setIsBusy(true);
     try {
-      await hrService.removeAbsence(removing.id);
+      await hrService.removeAbsence(removing.id, reopenMonths !== null);
       await mutate();
       setRemoving(null);
+      setReopenMonths(null);
       setToast({ type: "success", title: t("hr.absences.toasts.removed") });
     } catch (failure) {
-      complain(failure);
+      const months = monthsToReopen(failure);
+      if (months && reopenMonths === null) setReopenMonths(months);
+      else complain(failure);
     } finally {
       setIsBusy(false);
     }
@@ -293,7 +317,11 @@ export const HrAbsencesRoot = observer(function HrAbsencesRoot() {
         onSave={(draft) => void handleSave(draft)}
         onCloseRefusal={() => setRefusing(null)}
         onRefuse={handleRefuse}
-        onCloseRemoval={() => setRemoving(null)}
+        reopenMonths={reopenMonths}
+        onCloseRemoval={() => {
+          setRemoving(null);
+          setReopenMonths(null);
+        }}
         onRemove={() => void handleRemove()}
         onCloseTypes={() => setManagingTypes(false)}
         onTypesChanged={() => refreshTypes()}
@@ -353,6 +381,8 @@ type TDialogsProps = {
   onRefuse: (absence: THrAbsence, reason: string) => Promise<void>;
   onCloseRemoval: () => void;
   onRemove: () => void;
+  /** The settled months deleting the absence would send back, once the server has named them. */
+  reopenMonths: string[] | null;
   onCloseTypes: () => void;
   onTypesChanged: () => Promise<unknown>;
 };
@@ -372,6 +402,7 @@ const AbsenceDialogs = ({
   onRefuse,
   onCloseRemoval,
   onRemove,
+  reopenMonths,
   onCloseTypes,
   onTypesChanged,
 }: TDialogsProps) => {
@@ -408,23 +439,65 @@ const AbsenceDialogs = ({
         }}
       />
 
-      <ConfirmDialog
-        isOpen={removing !== null}
-        handleClose={onCloseRemoval}
-        handleSubmit={onRemove}
-        isSubmitting={isBusy}
-        variant="danger"
-        title={t("hr.absences.confirm_remove_title")}
-        content={t("hr.absences.confirm_remove_body", {
-          person: removing ? nameOf(people, removing.profile) : "",
-          duration: removing ? formatMinutes(removing.total_minutes) : "",
-        })}
-        primaryButtonText={{ default: t("hr.absences.delete"), loading: t("hr.absences.removing") }}
-        secondaryButtonText={t("common.cancel")}
+      <RemoveAbsenceDialog
+        removing={removing}
+        reopenMonths={reopenMonths}
+        people={people}
+        isBusy={isBusy}
+        onClose={onCloseRemoval}
+        onRemove={onRemove}
       />
 
       <HrAbsenceTypesModal isOpen={managingTypes} types={types} onClose={onCloseTypes} onChanged={onTypesChanged} />
     </>
+  );
+};
+
+type TRemoveProps = {
+  removing: THrAbsence | null;
+  reopenMonths: string[] | null;
+  people: THrEmploymentProfile[];
+  isBusy: boolean;
+  onClose: () => void;
+  onRemove: () => void;
+};
+
+/**
+ * Deleting an absence, and, where its month has been handed in or closed, saying
+ * plainly that the month goes back to be counted again before it does.
+ */
+const RemoveAbsenceDialog = ({ removing, reopenMonths, people, isBusy, onClose, onRemove }: TRemoveProps) => {
+  const { t, currentLocale } = useTranslation();
+  const person = removing ? nameOf(people, removing.profile) : "";
+  const months = reopenMonths
+    ? listOf(
+        reopenMonths.map((month) => formatMonthLabel(month, currentLocale)),
+        currentLocale
+      )
+    : "";
+
+  return (
+    <ConfirmDialog
+      isOpen={removing !== null}
+      handleClose={onClose}
+      handleSubmit={onRemove}
+      isSubmitting={isBusy}
+      variant="danger"
+      title={t(reopenMonths ? "hr.absences.confirm_reopen_title" : "hr.absences.confirm_remove_title")}
+      content={
+        reopenMonths
+          ? t("hr.absences.confirm_reopen_body", { person, months })
+          : t("hr.absences.confirm_remove_body", {
+              person,
+              duration: removing ? formatMinutes(removing.total_minutes) : "",
+            })
+      }
+      primaryButtonText={{
+        default: t(reopenMonths ? "hr.absences.delete_and_reopen" : "hr.absences.delete"),
+        loading: t("hr.absences.removing"),
+      }}
+      secondaryButtonText={t("common.cancel")}
+    />
   );
 };
 
@@ -606,7 +679,9 @@ const AbsenceActions = ({
           onClick={() => onEdit(absence)}
         />
       )}
-      {isManager && !locked && (
+      {/* Even in a closed month: an absence recorded by mistake has to be able to go.
+          The server asks first, since deleting it sends that month back. */}
+      {isManager && (
         <HrRowAction
           icon={<Trash2 className="size-4" />}
           label={t("hr.absences.delete")}

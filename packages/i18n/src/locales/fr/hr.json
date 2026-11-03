@@ -79,7 +79,8 @@
       "leave_left_days": "{amount} jours de congé restants",
       "leave_left_hours": "{amount} de congé restants",
       "behind_so_far": "{duration} de retard ce mois-ci",
-      "ahead_so_far": "{duration} d'avance ce mois-ci"
+      "ahead_so_far": "{duration} d'avance ce mois-ci",
+      "timer_counted": "Un chronomètre tourne. Ses {duration} jusqu’ici sont comptés dans les chiffres et continuent de s’ajouter ; arrêtez-le avant de remettre le mois."
     },
     "day_table": {
       "day": "Jour",
@@ -96,7 +97,8 @@
       "nothing_yet": "Rien n'a encore été calculé pour ce mois.",
       "rest_of_month": "{count, plural, one {Afficher le reste du mois (# jour)} other {Afficher le reste du mois (# jours)}}",
       "open_day": "Saisir le temps pour {day}",
-      "hide_rest_of_month": "Masquer le reste du mois"
+      "hide_rest_of_month": "Masquer le reste du mois",
+      "timer_counting": "Un chronomètre tourne : ses minutes jusqu’ici comptent pour ce jour"
     },
     "overview_table": {
       "person": "Personne",
@@ -662,7 +664,10 @@
       "refuse_placeholder": "Deux personnes sont déjà absentes cette semaine-là",
       "refuse_cancel": "Annuler",
       "request": "Demander une absence",
-      "errors": {}
+      "errors": {},
+      "confirm_reopen_title": "La supprimer d’un mois déjà réglé ?",
+      "confirm_reopen_body": "Mois déjà remis ou clôturés pour {person} : {months}. Supprimer cette absence les renvoie pour qu’ils soient recalculés sans elle ; ils devront ensuite être remis ou clôturés à nouveau.",
+      "delete_and_reopen": "Supprimer et rouvrir"
     },
     "statement": {
       "title": "Avant de facturer",

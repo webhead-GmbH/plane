@@ -89,6 +89,8 @@ export const MyTimeRoot = observer(function MyTimeRoot() {
   const { t, currentLocale } = useTranslation();
   const { data, isLoading, error, mutate } = useSWR(`HR_ME_${year}_${month}`, () => hrService.me(year, month), {
     shouldRetryOnError: isWorthRetrying,
+    // While a timer runs, asked again every minute: one stopped elsewhere stops counting here too.
+    refreshInterval: (latest) => (latest?.running_timer ? 60_000 : 0),
   });
   // The server refuses somebody who has no employment record here, rather than
   // sending them an empty month: only whoever looks after the team may open a

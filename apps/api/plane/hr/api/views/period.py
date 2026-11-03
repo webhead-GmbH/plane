@@ -45,6 +45,7 @@ from plane.hr.services.closing import TransitionRefused, approve, lock, reopen, 
 from plane.hr.services.ledger import (
     counted_through_for,
     has_running_timer,
+    running_timer_in,
     period_totals,
     period_totals_to_date,
     rebuild_period,
@@ -187,6 +188,7 @@ class HrMeEndpoint(BaseAPIView):
                 "schedule": HrWorkScheduleSerializer(schedule).data if schedule else None,
                 "period": _period_payload(period, include_days=True) if period else None,
                 "has_running_timer": has_running_timer(profile, year, month),
+                "running_timer": running_timer_in(profile, year, month),
                 # Null rather than zero where attendance is not kept for this
                 # person: there is no count, and zero would read as one.
                 "telework_days_this_year": (

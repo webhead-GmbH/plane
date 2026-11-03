@@ -79,7 +79,8 @@
       "leave_left_days": "{amount} gün izin kaldı",
       "leave_left_hours": "{amount} izin kaldı",
       "behind_so_far": "Bu ay {duration} geride",
-      "ahead_so_far": "Bu ay {duration} ileride"
+      "ahead_so_far": "Bu ay {duration} ileride",
+      "timer_counted": "Bir zamanlayıcı çalışıyor. Şimdiye kadarki {duration} süresi rakamlara dahil ve artmaya devam ediyor; ayı teslim etmeden önce durdurun."
     },
     "day_table": {
       "day": "Gün",
@@ -96,7 +97,8 @@
       "nothing_yet": "Bu ay için henüz bir hesaplama yapılmadı.",
       "rest_of_month": "{count, plural, one {Ayın kalanını göster (# gün)} other {Ayın kalanını göster (# gün)}}",
       "open_day": "{day} için süre kaydet",
-      "hide_rest_of_month": "Ayın kalanını gizle"
+      "hide_rest_of_month": "Ayın kalanını gizle",
+      "timer_counting": "Bir zamanlayıcı çalışıyor: şimdiye kadarki dakikaları bu güne sayılıyor"
     },
     "overview_table": {
       "person": "Kişi",
@@ -538,7 +540,10 @@
       "refuse_placeholder": "O hafta zaten iki kişi izinli",
       "refuse_cancel": "İptal",
       "request": "İzin talep et",
-      "errors": {}
+      "errors": {},
+      "confirm_reopen_title": "Kesinleşmiş bir aydan silinsin mi?",
+      "confirm_reopen_body": "{person} için teslim edilmiş ya da kapatılmış aylar: {months}. Bu devamsızlığı silmek bu ayları geri gönderir; ayrıca onsuz yeniden hesaplanırlar ve ardından tekrar teslim edilmeleri ya da kapatılmaları gerekir.",
+      "delete_and_reopen": "Sil ve yeniden aç"
     },
     "rates": {
       "title": "{person} adlı kişinin zamanının karşılığı",

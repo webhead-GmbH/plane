@@ -5,7 +5,7 @@
  */
 
 import { useState } from "react";
-import { AlertTriangle, ChevronDown, ChevronUp, Pencil } from "lucide-react";
+import { AlertTriangle, ChevronDown, ChevronUp, Pencil, Timer } from "lucide-react";
 // plane imports
 import { useTranslation } from "@plane/i18n";
 import { cn } from "@plane/utils";
@@ -26,13 +26,26 @@ type TProps = {
   onPickDay?: (workDate: string) => void;
   /** When the person was at work. Absent where the table is only about hours. */
   attendance?: THrAttendanceDay[];
+  /** The day a running timer's minutes are being counted on, so far. */
+  runningDay?: string | null;
 };
 
 /** "09:00–17:30", or "09:00–" while the day is still running. */
 const workedFromTo = (day: THrAttendanceDay | undefined) =>
   day ? `${day.started_at_local.slice(0, 5)}–${day.ended_at_local?.slice(0, 5) ?? ""}` : "";
 
-const QUIET_KINDS = new Set([EHrDayKind.NON_WORKING, EHrDayKind.HOLIDAY, EHrDayKind.HALF_HOLIDAY]);
+// Days nobody is expected to work, or only half: weekends, days off and public holidays.
+const DAYS_OFF = new Set([EHrDayKind.NON_WORKING, EHrDayKind.HOLIDAY, EHrDayKind.HALF_HOLIDAY]);
+
+/**
+ * A row's background: today stands out, days off are tinted red, and every
+ * other row is a shade apart so a line can be followed across the table.
+ */
+const rowTone = (day: THrPeriodDay, index: number) => {
+  if (isToday(day.work_date)) return "bg-accent-primary/5";
+  if (DAYS_OFF.has(day.day_kind)) return "bg-danger-subtle/60";
+  return index % 2 === 1 ? "bg-layer-1/60" : undefined;
+};
 
 /**
  * The month day by day.
@@ -41,7 +54,7 @@ const QUIET_KINDS = new Set([EHrDayKind.NON_WORKING, EHrDayKind.HOLIDAY, EHrDayK
  * would make the list shorter, but somebody scanning for where their hours went
  * needs to see that a gap was a Saturday and not a day they forgot.
  */
-export const HrDayTable = ({ days, countedThrough, onPickDay, attendance }: TProps) => {
+export const HrDayTable = ({ days, countedThrough, onPickDay, attendance, runningDay }: TProps) => {
   const { t, currentLocale } = useTranslation();
   const [showToCome, setShowToCome] = useState(false);
   const showsAttendance = Boolean(attendance?.length);
@@ -80,8 +93,8 @@ export const HrDayTable = ({ days, countedThrough, onPickDay, attendance }: TPro
           </tr>
         </thead>
         <tbody>
-          {shown.map((day) => {
-            const quiet = QUIET_KINDS.has(day.day_kind) && !day.actual_minutes;
+          {shown.map((day, index) => {
+            const quiet = DAYS_OFF.has(day.day_kind) && !day.actual_minutes;
             const away = day.absence_minutes + day.holiday_minutes;
             // Only a month still in flight has days that have not happened. When
             // the prop is absent the month is over and every day counts.
@@ -90,11 +103,11 @@ export const HrDayTable = ({ days, countedThrough, onPickDay, attendance }: TPro
               <tr
                 key={day.id}
                 className={cn(
-                  onPickDay && "group/row hover:bg-layer-2",
                   "border-b border-subtle last:border-b-0",
-                  quiet && "bg-layer-1/40 text-tertiary",
-                  notYet && "text-tertiary opacity-60",
-                  isToday(day.work_date) && "bg-accent-primary/5"
+                  rowTone(day, index),
+                  onPickDay && "group/row hover:bg-layer-2",
+                  quiet && "text-tertiary",
+                  notYet && "text-tertiary opacity-60"
                 )}
               >
                 <td className="px-3 py-1.5 whitespace-nowrap">
@@ -139,7 +152,17 @@ export const HrDayTable = ({ days, countedThrough, onPickDay, attendance }: TPro
                   </td>
                 ) : null}
                 <td className="px-3 py-1.5 text-right tabular-nums">{formatMinutes(day.target_minutes)}</td>
-                <td className="px-3 py-1.5 text-right tabular-nums">{formatMinutes(day.project_minutes)}</td>
+                <td className="px-3 py-1.5 text-right tabular-nums">
+                  <span className="inline-flex items-center justify-end gap-1.5">
+                    {day.work_date === runningDay ? (
+                      <Timer
+                        className="size-3 animate-pulse text-success-primary"
+                        aria-label={t("hr.day_table.timer_counting")}
+                      />
+                    ) : null}
+                    {formatMinutes(day.project_minutes)}
+                  </span>
+                </td>
                 <td className="px-3 py-1.5 text-right tabular-nums">{formatMinutes(day.non_project_minutes)}</td>
                 <td className="px-3 py-1.5 text-right tabular-nums">{formatMinutes(away)}</td>
                 <td className="px-3 py-1.5 text-right font-medium tabular-nums">{formatMinutes(day.actual_minutes)}</td>

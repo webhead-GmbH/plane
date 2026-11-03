@@ -79,7 +79,8 @@
       "leave_left_days": "Pozostało {amount} dni urlopu",
       "leave_left_hours": "Pozostało {amount} urlopu",
       "behind_so_far": "{duration} zaległości w tym miesiącu",
-      "ahead_so_far": "{duration} nadwyżki w tym miesiącu"
+      "ahead_so_far": "{duration} nadwyżki w tym miesiącu",
+      "timer_counted": "Działa licznik. Jego dotychczasowe {duration} jest już wliczone w dane i dalej się dolicza; zatrzymaj go, zanim oddasz miesiąc."
     },
     "day_table": {
       "day": "Dzień",
@@ -96,7 +97,8 @@
       "nothing_yet": "Dla tego miesiąca nic jeszcze nie obliczono.",
       "rest_of_month": "{count, plural, one {Pokaż resztę miesiąca (# dzień)} few {Pokaż resztę miesiąca (# dni)} many {Pokaż resztę miesiąca (# dni)} other {Pokaż resztę miesiąca (# dnia)}}",
       "open_day": "Zapisz czas dla {day}",
-      "hide_rest_of_month": "Ukryj resztę miesiąca"
+      "hide_rest_of_month": "Ukryj resztę miesiąca",
+      "timer_counting": "Działa licznik: jego dotychczasowe minuty liczą się w tym dniu"
     },
     "overview_table": {
       "person": "Osoba",
@@ -538,7 +540,10 @@
       "refuse_placeholder": "W tym tygodniu są już dwie osoby nieobecne",
       "refuse_cancel": "Anuluj",
       "request": "Złóż wniosek o nieobecność",
-      "errors": {}
+      "errors": {},
+      "confirm_reopen_title": "Usunąć ją z już rozliczonego miesiąca?",
+      "confirm_reopen_body": "Miesiące już oddane lub zamknięte dla osoby {person}: {months}. Usunięcie tej nieobecności cofa je, aby zostały przeliczone bez niej, a potem trzeba je ponownie oddać lub zamknąć.",
+      "delete_and_reopen": "Usuń i otwórz ponownie"
     },
     "rates": {
       "title": "Ile jest wart czas osoby {person}",

@@ -79,7 +79,8 @@
       "leave_left_days": "{amount} days of leave left",
       "leave_left_hours": "{amount} of leave left",
       "behind_so_far": "{duration} behind so far this month",
-      "ahead_so_far": "{duration} ahead so far this month"
+      "ahead_so_far": "{duration} ahead so far this month",
+      "timer_counted": "A timer is running. Its {duration} so far is counted in the figures and keeps counting; stop it before you hand the month in."
     },
     "day_table": {
       "day": "Day",
@@ -96,7 +97,8 @@
       "nothing_yet": "Nothing has been worked out for this month yet.",
       "rest_of_month": "{count, plural, one {Show the rest of the month (# day)} other {Show the rest of the month (# days)}}",
       "open_day": "Record time for {day}",
-      "hide_rest_of_month": "Hide the rest of the month"
+      "hide_rest_of_month": "Hide the rest of the month",
+      "timer_counting": "A timer is running: its minutes so far are counted on this day"
     },
     "overview_table": {
       "person": "Person",
@@ -538,7 +540,10 @@
       "refuse_placeholder": "Two people are already away that week",
       "refuse_cancel": "Cancel",
       "request": "Ask for time off",
-      "errors": {}
+      "errors": {},
+      "confirm_reopen_title": "Delete it from a settled month?",
+      "confirm_reopen_body": "Months already handed in or closed for {person}: {months}. Deleting this absence sends them back so they are counted again without it, and they then have to be handed in or closed once more.",
+      "delete_and_reopen": "Delete and reopen"
     },
     "rates": {
       "title": "What {person}'s time is worth",
