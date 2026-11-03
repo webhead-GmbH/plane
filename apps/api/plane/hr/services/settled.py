@@ -91,6 +91,27 @@ def settled_month_for_profile(profile, *days):
     return HrPeriod.objects.filter(profile_id=profile.id, period_start__in=starts).exclude(state__in=IN_PLAY).first()
 
 
+def months_across(start, end):
+    """The first day of every month from ``start`` to ``end``, both included."""
+    if end < start:
+        start, end = end, start
+    months = []
+    year, month = start.year, start.month
+    while (year, month) <= (end.year, end.month):
+        months.append(date(year, month, 1))
+        year, month = (year + 1, 1) if month == 12 else (year, month + 1)
+    return months
+
+
+def settled_months_across(profile, start, end):
+    """Every settled month a date range touches, earliest first. Both ends included."""
+    return list(
+        HrPeriod.objects.filter(profile_id=profile.id, period_start__in=months_across(start, end))
+        .exclude(state__in=IN_PLAY)
+        .order_by("period_start")
+    )
+
+
 def settled_month_across(profile, start, end):
     """The settled month a date range touches, or None. Both ends included.
 
@@ -100,15 +121,8 @@ def settled_month_across(profile, start, end):
     """
     if start is None or end is None:
         return settled_month_for_profile(profile, start, end)
-    if end < start:
-        start, end = end, start
-
-    months = []
-    year, month = start.year, start.month
-    while (year, month) <= (end.year, end.month):
-        months.append(date(year, month, 1))
-        year, month = (year + 1, 1) if month == 12 else (year, month + 1)
-    return HrPeriod.objects.filter(profile_id=profile.id, period_start__in=months).exclude(state__in=IN_PLAY).first()
+    settled = settled_months_across(profile, start, end)
+    return settled[0] if settled else None
 
 
 def occurred_at(worklog):

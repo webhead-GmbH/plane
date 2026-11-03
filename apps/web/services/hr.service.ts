@@ -195,6 +195,9 @@ export type THrAccess = {
   is_hr_manager: boolean;
 };
 
+/** A timer still going in the month: when it started, and the day its minutes will count on. */
+export type THrRunningTimer = { started_at: string; day: string | null };
+
 export type THrMe = {
   profile: THrEmploymentProfile | null;
   is_hr_manager: boolean;
@@ -202,6 +205,8 @@ export type THrMe = {
   schedule: THrWorkSchedule | null;
   period: THrPeriod | null;
   has_running_timer: boolean;
+  /** Null when no timer is running in this month. */
+  running_timer?: THrRunningTimer | null;
   /**
    * Days worked from home so far this calendar year. Null where attendance is
    * not kept for this person — there is no count, and zero would read as one.
@@ -1133,8 +1138,12 @@ export class HrService extends APIService {
       });
   }
 
-  async removeAbsence(absenceId: string) {
-    return this.delete(`${this.base}/absences/${absenceId}/`)
+  /**
+   * Delete an absence. One in a month already handed in or closed is refused
+   * unless `reopen` says that month may go back to be counted again.
+   */
+  async removeAbsence(absenceId: string, reopen = false) {
+    return this.delete(`${this.base}/absences/${absenceId}/${reopen ? "?reopen=1" : ""}`)
       .then((response) => response?.data)
       .catch((error) => {
         throw withStatus(error);
