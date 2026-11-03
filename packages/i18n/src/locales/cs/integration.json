@@ -442,7 +442,24 @@
       "removing": "Odebírání",
       "remove_title": "Odebrat přílohu?",
       "remove_body": "Soubor {name} bude přesunut do koše na Google Drive, kde ho bude možné 30 dní obnovit.",
-      "remove_failed": "Přílohu se nepodařilo odebrat"
+      "remove_failed": "Přílohu se nepodařilo odebrat",
+      "drop_here": "Přetáhněte sem soubory a nahrajte je na Google Drive",
+      "in_plane": "Uloženo v Plane",
+      "move_to_drive": "Přesunout na Google Drive",
+      "moving": "Přesouvání na Google Drive",
+      "move_failed": "Některé soubory se nepodařilo přesunout na Google Drive"
+    },
+    "uploads": {
+      "heading": "Nahrávání na Google Drive",
+      "progress": "Průběh nahrávání souboru {name}",
+      "stop": "Zastavit nahrávání souboru {name}"
+    },
+    "plane_files": {
+      "heading": "Soubory, které jsou stále na serveru Plane",
+      "description": "Přílohy z doby, kdy projekt ještě neměl složku: {count}, celkem {size}. Přesunem na Google Drive se toto místo na serveru uvolní.",
+      "moving": "Přesouvají se na Google Drive. Zbývá souborů: {count}",
+      "move": "Přesunout na Google Drive",
+      "failed": "Soubory se nepodařilo přesunout na Google Drive"
     },
     "errors": {
       "DRIVE_NOT_CONNECTED": "Google Drive není k tomuto pracovnímu prostoru připojen.",

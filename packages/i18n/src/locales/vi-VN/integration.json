@@ -442,7 +442,24 @@
       "removing": "Đang xóa",
       "remove_title": "Xóa tệp đính kèm?",
       "remove_body": "{name} sẽ được chuyển vào thùng rác của Google Drive, nơi có thể khôi phục trong vòng 30 ngày.",
-      "remove_failed": "Không thể xóa tệp đính kèm"
+      "remove_failed": "Không thể xóa tệp đính kèm",
+      "drop_here": "Thả tệp vào đây để tải lên Google Drive",
+      "in_plane": "Được lưu trong Plane",
+      "move_to_drive": "Chuyển sang Google Drive",
+      "moving": "Đang chuyển sang Google Drive",
+      "move_failed": "Không thể chuyển một số tệp sang Google Drive"
+    },
+    "uploads": {
+      "heading": "Đang tải lên Google Drive",
+      "progress": "Tiến độ tải lên {name}",
+      "stop": "Dừng tải lên {name}"
+    },
+    "plane_files": {
+      "heading": "Tệp vẫn còn trên máy chủ Plane",
+      "description": "Tệp đính kèm từ trước khi dự án có thư mục: {count}, tổng cộng {size}. Chuyển chúng sang Google Drive sẽ giải phóng dung lượng đó trên máy chủ.",
+      "moving": "Đang chuyển sang Google Drive. Số tệp còn lại: {count}",
+      "move": "Chuyển sang Google Drive",
+      "failed": "Không thể chuyển các tệp sang Google Drive"
     },
     "errors": {
       "DRIVE_NOT_CONNECTED": "Google Drive chưa được kết nối với không gian làm việc này.",

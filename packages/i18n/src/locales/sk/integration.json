@@ -442,7 +442,24 @@
       "removing": "Odstraňovanie",
       "remove_title": "Odstrániť prílohu?",
       "remove_body": "Súbor {name} sa presunie do koša na Google Drive, kde ho bude možné 30 dní obnoviť.",
-      "remove_failed": "Prílohu sa nepodarilo odstrániť"
+      "remove_failed": "Prílohu sa nepodarilo odstrániť",
+      "drop_here": "Pretiahnite sem súbory a nahrajte ich na Google Drive",
+      "in_plane": "Uložené v Plane",
+      "move_to_drive": "Presunúť na Google Drive",
+      "moving": "Presúvanie na Google Drive",
+      "move_failed": "Niektoré súbory sa nepodarilo presunúť na Google Drive"
+    },
+    "uploads": {
+      "heading": "Nahrávanie na Google Drive",
+      "progress": "Priebeh nahrávania súboru {name}",
+      "stop": "Zastaviť nahrávanie súboru {name}"
+    },
+    "plane_files": {
+      "heading": "Súbory, ktoré sú stále na serveri Plane",
+      "description": "Prílohy z obdobia, keď projekt ešte nemal priečinok: {count}, spolu {size}. Presunom na Google Drive sa toto miesto na serveri uvoľní.",
+      "moving": "Presúvajú sa na Google Drive. Zostáva súborov: {count}",
+      "move": "Presunúť na Google Drive",
+      "failed": "Súbory sa nepodarilo presunúť na Google Drive"
     },
     "errors": {
       "DRIVE_NOT_CONNECTED": "Google Drive nie je pripojený k tomuto pracovnému priestoru.",

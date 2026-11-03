@@ -12,6 +12,7 @@ This page is for the workspace admin who connects Plane to the company's Google 
 - [New projects](#new-projects)
 - [Files on a work item](#files-on-a-work-item)
 - [Removing a file](#removing-a-file)
+- [Files from before the folder](#files-from-before-the-folder)
 - [Who may do what](#who-may-do-what)
 - [Disconnecting](#disconnecting)
 - [Messages you may see](#messages-you-may-see)
@@ -64,7 +65,7 @@ The **Project folders** list shows every project with the folder it keeps its fi
 - For a project without one, the folders whose names look like the project's come first in the list, with how close the match is. Names are compared without case, accents, spaces or punctuation.
 - A folder is a **clear match** when it carries the project's own name, give or take spacing, punctuation, a company form such as GmbH or e.U., or one letter: for the project "Fisch Gruber", `fisch-gruber`, `Fisch Gruber GmbH` and `Fish Gruber` are clear matches. `Gruber`, `Fischer Gruber` or `Fisch Gruber 2024` are only suggested, because they may be another client's folder. Two clear matches for one project are not chosen between either.
 - **Use "…"** links a project to its clear match in one click, and **Link N clear matches** at the top links all such projects at once. Everything else is left for you to choose.
-- The **⋯** menu next to the list can create a folder named after the project, or choose a folder anywhere in Drive, even outside the projects folder.
+- The **⋯** menu next to the list can create a folder named after the project, or choose a folder inside the projects folder at any depth. To use a folder elsewhere in Drive, move it into the projects folder first.
 - A linked project shows its folder (it opens in Google Drive) and how it was linked: chosen, matched by name, or created by Plane. Its **⋯** menu changes or unlinks the folder. Unlinking leaves the folder and its files in Drive.
 
 ## New projects
@@ -75,21 +76,29 @@ With **Give new projects a folder** switched on, a new project is linked as soon
 
 On a work item of a linked project, the attachments section says **Stored in Google Drive** and has an **Open folder** link to the work item's folder.
 
-- **Attach** takes several files at once. Each one shows its progress while it uploads.
+- **Attach** takes several files at once, and files can be dropped anywhere on the list. Each one shows its progress while it uploads, with a button to stop it.
 - Click an image to see it larger; **Open in Google Drive** opens any file in Drive.
-- An image pasted or dropped into the description or a comment appears as an image, as before. Any other file appears as a link with the file's name where you dropped it, and opens in Drive.
-
-Files that were attached before the project was linked stay in Plane's own storage and are listed as before.
+- An image pasted, dropped or added with `/image` in the description or a comment appears as an image, as before. Any other file appears as a link with the file's name where you dropped it, and opens in Drive.
+- While files from the text are uploading, they are listed under it with their progress and a button to stop each one. A comment cannot be sent until its files are in Drive, and closing or reloading the tab asks first.
 
 ## Removing a file
 
-Removing an attachment in Plane moves the file to Google Drive's bin, where it can be restored for 30 days. An image or file deleted from the description or a comment stays in the work item's folder in Drive; remove it there if it is no longer wanted.
+Removing an attachment in Plane moves the file to Google Drive's bin, where it can be restored for 30 days.
+
+An image or file in the description or a comment goes to the bin too, a few seconds after the last mention of it is gone: deleted from the description, taken out of a comment, or with its comment deleted. Undo it, or restore an older version of the description, and the file comes back out of the bin. A file still mentioned somewhere else on the work item stays.
+
+## Files from before the folder
+
+Attachments added before the project had a folder are on the Plane server. On the work item they are listed under **Stored in Plane**, below the files in Drive; **Move to Google Drive** moves them into the work item's folder and deletes them from the server. They keep their uploader and date.
+
+To move all of them at once, use **Files still on the Plane server** at the bottom of the Google Drive settings, which shows how many there are and how much space they take. The move runs in the background; the count goes down as it goes. Images in descriptions and comments from before the folder stay on the Plane server.
 
 ## Who may do what
 
 - Connecting, choosing the projects folder and linking projects: workspace admins.
 - Uploading: anybody on the project.
 - Removing an attachment: the person who uploaded it, or a project admin.
+- Moving a work item's attachments from the Plane server to Drive: project members and admins. Moving all of them at once: workspace admins.
 - Seeing an image or opening a file through Plane: anybody on the file's project, and workspace admins. Opening a file in Google Drive itself depends on who the folder is shared with there.
 
 ## Disconnecting

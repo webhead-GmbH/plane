@@ -442,7 +442,24 @@
       "removing": "მიმდინარეობს ამოღება",
       "remove_title": "ამოიღოთ დანართი?",
       "remove_body": "{name} გადავა Google Drive-ის ნაგავში, სადაც მისი აღდგენა 30 დღის განმავლობაში იქნება შესაძლებელი.",
-      "remove_failed": "დანართის ამოღება ვერ მოხერხდა"
+      "remove_failed": "დანართის ამოღება ვერ მოხერხდა",
+      "drop_here": "ჩააგდეთ ფაილები Google Drive-ში ასატვირთად",
+      "in_plane": "ინახება Plane-ში",
+      "move_to_drive": "Google Drive-ში გადატანა",
+      "moving": "მიმდინარეობს Google Drive-ში გადატანა",
+      "move_failed": "ზოგიერთი ფაილის Google Drive-ში გადატანა ვერ მოხერხდა"
+    },
+    "uploads": {
+      "heading": "მიმდინარეობს Google Drive-ში ატვირთვა",
+      "progress": "{name}-ის ატვირთვის პროგრესი",
+      "stop": "{name}-ის ატვირთვის შეწყვეტა"
+    },
+    "plane_files": {
+      "heading": "ფაილები, რომლებიც ჯერ კიდევ Plane-ის სერვერზეა",
+      "description": "დანართები იმ დროიდან, როცა პროექტს საქაღალდე ჯერ არ ჰქონდა: {count}, სულ {size}. Google Drive-ში გადატანით სერვერზე ეს ადგილი გათავისუფლდება.",
+      "moving": "მიმდინარეობს Google Drive-ში გადატანა. დარჩენილი ფაილები: {count}",
+      "move": "Google Drive-ში გადატანა",
+      "failed": "ფაილების Google Drive-ში გადატანა ვერ მოხერხდა"
     },
     "errors": {
       "DRIVE_NOT_CONNECTED": "Google Drive ამ სამუშაო სივრცესთან დაკავშირებული არ არის.",

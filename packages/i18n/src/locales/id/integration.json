@@ -442,7 +442,24 @@
       "removing": "Menghapus",
       "remove_title": "Hapus lampiran?",
       "remove_body": "{name} akan dipindahkan ke sampah Google Drive, tempat file tersebut dapat dipulihkan selama 30 hari.",
-      "remove_failed": "Tidak dapat menghapus lampiran"
+      "remove_failed": "Tidak dapat menghapus lampiran",
+      "drop_here": "Lepaskan file untuk mengunggahnya ke Google Drive",
+      "in_plane": "Disimpan di Plane",
+      "move_to_drive": "Pindahkan ke Google Drive",
+      "moving": "Memindahkan ke Google Drive",
+      "move_failed": "Beberapa file tidak dapat dipindahkan ke Google Drive"
+    },
+    "uploads": {
+      "heading": "Mengunggah ke Google Drive",
+      "progress": "Progres unggahan {name}",
+      "stop": "Hentikan unggahan {name}"
+    },
+    "plane_files": {
+      "heading": "File yang masih ada di server Plane",
+      "description": "Lampiran dari sebelum proyeknya memiliki folder: {count}, total {size}. Memindahkannya ke Google Drive akan mengosongkan ruang tersebut di server.",
+      "moving": "Sedang dipindahkan ke Google Drive. File tersisa: {count}",
+      "move": "Pindahkan ke Google Drive",
+      "failed": "File tidak dapat dipindahkan ke Google Drive"
     },
     "errors": {
       "DRIVE_NOT_CONNECTED": "Google Drive tidak terhubung ke ruang kerja ini.",

@@ -442,7 +442,24 @@
       "removing": "Removendo",
       "remove_title": "Remover anexo?",
       "remove_body": "{name} será movido para a lixeira do Google Drive, onde poderá ser restaurado por 30 dias.",
-      "remove_failed": "Não foi possível remover o anexo"
+      "remove_failed": "Não foi possível remover o anexo",
+      "drop_here": "Solte os arquivos para enviá-los ao Google Drive",
+      "in_plane": "Armazenado no Plane",
+      "move_to_drive": "Mover para o Google Drive",
+      "moving": "Movendo para o Google Drive",
+      "move_failed": "Não foi possível mover alguns arquivos para o Google Drive"
+    },
+    "uploads": {
+      "heading": "Enviando para o Google Drive",
+      "progress": "Progresso do envio de {name}",
+      "stop": "Parar o envio de {name}"
+    },
+    "plane_files": {
+      "heading": "Arquivos ainda no servidor do Plane",
+      "description": "Anexos de antes de o projeto ter uma pasta: {count}, {size} no total. Movê-los para o Google Drive libera esse espaço no servidor.",
+      "moving": "Movendo para o Google Drive. Arquivos restantes: {count}",
+      "move": "Mover para o Google Drive",
+      "failed": "Não foi possível mover os arquivos para o Google Drive"
     },
     "errors": {
       "DRIVE_NOT_CONNECTED": "O Google Drive não está conectado a este espaço de trabalho.",

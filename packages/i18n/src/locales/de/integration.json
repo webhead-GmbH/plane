@@ -442,7 +442,24 @@
       "removing": "Wird entfernt",
       "remove_title": "Anhang entfernen?",
       "remove_body": "{name} wird in den Papierkorb von Google Drive verschoben und kann dort 30 Tage lang wiederhergestellt werden.",
-      "remove_failed": "Der Anhang konnte nicht entfernt werden"
+      "remove_failed": "Der Anhang konnte nicht entfernt werden",
+      "drop_here": "Dateien hier ablegen, um sie in Google Drive hochzuladen",
+      "in_plane": "In Plane gespeichert",
+      "move_to_drive": "In Google Drive verschieben",
+      "moving": "Wird in Google Drive verschoben",
+      "move_failed": "Einige Dateien konnten nicht in Google Drive verschoben werden"
+    },
+    "uploads": {
+      "heading": "Wird in Google Drive hochgeladen",
+      "progress": "Upload-Fortschritt von {name}",
+      "stop": "Hochladen von {name} abbrechen"
+    },
+    "plane_files": {
+      "heading": "Dateien, die noch auf dem Plane-Server liegen",
+      "description": "Anhänge aus der Zeit, bevor ihr Projekt einen Ordner hatte: {count}, insgesamt {size}. Wenn Sie sie in Google Drive verschieben, wird dieser Platz auf dem Server frei.",
+      "moving": "Sie werden in Google Drive verschoben. Verbleibende Dateien: {count}",
+      "move": "In Google Drive verschieben",
+      "failed": "Die Dateien konnten nicht in Google Drive verschoben werden"
     },
     "errors": {
       "DRIVE_NOT_CONNECTED": "Google Drive ist nicht mit diesem Arbeitsbereich verbunden.",

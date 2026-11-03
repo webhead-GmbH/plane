@@ -442,7 +442,24 @@
       "removing": "Wordt verwijderd",
       "remove_title": "Bijlage verwijderen?",
       "remove_body": "{name} wordt naar de prullenbak van Google Drive verplaatst, waar je het 30 dagen lang kunt terugzetten.",
-      "remove_failed": "Kan de bijlage niet verwijderen"
+      "remove_failed": "Kan de bijlage niet verwijderen",
+      "drop_here": "Zet bestanden hier neer om ze naar Google Drive te uploaden",
+      "in_plane": "Opgeslagen in Plane",
+      "move_to_drive": "Naar Google Drive verplaatsen",
+      "moving": "Wordt naar Google Drive verplaatst",
+      "move_failed": "Sommige bestanden konden niet naar Google Drive worden verplaatst"
+    },
+    "uploads": {
+      "heading": "Uploaden naar Google Drive",
+      "progress": "Uploadvoortgang van {name}",
+      "stop": "Uploaden van {name} stoppen"
+    },
+    "plane_files": {
+      "heading": "Bestanden die nog op de Plane-server staan",
+      "description": "Bijlagen van voordat hun project een map had: {count}, in totaal {size}. Door ze naar Google Drive te verplaatsen komt die ruimte op de server vrij.",
+      "moving": "Ze worden naar Google Drive verplaatst. Resterende bestanden: {count}",
+      "move": "Naar Google Drive verplaatsen",
+      "failed": "De bestanden konden niet naar Google Drive worden verplaatst"
     },
     "errors": {
       "DRIVE_NOT_CONNECTED": "Google Drive is niet verbonden met deze werkruimte.",

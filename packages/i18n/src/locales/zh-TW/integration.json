@@ -442,7 +442,24 @@
       "removing": "正在移除",
       "remove_title": "要移除附件嗎？",
       "remove_body": "{name} 將移至 Google Drive 的垃圾桶，可在 30 天內還原。",
-      "remove_failed": "無法移除附件"
+      "remove_failed": "無法移除附件",
+      "drop_here": "將檔案拖放到此處以上傳到 Google Drive",
+      "in_plane": "儲存在 Plane 中",
+      "move_to_drive": "移至 Google Drive",
+      "moving": "正在移至 Google Drive",
+      "move_failed": "部分檔案無法移至 Google Drive"
+    },
+    "uploads": {
+      "heading": "正在上傳到 Google Drive",
+      "progress": "{name} 的上傳進度",
+      "stop": "停止上傳 {name}"
+    },
+    "plane_files": {
+      "heading": "仍在 Plane 伺服器上的檔案",
+      "description": "專案設定資料夾之前新增的附件：{count} 個，共 {size}。將它們移至 Google Drive 可釋放伺服器上的這部分空間。",
+      "moving": "正在移至 Google Drive。剩餘檔案：{count} 個",
+      "move": "移至 Google Drive",
+      "failed": "無法將檔案移至 Google Drive"
     },
     "errors": {
       "DRIVE_NOT_CONNECTED": "Google Drive 未連線到此工作區。",

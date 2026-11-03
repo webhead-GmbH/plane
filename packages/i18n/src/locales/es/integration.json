@@ -442,7 +442,24 @@
       "removing": "Eliminando",
       "remove_title": "¿Eliminar el archivo adjunto?",
       "remove_body": "{name} se moverá a la papelera de Google Drive, donde podrá restaurarse durante 30 días.",
-      "remove_failed": "No se pudo eliminar el archivo adjunto"
+      "remove_failed": "No se pudo eliminar el archivo adjunto",
+      "drop_here": "Suelta los archivos para subirlos a Google Drive",
+      "in_plane": "Guardado en Plane",
+      "move_to_drive": "Mover a Google Drive",
+      "moving": "Moviendo a Google Drive",
+      "move_failed": "Algunos archivos no se pudieron mover a Google Drive"
+    },
+    "uploads": {
+      "heading": "Subiendo a Google Drive",
+      "progress": "Progreso de subida de {name}",
+      "stop": "Detener la subida de {name}"
+    },
+    "plane_files": {
+      "heading": "Archivos que siguen en el servidor de Plane",
+      "description": "Adjuntos de antes de que su proyecto tuviera carpeta: {count}, {size} en total. Al moverlos a Google Drive se libera ese espacio en el servidor.",
+      "moving": "Moviéndolos a Google Drive. Archivos restantes: {count}",
+      "move": "Mover a Google Drive",
+      "failed": "No se pudieron mover los archivos a Google Drive"
     },
     "errors": {
       "DRIVE_NOT_CONNECTED": "Google Drive no está conectado a este espacio de trabajo.",

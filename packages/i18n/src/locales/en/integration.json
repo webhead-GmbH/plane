@@ -442,7 +442,24 @@
       "removing": "Removing",
       "remove_title": "Remove attachment?",
       "remove_body": "{name} will be moved to Google Drive's bin, where it can be restored for 30 days.",
-      "remove_failed": "Couldn't remove the attachment"
+      "remove_failed": "Couldn't remove the attachment",
+      "drop_here": "Drop files to upload them to Google Drive",
+      "in_plane": "Stored in Plane",
+      "move_to_drive": "Move to Google Drive",
+      "moving": "Moving to Google Drive",
+      "move_failed": "Some files couldn't be moved to Google Drive"
+    },
+    "uploads": {
+      "heading": "Uploading to Google Drive",
+      "progress": "Upload progress of {name}",
+      "stop": "Stop uploading {name}"
+    },
+    "plane_files": {
+      "heading": "Files still on the Plane server",
+      "description": "Attachments from before their project had a folder: {count}, {size} in total. Moving them to Google Drive frees that space on the server.",
+      "moving": "Moving them to Google Drive. Files left: {count}",
+      "move": "Move to Google Drive",
+      "failed": "The files couldn't be moved to Google Drive"
     },
     "errors": {
       "DRIVE_NOT_CONNECTED": "Google Drive isn't connected to this workspace.",

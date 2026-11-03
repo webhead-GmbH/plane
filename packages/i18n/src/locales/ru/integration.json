@@ -442,7 +442,24 @@
       "removing": "Удаление",
       "remove_title": "Удалить вложение?",
       "remove_body": "Файл {name} будет перемещен в корзину Google Drive, где его можно восстановить в течение 30 дней.",
-      "remove_failed": "Не удалось удалить вложение"
+      "remove_failed": "Не удалось удалить вложение",
+      "drop_here": "Перетащите файлы сюда, чтобы загрузить их в Google Drive",
+      "in_plane": "Хранится в Plane",
+      "move_to_drive": "Перенести в Google Drive",
+      "moving": "Перенос в Google Drive",
+      "move_failed": "Не удалось перенести некоторые файлы в Google Drive"
+    },
+    "uploads": {
+      "heading": "Загрузка в Google Drive",
+      "progress": "Ход загрузки файла {name}",
+      "stop": "Остановить загрузку файла {name}"
+    },
+    "plane_files": {
+      "heading": "Файлы, которые всё ещё на сервере Plane",
+      "description": "Вложения, добавленные до того, как у проекта появилась папка: {count}, всего {size}. Перенос в Google Drive освободит это место на сервере.",
+      "moving": "Идёт перенос в Google Drive. Осталось файлов: {count}",
+      "move": "Перенести в Google Drive",
+      "failed": "Не удалось перенести файлы в Google Drive"
     },
     "errors": {
       "DRIVE_NOT_CONNECTED": "Google Drive не подключен к этому рабочему пространству.",

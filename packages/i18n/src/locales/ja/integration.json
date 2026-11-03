@@ -442,7 +442,24 @@
       "removing": "削除中",
       "remove_title": "添付ファイルを削除しますか？",
       "remove_body": "{name}はGoogle Driveのゴミ箱に移動され、30日間は復元できます。",
-      "remove_failed": "添付ファイルを削除できませんでした"
+      "remove_failed": "添付ファイルを削除できませんでした",
+      "drop_here": "ファイルをドロップしてGoogle Driveにアップロード",
+      "in_plane": "Planeに保存済み",
+      "move_to_drive": "Google Driveに移動",
+      "moving": "Google Driveに移動中",
+      "move_failed": "一部のファイルをGoogle Driveに移動できませんでした"
+    },
+    "uploads": {
+      "heading": "Google Driveにアップロード中",
+      "progress": "{name}のアップロードの進行状況",
+      "stop": "{name}のアップロードを中止"
+    },
+    "plane_files": {
+      "heading": "Planeサーバーに残っているファイル",
+      "description": "プロジェクトにフォルダーが設定される前の添付ファイル: {count}件、合計{size}。Google Driveに移動すると、サーバーのその容量が空きます。",
+      "moving": "Google Driveに移動しています。残りのファイル: {count}件",
+      "move": "Google Driveに移動",
+      "failed": "ファイルをGoogle Driveに移動できませんでした"
     },
     "errors": {
       "DRIVE_NOT_CONNECTED": "このワークスペースはGoogle Driveに接続されていません。",

@@ -442,7 +442,24 @@
       "removing": "Премахване",
       "remove_title": "Премахване на прикачения файл?",
       "remove_body": "Файлът {name} ще бъде преместен в кошчето на Google Drive, откъдето може да бъде възстановен в рамките на 30 дни.",
-      "remove_failed": "Прикаченият файл не можа да бъде премахнат"
+      "remove_failed": "Прикаченият файл не можа да бъде премахнат",
+      "drop_here": "Пуснете файловете тук, за да ги качите в Google Drive",
+      "in_plane": "Съхранено в Plane",
+      "move_to_drive": "Премести в Google Drive",
+      "moving": "Преместване в Google Drive",
+      "move_failed": "Някои файлове не можаха да бъдат преместени в Google Drive"
+    },
+    "uploads": {
+      "heading": "Качване в Google Drive",
+      "progress": "Напредък на качването на {name}",
+      "stop": "Спри качването на {name}"
+    },
+    "plane_files": {
+      "heading": "Файлове, които все още са на сървъра на Plane",
+      "description": "Прикачени файлове отпреди проектът им да има папка: {count}, общо {size}. Преместването им в Google Drive освобождава това място на сървъра.",
+      "moving": "Преместват се в Google Drive. Остават файлове: {count}",
+      "move": "Премести в Google Drive",
+      "failed": "Файловете не можаха да бъдат преместени в Google Drive"
     },
     "errors": {
       "DRIVE_NOT_CONNECTED": "Google Drive не е свързан с това работно пространство.",

@@ -442,7 +442,24 @@
       "removing": "Rimozione",
       "remove_title": "Rimuovere l'allegato?",
       "remove_body": "{name} verrà spostato nel cestino di Google Drive, dove potrà essere ripristinato per 30 giorni.",
-      "remove_failed": "Impossibile rimuovere l'allegato"
+      "remove_failed": "Impossibile rimuovere l'allegato",
+      "drop_here": "Rilascia i file per caricarli su Google Drive",
+      "in_plane": "Archiviato in Plane",
+      "move_to_drive": "Sposta su Google Drive",
+      "moving": "Spostamento su Google Drive",
+      "move_failed": "Non è stato possibile spostare alcuni file su Google Drive"
+    },
+    "uploads": {
+      "heading": "Caricamento su Google Drive",
+      "progress": "Avanzamento del caricamento di {name}",
+      "stop": "Interrompi il caricamento di {name}"
+    },
+    "plane_files": {
+      "heading": "File ancora sul server di Plane",
+      "description": "Allegati di quando il loro progetto non aveva ancora una cartella: {count}, {size} in totale. Spostarli su Google Drive libera questo spazio sul server.",
+      "moving": "Spostamento su Google Drive in corso. File rimanenti: {count}",
+      "move": "Sposta su Google Drive",
+      "failed": "Non è stato possibile spostare i file su Google Drive"
     },
     "errors": {
       "DRIVE_NOT_CONNECTED": "Google Drive non è connesso a questo spazio di lavoro.",

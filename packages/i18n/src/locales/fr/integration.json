@@ -442,7 +442,24 @@
       "removing": "Suppression",
       "remove_title": "Supprimer la pièce jointe ?",
       "remove_body": "{name} sera placé dans la corbeille de Google Drive, où il pourra être restauré pendant 30 jours.",
-      "remove_failed": "Impossible de supprimer la pièce jointe"
+      "remove_failed": "Impossible de supprimer la pièce jointe",
+      "drop_here": "Déposez des fichiers pour les importer dans Google Drive",
+      "in_plane": "Stocké dans Plane",
+      "move_to_drive": "Déplacer vers Google Drive",
+      "moving": "Déplacement vers Google Drive",
+      "move_failed": "Certains fichiers n’ont pas pu être déplacés vers Google Drive"
+    },
+    "uploads": {
+      "heading": "Importation dans Google Drive",
+      "progress": "Progression de l’importation de {name}",
+      "stop": "Arrêter l’importation de {name}"
+    },
+    "plane_files": {
+      "heading": "Fichiers encore sur le serveur Plane",
+      "description": "Pièces jointes antérieures au dossier de leur projet : {count}, {size} au total. Les déplacer vers Google Drive libère cet espace sur le serveur.",
+      "moving": "Déplacement vers Google Drive en cours. Fichiers restants : {count}",
+      "move": "Déplacer vers Google Drive",
+      "failed": "Les fichiers n’ont pas pu être déplacés vers Google Drive"
     },
     "errors": {
       "DRIVE_NOT_CONNECTED": "Google Drive n’est pas connecté à cet espace de travail.",

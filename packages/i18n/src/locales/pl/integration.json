@@ -442,7 +442,24 @@
       "removing": "Usuwanie",
       "remove_title": "Usunąć załącznik?",
       "remove_body": "Plik {name} zostanie przeniesiony do kosza Google Drive, gdzie można go przywrócić przez 30 dni.",
-      "remove_failed": "Nie udało się usunąć załącznika"
+      "remove_failed": "Nie udało się usunąć załącznika",
+      "drop_here": "Upuść pliki, aby przesłać je do Google Drive",
+      "in_plane": "Przechowywane w Plane",
+      "move_to_drive": "Przenieś do Google Drive",
+      "moving": "Przenoszenie do Google Drive",
+      "move_failed": "Nie udało się przenieść niektórych plików do Google Drive"
+    },
+    "uploads": {
+      "heading": "Przesyłanie do Google Drive",
+      "progress": "Postęp przesyłania pliku {name}",
+      "stop": "Zatrzymaj przesyłanie pliku {name}"
+    },
+    "plane_files": {
+      "heading": "Pliki, które wciąż są na serwerze Plane",
+      "description": "Załączniki sprzed utworzenia folderu projektu: {count}, łącznie {size}. Przeniesienie ich do Google Drive zwolni to miejsce na serwerze.",
+      "moving": "Trwa przenoszenie do Google Drive. Pozostało plików: {count}",
+      "move": "Przenieś do Google Drive",
+      "failed": "Nie udało się przenieść plików do Google Drive"
     },
     "errors": {
       "DRIVE_NOT_CONNECTED": "Google Drive nie jest połączony z tą przestrzenią roboczą.",

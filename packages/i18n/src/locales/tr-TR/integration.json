@@ -442,7 +442,24 @@
       "removing": "Kaldırılıyor",
       "remove_title": "Ek kaldırılsın mı?",
       "remove_body": "{name}, Google Drive çöp kutusuna taşınacak ve 30 gün boyunca oradan geri yüklenebilecek.",
-      "remove_failed": "Ek kaldırılamadı"
+      "remove_failed": "Ek kaldırılamadı",
+      "drop_here": "Google Drive'a yüklemek için dosyaları bırakın",
+      "in_plane": "Plane'de saklanıyor",
+      "move_to_drive": "Google Drive'a taşı",
+      "moving": "Google Drive'a taşınıyor",
+      "move_failed": "Bazı dosyalar Google Drive'a taşınamadı"
+    },
+    "uploads": {
+      "heading": "Google Drive'a yükleniyor",
+      "progress": "{name} yükleme ilerlemesi",
+      "stop": "{name} yüklemesini durdur"
+    },
+    "plane_files": {
+      "heading": "Hâlâ Plane sunucusunda olan dosyalar",
+      "description": "Projelerinin klasörü olmadan önce eklenen ekler: {count}, toplam {size}. Bunları Google Drive'a taşımak sunucuda bu alanı boşaltır.",
+      "moving": "Google Drive'a taşınıyor. Kalan dosya: {count}",
+      "move": "Google Drive'a taşı",
+      "failed": "Dosyalar Google Drive'a taşınamadı"
     },
     "errors": {
       "DRIVE_NOT_CONNECTED": "Google Drive bu çalışma alanına bağlı değil.",

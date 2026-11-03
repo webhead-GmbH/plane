@@ -442,7 +442,24 @@
       "removing": "Se elimină",
       "remove_title": "Eliminați atașamentul?",
       "remove_body": "{name} va fi mutat în coșul de gunoi din Google Drive, de unde poate fi restabilit timp de 30 de zile.",
-      "remove_failed": "Nu s-a putut elimina atașamentul"
+      "remove_failed": "Nu s-a putut elimina atașamentul",
+      "drop_here": "Plasează fișierele aici pentru a le încărca în Google Drive",
+      "in_plane": "Stocat în Plane",
+      "move_to_drive": "Mută în Google Drive",
+      "moving": "Se mută în Google Drive",
+      "move_failed": "Unele fișiere nu au putut fi mutate în Google Drive"
+    },
+    "uploads": {
+      "heading": "Se încarcă în Google Drive",
+      "progress": "Progresul încărcării pentru {name}",
+      "stop": "Oprește încărcarea pentru {name}"
+    },
+    "plane_files": {
+      "heading": "Fișiere aflate încă pe serverul Plane",
+      "description": "Atașamente de dinainte ca proiectul lor să aibă un folder: {count}, în total {size}. Mutarea lor în Google Drive eliberează acest spațiu pe server.",
+      "moving": "Se mută în Google Drive. Fișiere rămase: {count}",
+      "move": "Mută în Google Drive",
+      "failed": "Fișierele nu au putut fi mutate în Google Drive"
     },
     "errors": {
       "DRIVE_NOT_CONNECTED": "Google Drive nu este conectat la acest spațiu de lucru.",

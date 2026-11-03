@@ -442,7 +442,24 @@
       "removing": "제거 중",
       "remove_title": "첨부 파일을 제거하시겠습니까?",
       "remove_body": "{name} 파일이 Google Drive 휴지통으로 이동되며, 30일 동안 복원할 수 있습니다.",
-      "remove_failed": "첨부 파일을 제거할 수 없습니다"
+      "remove_failed": "첨부 파일을 제거할 수 없습니다",
+      "drop_here": "파일을 여기에 놓으면 Google Drive에 업로드됩니다",
+      "in_plane": "Plane에 저장됨",
+      "move_to_drive": "Google Drive로 이동",
+      "moving": "Google Drive로 이동하는 중",
+      "move_failed": "일부 파일을 Google Drive로 이동할 수 없습니다"
+    },
+    "uploads": {
+      "heading": "Google Drive에 업로드하는 중",
+      "progress": "{name} 업로드 진행률",
+      "stop": "{name} 업로드 중지"
+    },
+    "plane_files": {
+      "heading": "아직 Plane 서버에 있는 파일",
+      "description": "프로젝트에 폴더가 생기기 전에 추가된 첨부 파일: {count}개, 총 {size}. Google Drive로 옮기면 서버의 해당 공간이 확보됩니다.",
+      "moving": "Google Drive로 이동하는 중입니다. 남은 파일: {count}개",
+      "move": "Google Drive로 이동",
+      "failed": "파일을 Google Drive로 이동할 수 없습니다"
     },
     "errors": {
       "DRIVE_NOT_CONNECTED": "이 워크스페이스에 Google Drive가 연결되어 있지 않습니다.",
