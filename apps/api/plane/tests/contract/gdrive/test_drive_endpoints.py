@@ -241,7 +241,7 @@ class TestProjectFolders:
         admin = client_for(setup["admin"])
         assert admin.put(url, {"folder_id": folder}, format="json").json()["folder"]["id"] == folder
         made = admin.put(url, {"create": True}, format="json").json()["folder"]
-        assert drive.items[made["id"]]["name"] == "Fisch Gruber"
+        assert drive.items[made["id"]]["name"] == "FISCH - Fisch Gruber"
         assert admin.delete(url).status_code == 204
         assert not DriveProjectFolder.objects.filter(project=setup["project"]).exists()
 
@@ -254,7 +254,7 @@ class TestProjectFolders:
     def test_a_new_project_with_no_match_gets_a_new_folder(self, setup, drive):
         project = ProjectFactory(workspace=setup["workspace"], name="Ganz Neu", identifier="GANZ")
         assert link_new_project(project) == "created"
-        assert drive.find_folder(ROOT, "Ganz Neu") is not None
+        assert drive.find_folder(ROOT, "GANZ - Ganz Neu") is not None
 
     def test_a_new_project_with_two_folders_of_its_name_is_left_to_a_person(self, setup, drive):
         drive.add_folder("Neues Projekt")
@@ -263,6 +263,28 @@ class TestProjectFolders:
         assert link_new_project(project) == "ambiguous"
         assert not DriveProjectFolder.objects.filter(project=project).exists()
         assert len([item for item in drive.items.values() if item["name"].startswith("Neues Projekt")]) == 2
+
+    def test_a_folder_named_with_the_projects_number_is_found_and_offered_to_create(self, setup, drive):
+        project = ProjectFactory(workspace=setup["workspace"], name="Alias Immo", identifier="288")
+        drive.add_folder("288 - Alias")
+        drive.add_folder("Alias Immo Archiv")
+        body = client_for(setup["admin"]).get(f"/api/workspaces/{setup['workspace'].slug}/drive/projects/").json()
+        row = next(row for row in body["projects"] if row["project"]["id"] == str(project.id))
+        assert row["project"]["new_folder_name"] == "288 - Alias Immo"
+        assert (row["suggestions"][0]["name"], row["suggestions"][0]["clear"]) == ("288 - Alias", True)
+
+    def test_a_new_project_takes_the_folder_with_its_number(self, setup, drive):
+        drive.add_folder("209 - ATTN-SEEKR Webseite")
+        project = ProjectFactory(workspace=setup["workspace"], name="ATTN–SEEKR Webseite", identifier="209")
+        assert link_new_project(project) == "matched"
+        assert DriveProjectFolder.objects.get(project=project).folder_name == "209 - ATTN-SEEKR Webseite"
+
+    def test_a_new_project_beside_a_folder_with_another_number_is_left_to_a_person(self, setup, drive):
+        drive.add_folder("290 - Biohof Radl")
+        project = ProjectFactory(workspace=setup["workspace"], name="Biohof Radl", identifier="284")
+        assert link_new_project(project) == "ambiguous"
+        assert not DriveProjectFolder.objects.filter(project=project).exists()
+        assert drive.find_folder(ROOT, "284 - Biohof Radl") is None
 
     def test_nothing_is_made_when_the_workspace_does_not_want_it(self, setup, drive):
         DriveConnection.objects.filter(workspace=setup["workspace"]).update(auto_link_new_projects=False)
