@@ -4,12 +4,9 @@
  * See the LICENSE file for details.
  */
 
-import { useState } from "react";
 import { observer } from "mobx-react";
 // plane imports
 import type { TCycleFilters, TCycleGroups } from "@plane/types";
-// components
-import { FiltersSearchInput } from "@/components/common/filters/search-input";
 // local imports
 import { FilterEndDate } from "./end-date";
 import { FilterStartDate } from "./start-date";
@@ -23,42 +20,28 @@ type Props = {
 
 export const CycleFiltersSelection = observer(function CycleFiltersSelection(props: Props) {
   const { filters, handleFiltersUpdate, isArchived = false } = props;
-  // states
-  const [filtersSearchQuery, setFiltersSearchQuery] = useState("");
 
   return (
-    <div className="flex h-full w-full flex-col overflow-hidden">
-      <FiltersSearchInput searchQuery={filtersSearchQuery} onSearchQueryChange={setFiltersSearchQuery} />
-      <div className="vertical-scrollbar scrollbar-sm h-full w-full divide-y divide-subtle-1 overflow-y-auto px-2.5">
-        {/* cycle status */}
-        {!isArchived && (
-          <div className="py-2">
-            <FilterStatus
-              appliedFilters={(filters.status as TCycleGroups[]) ?? null}
-              handleUpdate={(val) => handleFiltersUpdate("status", val)}
-              searchQuery={filtersSearchQuery}
-            />
-          </div>
-        )}
+    <>
+      {/* cycle status */}
+      {!isArchived && (
+        <FilterStatus
+          appliedFilters={(filters.status as TCycleGroups[]) ?? null}
+          handleUpdate={(val) => handleFiltersUpdate("status", val)}
+        />
+      )}
 
-        {/* start date */}
-        <div className="py-2">
-          <FilterStartDate
-            appliedFilters={filters.start_date ?? null}
-            handleUpdate={(val) => handleFiltersUpdate("start_date", val)}
-            searchQuery={filtersSearchQuery}
-          />
-        </div>
+      {/* start date */}
+      <FilterStartDate
+        appliedFilters={filters.start_date ?? null}
+        handleUpdate={(val) => handleFiltersUpdate("start_date", val)}
+      />
 
-        {/* end date */}
-        <div className="py-2">
-          <FilterEndDate
-            appliedFilters={filters.end_date ?? null}
-            handleUpdate={(val) => handleFiltersUpdate("end_date", val)}
-            searchQuery={filtersSearchQuery}
-          />
-        </div>
-      </div>
-    </div>
+      {/* end date */}
+      <FilterEndDate
+        appliedFilters={filters.end_date ?? null}
+        handleUpdate={(val) => handleFiltersUpdate("end_date", val)}
+      />
+    </>
   );
 });

@@ -5,20 +5,17 @@
  */
 
 import { isEmpty } from "lodash-es";
-import { useForm } from "react-hook-form";
 // plane internal packages
 import { API_BASE_URL } from "@plane/constants";
-import { setToast } from "@plane/blocks/toast";
 import type { IFormattedInstanceConfiguration, TInstanceGitlabAuthenticationConfigurationKeys } from "@plane/types";
 // components
-import { AuthenticationProviderConfigForm } from "@/app/(all)/(dashboard)/authentication/provider-config-form";
 import { CodeBlock } from "@/components/common/code-block";
 import type { TControllerInputFormField } from "@/components/common/controller-input";
 import type { TControllerSwitchFormField } from "@/components/common/controller-switch";
 import type { TCopyField } from "@/components/common/copy-field";
-import { CopyField } from "@/components/common/copy-field";
+import { OAuthProviderForm } from "@/components/authentication/oauth-provider-form";
 // hooks
-import { useInstance } from "@/hooks/store";
+import { useOAuthProviderConfigForm } from "@/hooks/use-oauth-provider-config-form";
 
 type Props = {
   config: IFormattedInstanceConfiguration;
@@ -33,21 +30,16 @@ const GITLAB_FORM_SWITCH_FIELD: TControllerSwitchFormField<GitlabConfigFormValue
 
 export function InstanceGitlabConfigForm(props: Props) {
   const { config } = props;
-  // store hooks
-  const { updateInstanceConfigurations } = useInstance();
   // form data
   const {
-    handleSubmit,
     control,
-    reset,
-    formState: { errors, isDirty, isSubmitting },
-  } = useForm<GitlabConfigFormValues>({
-    defaultValues: {
-      GITLAB_HOST: config["GITLAB_HOST"],
-      GITLAB_CLIENT_ID: config["GITLAB_CLIENT_ID"],
-      GITLAB_CLIENT_SECRET: config["GITLAB_CLIENT_SECRET"],
-      ENABLE_GITLAB_SYNC: config["ENABLE_GITLAB_SYNC"] || "0",
-    },
+    formState: { errors },
+    onSave,
+  } = useOAuthProviderConfigForm<GitlabConfigFormValues>("GitLab", {
+    GITLAB_HOST: config["GITLAB_HOST"],
+    GITLAB_CLIENT_ID: config["GITLAB_CLIENT_ID"],
+    GITLAB_CLIENT_SECRET: config["GITLAB_CLIENT_SECRET"],
+    ENABLE_GITLAB_SYNC: config["ENABLE_GITLAB_SYNC"] || "0",
   });
 
   const originURL = !isEmpty(API_BASE_URL) ? API_BASE_URL : typeof window !== "undefined" ? window.location.origin : "";
@@ -134,45 +126,14 @@ export function InstanceGitlabConfigForm(props: Props) {
     },
   ];
 
-  const onSubmit = async (formData: GitlabConfigFormValues) => {
-    const payload: Partial<GitlabConfigFormValues> = { ...formData };
-
-    try {
-      const response = await updateInstanceConfigurations(payload);
-      setToast({
-        type: "success",
-        title: "Done!",
-        message: "Your GitLab authentication is configured. You should test it now.",
-      });
-      reset({
-        GITLAB_HOST: response.find((item) => item.key === "GITLAB_HOST")?.value,
-        GITLAB_CLIENT_ID: response.find((item) => item.key === "GITLAB_CLIENT_ID")?.value,
-        GITLAB_CLIENT_SECRET: response.find((item) => item.key === "GITLAB_CLIENT_SECRET")?.value,
-        ENABLE_GITLAB_SYNC: response.find((item) => item.key === "ENABLE_GITLAB_SYNC")?.value,
-      });
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
   return (
-    <AuthenticationProviderConfigForm
+    <OAuthProviderForm
+      providerName="GitLab"
       control={control}
-      heading="GitLab-provided details for Plane"
-      fields={GITLAB_FORM_FIELDS}
+      formFields={GITLAB_FORM_FIELDS}
       switchField={GITLAB_FORM_SWITCH_FIELD}
-      isDirty={isDirty}
-      isSubmitting={isSubmitting}
-      onSave={handleSubmit(onSubmit)}
-    >
-      <div className="col-span-2 md:col-span-1">
-        <div className="flex flex-col gap-y-4 rounded-lg bg-layer-3 px-6 pt-1.5 pb-4">
-          <div className="pt-2 text-18 font-medium">Plane-provided details for GitLab</div>
-          {GITLAB_SERVICE_FIELD.map((field) => (
-            <CopyField key={field.key} label={field.label} url={field.url} description={field.description} />
-          ))}
-        </div>
-      </div>
-    </AuthenticationProviderConfigForm>
+      onSave={onSave}
+      serviceDetails={GITLAB_SERVICE_FIELD}
+    />
   );
 }

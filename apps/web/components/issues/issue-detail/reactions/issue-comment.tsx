@@ -122,19 +122,23 @@ export const IssueCommentReaction = observer(function IssueCommentReaction(props
   };
 
   return (
-    <div className="relative mt-4 flex flex-wrap items-center gap-2">
-      {/* the reactions stay outside the picker's trigger: inside it every one of them would open the
-          picker as well as toggle the reaction, and a button cannot contain a button */}
-      <EmojiReactionGroup reactions={reactions} onReactionClick={handleReactionClick} showAddButton={false} />
-      {!disabled && (
-        <EmojiReactionPicker
-          isOpen={isPickerOpen}
-          handleToggle={setIsPickerOpen}
-          onChange={handleEmojiSelect}
-          label={<EmojiReactionButton />}
-          placement="bottom-start"
-        />
-      )}
+    <div className="relative mt-4">
+      <EmojiReactionGroup
+        disabled={disabled}
+        reactions={reactions}
+        onReactionClick={handleReactionClick}
+        showAddButton={!disabled}
+        addReactionButton={
+          <EmojiReactionPicker
+            isOpen={isPickerOpen}
+            handleToggle={setIsPickerOpen}
+            onChange={handleEmojiSelect}
+            disabled={disabled}
+            render={<EmojiReactionButton />}
+            placement="bottom-start"
+          />
+        }
+      />
     </div>
   );
 });

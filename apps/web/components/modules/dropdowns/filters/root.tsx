@@ -4,15 +4,17 @@
  * See the LICENSE file for details.
  */
 
-import { useState } from "react";
 import { observer } from "mobx-react";
-import type { TModuleStatus } from "@plane/blocks/icons";
 // plane imports
+import { MenuCheckboxItem, MenuSeparator } from "@makeplane/propel/components/menu";
+import type { TModuleStatus } from "@plane/blocks/icons";
 import type { TModuleDisplayFilters, TModuleFilters } from "@plane/types";
-// components
-import { FiltersSearchInput } from "@/components/common/filters/search-input";
-import { FilterOption } from "@/components/issues/issue-layouts/filters";
-import { FilterLead, FilterMembers, FilterStartDate, FilterStatus, FilterTargetDate } from "@/components/modules";
+// local imports
+import { FilterLead } from "./lead";
+import { FilterMembers } from "./members";
+import { FilterStartDate } from "./start-date";
+import { FilterStatus } from "./status";
+import { FilterTargetDate } from "./target-date";
 
 type Props = {
   displayFilters: TModuleDisplayFilters;
@@ -32,76 +34,50 @@ export const ModuleFiltersSelection = observer(function ModuleFiltersSelection(p
     memberIds,
     isArchived = false,
   } = props;
-  // states
-  const [filtersSearchQuery, setFiltersSearchQuery] = useState("");
 
   return (
-    <div className="flex h-full w-full flex-col overflow-hidden">
-      <FiltersSearchInput searchQuery={filtersSearchQuery} onSearchQueryChange={setFiltersSearchQuery} />
-      <div className="vertical-scrollbar scrollbar-sm h-full w-full divide-y divide-subtle-1 overflow-y-auto px-2.5">
-        {!isArchived && (
-          <div className="py-2">
-            <FilterOption
-              isChecked={!!displayFilters.favorites}
-              onClick={() =>
-                handleDisplayFiltersUpdate({
-                  favorites: !displayFilters.favorites,
-                })
-              }
-              title="Favorites"
-            />
-          </div>
-        )}
-
-        {/* status */}
-        {!isArchived && (
-          <div className="py-2">
-            <FilterStatus
-              appliedFilters={(filters.status as TModuleStatus[]) ?? null}
-              handleUpdate={(val) => handleFiltersUpdate("status", val)}
-              searchQuery={filtersSearchQuery}
-            />
-          </div>
-        )}
-
-        {/* lead */}
-        <div className="py-2">
-          <FilterLead
-            appliedFilters={filters.lead ?? null}
-            handleUpdate={(val) => handleFiltersUpdate("lead", val)}
-            searchQuery={filtersSearchQuery}
-            memberIds={memberIds}
+    <>
+      {!isArchived && (
+        <>
+          <MenuCheckboxItem
+            label="Favorites"
+            checked={!!displayFilters.favorites}
+            onCheckedChange={(checked) => handleDisplayFiltersUpdate({ favorites: checked })}
           />
-        </div>
-
-        {/* members */}
-        <div className="py-2">
-          <FilterMembers
-            appliedFilters={filters.members ?? null}
-            handleUpdate={(val) => handleFiltersUpdate("members", val)}
-            searchQuery={filtersSearchQuery}
-            memberIds={memberIds}
+          <MenuSeparator />
+          {/* status */}
+          <FilterStatus
+            appliedFilters={(filters.status as TModuleStatus[]) ?? null}
+            handleUpdate={(val) => handleFiltersUpdate("status", val)}
           />
-        </div>
+        </>
+      )}
 
-        {/* start date */}
-        <div className="py-2">
-          <FilterStartDate
-            appliedFilters={filters.start_date ?? null}
-            handleUpdate={(val) => handleFiltersUpdate("start_date", val)}
-            searchQuery={filtersSearchQuery}
-          />
-        </div>
+      {/* lead */}
+      <FilterLead
+        appliedFilters={filters.lead ?? null}
+        handleUpdate={(val) => handleFiltersUpdate("lead", val)}
+        memberIds={memberIds}
+      />
 
-        {/* target date */}
-        <div className="py-2">
-          <FilterTargetDate
-            appliedFilters={filters.target_date ?? null}
-            handleUpdate={(val) => handleFiltersUpdate("target_date", val)}
-            searchQuery={filtersSearchQuery}
-          />
-        </div>
-      </div>
-    </div>
+      {/* members */}
+      <FilterMembers
+        appliedFilters={filters.members ?? null}
+        handleUpdate={(val) => handleFiltersUpdate("members", val)}
+        memberIds={memberIds}
+      />
+
+      {/* start date */}
+      <FilterStartDate
+        appliedFilters={filters.start_date ?? null}
+        handleUpdate={(val) => handleFiltersUpdate("start_date", val)}
+      />
+
+      {/* target date */}
+      <FilterTargetDate
+        appliedFilters={filters.target_date ?? null}
+        handleUpdate={(val) => handleFiltersUpdate("target_date", val)}
+      />
+    </>
   );
 });

@@ -75,7 +75,7 @@ function avatarGroupTriggerSize(variant: `avatar-group-${SelectTriggerSize}`): S
   return split.isSelectKind ? "md" : split.size;
 }
 
-/** Dropdown row is a fixed `h-7`; pin the option face in a reserved slot so a size flash cannot
+/** Dropdown row is 32px; pin the option face in a reserved slot so a size flash cannot
  *  grow the panel. Matches the clear-option glyph box. */
 const OPTION_ICON_SLOT_CLASSNAME = "grid size-5 shrink-0 place-items-center overflow-hidden";
 
@@ -116,6 +116,8 @@ type MemberSelectCommonProps = {
   filterOption?: (member: MemberOption) => boolean;
   /** Badge text on a {@link MemberOption.suspended} row. Defaults to "Suspended". */
   suspendedLabel?: string;
+  /** Trigger text when more than one member is selected (e.g. "3 assignees"), in place of the default summary. */
+  multipleLabel?: (count: number) => string;
 };
 
 export type MemberSelectProps = MemberSelectCommonProps &
@@ -130,9 +132,15 @@ export type MemberSelectProps = MemberSelectCommonProps &
       }
   );
 
-function triggerLabel(selected: MemberOption[], showCountOnMultiple: boolean, placeholder?: string): string {
+function triggerLabel(
+  selected: MemberOption[],
+  showCountOnMultiple: boolean,
+  placeholder?: string,
+  multipleLabel?: (count: number) => string
+): string {
   if (selected.length === 0) return placeholder ?? "";
   if (selected.length === 1) return selected[0]?.display_name ?? "";
+  if (multipleLabel) return multipleLabel(selected.length);
   if (showCountOnMultiple) return `${selected.length} members`;
   // Join-names variant: only the first few selected are resolved (the rest are count-only stubs), so list
   // those names and summarise the remainder rather than rendering blanks for the unresolved ids.
@@ -147,7 +155,7 @@ function triggerLabel(selected: MemberOption[], showCountOnMultiple: boolean, pl
 
 // How a member select variant lays out: its size and kind, whether it is the avatar group, the avatar
 // size of its faces, and the Select trigger variant it renders with.
-const getMemberSelectLayout = (variant: MemberSelectVariant) => {
+const getMemberSelectLayout = (variant: MemberSelectVariant, multiple?: boolean) => {
   // `size` drives avatar sizing; `kind` (variant minus its size suffix) drives the member-specific
   // display logic. `splitSelectVariant` doesn't recognise `avatar-group` (a member-only kind) and would
   const isAvatarGroup = isAvatarGroupVariant(variant);
@@ -157,13 +165,13 @@ const getMemberSelectLayout = (variant: MemberSelectVariant) => {
   const isPill = kind === "pill";
   const isSearchInput = kind === "search-input";
 
-  // Only `avatar-group-*` maps its size onto the face — every other variant keeps the `xs` trigger face it
-  // always had, so this fix doesn't reflow `pill-lg`/`select-lg`'s existing chrome. It's also not a Select
+  // A single-member pill uses a 16px face to match its sibling glyphs. Multi-member stacks keep 20px
+  // faces so their remaining-count badge has room. `avatar-group-*` maps its size onto the face and is not a Select
   // trigger kind on its own, so forward the same-size `pill-*` so height stays put when a form flips empty
   // pill → faces; chrome is cancelled via `AVATAR_GROUP_TRIGGER_CLASSNAME`. Testing the type guard directly
   // (rather than the `isAvatarGroup` alias, or a ternary) is what narrows `variant` per-branch below —
   // TS only carries a saved alias's narrowing onto a `readonly` property, and `variant` isn't one.
-  let avatarSize: AvatarGroupSize = "xs";
+  let avatarSize: AvatarGroupSize = isPill && !multiple ? "2xs" : "xs";
   let triggerVariant: SelectVariant;
   if (isAvatarGroupVariant(variant)) {
     const triggerSize = avatarGroupTriggerSize(variant);
@@ -214,11 +222,13 @@ export function MemberSelect(props: MemberSelectProps) {
     testId,
     tabIndex,
     suspendedLabel = "Suspended",
+    multipleLabel,
   } = props;
   const clearable = !props.multiple && !!props.clearable;
 
   const { kind, isAvatarGroup, isPill, isSearchInput, avatarSize, triggerVariant } = getMemberSelectLayout(
-    props.variant
+    props.variant,
+    props.multiple
   );
   const { searchPlaceholder, clearLabel } = getMemberSelectCopy(props, isSearchInput);
   const showCountOnMultiple = kind === "table-cell" || isPill;
@@ -288,7 +298,7 @@ export function MemberSelect(props: MemberSelectProps) {
       prependIcon={(members) =>
         members.length === 0 ? props.multiple ? <AssigneeOutline /> : <UserAltOutline /> : undefined
       }
-      label={(members) => triggerLabel(members, showCountOnMultiple, placeholder)}
+      label={(members) => triggerLabel(members, showCountOnMultiple, placeholder, multipleLabel)}
       tooltip={tooltip}
     >
       {(members) => (
@@ -308,7 +318,7 @@ export function MemberSelect(props: MemberSelectProps) {
           )}
           {showLabel && (members.length > 0 || !!placeholder) && (
             <span className="min-w-0 grow truncate text-left">
-              {triggerLabel(members, showCountOnMultiple, placeholder)}
+              {triggerLabel(members, showCountOnMultiple, placeholder, multipleLabel)}
             </span>
           )}
         </>

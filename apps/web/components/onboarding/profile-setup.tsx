@@ -123,7 +123,7 @@ function ProfileSetupNameFields(props: TProfileSetupFieldsProps) {
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
       <div className="space-y-1">
         <label
-          className="text-13 font-medium text-tertiary after:ml-0.5 after:text-danger-primary after:content-['*']"
+          className="text-body-xs-medium text-tertiary after:ml-0.5 after:text-danger-primary after:content-['*']"
           htmlFor="first_name"
         >
           First name
@@ -158,11 +158,13 @@ function ProfileSetupNameFields(props: TProfileSetupFieldsProps) {
             </Field>
           )}
         />
-        {errors.first_name && <span className="text-13 text-danger-primary">{errors.first_name.message}</span>}
+        {errors.first_name && (
+          <span className="text-body-xs-regular text-danger-primary">{errors.first_name.message}</span>
+        )}
       </div>
       <div className="space-y-1">
         <label
-          className="text-13 font-medium text-tertiary after:ml-0.5 after:text-danger-primary after:content-['*']"
+          className="text-body-xs-medium text-tertiary after:ml-0.5 after:text-danger-primary after:content-['*']"
           htmlFor="last_name"
         >
           Last name
@@ -196,7 +198,9 @@ function ProfileSetupNameFields(props: TProfileSetupFieldsProps) {
             </Field>
           )}
         />
-        {errors.last_name && <span className="text-13 text-danger-primary">{errors.last_name.message}</span>}
+        {errors.last_name && (
+          <span className="text-body-xs-regular text-danger-primary">{errors.last_name.message}</span>
+        )}
       </div>
     </div>
   );
@@ -231,7 +235,7 @@ function ProfileSetupPasswordFields(props: TProfileSetupPasswordFieldsProps) {
   return (
     <>
       <div className="space-y-1">
-        <label className="text-13 font-medium text-tertiary" htmlFor="password">
+        <label className="text-body-xs-medium text-tertiary" htmlFor="password">
           Set a password ({t("common.optional")})
         </label>
         <Controller
@@ -274,7 +278,7 @@ function ProfileSetupPasswordFields(props: TProfileSetupPasswordFieldsProps) {
         <PasswordStrengthIndicator password={watch("password") ?? ""} isFocused={isPasswordInputFocused} />
       </div>
       <div className="space-y-1">
-        <label className="text-13 font-medium text-tertiary" htmlFor="confirm_password">
+        <label className="text-body-xs-medium text-tertiary" htmlFor="confirm_password">
           {t("auth.common.password.confirm_password.label")} ({t("common.optional")})
         </label>
         <Controller
@@ -315,7 +319,7 @@ function ProfileSetupPasswordFields(props: TProfileSetupPasswordFieldsProps) {
           )}
         />
         {errors.confirm_password && (
-          <span className="text-13 text-danger-primary">{errors.confirm_password.message}</span>
+          <span className="text-body-xs-regular text-danger-primary">{errors.confirm_password.message}</span>
         )}
       </div>
     </>
@@ -501,11 +505,11 @@ export const ProfileSetup = observer(function ProfileSetup(props: Props) {
                   {!userAvatar || userAvatar === "" ? (
                     <div className="flex flex-col items-center justify-between">
                       <div className="relative h-14 w-14 overflow-hidden">
-                        <div className="absolute top-0 left-0 flex h-full w-full items-center justify-center rounded-full bg-accent-primary text-24 font-medium text-on-color uppercase">
+                        <div className="absolute top-0 left-0 flex h-full w-full items-center justify-center rounded-full bg-accent-primary text-h3-medium text-on-color uppercase">
                           {watch("first_name")[0] ?? "R"}
                         </div>
                       </div>
-                      <div className="pt-1 text-13 font-medium text-accent-secondary hover:text-tertiary">
+                      <div className="pt-1 text-body-xs-medium text-accent-secondary hover:text-tertiary">
                         Choose image
                       </div>
                     </div>
@@ -543,7 +547,7 @@ export const ProfileSetup = observer(function ProfileSetup(props: Props) {
             <>
               <div className="space-y-1">
                 <label
-                  className="text-13 font-medium text-tertiary after:ml-0.5 after:text-danger-primary after:content-['*']"
+                  className="text-body-xs-medium text-tertiary after:ml-0.5 after:text-danger-primary after:content-['*']"
                   htmlFor="role"
                 >
                   What role are you working on? Choose one.
@@ -560,7 +564,7 @@ export const ProfileSetup = observer(function ProfileSetup(props: Props) {
                         <div
                           key={userRole}
                           className={cn(
-                            "shrink-0 rounded border-[0.5px] px-3 py-1.5 text-13 font-medium hover:cursor-pointer hover:bg-surface-2",
+                            "shrink-0 rounded border-[0.5px] px-3 py-1.5 text-body-xs-medium hover:cursor-pointer hover:bg-surface-2",
                             {
                               "border-accent-strong": value === userRole,
                               "border-strong": value !== userRole,
@@ -574,11 +578,11 @@ export const ProfileSetup = observer(function ProfileSetup(props: Props) {
                     </div>
                   )}
                 />
-                {errors.role && <span className="text-13 text-danger-primary">{errors.role.message}</span>}
+                {errors.role && <span className="text-body-xs-regular text-danger-primary">{errors.role.message}</span>}
               </div>
               <div className="space-y-1">
                 <label
-                  className="text-13 font-medium text-tertiary after:ml-0.5 after:text-danger-primary after:content-['*']"
+                  className="text-body-xs-medium text-tertiary after:ml-0.5 after:text-danger-primary after:content-['*']"
                   htmlFor="use_case"
                 >
                   What is your domain expertise? Choose one or more.
@@ -599,7 +603,7 @@ export const ProfileSetup = observer(function ProfileSetup(props: Props) {
                             key={userDomain}
                             className={`flex-shrink-0 border-[0.5px] hover:cursor-pointer hover:bg-surface-2 ${
                               isSelected ? "border-accent-strong" : "border-strong"
-                            } rounded px-3 py-1.5 text-13 font-medium`}
+                            } rounded px-3 py-1.5 text-body-xs-medium`}
                             onClick={() => {
                               const currentValue = value || [];
                               if (isSelected) {
@@ -616,7 +620,9 @@ export const ProfileSetup = observer(function ProfileSetup(props: Props) {
                     </div>
                   )}
                 />
-                {errors.use_case && <span className="text-13 text-danger-primary">{errors.use_case.message}</span>}
+                {errors.use_case && (
+                  <span className="text-body-xs-regular text-danger-primary">{errors.use_case.message}</span>
+                )}
               </div>
             </>
           )}

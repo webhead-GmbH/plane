@@ -5,8 +5,12 @@
  */
 
 import { observer } from "mobx-react";
-// components
-import { AppliedMembersFilters as CommonAppliedMembersFilters } from "@/components/common/applied-filters/members";
+import { Avatar } from "@makeplane/propel/components/avatar";
+// helpers
+import { getFileURL } from "@plane/utils";
+// hooks
+import { useMember } from "@/hooks/store/use-member";
+import { RemovableChip } from "@/components/common/removable-chip";
 
 type Props = {
   handleRemove: (val: string) => void;
@@ -16,6 +20,36 @@ type Props = {
 
 export const AppliedMembersFilters = observer(function AppliedMembersFilters(props: Props) {
   const { handleRemove, values, editable } = props;
+  // store hooks
+  const {
+    workspace: { getWorkspaceMemberDetails },
+  } = useMember();
 
-  return <CommonAppliedMembersFilters handleRemove={handleRemove} values={values} editable={editable} compact />;
+  return (
+    <>
+      {values.map((memberId) => {
+        const memberDetails = getWorkspaceMemberDetails(memberId)?.member;
+
+        if (!memberDetails) return null;
+
+        return (
+          <RemovableChip
+            key={memberId}
+            variant="soft"
+            icon={
+              <Avatar
+                alt={memberDetails.display_name}
+                fallback={memberDetails.display_name?.[0]?.toUpperCase()}
+                src={getFileURL(memberDetails.avatar_url)}
+                size="2xs"
+              />
+            }
+            label={memberDetails.display_name}
+            ariaLabel={memberDetails.display_name}
+            onRemove={editable ? () => handleRemove(memberId) : undefined}
+          />
+        );
+      })}
+    </>
+  );
 });

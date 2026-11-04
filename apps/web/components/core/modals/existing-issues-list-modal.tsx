@@ -6,16 +6,9 @@
 
 import { useEffect, useState, useRef } from "react";
 import type { Dispatch, SetStateAction } from "react";
-import { Combobox, ComboboxItem, ComboboxList, ComboboxSearch } from "@makeplane/propel/components/combobox";
-import {
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogInfo,
-  DialogMain,
-  DialogTitle,
-} from "@makeplane/propel/components/dialog";
-import { CloseOutline, RocketOutline } from "@makeplane/propel/icons";
+import { Combobox, ComboboxItem, ComboboxList } from "@makeplane/propel/components/combobox";
+import { Dialog, DialogContent, DialogTitle } from "@makeplane/propel/components/dialog";
+import { CloseOutline, NewTabOutline } from "@makeplane/propel/icons";
 // i18n
 import { useTranslation } from "@plane/i18n";
 // types
@@ -35,6 +28,12 @@ import { usePlatformOS } from "@/hooks/use-platform-os";
 import { ProjectService } from "@/services/project";
 // components
 import { IssueIdentifier } from "@/components/issues/issue-detail/issue-identifier";
+import {
+  SelectionDialogFooter,
+  SelectionDialogList,
+  SelectionDialogSearch,
+  SelectionDialogSelected,
+} from "@/components/common/selection-dialog-layout";
 import { IssueSearchModalEmptyState } from "./issue-search-modal-empty-state";
 
 type Props = {
@@ -57,17 +56,17 @@ type TSelectedIssueChipsProps = {
   setSelectedIssues: Dispatch<SetStateAction<ISearchIssueResponse[]>>;
 };
 
-// The work items picked so far, each removable, or a note that none are.
+// The work items picked so far, each removable.
 function SelectedIssueChips(props: TSelectedIssueChipsProps) {
   const { selectedIssues, setSelectedIssues } = props;
   const { t } = useTranslation();
 
-  return selectedIssues.length > 0 ? (
-    <div className="mt-1 flex flex-wrap items-center gap-2">
+  return (
+    <div className="flex flex-wrap items-center gap-2">
       {selectedIssues.map((issue) => (
         <div
           key={issue.id}
-          className="flex items-center gap-1 rounded-md border border-subtle bg-layer-1 py-1 pl-2 text-11 whitespace-nowrap text-primary"
+          className="flex items-center gap-1 rounded-md border border-subtle bg-layer-1 py-1 pl-2 text-caption-sm-regular whitespace-nowrap text-primary"
         >
           <IssueIdentifier
             projectId={issue.project_id}
@@ -80,17 +79,13 @@ function SelectedIssueChips(props: TSelectedIssueChipsProps) {
           <button
             type="button"
             className="group p-1"
-            aria-label={t("remove")}
+            aria-label={t("aria_labels.common.remove")}
             onClick={() => setSelectedIssues((prevData) => prevData.filter((i) => i.id !== issue.id))}
           >
             <CloseOutline className="h-3 w-3 text-secondary group-hover:text-primary" />
           </button>
         </div>
       ))}
-    </div>
-  ) : (
-    <div className="w-min rounded-md border border-subtle bg-layer-1 p-2 text-11 whitespace-nowrap">
-      {t("issue.select.empty")}
     </div>
   );
 }
@@ -143,7 +138,7 @@ function ExistingIssueOption(props: TExistingIssueOptionProps) {
           aria-label={t("common.actions.open_in_new_tab")}
           onClick={(e) => e.stopPropagation()}
         >
-          <RocketOutline className="h-4 w-4" />
+          <NewTabOutline className="h-4 w-4" />
         </a>
       }
     />
@@ -278,23 +273,18 @@ export function ExistingIssuesListModal(props: Props) {
             setSearchTerm(next);
           }}
         >
-          <ComboboxSearch
+          <SelectionDialogSearch
             placeholder={t("common.search.placeholder")}
-            aria-label={t("issue.add.existing")}
+            ariaLabel={t("issue.add.existing")}
             tabIndex={baseTabIndex}
-          />
-          <DialogMain>
-            <div className="flex flex-shrink-0 flex-col-reverse gap-4 text-13 text-secondary sm:flex-row sm:items-center sm:justify-between">
-              <SelectedIssueChips selectedIssues={selectedIssues} setSelectedIssues={setSelectedIssues} />
-              {workspaceLevelToggle && (
+          >
+            {workspaceLevelToggle && (
+              <>
+                <span className="h-5 border-s border-subtle" aria-hidden />
                 <Tooltip label="Toggle workspace level search" disabled={isMobile}>
-                  <div
-                    className={`flex flex-shrink-0 cursor-pointer items-center gap-1 text-11 ${
-                      isWorkspaceLevel ? "text-primary" : "text-secondary"
-                    }`}
-                  >
+                  <div className="flex flex-shrink-0 items-center gap-2 text-body-xs-regular text-secondary">
                     <Switch
-                      size="sm"
+                      size="md"
                       checked={isWorkspaceLevel}
                       onCheckedChange={setIsWorkspaceLevel}
                       aria-label={t("common.workspace_level")}
@@ -308,66 +298,68 @@ export function ExistingIssuesListModal(props: Props) {
                     </button>
                   </div>
                 </Tooltip>
-              )}
-            </div>
+              </>
+            )}
+          </SelectionDialogSearch>
+          {selectedIssues.length > 0 && (
+            <SelectionDialogSelected>
+              <SelectedIssueChips selectedIssues={selectedIssues} setSelectedIssues={setSelectedIssues} />
+            </SelectionDialogSelected>
+          )}
+          <SelectionDialogList>
+            {/* TODO: Translate here */}
+            {searchTerm !== "" && (
+              <h5 className="px-3 py-1 text-body-xs-regular text-secondary">
+                Search results for{" "}
+                <span className="text-primary">
+                  {'"'}
+                  {searchTerm}
+                  {'"'}
+                </span>{" "}
+                in project:
+              </h5>
+            )}
 
-            <div className="vertical-scrollbar scrollbar-md max-h-80 min-h-0 scroll-py-2 overflow-x-hidden overflow-y-auto overscroll-contain">
-              {/* TODO: Translate here */}
-              {searchTerm !== "" && (
-                <h5 className="text-13 text-secondary">
-                  Search results for{" "}
-                  <span className="text-primary">
-                    {'"'}
-                    {searchTerm}
-                    {'"'}
-                  </span>{" "}
-                  in project:
-                </h5>
-              )}
-
-              {isSearching || isLoading ? (
-                <Loader className="space-y-3 p-3">
-                  <Loader.Item height="40px" />
-                  <Loader.Item height="40px" />
-                  <Loader.Item height="40px" />
-                  <Loader.Item height="40px" />
-                </Loader>
-              ) : (
-                <>
-                  {filteredIssues.length === 0 ? (
-                    <IssueSearchModalEmptyState
-                      debouncedSearchTerm={debouncedSearchTerm}
-                      isSearching={isSearching}
-                      issues={filteredIssues}
-                      searchTerm={searchTerm}
-                    />
-                  ) : (
-                    <ComboboxList aria-label={t("issue.add.existing")}>
-                      {filteredIssues.map((issue) => (
-                        // `selection="checkbox"` replaces the hand-placed checkbox and the
-                        // `as="label"` wrapper the old row needed to make it clickable.
-                        <ExistingIssueOption key={issue.id} issue={issue} workspaceSlug={workspaceSlug} />
-                      ))}
-                    </ComboboxList>
-                  )}
-                </>
-              )}
-            </div>
-          </DialogMain>
+            {isSearching || isLoading ? (
+              <Loader className="space-y-3 p-3">
+                <Loader.Item height="40px" />
+                <Loader.Item height="40px" />
+                <Loader.Item height="40px" />
+                <Loader.Item height="40px" />
+              </Loader>
+            ) : (
+              <>
+                {filteredIssues.length === 0 ? (
+                  <IssueSearchModalEmptyState
+                    debouncedSearchTerm={debouncedSearchTerm}
+                    isSearching={isSearching}
+                    issues={filteredIssues}
+                    searchTerm={searchTerm}
+                  />
+                ) : (
+                  <ComboboxList aria-label={t("issue.add.existing")}>
+                    {filteredIssues.map((issue) => (
+                      // `selection="checkbox"` replaces the hand-placed checkbox and the
+                      // `as="label"` wrapper the old row needed to make it clickable.
+                      <ExistingIssueOption key={issue.id} issue={issue} workspaceSlug={workspaceSlug} />
+                    ))}
+                  </ComboboxList>
+                )}
+              </>
+            )}
+          </SelectionDialogList>
         </Combobox>
-        <DialogActions>
-          <DialogInfo>
-            <Button
-              variant="ghost"
-              size="sm"
-              stretch="auto"
-              label={
-                selectedIssues.length === issues.length ? t("issue.select.deselect_all") : t("issue.select.select_all")
-              }
-              onClick={handleSelectIssues}
-              disabled={filteredIssues.length === 0}
-            />
-          </DialogInfo>
+        <SelectionDialogFooter status={selectedIssues.length === 0 ? t("issue.select.empty") : undefined}>
+          <Button
+            variant="ghost"
+            size="md"
+            stretch="auto"
+            label={
+              selectedIssues.length === issues.length ? t("issue.select.deselect_all") : t("issue.select.select_all")
+            }
+            onClick={handleSelectIssues}
+            disabled={filteredIssues.length === 0}
+          />
           <Button variant="secondary" size="md" stretch="auto" label={t("common.cancel")} onClick={handleClose} />
           <Button
             variant="primary"
@@ -378,7 +370,7 @@ export function ExistingIssuesListModal(props: Props) {
             loading={isSubmitting}
             disabled={isSubmitting || selectedIssues.length === 0}
           />
-        </DialogActions>
+        </SelectionDialogFooter>
       </DialogContent>
     </Dialog>
   );

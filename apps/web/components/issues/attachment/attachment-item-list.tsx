@@ -125,7 +125,7 @@ export const IssueAttachmentItemList = observer(function IssueAttachmentItemList
       <div className="flex items-center justify-center rounded-md bg-surface-1 p-1">
         <div className="flex flex-col items-center justify-center rounded-md border border-dashed border-strong px-5 py-6">
           <UploadOutline className="size-7" />
-          <span className="text-13 text-tertiary">
+          <span className="text-body-xs-regular text-tertiary">
             {toDrive ? t("google_drive_integration.attachments.drop_here") : t("attachment.drag_and_drop")}
           </span>
         </div>

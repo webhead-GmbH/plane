@@ -8,6 +8,7 @@ import type { Dispatch, ReactElement, SetStateAction } from "react";
 import React, { useCallback, useEffect, useState, useRef } from "react";
 // helpers
 import { usePlatformOS } from "@plane/hooks";
+import { useTranslation } from "@plane/i18n";
 import { cn } from "@plane/utils";
 
 interface ResizableSidebarProps {
@@ -31,76 +32,6 @@ interface ResizableSidebarProps {
   isAnySidebarDropdownOpen?: boolean;
 }
 
-interface ResizableSidebarPeekViewProps {
-  showPeek: boolean;
-  isCollapsed: boolean;
-  isResizing: boolean;
-  width: number;
-  isAnyExtendedSidebarExpanded: boolean;
-  handlePeekEnter: () => void;
-  handlePeekLeave: () => void;
-  toggleCollapsed: () => void;
-  startResizing: (e: React.MouseEvent) => void;
-  children?: ReactElement;
-}
-
-function ResizableSidebarPeekView({
-  showPeek,
-  isCollapsed,
-  isResizing,
-  width,
-  isAnyExtendedSidebarExpanded,
-  handlePeekEnter,
-  handlePeekLeave,
-  toggleCollapsed,
-  startResizing,
-  children,
-}: ResizableSidebarPeekViewProps) {
-  return (
-    <div
-      className={cn(
-        "shadow-sm absolute left-0 z-20 h-full bg-surface-1",
-        !isResizing && "transition-all duration-300 ease-in-out",
-        isCollapsed && showPeek ? "translate-x-0 opacity-100" : "translate-x-[-100%] opacity-0",
-        "pointer-events-none",
-        isCollapsed && showPeek && "pointer-events-auto",
-        !showPeek ? "w-0" : "w-full"
-      )}
-      style={{
-        width: `${width}px`,
-      }}
-      onMouseEnter={handlePeekEnter}
-      onMouseLeave={handlePeekLeave}
-      role="complementary"
-      aria-label="Sidebar peek view"
-    >
-      <aside
-        className={cn(
-          "group/sidebar relative z-20 flex h-full w-full flex-col overflow-hidden bg-surface-1 pt-4",
-          "self-center rounded-md rounded-tl-none rounded-bl-none border-r border-subtle",
-          isAnyExtendedSidebarExpanded && "rounded-none"
-        )}
-      >
-        {children}
-        {/* Resize Handle */}
-        <div
-          className={cn(
-            "absolute z-[20] h-full w-1 cursor-ew-resize transition-all duration-200",
-            !isResizing && "hover:bg-surface-2",
-            isResizing && "bg-layer-1",
-            "top-0 right-0"
-          )}
-          // onDoubleClick toggle sidebar
-          onDoubleClick={() => toggleCollapsed()}
-          onMouseDown={(e) => startResizing(e)}
-          role="separator"
-          aria-label="Resize sidebar"
-        />
-      </aside>
-    </div>
-  );
-}
-
 export function ResizableSidebar({
   showPeek = false,
   togglePeek,
@@ -119,6 +50,7 @@ export function ResizableSidebar({
   isAnyExtendedSidebarExpanded = false,
   isAnySidebarDropdownOpen = false,
 }: ResizableSidebarProps) {
+  const { t } = useTranslation();
   // states
   const [isResizing, setIsResizing] = useState(false);
   const [isHoveringTrigger, setIsHoveringTrigger] = useState(false);
@@ -145,6 +77,32 @@ export function ResizableSidebar({
       setWidth(newWidth);
     },
     [isResizing, minWidth, maxWidth, setWidth]
+  );
+
+  const handleResizeKeyDown = useCallback(
+    (event: React.KeyboardEvent<HTMLDivElement>) => {
+      if (event.altKey || event.ctrlKey || event.metaKey) return;
+
+      const step = 10;
+      switch (event.key) {
+        case "ArrowLeft":
+          setWidth((currentWidth) => Math.min(Math.max(currentWidth - step, minWidth), maxWidth));
+          break;
+        case "ArrowRight":
+          setWidth((currentWidth) => Math.min(Math.max(currentWidth + step, minWidth), maxWidth));
+          break;
+        case "Home":
+          setWidth(minWidth);
+          break;
+        case "End":
+          setWidth(maxWidth);
+          break;
+        default:
+          return;
+      }
+      event.preventDefault();
+    },
+    [minWidth, maxWidth, setWidth]
   );
 
   const startResizing = useCallback(
@@ -266,12 +224,14 @@ export function ResizableSidebar({
           maxWidth: `${isCollapsed ? 0 : width}px`,
         }}
         role="complementary"
-        aria-label="Main sidebar"
+        aria-label={t("aria_labels.projects_sidebar.main_sidebar")}
+        inert={isCollapsed}
+        aria-hidden={isCollapsed}
         data-prevent-outside-click={isMobile}
       >
         <aside
           className={cn(
-            "group/sidebar relative flex h-full w-full flex-col overflow-hidden bg-surface-1 pt-3",
+            "group/sidebar relative flex h-full w-full flex-col overflow-hidden bg-surface-1",
             isAnyExtendedSidebarExpanded && "rounded-none"
           )}
         >
@@ -280,7 +240,7 @@ export function ResizableSidebar({
           {/* Resize Handle */}
           <div
             className={cn(
-              "absolute z-[20] h-full w-1 cursor-ew-resize transition-all duration-200",
+              "absolute z-[20] h-full w-1 cursor-ew-resize transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-accent-strong focus-visible:ring-inset",
               !isResizing && "hover:bg-surface-2",
               isResizing && "w-1.5 bg-layer-1",
               "top-0 right-0"
@@ -288,25 +248,67 @@ export function ResizableSidebar({
             // onDoubleClick toggle sidebar
             onDoubleClick={() => toggleCollapsed()}
             onMouseDown={(e) => startResizing(e)}
+            onKeyDown={handleResizeKeyDown}
             role="separator"
-            aria-label="Resize sidebar"
+            tabIndex={0}
+            aria-label={t("aria_labels.projects_sidebar.resize_sidebar")}
+            aria-orientation="vertical"
+            aria-valuemin={minWidth}
+            aria-valuemax={maxWidth}
+            aria-valuenow={width}
           />
         </aside>
       </div>
       {/* Peek View */}
-      <ResizableSidebarPeekView
-        showPeek={showPeek}
-        isCollapsed={isCollapsed}
-        isResizing={isResizing}
-        width={width}
-        isAnyExtendedSidebarExpanded={isAnyExtendedSidebarExpanded}
-        handlePeekEnter={handlePeekEnter}
-        handlePeekLeave={handlePeekLeave}
-        toggleCollapsed={toggleCollapsed}
-        startResizing={startResizing}
+      <div
+        className={cn(
+          "shadow-sm absolute left-0 z-20 h-full bg-surface-1",
+          !isResizing && "transition-all duration-300 ease-in-out",
+          isCollapsed && showPeek ? "translate-x-0 opacity-100" : "translate-x-[-100%] opacity-0",
+          "pointer-events-none",
+          isCollapsed && showPeek && "pointer-events-auto",
+          !showPeek ? "w-0" : "w-full"
+        )}
+        style={{
+          width: `${width}px`,
+        }}
+        onMouseEnter={handlePeekEnter}
+        onMouseLeave={handlePeekLeave}
+        role="complementary"
+        aria-label={t("aria_labels.projects_sidebar.sidebar_peek_view")}
+        inert={!(isCollapsed && showPeek)}
+        aria-hidden={!(isCollapsed && showPeek)}
       >
-        {children}
-      </ResizableSidebarPeekView>
+        <aside
+          className={cn(
+            "group/sidebar relative z-20 flex h-full w-full flex-col overflow-hidden bg-surface-1 pt-4",
+            "self-center rounded-md rounded-tl-none rounded-bl-none border-r border-subtle",
+            isAnyExtendedSidebarExpanded && "rounded-none"
+          )}
+        >
+          {children}
+          {/* Resize Handle */}
+          <div
+            className={cn(
+              "absolute z-[20] h-full w-1 cursor-ew-resize transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-accent-strong focus-visible:ring-inset",
+              !isResizing && "hover:bg-surface-2",
+              isResizing && "bg-layer-1",
+              "top-0 right-0"
+            )}
+            // onDoubleClick toggle sidebar
+            onDoubleClick={() => toggleCollapsed()}
+            onMouseDown={(e) => startResizing(e)}
+            onKeyDown={handleResizeKeyDown}
+            role="separator"
+            tabIndex={0}
+            aria-label={t("aria_labels.projects_sidebar.resize_sidebar")}
+            aria-orientation="vertical"
+            aria-valuemin={minWidth}
+            aria-valuemax={maxWidth}
+            aria-valuenow={width}
+          />
+        </aside>
+      </div>
 
       {/* Extended Sidebar */}
       {extendedSidebar && extendedSidebar}

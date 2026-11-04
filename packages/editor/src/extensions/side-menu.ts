@@ -31,7 +31,7 @@ export type SideMenuPluginProps = {
 };
 
 export type SideMenuHandleOptions = {
-  view: (view: EditorView, sideMenu: HTMLDivElement | null) => { destroy: () => void };
+  view: (view: EditorView, sideMenu: HTMLDivElement | null) => { destroy: () => void } | void;
   domEvents?: {
     [key: string]: (...args: any) => void;
   };
@@ -83,23 +83,24 @@ const SideMenu = (options: SideMenuPluginProps) => {
   return new Plugin({
     key: new PluginKey("sideMenu"),
     view: (view) => {
+      const handleViews: { destroy: () => void }[] = [];
       hideSideMenu();
       view?.dom.parentElement?.appendChild(editorSideMenu);
       // side menu elements' initialization
-      const handleViews: ReturnType<SideMenuHandleOptions["view"]>[] = [];
       if (handlesConfig.ai && !editorSideMenu.querySelector("#ai-handle")) {
-        handleViews.push(aiHandleView(view, editorSideMenu));
+        const handleView = aiHandleView(view, editorSideMenu);
+        if (handleView) handleViews.push(handleView);
       }
 
       if (handlesConfig.dragDrop && !editorSideMenu.querySelector("#drag-handle")) {
-        handleViews.push(dragHandleView(view, editorSideMenu));
+        const handleView = dragHandleView(view, editorSideMenu);
+        if (handleView) handleViews.push(handleView);
       }
 
       return {
         destroy: () => {
-          hideSideMenu();
-          // remove the handles and the window/document listeners they registered
-          for (const handleView of handleViews) handleView.destroy();
+          handleViews.forEach((handleView) => handleView.destroy());
+          editorSideMenu.remove();
         },
       };
     },

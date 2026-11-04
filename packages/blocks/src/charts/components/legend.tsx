@@ -55,7 +55,7 @@ const CustomLegend = React.forwardRef(function CustomLegend(
       })}
     >
       {payload.map((item, index) => {
-        const itemClassName = cn("flex items-center gap-1.5 text-13 font-medium whitespace-nowrap text-tertiary", {
+        const itemClassName = cn("flex items-center gap-1.5 text-body-xs-medium whitespace-nowrap text-tertiary", {
           "px-2": layout === "horizontal",
           "py-2": layout === "vertical",
           "pt-0 pl-0": index === 0,

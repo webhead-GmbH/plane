@@ -109,17 +109,19 @@ export const IssueEmojiReactions = observer(function IssueEmojiReactions(props: 
   };
 
   return (
-    <div className="flex flex-wrap items-center gap-2">
-      {/* the reactions stay outside the picker's trigger: inside it every one of them would open the
-          picker as well as toggle the reaction, and a button cannot contain a button */}
-      <EmojiReactionGroup reactions={propelReactions} onReactionClick={handleEmojiClick} showAddButton={false} />
-      <EmojiReactionPicker
-        isOpen={isPickerOpen}
-        handleToggle={setIsPickerOpen}
-        onChange={handleEmojiSelect}
-        label={<EmojiReactionButton />}
-        placement="bottom-start"
-      />
-    </div>
+    <EmojiReactionGroup
+      reactions={propelReactions}
+      onReactionClick={handleEmojiClick}
+      showAddButton
+      addReactionButton={
+        <EmojiReactionPicker
+          isOpen={isPickerOpen}
+          handleToggle={setIsPickerOpen}
+          onChange={handleEmojiSelect}
+          render={<EmojiReactionButton />}
+          placement="bottom-start"
+        />
+      }
+    />
   );
 });

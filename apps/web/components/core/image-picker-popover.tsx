@@ -158,34 +158,36 @@ function UnsplashImagesPanel<TFieldValues extends FieldValues>(props: TUnsplashI
   const { control, unsplashImages, unsplashError, onChange, onSearch, onSearchQueryChange, setIsOpen } = props;
 
   return (
-    <div className="space-y-4">
+    <div className="flex h-full min-h-0 w-full flex-col">
       {(unsplashImages || !unsplashError) && (
         <>
-          <div className="flex items-center gap-x-2">
-            <Controller
-              control={control}
-              name={"search" as FieldPath<TFieldValues>}
-              render={({ field: { value, ref } }) => (
-                <InputGroup size="2xl">
-                  <Input
-                    size="2xl"
-                    id="search"
-                    name="search"
-                    type="text"
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        e.preventDefault();
-                        onSearch();
-                      }
-                    }}
-                    value={value}
-                    onChange={(e) => onSearchQueryChange(e.target.value)}
-                    ref={ref}
-                    placeholder="Search for images"
-                  />
-                </InputGroup>
-              )}
-            />
+          <div className="mb-4 flex flex-shrink-0 items-center gap-x-3">
+            <div className="min-w-0 flex-1">
+              <Controller
+                control={control}
+                name={"search" as FieldPath<TFieldValues>}
+                render={({ field: { value, ref } }) => (
+                  <InputGroup size="lg">
+                    <Input
+                      size="lg"
+                      id="search"
+                      name="search"
+                      type="text"
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          onSearch();
+                        }
+                      }}
+                      value={value}
+                      onChange={(e) => onSearchQueryChange(e.target.value)}
+                      ref={ref}
+                      placeholder="Search for images"
+                    />
+                  </InputGroup>
+                )}
+              />
+            </div>
             <Button variant="primary" size="lg" stretch="auto" label="Search" onClick={() => onSearch()} />
           </div>
           {unsplashImages ? (
@@ -205,13 +207,15 @@ function UnsplashImagesPanel<TFieldValues extends FieldValues>(props: TUnsplashI
                     <img
                       src={image.urls.small}
                       alt={image.alt_description}
-                      className="absolute top-0 left-0 h-full w-full cursor-pointer rounded-sm object-cover"
+                      className="absolute top-0 left-0 h-full w-full cursor-pointer rounded-sm object-cover transition-opacity hover:opacity-80"
                     />
                   </button>
                 ))}
               </div>
             ) : (
-              <p className="pt-7 text-center text-11 text-secondary">No images found.</p>
+              <div className="flex min-h-0 flex-1 items-center justify-center">
+                <p className="text-center text-caption-md-regular text-tertiary">No images found.</p>
+              </div>
             )
           ) : (
             <Loader className="grid grid-cols-4 gap-4">
@@ -268,12 +272,9 @@ function CoverImageUploadPanel(props: TCoverImageUploadPanelProps) {
             (image === null && isDragActive) || !value ? "border-2 border-dashed border-subtle hover:bg-surface-2" : ""
           }`}
         >
-          <button
-            type="button"
-            className="absolute top-0 right-0 z-40 -translate-y-1/2 rounded-sm bg-surface-2 px-2 py-0.5 text-11 font-medium text-secondary"
-          >
-            Edit
-          </button>
+          <div className="absolute top-0 right-1 z-40">
+            <Button type="button" variant="tertiary" size="xs" stretch="auto" label="Edit" />
+          </div>
           {image !== null || (value && value !== "") ? (
             <>
               <img
@@ -284,7 +285,7 @@ function CoverImageUploadPanel(props: TCoverImageUploadPanelProps) {
             </>
           ) : (
             <div>
-              <span className="mt-2 block text-13 font-medium text-secondary">
+              <span className="mt-2 block text-body-xs-medium text-secondary">
                 {isDragActive ? "Drop image here to upload" : "Drag & drop image here"}
               </span>
             </div>
@@ -294,26 +295,29 @@ function CoverImageUploadPanel(props: TCoverImageUploadPanelProps) {
         </div>
       </div>
       {fileRejections.length > 0 && (
-        <p className="text-13 text-danger-primary">
+        <p className="text-body-xs-regular text-danger-primary">
           {fileRejections[0].errors[0].code === "file-too-large"
             ? "The image size cannot exceed 5 MB."
             : "Please upload a file in a valid format."}
         </p>
       )}
 
-      <p className="text-13 text-secondary">File formats supported- .jpeg, .jpg, .png, .webp</p>
-
-      <div className="flex h-12 items-start justify-end gap-2">
-        <Button variant="secondary" size="sm" stretch="auto" label="Cancel" onClick={onCancel} />
-        <Button
-          variant="primary"
-          size="sm"
-          stretch="full"
-          label={isImageUploading ? "Uploading" : "Upload & Save"}
-          onClick={onSubmit}
-          disabled={!image}
-          loading={isImageUploading}
-        />
+      <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 px-1">
+        <p className="min-w-0 truncate text-body-xs-regular text-secondary">
+          File formats supported- .jpeg, .jpg, .png, .webp
+        </p>
+        <div className="flex flex-shrink-0 items-center gap-2">
+          <Button variant="secondary" size="md" stretch="auto" label="Cancel" onClick={onCancel} />
+          <Button
+            variant="primary"
+            size="md"
+            stretch="auto"
+            label={isImageUploading ? "Uploading" : "Upload & Save"}
+            onClick={onSubmit}
+            disabled={!image}
+            loading={isImageUploading}
+          />
+        </div>
       </div>
     </div>
   );
@@ -415,50 +419,43 @@ function ImagePickerPopoverComponent<TFieldValues extends FieldValues = FieldVal
         </PopoverTrigger>
         <PopoverContent variant="rich" side="bottom" align="end" sideOffset={8} data-prevent-outside-click>
           <PopoverBody tabIndex={0}>
-            <div ref={imagePickerRef} className="flex h-96 w-80 flex-col overflow-hidden md:h-[36rem] md:w-[36rem]">
-              {/* Row wrapper: published Tabs omits className, so fill height comes from stretch. The
-                  popup supplies the panel padding. */}
-              <div className="flex h-full min-h-0 w-full">
-                <Tabs variant="contained" defaultValue={enabledTabs[0]?.key || "images"}>
-                  <div className="flex h-full min-h-0 w-full flex-col">
-                    {/* Published TabsList is inline-flex; stretch it to the previous full-width bar. */}
-                    <div className="w-full min-w-0 [&_[role=tab]]:min-w-0 [&_[role=tab]]:flex-1 [&_[role=tablist]]:flex [&_[role=tablist]]:w-full">
-                      <TabsList>
-                        {enabledTabs.map((tab) => (
-                          <Tab key={tab.key} value={tab.key} label={tab.title} />
-                        ))}
-                      </TabsList>
-                    </div>
-                    {/* Grid wrapper: published TabsPanel omits className, so fill height comes from a one-row grid. */}
-                    <div className="vertical-scrollbar mt-3 scrollbar-sm grid min-h-0 w-full flex-1 grid-rows-1 overflow-x-hidden overflow-y-auto p-3">
-                      <TabsPanel value="unsplash">
-                        <UnsplashImagesPanel
-                          control={control}
-                          unsplashImages={unsplashImages}
-                          unsplashError={unsplashError}
-                          onChange={onChange}
-                          onSearch={handleUnsplashSearch}
-                          onSearchQueryChange={handleSearchQueryChange}
-                          setIsOpen={setIsOpen}
-                        />
-                      </TabsPanel>
-                      <TabsPanel value="images">
-                        <StaticCoverImagesPanel onSelect={handleStaticImageSelect} />
-                      </TabsPanel>
-                      <TabsPanel value="upload">
-                        <CoverImageUploadPanel
-                          dropzone={dropzone}
-                          image={image}
-                          isImageUploading={isImageUploading}
-                          value={value}
-                          onCancel={handleUploadCancel}
-                          onSubmit={handleSubmit}
-                        />
-                      </TabsPanel>
-                    </div>
-                  </div>
-                </Tabs>
-              </div>
+            <div
+              ref={imagePickerRef}
+              className="flex h-96 w-80 max-w-full flex-col overflow-auto md:h-[36rem] md:w-[36rem]"
+            >
+              <Tabs variant="contained" stretch="full" layout="fill" defaultValue={enabledTabs[0]?.key || "images"}>
+                <TabsList>
+                  {enabledTabs.map((tab) => (
+                    <Tab key={tab.key} value={tab.key} label={tab.title} />
+                  ))}
+                </TabsList>
+                <div className="vertical-scrollbar mt-4 scrollbar-sm flex min-h-0 w-full flex-1 flex-col overflow-auto">
+                  <TabsPanel value="unsplash">
+                    <UnsplashImagesPanel
+                      control={control}
+                      unsplashImages={unsplashImages}
+                      unsplashError={unsplashError}
+                      onChange={onChange}
+                      onSearch={handleUnsplashSearch}
+                      onSearchQueryChange={handleSearchQueryChange}
+                      setIsOpen={setIsOpen}
+                    />
+                  </TabsPanel>
+                  <TabsPanel value="images">
+                    <StaticCoverImagesPanel onSelect={handleStaticImageSelect} />
+                  </TabsPanel>
+                  <TabsPanel value="upload">
+                    <CoverImageUploadPanel
+                      dropzone={dropzone}
+                      image={image}
+                      isImageUploading={isImageUploading}
+                      value={value}
+                      onCancel={handleUploadCancel}
+                      onSubmit={handleSubmit}
+                    />
+                  </TabsPanel>
+                </div>
+              </Tabs>
             </div>
           </PopoverBody>
         </PopoverContent>

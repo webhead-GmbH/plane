@@ -4,43 +4,33 @@
  * See the LICENSE file for details.
  */
 
-import { useMemo } from "react";
+import { useId, useMemo } from "react";
+import uniq from "lodash-es/uniq";
 import { observer } from "mobx-react";
 // plane package imports
 import type { TActivityFilters } from "@plane/constants";
-import { E_SORT_ORDER, EActivityFilterType, EUserPermissions } from "@plane/constants";
+import { E_SORT_ORDER, EActivityFilterType, EUserPermissions, defaultActivityFilters } from "@plane/constants";
 import { useLocalStorage } from "@plane/hooks";
+// i18n
+import { useTranslation } from "@plane/i18n";
 //types
 import type { TFileSignedURLResponse, TIssueComment } from "@plane/types";
 // components
 import { CommentCreate } from "@/components/comments/comment-create";
 import { IssueCustomFieldsTab } from "@/components/custom-fields";
+import { IssueActivityWorklogCreateButton } from "@/components/issues/worklog/activity/worklog-create-button";
+import { IssueWorklogList } from "@/components/issues/worklog/activity/worklog-list";
 // hooks
 import { useIssueDetail } from "@/hooks/store/use-issue-detail";
 import { useProject } from "@/hooks/store/use-project";
 import { useUser, useUserPermissions } from "@/hooks/store/user";
-// worklog components
-import { IssueActivityWorklogCreateButton } from "@/components/issues/worklog/activity/worklog-create-button";
-import { IssueWorklogList } from "@/components/issues/worklog/activity/worklog-list";
 // local imports
-import type { TActivityTab } from "./activity-tab-bar";
-import { ActivityTabBar } from "./activity-tab-bar";
 import { IssueActivityCommentRoot } from "./activity-comment-root";
+import type { TActivityTab } from "./activity-tabs";
+import { ActivityTabs, getActivityTabId, getActivityTabPanelId } from "./activity-tabs";
 import { useWorkItemCommentOperations } from "./helper";
 import { ActivitySortRoot } from "./sort-root";
-
-// each tab maps to the set of activity types it shows in the feed
-const TAB_FILTER_MAP: Record<Exclude<TActivityTab, "worklogs" | "custom_fields">, TActivityFilters[]> = {
-  all: [
-    EActivityFilterType.ACTIVITY,
-    EActivityFilterType.COMMENT,
-    EActivityFilterType.STATE,
-    EActivityFilterType.ASSIGNEE,
-    EActivityFilterType.WORKLOG,
-  ],
-  activity: [EActivityFilterType.ACTIVITY, EActivityFilterType.STATE, EActivityFilterType.ASSIGNEE],
-  comments: [EActivityFilterType.COMMENT],
-};
+import { ActivityFilterRoot } from "./filter-root";
 
 type TIssueActivity = {
   workspaceSlug: string;
@@ -49,6 +39,27 @@ type TIssueActivity = {
   disabled?: boolean;
   isIntakeIssue?: boolean;
 };
+
+type TFeedTabKey = "all" | "activity" | "comment";
+// The work item's time and its custom fields have tabs of their own, beside the feed's.
+type TActivityTabKey = TFeedTabKey | "worklogs" | "custom_fields";
+
+const DEFAULT_ACTIVITY_TAB: TActivityTabKey = "all";
+
+/** Filters each feed tab covers; the filter menu refines within the active tab. */
+const ACTIVITY_TAB_FILTERS: Record<TFeedTabKey, TActivityFilters[]> = {
+  all: defaultActivityFilters,
+  activity: [EActivityFilterType.ACTIVITY, EActivityFilterType.STATE, EActivityFilterType.ASSIGNEE],
+  comment: [EActivityFilterType.COMMENT],
+};
+
+const ACTIVITY_TAB_KEYS: TActivityTabKey[] = ["all", "activity", "comment", "worklogs", "custom_fields"];
+
+const isActivityTabKey = (key: string | null | undefined): key is TActivityTabKey =>
+  !!key && (ACTIVITY_TAB_KEYS as string[]).includes(key);
+
+const isFeedTab = (key: TActivityTabKey): key is TFeedTabKey =>
+  Object.prototype.hasOwnProperty.call(ACTIVITY_TAB_FILTERS, key);
 
 export type TActivityOperations = {
   createComment: (data: Partial<TIssueComment>) => Promise<TIssueComment>;
@@ -59,32 +70,63 @@ export type TActivityOperations = {
 
 export const IssueActivity = observer(function IssueActivity(props: TIssueActivity) {
   const { workspaceSlug, projectId, issueId, disabled = false, isIntakeIssue = false } = props;
+  // i18n
+  const { t } = useTranslation();
   // hooks
-  const { setValue: setActiveTab, storedValue: storedTab } = useLocalStorage<TActivityTab>("issue_activity_tab", "all");
-  const activeTab: TActivityTab = storedTab ?? "all";
+  const { setValue: setFilterValue, storedValue: selectedFilters } = useLocalStorage(
+    "issue_activity_filters",
+    defaultActivityFilters
+  );
   const { setValue: setSortOrder, storedValue: sortOrder } = useLocalStorage("activity_sort_order", E_SORT_ORDER.ASC);
-  // store hooks
+
+  const { getProjectById } = useProject();
   const {
     issue: { getIssueById },
   } = useIssueDetail();
   const { getProjectRoleByWorkspaceSlugAndProjectId } = useUserPermissions();
-  const { getProjectById } = useProject();
   const { data: currentUser } = useUser();
-  // derived values
+  // Time is logged by the people on the work item, or a project admin; never on an intake item.
   const issue = issueId ? getIssueById(issueId) : undefined;
   const currentUserProjectRole = getProjectRoleByWorkspaceSlugAndProjectId(workspaceSlug, projectId);
-  const isAdmin = currentUserProjectRole === EUserPermissions.ADMIN;
-  const isGuest = currentUserProjectRole === EUserPermissions.GUEST;
-  const isAssigned = issue?.assignee_ids && currentUser?.id ? issue?.assignee_ids.includes(currentUser?.id) : false;
-  const isWorklogButtonEnabled = !isIntakeIssue && !isGuest && (isAdmin || isAssigned);
-  // intake issues don't support worklogs, so drop that tab there
-  const tabs: TActivityTab[] = isIntakeIssue
-    ? ["all", "activity", "comments", "custom_fields"]
-    : ["all", "activity", "comments", "worklogs", "custom_fields"];
-  const selectedFilters: TActivityFilters[] =
-    activeTab === "worklogs" || activeTab === "custom_fields" ? [] : TAB_FILTER_MAP[activeTab];
-  // comment composer only makes sense on the All and Comments tabs
-  const showCommentBox = !disabled && (activeTab === "all" || activeTab === "comments");
+  const isAssigned = !!currentUser?.id && !!issue?.assignee_ids?.includes(currentUser.id);
+  const isWorklogButtonEnabled =
+    !isIntakeIssue &&
+    currentUserProjectRole !== EUserPermissions.GUEST &&
+    (currentUserProjectRole === EUserPermissions.ADMIN || isAssigned);
+
+  const { setValue: setActiveTabKey, storedValue: storedActiveTabKey } = useLocalStorage<string>(
+    "issue_activity_active_tab",
+    DEFAULT_ACTIVITY_TAB
+  );
+  const tabIdPrefix = useId();
+
+  const activityTabs: TActivityTab<TActivityTabKey>[] = [
+    { key: "all", label: t("common.all") },
+    { key: "activity", label: t("common.activity") },
+    { key: "comment", label: t("common.comments") },
+    // intake items keep no time
+    ...(isIntakeIssue ? [] : [{ key: "worklogs" as const, label: t("common.worklogs") }]),
+    { key: "custom_fields", label: t("common.custom_fields") },
+  ];
+  const storedTab = isActivityTabKey(storedActiveTabKey) ? storedActiveTabKey : DEFAULT_ACTIVITY_TAB;
+  const activeTabKey: TActivityTabKey = isIntakeIssue && storedTab === "worklogs" ? DEFAULT_ACTIVITY_TAB : storedTab;
+  const activeTabFilters = isFeedTab(activeTabKey) ? ACTIVITY_TAB_FILTERS[activeTabKey] : [];
+  // Filters chosen in the filter menu, narrowed to the active tab. Falls back to the whole tab when
+  // none of the chosen filters belong to it, so a tab never renders empty because of another tab's choice.
+  const chosenTabFilters = activeTabFilters.filter((filter) =>
+    (selectedFilters ?? defaultActivityFilters).includes(filter)
+  );
+  const effectiveFilters = chosenTabFilters.length > 0 ? chosenTabFilters : activeTabFilters;
+
+  // toggle filter within the active tab
+  const toggleFilter = (filter: TActivityFilters) => {
+    const nextTabFilters = effectiveFilters.includes(filter)
+      ? effectiveFilters.filter((f) => f !== filter)
+      : [...effectiveFilters, filter];
+    if (nextTabFilters.length === 0) return; // Ensure at least one filter is applied
+    const otherFilters = (selectedFilters ?? defaultActivityFilters).filter((f) => !activeTabFilters.includes(f));
+    setFilterValue(uniq([...otherFilters, ...nextTabFilters]));
+  };
 
   const toggleSortOrder = () => {
     setSortOrder(sortOrder === E_SORT_ORDER.ASC ? E_SORT_ORDER.DESC : E_SORT_ORDER.ASC);
@@ -100,7 +142,6 @@ export const IssueActivity = observer(function IssueActivity(props: TIssueActivi
         workspaceSlug={workspaceSlug}
         entityId={issueId}
         activityOperations={activityOperations}
-        showToolbarInitially
         projectId={projectId}
       />
     ),
@@ -108,33 +149,55 @@ export const IssueActivity = observer(function IssueActivity(props: TIssueActivi
   );
   if (!project) return <></>;
 
+  const tabPanelId = getActivityTabPanelId(tabIdPrefix);
+  // the comment composer belongs to the tabs that show comments
+  const showCommentBox = !disabled && (activeTabKey === "all" || activeTabKey === "comment");
+
   return (
-    <div className="space-y-4">
-      {/* header: tab bar + actions — the tab strip absorbs the narrow-screen squeeze
-          (it scrolls internally) so the actions stay put and reachable */}
-      <div className="flex items-end justify-between gap-2">
-        <ActivityTabBar activeTab={activeTab} setActiveTab={setActiveTab} tabs={tabs} />
-        <div className="flex shrink-0 items-center gap-2 pb-1">
-          {isWorklogButtonEnabled && (
-            <IssueActivityWorklogCreateButton
-              workspaceSlug={workspaceSlug}
-              projectId={projectId}
-              issueId={issueId}
-              disabled={disabled}
-            />
-          )}
-          {activeTab !== "worklogs" && activeTab !== "custom_fields" && (
-            <ActivitySortRoot sortOrder={sortOrder || E_SORT_ORDER.ASC} toggleSort={toggleSortOrder} />
-          )}
-        </div>
-      </div>
+    <div className="py-8">
+      <ActivityTabs
+        tabs={activityTabs}
+        activeTab={activeTabKey}
+        onTabChange={(key) => setActiveTabKey(key)}
+        idPrefix={tabIdPrefix}
+        ariaLabel={t("common.activity")}
+        actionsElement={
+          <>
+            {isWorklogButtonEnabled && (
+              <IssueActivityWorklogCreateButton
+                workspaceSlug={workspaceSlug}
+                projectId={projectId}
+                issueId={issueId}
+                disabled={disabled}
+              />
+            )}
+            {activeTabFilters.length > 1 && (
+              <ActivityFilterRoot
+                selectedFilters={effectiveFilters}
+                toggleFilter={toggleFilter}
+                isIntakeIssue={isIntakeIssue}
+                projectId={projectId}
+                filterKeys={activeTabFilters}
+              />
+            )}
+            {isFeedTab(activeTabKey) && (
+              <ActivitySortRoot sortOrder={sortOrder || E_SORT_ORDER.ASC} toggleSort={toggleSortOrder} />
+            )}
+          </>
+        }
+      />
 
       {/* rendering activity */}
-      <div className="space-y-3">
+      <div
+        id={tabPanelId}
+        role="tabpanel"
+        aria-labelledby={getActivityTabId(tabIdPrefix, activeTabKey)}
+        className="flex flex-col gap-5 py-6"
+      >
         <div className="min-h-[200px]">
-          {activeTab === "worklogs" ? (
+          {activeTabKey === "worklogs" ? (
             <IssueWorklogList workspaceSlug={workspaceSlug} projectId={projectId} issueId={issueId} />
-          ) : activeTab === "custom_fields" ? (
+          ) : activeTabKey === "custom_fields" ? (
             <IssueCustomFieldsTab
               workspaceSlug={workspaceSlug}
               projectId={projectId}
@@ -149,7 +212,7 @@ export const IssueActivity = observer(function IssueActivity(props: TIssueActivi
                 workspaceSlug={workspaceSlug}
                 isIntakeIssue={isIntakeIssue}
                 issueId={issueId}
-                selectedFilters={selectedFilters}
+                selectedFilters={effectiveFilters}
                 activityOperations={activityOperations}
                 showAccessSpecifier={!!project.anchor}
                 disabled={disabled}

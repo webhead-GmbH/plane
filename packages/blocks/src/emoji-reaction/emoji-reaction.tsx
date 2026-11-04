@@ -10,9 +10,9 @@ import { AnimatedCounter } from "./animated-counter";
 import { stringToEmoji } from "../emoji-icon-picker/helper";
 import { ReactionOutline } from "@makeplane/propel/icons";
 import { Tooltip } from "@makeplane/propel/components/tooltip";
-import { IconButton as IconButtonBox } from "@makeplane/propel/elements/icon-button";
 import { useTranslation } from "@plane/i18n";
 import { cn } from "@plane/utils";
+import { IconButton } from "@makeplane/propel/components/icon-button";
 
 export type EmojiReactionType = {
   emoji: string;
@@ -33,11 +33,17 @@ export type EmojiReactionProps = React.ComponentPropsWithRef<"button"> & {
 export type EmojiReactionGroupProps = React.ComponentPropsWithRef<"div"> & {
   reactions: EmojiReactionType[];
   onReactionClick?: (emoji: string) => void;
+  onAddReaction?: () => void;
   showAddButton?: boolean;
+  /** Compose the add action separately so reaction buttons remain independent of its popover. */
+  addReactionButton?: React.ReactElement<{ disabled?: boolean }>;
+  disabled?: boolean;
   maxDisplayUsers?: number;
 };
 
-export type EmojiReactionButtonProps = React.ComponentPropsWithRef<"span">;
+export type EmojiReactionButtonProps = React.ComponentPropsWithRef<"button"> & {
+  onAddReaction?: () => void;
+};
 
 // one shared empty list, so a reaction without users does not hand its memo a new array each render
 const NO_USERS: string[] = [];
@@ -55,6 +61,8 @@ const EmojiReaction = React.forwardRef(function EmojiReaction(
   }: EmojiReactionProps,
   ref: React.ForwardedRef<HTMLButtonElement>
 ) {
+  const { t } = useTranslation();
+
   const handleClick = () => {
     onReactionClick?.(emoji);
   };
@@ -77,6 +85,8 @@ const EmojiReaction = React.forwardRef(function EmojiReaction(
       ref={ref}
       type="button"
       onClick={handleClick}
+      aria-label={`${t("common.actions.add_reaction")}: ${emoji}${showCount && count > 0 ? ` (${count})` : ""}`}
+      aria-pressed={reacted}
       className={cn(
         "inline-flex items-center gap-0.5 rounded-full border px-1.5 text-caption-sm-regular transition-all duration-200",
         reacted
@@ -104,23 +114,27 @@ const EmojiReaction = React.forwardRef(function EmojiReaction(
   return button;
 });
 
-// This is always the content of the emoji picker's trigger button, so it is the icon button's box
-// rendered as a span: a button cannot contain a button, and the trigger is what opens the picker.
-// The visually hidden label is what gives that trigger button its accessible name.
 const EmojiReactionButton = React.forwardRef(function EmojiReactionButton(
-  { className, ...props }: EmojiReactionButtonProps,
-  ref: React.ForwardedRef<HTMLSpanElement>
+  { onAddReaction, className, ...props }: EmojiReactionButtonProps,
+  ref: React.ForwardedRef<HTMLButtonElement>
 ) {
   // plane hooks
   const { t } = useTranslation();
 
   return (
+    // propel: `IconButton` takes an icon ELEMENT, a required `aria-label` and no className —
+    // the caller's class rides a wrapper.
     <Tooltip label={t("common.actions.add_reaction")}>
-      <span ref={ref} className={cn("inline-flex", className)} {...props}>
-        <IconButtonBox render={<span />} variant="ghost" size="xs">
-          <PropelIcon icon={<ReactionOutline className="size-3.5" />} />
-        </IconButtonBox>
-        <span className="sr-only">{t("common.actions.add_reaction")}</span>
+      <span className={className}>
+        <IconButton
+          ref={ref}
+          icon={<PropelIcon icon={<ReactionOutline className="size-3.5" />} />}
+          variant="ghost"
+          size="xs"
+          aria-label={t("common.actions.add_reaction")}
+          onClick={onAddReaction}
+          {...props}
+        />
       </span>
     </Tooltip>
   );
@@ -130,8 +144,11 @@ const EmojiReactionGroup = React.forwardRef(function EmojiReactionGroup(
   {
     reactions,
     onReactionClick,
+    onAddReaction,
     className,
     showAddButton = true,
+    addReactionButton,
+    disabled = false,
     maxDisplayUsers = 5,
     ...props
   }: EmojiReactionGroupProps,
@@ -147,9 +164,15 @@ const EmojiReactionGroup = React.forwardRef(function EmojiReactionGroup(
           reacted={reaction.reacted}
           users={reaction.users?.slice(0, maxDisplayUsers)}
           onReactionClick={onReactionClick}
+          disabled={disabled}
         />
       ))}
-      {showAddButton && <EmojiReactionButton />}
+      {showAddButton &&
+        (addReactionButton ? (
+          React.cloneElement(addReactionButton, { disabled: disabled || addReactionButton.props.disabled })
+        ) : (
+          <EmojiReactionButton onAddReaction={onAddReaction} disabled={disabled} />
+        ))}
     </div>
   );
 });

@@ -7,6 +7,8 @@
     }
   },
   "sidebar": {
+    "more": "Más",
+    "hide": "Ocultar",
     "stickies": "Notas adhesivas",
     "your_work": "Tu trabajo",
     "my_time": "Mi tiempo",
