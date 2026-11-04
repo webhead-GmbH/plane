@@ -61,7 +61,7 @@ export const IssueAttachmentsListItem = observer(function IssueAttachmentsListIt
           around the list, which would open the file picker. */}
       <button
         type="button"
-        className="flex h-full min-w-0 flex-1 items-center gap-3 truncate pl-3 text-left text-13"
+        className="flex h-full min-w-0 flex-1 items-center gap-3 truncate pl-3 text-left text-body-xs-regular"
         onClick={(e) => {
           e.stopPropagation();
           window.open(fileURL, "_blank", "noopener,noreferrer");
@@ -75,7 +75,11 @@ export const IssueAttachmentsListItem = observer(function IssueAttachmentsListIt
         <span className="shrink-0 text-placeholder">{convertBytesToSize(attachment.attributes.size)}</span>
       </button>
 
-      <div role="presentation" className="flex h-full items-center gap-3 px-3" onClick={(e) => e.stopPropagation()}>
+      <div
+        role="presentation"
+        className="flex h-full items-center gap-3 pr-2 pl-3"
+        onClick={(e) => e.stopPropagation()}
+      >
         {attachment?.created_by && (
           <Tooltip
             label={`${

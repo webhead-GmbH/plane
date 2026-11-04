@@ -23,7 +23,7 @@ export function EditorAIResponseActions(props: Props) {
     <div className="mt-3 flex items-center gap-4">
       <button
         type="button"
-        className="rounded-sm p-1 text-13 font-medium text-tertiary outline-none hover:bg-layer-1"
+        className="rounded-sm p-1 text-body-xs-medium text-tertiary outline-none hover:bg-layer-1"
         onClick={() => handleInsertText(false)}
       >
         Replace selection

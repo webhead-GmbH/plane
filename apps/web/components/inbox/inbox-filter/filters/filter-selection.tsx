@@ -4,10 +4,7 @@
  * See the LICENSE file for details.
  */
 
-import { useState } from "react";
 import { observer } from "mobx-react";
-// components
-import { FiltersSearchInput } from "@/components/common/filters/search-input";
 // hooks
 import { useLabel } from "@/hooks/store/use-label";
 import { useMember } from "@/hooks/store/use-member";
@@ -24,53 +21,23 @@ export const InboxIssueFilterSelection = observer(function InboxIssueFilterSelec
     project: { projectMemberIds },
   } = useMember();
   const { projectLabels } = useLabel();
-  // states
-  const [filtersSearchQuery, setFiltersSearchQuery] = useState("");
 
   return (
-    <div className="flex h-full w-full flex-col overflow-hidden">
-      <FiltersSearchInput searchQuery={filtersSearchQuery} onSearchQueryChange={setFiltersSearchQuery} />
-
-      <div className="vertical-scrollbar scrollbar-sm h-full w-full divide-y divide-subtle-1 overflow-y-auto px-2.5">
-        {/* status */}
-        <div className="py-2">
-          <FilterStatus searchQuery={filtersSearchQuery} />
-        </div>
-        {/* Priority */}
-        <div className="py-2">
-          <FilterPriority searchQuery={filtersSearchQuery} />
-        </div>
-        {/* assignees */}
-        <div className="py-2">
-          <FilterMember
-            filterKey="assignees"
-            label="Assignees"
-            searchQuery={filtersSearchQuery}
-            memberIds={projectMemberIds ?? []}
-          />
-        </div>
-        {/* Created By */}
-        <div className="py-2">
-          <FilterMember
-            filterKey="created_by"
-            label="Created By"
-            searchQuery={filtersSearchQuery}
-            memberIds={projectMemberIds ?? []}
-          />
-        </div>
-        {/* Labels */}
-        <div className="py-2">
-          <FilterLabels searchQuery={filtersSearchQuery} labels={projectLabels ?? []} />
-        </div>
-        {/* Created at */}
-        <div className="py-2">
-          <FilterDate filterKey="created_at" label="Created date" searchQuery={filtersSearchQuery} />
-        </div>
-        {/* Updated at */}
-        <div className="py-2">
-          <FilterDate filterKey="updated_at" label="Last updated date" searchQuery={filtersSearchQuery} />
-        </div>
-      </div>
-    </div>
+    <>
+      {/* status */}
+      <FilterStatus />
+      {/* Priority */}
+      <FilterPriority />
+      {/* assignees */}
+      <FilterMember filterKey="assignees" label="Assignees" memberIds={projectMemberIds ?? []} />
+      {/* Created By */}
+      <FilterMember filterKey="created_by" label="Created By" memberIds={projectMemberIds ?? []} />
+      {/* Labels */}
+      <FilterLabels labels={projectLabels ?? []} />
+      {/* Created at */}
+      <FilterDate filterKey="created_at" label="Created date" />
+      {/* Updated at */}
+      <FilterDate filterKey="updated_at" label="Last updated date" />
+    </>
   );
 });

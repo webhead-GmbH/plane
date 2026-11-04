@@ -5,24 +5,22 @@
  */
 
 import { observer } from "mobx-react";
-import { CloseOutline } from "@makeplane/propel/icons";
 // plane ui
 import { Avatar } from "@makeplane/propel/components/avatar";
 // helpers
-import { cn, getFileURL } from "@plane/utils";
+import { getFileURL } from "@plane/utils";
 // types
 import { useMember } from "@/hooks/store/use-member";
+import { RemovableChip } from "@/components/common/removable-chip";
 
 type Props = {
   handleRemove: (val: string) => void;
   values: string[];
   editable: boolean | undefined;
-  /** Uses the tighter chip padding of the work item and module filter lists. */
-  compact?: boolean;
 };
 
 export const AppliedMembersFilters = observer(function AppliedMembersFilters(props: Props) {
-  const { handleRemove, values, editable, compact = false } = props;
+  const { handleRemove, values, editable } = props;
   // store hooks
   const {
     workspace: { getWorkspaceMemberDetails },
@@ -36,27 +34,21 @@ export const AppliedMembersFilters = observer(function AppliedMembersFilters(pro
         if (!memberDetails) return null;
 
         return (
-          <div
+          <RemovableChip
             key={memberId}
-            className={cn("flex items-center gap-1 rounded-sm bg-layer-1", compact ? "p-1" : "px-1.5 py-1", "text-11")}
-          >
-            <Avatar
-              alt={memberDetails.display_name}
-              fallback={memberDetails.display_name?.[0]?.toUpperCase()}
-              src={getFileURL(memberDetails.avatar_url)}
-              size="2xs"
-            />
-            <span className="normal-case">{memberDetails.display_name}</span>
-            {editable && (
-              <button
-                type="button"
-                className="grid place-items-center text-tertiary hover:text-secondary"
-                onClick={() => handleRemove(memberId)}
-              >
-                <CloseOutline height={10} width={10} />
-              </button>
-            )}
-          </div>
+            variant="soft"
+            icon={
+              <Avatar
+                alt={memberDetails.display_name}
+                fallback={memberDetails.display_name?.[0]?.toUpperCase()}
+                src={getFileURL(memberDetails.avatar_url)}
+                size="2xs"
+              />
+            }
+            label={memberDetails.display_name}
+            ariaLabel={memberDetails.display_name}
+            onRemove={editable ? () => handleRemove(memberId) : undefined}
+          />
         );
       })}
     </>

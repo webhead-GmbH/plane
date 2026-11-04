@@ -7,25 +7,27 @@
 import { useMemo, useState } from "react";
 import { observer } from "mobx-react";
 import { useSearchParams } from "next/navigation";
-import { Collapsible } from "@makeplane/propel/components/collapsible";
 import { WarningCircleOutline } from "@makeplane/propel/icons";
 import { EEstimateSystem } from "@plane/constants";
 import { useTranslation } from "@plane/i18n";
-import type { IModule, TModulePlotType } from "@plane/types";
+import type { TModulePlotType, TStateGroups } from "@plane/types";
 import { EIssuesStoreType } from "@plane/types";
 import { Select } from "@plane/blocks/select";
 import { Spinner } from "@plane/blocks/spinner";
 // components
 // constants
 // helpers
-import { getDate } from "@plane/utils";
-import ProgressChart from "@/components/core/sidebar/progress-chart";
+import { getDate, toFilterArray } from "@plane/utils";
+import { createFilterUpdateHandler } from "@/components/core/sidebar/progress-stats/shared";
 import { ModuleProgressStats } from "@/components/modules";
 // hooks
 import { useProjectEstimates } from "@/hooks/store/estimates";
 import { useModule } from "@/hooks/store/use-module";
 import { useWorkItemFilters } from "@/hooks/store/work-item-filters/use-work-item-filters";
-// plane web constants
+// local imports
+import { ModuleProgressSummary } from "./progress-summary";
+import { ModuleSidebarGroup } from "./sidebar-group";
+
 type TModuleAnalyticsProgress = {
   workspaceSlug: string;
   projectId: string;
@@ -39,83 +41,37 @@ const moduleBurnDownChartOptions: PlotTypeOption[] = [
   { value: "points", i18n_label: "points" },
 ];
 
-const getModuleProgressTotals = (moduleDetails: IModule | null, plotType: TModulePlotType) => {
-  const completedIssues = moduleDetails?.completed_issues || 0;
-  const totalIssues = moduleDetails?.total_issues || 0;
-  const completedEstimatePoints = moduleDetails?.completed_estimate_points || 0;
-  const totalEstimatePoints = moduleDetails?.total_estimate_points || 0;
-  const progressHeaderPercentage = moduleDetails
-    ? plotType === "points"
-      ? completedEstimatePoints != 0 && totalEstimatePoints != 0
-        ? Math.round((completedEstimatePoints / totalEstimatePoints) * 100)
-        : 0
-      : completedIssues != 0 && totalIssues != 0
-        ? Math.round((completedIssues / totalIssues) * 100)
-        : 0
-    : 0;
-
-  return { totalIssues, totalEstimatePoints, progressHeaderPercentage };
-};
-
-const getModuleDateDetails = (moduleDetails: IModule | null) => {
-  const moduleStartDate = getDate(moduleDetails?.start_date);
-  const moduleEndDate = getDate(moduleDetails?.target_date);
-  const isModuleStartDateValid = moduleStartDate && moduleStartDate <= new Date();
-  const isModuleEndDateValid = moduleStartDate && moduleEndDate && moduleEndDate >= moduleStartDate;
-  const isModuleDateValid = isModuleStartDateValid && isModuleEndDateValid;
-
-  return { moduleStartDate, moduleEndDate, isModuleDateValid };
-};
-
-type TModuleProgressChartProps = {
-  moduleDetails: IModule;
-  plotType: TModulePlotType;
-  moduleStartDate: Date | undefined;
-  moduleEndDate: Date | undefined;
-};
-
-// The burn-down chart, in points or work items as the plot type says.
-function ModuleProgressChart(props: TModuleProgressChartProps) {
-  const { moduleDetails, plotType, moduleStartDate, moduleEndDate } = props;
-  const { totalIssues, totalEstimatePoints } = getModuleProgressTotals(moduleDetails, plotType);
-  const chartDistributionData =
-    plotType === "points" ? moduleDetails?.estimate_distribution : moduleDetails?.distribution || undefined;
-  const completionChartDistributionData = chartDistributionData?.completion_chart || undefined;
-
-  if (!moduleStartDate || !moduleEndDate || !completionChartDistributionData) return null;
-
-  return plotType === "points" ? (
-    <ProgressChart
-      distribution={completionChartDistributionData}
-      totalIssues={totalEstimatePoints}
-      plotTitle={"points"}
-    />
-  ) : (
-    <ProgressChart distribution={completionChartDistributionData} totalIssues={totalIssues} plotTitle={"work items"} />
-  );
-}
-
-type TModuleProgressDetailsProps = {
-  moduleId: string;
-  moduleDetails: IModule;
-  plotType: TModulePlotType;
-  isEditable: boolean;
-};
-
-// The per-state figures (work items or estimate points) and the filters they drive.
-const ModuleProgressDetails = observer(function ModuleProgressDetails(props: TModuleProgressDetailsProps) {
-  const { moduleId, moduleDetails, plotType, isEditable } = props;
-  // store hooks
+export const ModuleAnalyticsProgress = observer(function ModuleAnalyticsProgress(props: TModuleAnalyticsProgress) {
+  // props
+  const { workspaceSlug, projectId, moduleId } = props;
+  // router
+  const searchParams = useSearchParams();
+  const peekModule = searchParams.get("peekModule") || undefined;
+  // plane hooks
+  const { t } = useTranslation();
+  // hooks
+  const { areEstimateEnabledByProjectId, currentActiveEstimateId, estimateById } = useProjectEstimates();
+  const { getPlotTypeByModuleId, setPlotType, getModuleById, fetchModuleDetails, fetchArchivedModuleDetails } =
+    useModule();
   const { getFilter, updateFilterValueFromSidebar } = useWorkItemFilters();
+  // state
+  const [loader, setLoader] = useState(false);
   // derived values
   const moduleFilter = getFilter(EIssuesStoreType.MODULE, moduleId);
   const selectedAssignees = moduleFilter?.findFirstConditionByPropertyAndOperator("assignee_id", "in");
   const selectedLabels = moduleFilter?.findFirstConditionByPropertyAndOperator("label_id", "in");
   const selectedStateGroups = moduleFilter?.findFirstConditionByPropertyAndOperator("state_group", "in");
-  const { totalIssues, totalEstimatePoints } = getModuleProgressTotals(moduleDetails, plotType);
+  const moduleDetails = getModuleById(moduleId);
+  const plotType: TModulePlotType = getPlotTypeByModuleId(moduleId);
+  const isCurrentProjectEstimateEnabled = projectId && areEstimateEnabledByProjectId(projectId) ? true : false;
+  const estimateDetails =
+    isCurrentProjectEstimateEnabled && currentActiveEstimateId && estimateById(currentActiveEstimateId);
+  const isCurrentEstimateTypeIsPoints = estimateDetails && estimateDetails?.type === EEstimateSystem.POINTS;
+  const totalIssues = moduleDetails?.total_issues || 0;
+  const totalEstimatePoints = moduleDetails?.total_estimate_points || 0;
   const chartDistributionData =
     plotType === "points" ? moduleDetails?.estimate_distribution : moduleDetails?.distribution || undefined;
-  const groupedIssues = useMemo(
+  const groupedIssues: Record<TStateGroups, number> = useMemo(
     () => ({
       backlog: plotType === "points" ? moduleDetails?.backlog_estimate_points || 0 : moduleDetails?.backlog_issues || 0,
       unstarted:
@@ -128,56 +84,26 @@ const ModuleProgressDetails = observer(function ModuleProgressDetails(props: TMo
     }),
     [plotType, moduleDetails]
   );
-
-  if (!chartDistributionData) return null;
-
-  return (
-    <div className="w-full border-t border-subtle pt-5">
-      <ModuleProgressStats
-        distribution={chartDistributionData}
-        groupedIssues={groupedIssues}
-        handleFiltersUpdate={updateFilterValueFromSidebar.bind(
-          updateFilterValueFromSidebar,
-          EIssuesStoreType.MODULE,
-          moduleId
-        )}
-        isEditable={isEditable && moduleFilter !== undefined}
-        moduleId={moduleId}
-        plotType={plotType}
-        selectedFilters={{
-          assignees: selectedAssignees,
-          labels: selectedLabels,
-          stateGroups: selectedStateGroups,
-        }}
-        totalIssuesCount={plotType === "points" ? totalEstimatePoints || 0 : totalIssues || 0}
-      />
-    </div>
+  const moduleStartDate = getDate(moduleDetails?.start_date);
+  const moduleEndDate = getDate(moduleDetails?.target_date);
+  const isModuleStartDateValid = moduleStartDate && moduleStartDate <= new Date();
+  const isModuleEndDateValid = moduleStartDate && moduleEndDate && moduleEndDate >= moduleStartDate;
+  const isModuleDateValid = isModuleStartDateValid && isModuleEndDateValid;
+  const isArchived = !!moduleDetails?.archived_at;
+  // Progress follows the plot type; cancelled items are left out of the scope.
+  const progressTotal = plotType === "points" ? totalEstimatePoints : totalIssues;
+  const progressScope = Math.max(progressTotal - groupedIssues.cancelled, 0);
+  const progressCompleted = Math.min(groupedIssues.completed, progressScope);
+  const progressPercentage = progressScope > 0 ? Math.round((progressCompleted * 100) / progressScope) : 0;
+  // The sidebar filters only apply on the module's own page, not in the peek overview.
+  const isFilterable = !peekModule && moduleFilter !== undefined;
+  const handleFiltersUpdate = updateFilterValueFromSidebar.bind(
+    updateFilterValueFromSidebar,
+    EIssuesStoreType.MODULE,
+    moduleId
   );
-});
-
-type TModulePlotTypeSelectProps = {
-  workspaceSlug: string;
-  projectId: string;
-  moduleId: string;
-  plotType: TModulePlotType;
-  isArchived: boolean;
-};
-
-// Points or work items, offered only when the project estimates in points. Switching refetches the module.
-const ModulePlotTypeSelect = observer(function ModulePlotTypeSelect(props: TModulePlotTypeSelectProps) {
-  const { workspaceSlug, projectId, moduleId, plotType, isArchived } = props;
-  // plane hooks
-  const { t } = useTranslation();
-  // store hooks
-  const { areEstimateEnabledByProjectId, currentActiveEstimateId, estimateById } = useProjectEstimates();
-  const { setPlotType, fetchModuleDetails, fetchArchivedModuleDetails } = useModule();
   // state
-  const [loader, setLoader] = useState(false);
-  // derived values
-  const isCurrentProjectEstimateEnabled = projectId && areEstimateEnabledByProjectId(projectId) ? true : false;
-  const estimateDetails =
-    isCurrentProjectEstimateEnabled && currentActiveEstimateId && estimateById(currentActiveEstimateId);
-  const isCurrentEstimateTypeIsPoints = estimateDetails && estimateDetails?.type === EEstimateSystem.POINTS;
+  const [isOpen, setIsOpen] = useState(true);
 
   // handlers
   const onChange = async (value: TModulePlotType) => {
@@ -197,111 +123,87 @@ const ModulePlotTypeSelect = observer(function ModulePlotTypeSelect(props: TModu
     }
   };
 
-  if (!isCurrentEstimateTypeIsPoints) return null;
-
-  return (
-    <div className="flex items-center gap-2">
-      <Select<PlotTypeOption>
-        getValues={() => moduleBurnDownChartOptions}
-        value={moduleBurnDownChartOptions.find((v) => v.value === plotType) ?? null}
-        onChange={(val) => void onChange(val as TModulePlotType)}
-        getOptionValue={(option) => option.value}
-        getOptionLabel={(option) => t(option.i18n_label)}
-        showSearch={false}
-        pinSelected={false}
-      >
-        <Select.Trigger variant="select-md" className="w-auto">
-          <span>{t(moduleBurnDownChartOptions.find((v) => v.value === plotType)?.i18n_label || "none")}</span>
-        </Select.Trigger>
-      </Select>
-      {loader && <Spinner className="h-3 w-3" />}
-    </div>
-  );
-});
-
-export const ModuleAnalyticsProgress = observer(function ModuleAnalyticsProgress(props: TModuleAnalyticsProgress) {
-  // props
-  const { workspaceSlug, projectId, moduleId } = props;
-  // router
-  const searchParams = useSearchParams();
-  const peekModule = searchParams.get("peekModule") || undefined;
-  // plane hooks
-  const { t } = useTranslation();
-  // hooks
-  const { getPlotTypeByModuleId, getModuleById } = useModule();
-  // derived values
-  const moduleDetails = getModuleById(moduleId);
-  const plotType: TModulePlotType = getPlotTypeByModuleId(moduleId);
-  const { progressHeaderPercentage } = getModuleProgressTotals(moduleDetails, plotType);
-  const { moduleStartDate, moduleEndDate, isModuleDateValid } = getModuleDateDetails(moduleDetails);
-  const isArchived = !!moduleDetails?.archived_at;
-  // state
-  const [isOpen, setIsOpen] = useState(!!isModuleDateValid);
-
   if (!moduleDetails) return <></>;
 
-  const progressBody = (
-    <div className="space-y-4">
-      {/* progress burndown chart */}
-      <div>
-        <ModuleProgressChart
-          moduleDetails={moduleDetails}
-          plotType={plotType}
-          moduleStartDate={moduleStartDate}
-          moduleEndDate={moduleEndDate}
-        />
-      </div>
-
-      {/* progress detailed view */}
-      <ModuleProgressDetails
-        moduleId={moduleId}
-        moduleDetails={moduleDetails}
-        plotType={plotType}
-        isEditable={!peekModule}
-      />
-    </div>
+  const selectedStateGroupValues = toFilterArray(selectedStateGroups?.value || []) as string[];
+  const handleStateGroupFilterUpdate = createFilterUpdateHandler(
+    "state_group",
+    selectedStateGroupValues,
+    handleFiltersUpdate
   );
 
-  return (
-    <div className="space-y-4 border-t border-subtle px-3 py-4">
-      {/* progress bar header */}
+  const progressBody = (
+    <div className="flex flex-col gap-5">
+      <ModuleProgressSummary
+        plotType={plotType}
+        stateGroupCounts={groupedIssues}
+        total={progressTotal}
+        percentage={progressPercentage}
+        completed={progressCompleted}
+        scope={progressScope}
+        isFilterable={isFilterable}
+        selectedStateGroups={selectedStateGroupValues}
+        onStateGroupClick={handleStateGroupFilterUpdate}
+      />
+
       {isModuleDateValid ? (
-        <Collapsible
-          open={isOpen}
-          onOpenChange={setIsOpen}
-          trigger={
-            <span className="relative flex w-full items-center gap-2">
-              <span className="text-13 font-medium text-secondary">{t("common.progress")}</span>
-              {progressHeaderPercentage > 0 && (
-                <span className="bg-amber-500/20 text-amber-500 flex h-5 w-9 items-center justify-center rounded-sm text-11 font-medium">{`${progressHeaderPercentage}%`}</span>
-              )}
-            </span>
-          }
-          trailing={
-            <ModulePlotTypeSelect
-              workspaceSlug={workspaceSlug}
-              projectId={projectId}
-              moduleId={moduleId}
-              plotType={plotType}
-              isArchived={isArchived}
-            />
-          }
-        >
-          {progressBody}
-        </Collapsible>
+        // assignee and label breakdown
+        chartDistributionData && (
+          <ModuleProgressStats
+            distribution={chartDistributionData}
+            handleFiltersUpdate={handleFiltersUpdate}
+            isEditable={isFilterable}
+            moduleId={moduleId}
+            plotType={plotType}
+            selectedFilters={{
+              assignees: selectedAssignees,
+              labels: selectedLabels,
+            }}
+          />
+        )
       ) : (
-        <div className="relative flex w-full items-center justify-between gap-2">
-          <div className="text-13 font-medium text-secondary">Progress</div>
-          <div className="flex items-center gap-1">
-            <WarningCircleOutline height={14} width={14} className="text-secondary" />
-            <span className="text-11 text-secondary italic">
-              {moduleDetails?.start_date && moduleDetails?.target_date
-                ? t("project_module.empty_state.sidebar.in_active")
-                : t("project_module.empty_state.sidebar.invalid_date")}
-            </span>
-          </div>
+        <div className="flex items-center gap-1">
+          <WarningCircleOutline height={14} width={14} className="shrink-0 text-secondary" />
+          <span className="text-caption-sm-regular text-secondary italic">
+            {moduleDetails?.start_date && moduleDetails?.target_date
+              ? t("project_module.empty_state.sidebar.in_active")
+              : t("project_module.empty_state.sidebar.invalid_date")}
+          </span>
         </div>
       )}
     </div>
+  );
+
+  return (
+    <ModuleSidebarGroup
+      open={isOpen}
+      onOpenChange={setIsOpen}
+      label={t("common.progress")}
+      trailing={
+        <div className="flex items-center gap-2">
+          {isCurrentEstimateTypeIsPoints && (
+            <>
+              <Select<PlotTypeOption>
+                getValues={() => moduleBurnDownChartOptions}
+                value={moduleBurnDownChartOptions.find((v) => v.value === plotType) ?? null}
+                onChange={(val) => void onChange(val as TModulePlotType)}
+                getOptionValue={(option) => option.value}
+                getOptionLabel={(option) => t(option.i18n_label)}
+                showSearch={false}
+                pinSelected={false}
+              >
+                <Select.Trigger variant="select-md" className="w-auto">
+                  <span>{t(moduleBurnDownChartOptions.find((v) => v.value === plotType)?.i18n_label || "none")}</span>
+                </Select.Trigger>
+              </Select>
+              {loader && <Spinner className="h-3 w-3" />}
+            </>
+          )}
+          <span className="text-caption-md-regular text-placeholder">{`${progressPercentage}%`}</span>
+        </div>
+      }
+    >
+      {progressBody}
+    </ModuleSidebarGroup>
   );
 });

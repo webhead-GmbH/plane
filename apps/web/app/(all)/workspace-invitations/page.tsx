@@ -5,19 +5,15 @@
  */
 
 import { observer } from "mobx-react";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import useSWR from "swr";
-import {
-  BoxesOutline,
-  CloseOutline,
-  ShareAltOutline,
-  StarOutline,
-  TickOutline,
-  UserOutline,
-} from "@makeplane/propel/icons";
+// plane imports
+import { AnchorButton } from "@makeplane/propel/components/anchor-button";
+import { Button } from "@makeplane/propel/components/button";
+import { EmptyStateDetailed } from "@plane/blocks/empty-state";
 // components
 import { LogoSpinner } from "@/components/common/logo-spinner";
-import { EmptySpace, EmptySpaceItem } from "@/components/ui/empty-space";
 // constants
 import { WORKSPACE_INVITATION } from "@plane/constants";
 // helpers
@@ -33,25 +29,48 @@ import { WorkspaceService } from "@/services/workspace.service";
 // service initialization
 const workspaceService = new WorkspaceService();
 
-function InactiveInvitationEmptySpace({ isSignedIn }: { isSignedIn: boolean }) {
+function InactiveInvitationEmptyState({ isSignedIn }: { isSignedIn: boolean }) {
   return (
-    <EmptySpace
+    <EmptyStateDetailed
+      align="center"
+      assetKey="invalid-link"
       title="This invitation link is not active anymore."
       description="Your workspace is where you'll create projects, collaborate on your work items, and organize different streams of work in your Plane account."
-      link={{ text: "Or start from an empty project", href: "/" }}
-    >
-      {isSignedIn ? (
-        <EmptySpaceItem Icon={BoxesOutline} title="Continue to home" href="/" />
-      ) : (
-        <EmptySpaceItem Icon={UserOutline} title="Sign in to continue" href="/" />
-      )}
-      <EmptySpaceItem Icon={StarOutline} title="Star us on GitHub" href="https://github.com/makeplane" />
-      <EmptySpaceItem
-        Icon={ShareAltOutline}
-        title="Join our community of active creators"
-        href="https://forum.plane.so"
-      />
-    </EmptySpace>
+      customButton={
+        <div className="flex flex-col items-center gap-4">
+          <Button
+            variant="primary"
+            size="lg"
+            stretch="auto"
+            label={isSignedIn ? "Continue to home" : "Sign in to continue"}
+            nativeButton={false}
+            render={<Link href="/" />}
+          />
+          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
+            <AnchorButton
+              variant="secondary"
+              size="md"
+              href="https://github.com/makeplane"
+              external
+              label="Star us on GitHub"
+            />
+            <AnchorButton
+              variant="secondary"
+              size="md"
+              href="https://forum.plane.so"
+              external
+              label="Join our community of active creators"
+            />
+            <AnchorButton
+              variant="secondary"
+              size="md"
+              render={<Link href="/" />}
+              label="Or start from an empty project"
+            />
+          </div>
+        </div>
+      }
+    />
   );
 }
 
@@ -108,28 +127,44 @@ function WorkspaceInvitationPage() {
       <div className="flex h-full w-full flex-col items-center justify-center px-3">
         {invitationDetail && !invitationDetail.responded_at ? (
           error ? (
-            <div className="shadow-2xl flex w-full flex-col space-y-4 rounded-sm border border-subtle bg-surface-1 px-4 py-8 text-center md:w-1/3">
-              <h2 className="text-18 uppercase">INVITATION NOT FOUND</h2>
-            </div>
+            <EmptyStateDetailed
+              align="center"
+              assetKey="invalid-link"
+              assetClassName="size-40"
+              title="INVITATION NOT FOUND"
+            />
           ) : (
-            <EmptySpace
+            <EmptyStateDetailed
+              align="center"
+              assetKey="inbox"
               title={`You have been invited to ${invitationDetail.workspace.name}`}
               description="Your workspace is where you'll create projects, collaborate on your work items, and organize different streams of work in your Plane account."
-            >
-              <EmptySpaceItem Icon={TickOutline} title="Accept" action={handleAccept} />
-              <EmptySpaceItem Icon={CloseOutline} title="Ignore" action={handleReject} />
-            </EmptySpace>
+              actions={[
+                { label: "Accept", variant: "primary", onClick: handleAccept },
+                { label: "Ignore", variant: "secondary", onClick: handleReject },
+              ]}
+            />
           )
         ) : error || invitationDetail?.responded_at ? (
           invitationDetail?.accepted ? (
-            <EmptySpace
+            <EmptyStateDetailed
+              align="center"
+              assetKey="project"
               title={`You are already a member of ${invitationDetail.workspace.name}`}
               description="Your workspace is where you'll create projects, collaborate on your work items, and organize different streams of work in your Plane account."
-            >
-              <EmptySpaceItem Icon={BoxesOutline} title="Continue to home" href="/" />
-            </EmptySpace>
+              customButton={
+                <Button
+                  variant="primary"
+                  size="lg"
+                  stretch="auto"
+                  label="Continue to home"
+                  nativeButton={false}
+                  render={<Link href="/" />}
+                />
+              }
+            />
           ) : (
-            <InactiveInvitationEmptySpace isSignedIn={!!currentUser} />
+            <InactiveInvitationEmptyState isSignedIn={!!currentUser} />
           )
         ) : (
           <div className="flex h-full w-full items-center justify-center">

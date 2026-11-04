@@ -124,7 +124,7 @@ export const UserImageUploadModal = observer(function UserImageUploadModal(props
           <DialogBody tabIndex={0}>
             <div className="space-y-5">
               <ImageUploadDropzone dropzone={dropzone} image={image} previewAlt="Avatar" value={value} />
-              <p className="text-13 text-secondary">File formats supported- .jpeg, .jpg, .png, .webp</p>
+              <p className="text-body-xs-regular text-secondary">File formats supported- .jpeg, .jpg, .png, .webp</p>
             </div>
           </DialogBody>
         </DialogMain>

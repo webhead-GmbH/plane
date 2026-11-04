@@ -10,6 +10,8 @@ import { CloseCircleOutline, HideOutline, ShowOutline } from "@makeplane/propel/
 // plane imports
 import { API_BASE_URL, E_PASSWORD_STRENGTH } from "@plane/constants";
 import { Button } from "@makeplane/propel/components/button";
+import { Icon } from "@makeplane/propel/components/icon";
+import { IconButton } from "@makeplane/propel/components/icon-button";
 import { Input } from "@makeplane/propel/components/input";
 import { AuthService } from "@plane/services";
 import { PasswordStrengthIndicator } from "@plane/blocks/auth";
@@ -62,18 +64,17 @@ type TPasswordVisibilityToggleProps = {
 
 function PasswordVisibilityToggle({ isPasswordVisible, onToggle }: TPasswordVisibilityToggleProps) {
   return (
-    <button
-      type="button"
-      aria-label={isPasswordVisible ? "Hide password" : "Show password"}
-      className="absolute right-3 hover:cursor-pointer"
-      onClick={onToggle}
-    >
-      {isPasswordVisible ? (
-        <HideOutline className="h-5 w-5 text-placeholder" />
-      ) : (
-        <ShowOutline className="h-5 w-5 text-placeholder" />
-      )}
-    </button>
+    <span className="absolute right-2">
+      <IconButton
+        type="button"
+        variant="ghost"
+        size="sm"
+        aria-label={isPasswordVisible ? "Hide password" : "Show password"}
+        aria-pressed={isPasswordVisible}
+        onClick={onToggle}
+        icon={<Icon icon={isPasswordVisible ? HideOutline : ShowOutline} />}
+      />
+    </span>
   );
 }
 
@@ -206,7 +207,7 @@ export const AuthPasswordForm = observer(function AuthPasswordForm(props: Props)
       <input type="hidden" value={passwordFormData.email} name="email" />
       <input type="hidden" value={nextPath} name="next_path" />
       <div className="space-y-1">
-        <label className="text-13 font-medium text-tertiary" htmlFor="email">
+        <label className="text-body-xs-medium text-tertiary" htmlFor="email">
           Email
         </label>
         <div className="relative flex h-10 items-center rounded-md border border-subtle bg-surface-1 px-3 [&_input]:disable-autofill-style">
@@ -235,7 +236,7 @@ export const AuthPasswordForm = observer(function AuthPasswordForm(props: Props)
       </div>
 
       <div className="space-y-1">
-        <label className="text-13 font-medium text-tertiary" htmlFor="password">
+        <label className="text-body-xs-medium text-tertiary" htmlFor="password">
           {mode === EAuthModes.SIGN_IN ? "Password" : "Set a password"}
         </label>
         <div className="relative flex h-10 items-center rounded-md border border-subtle bg-surface-1 pr-12 pl-3 [&_input]:disable-autofill-style">
@@ -263,7 +264,7 @@ export const AuthPasswordForm = observer(function AuthPasswordForm(props: Props)
 
       {mode === EAuthModes.SIGN_UP && (
         <div className="space-y-1">
-          <label className="text-13 font-medium text-tertiary" htmlFor="confirm_password">
+          <label className="text-body-xs-medium text-tertiary" htmlFor="confirm_password">
             Confirm password
           </label>
           <div className="relative flex h-10 items-center rounded-md border border-subtle bg-surface-1 pr-12 pl-3 [&_input]:disable-autofill-style">
@@ -284,7 +285,9 @@ export const AuthPasswordForm = observer(function AuthPasswordForm(props: Props)
               onToggle={() => handleShowPassword("retypePassword")}
             />
           </div>
-          {showPasswordMismatchError && <span className="text-13 text-danger-primary">Passwords don{"'"}t match</span>}
+          {showPasswordMismatchError && (
+            <span className="text-body-xs-regular text-danger-primary">Passwords don{"'"}t match</span>
+          )}
         </div>
       )}
 

@@ -87,7 +87,7 @@ function InboxIssueParentProperty(props: TInboxIssueParentProperty) {
                 <button
                   type="button"
                   tabIndex={tabIndex}
-                  className="flex h-full cursor-pointer items-center justify-between gap-1 rounded-sm border-[0.5px] border-strong px-2 py-0.5 text-11 hover:bg-layer-1"
+                  className="flex h-full cursor-pointer items-center justify-between gap-1 rounded-sm border-[0.5px] border-strong px-2 py-0.5 text-caption-sm-regular hover:bg-layer-1"
                 >
                   <ParentOutline className="h-3 w-3 flex-shrink-0" />
                   <span className="whitespace-nowrap">
@@ -111,7 +111,7 @@ function InboxIssueParentProperty(props: TInboxIssueParentProperty) {
       ) : (
         <button
           type="button"
-          className="flex h-full cursor-pointer items-center justify-between gap-1 rounded-sm border-[0.5px] border-strong px-2 py-0.5 text-11 hover:bg-layer-1"
+          className="flex h-full cursor-pointer items-center justify-between gap-1 rounded-sm border-[0.5px] border-strong px-2 py-0.5 text-caption-sm-regular hover:bg-layer-1"
           onClick={() => setParentIssueModalOpen(true)}
         >
           <ParentOutline className="h-3 w-3 flex-shrink-0" />

@@ -4,18 +4,16 @@
  * See the LICENSE file for details.
  */
 
-import { useState } from "react";
 import { observer } from "mobx-react";
 // plane imports
+import { MenuCheckboxItem, MenuSeparator } from "@makeplane/propel/components/menu";
+import { PROJECT_CREATED_AT_FILTER_OPTIONS } from "@plane/constants";
 import type { TProjectDisplayFilters, TProjectFilters } from "@plane/types";
 // components
-import { FiltersSearchInput } from "@/components/common/filters/search-input";
-import { FilterOption } from "@/components/issues/issue-layouts/filters";
+import { DateFilterSubmenu, isCustomDateFilterValue } from "@/components/common/filters/date-filter-submenu";
+import { MemberFilterSubmenu } from "@/components/common/filters/member-filter-submenu";
 // local imports
 import { FilterAccess } from "./access";
-import { FilterCreatedDate } from "./created-at";
-import { FilterLead } from "./lead";
-import { FilterMembers } from "./members";
 
 type Props = {
   displayFilters: TProjectDisplayFilters;
@@ -27,63 +25,50 @@ type Props = {
 
 export const ProjectFiltersSelection = observer(function ProjectFiltersSelection(props: Props) {
   const { displayFilters, filters, handleFiltersUpdate, handleDisplayFiltersUpdate, memberIds } = props;
-  // states
-  const [filtersSearchQuery, setFiltersSearchQuery] = useState("");
 
   return (
-    <div className="flex h-full w-full flex-col overflow-hidden">
-      <FiltersSearchInput searchQuery={filtersSearchQuery} onSearchQueryChange={setFiltersSearchQuery} />
-      <div className="vertical-scrollbar scrollbar-sm h-full w-full divide-y divide-subtle-1 overflow-y-auto px-2.5">
-        <div className="py-2">
-          <FilterOption
-            isChecked={!!displayFilters.my_projects}
-            onClick={() =>
-              handleDisplayFiltersUpdate({
-                my_projects: !displayFilters.my_projects,
-              })
-            }
-            title="My projects"
-          />
-        </div>
+    <>
+      <MenuCheckboxItem
+        label="My projects"
+        checked={!!displayFilters.my_projects}
+        onCheckedChange={(checked) => handleDisplayFiltersUpdate({ my_projects: checked })}
+      />
 
-        {/* access */}
-        <div className="py-2">
-          <FilterAccess
-            appliedFilters={filters.access ?? null}
-            handleUpdate={(val) => handleFiltersUpdate("access", val)}
-            searchQuery={filtersSearchQuery}
-          />
-        </div>
+      <MenuSeparator />
 
-        {/* lead */}
-        <div className="py-2">
-          <FilterLead
-            appliedFilters={filters.lead ?? null}
-            handleUpdate={(val) => handleFiltersUpdate("lead", val)}
-            searchQuery={filtersSearchQuery}
-            memberIds={memberIds}
-          />
-        </div>
+      {/* access */}
+      <FilterAccess
+        appliedFilters={filters.access ?? null}
+        handleUpdate={(val) => handleFiltersUpdate("access", val)}
+      />
 
-        {/* members */}
-        <div className="py-2">
-          <FilterMembers
-            appliedFilters={filters.members ?? null}
-            handleUpdate={(val) => handleFiltersUpdate("members", val)}
-            searchQuery={filtersSearchQuery}
-            memberIds={memberIds}
-          />
-        </div>
+      {/* lead */}
+      <MemberFilterSubmenu
+        label="Lead"
+        memberIds={memberIds}
+        appliedFilters={filters.lead}
+        onToggle={(val) => handleFiltersUpdate("lead", val)}
+      />
 
-        {/* created date */}
-        <div className="py-2">
-          <FilterCreatedDate
-            appliedFilters={filters.created_at ?? null}
-            handleUpdate={(val) => handleFiltersUpdate("created_at", val)}
-            searchQuery={filtersSearchQuery}
-          />
-        </div>
-      </div>
-    </div>
+      {/* members */}
+      <MemberFilterSubmenu
+        label="Members"
+        memberIds={memberIds}
+        appliedFilters={filters.members}
+        onToggle={(val) => handleFiltersUpdate("members", val)}
+      />
+
+      {/* created date */}
+      <DateFilterSubmenu
+        label="Created date"
+        options={PROJECT_CREATED_AT_FILTER_OPTIONS}
+        appliedFilters={filters.created_at}
+        onToggleOption={(val) => handleFiltersUpdate("created_at", val)}
+        onSelectCustomRange={(val) => handleFiltersUpdate("created_at", val)}
+        onClearCustomRange={() =>
+          handleFiltersUpdate("created_at", (filters.created_at ?? []).filter(isCustomDateFilterValue))
+        }
+      />
+    </>
   );
 });

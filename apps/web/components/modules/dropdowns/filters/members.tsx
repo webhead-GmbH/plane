@@ -4,47 +4,25 @@
  * See the LICENSE file for details.
  */
 
-import { useMemo } from "react";
-import { sortBy } from "lodash-es";
 import { observer } from "mobx-react";
 // components
-import { FilterMembersList } from "@/components/common/filters/members-list";
-// hooks
-import { useMember } from "@/hooks/store/use-member";
-import { useUser } from "@/hooks/store/user";
+import { MemberFilterSubmenu } from "@/components/common/filters/member-filter-submenu";
 
 type Props = {
   appliedFilters: string[] | null;
   handleUpdate: (val: string) => void;
   memberIds: string[] | undefined;
-  searchQuery: string;
 };
 
 export const FilterMembers = observer(function FilterMembers(props: Props) {
-  const { appliedFilters, handleUpdate, memberIds, searchQuery } = props;
-  // store hooks
-  const { getUserDetails } = useMember();
-  const { data: currentUser } = useUser();
-
-  const sortedOptions = useMemo(() => {
-    const filteredOptions = (memberIds || []).filter((memberId) =>
-      getUserDetails(memberId)?.display_name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-
-    return sortBy(filteredOptions, [
-      (memberId) => !(appliedFilters ?? []).includes(memberId),
-      (memberId) => memberId !== currentUser?.id,
-      (memberId) => getUserDetails(memberId)?.display_name.toLowerCase(),
-    ]);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchQuery]);
+  const { appliedFilters, handleUpdate, memberIds } = props;
 
   return (
-    <FilterMembersList
-      title="Members"
+    <MemberFilterSubmenu
+      label="Members"
+      memberIds={memberIds}
       appliedFilters={appliedFilters}
-      handleUpdate={handleUpdate}
-      sortedOptions={sortedOptions}
+      onToggle={handleUpdate}
     />
   );
 });

@@ -72,19 +72,23 @@ export const CommentReactions = observer(function CommentReactions(props: TProps
   const showAddButton = !disabled && reactions.length > 0;
 
   return (
-    <div className="relative flex flex-wrap items-center gap-2">
-      {/* the reactions stay outside the picker's trigger: inside it every one of them would open the
-          picker as well as toggle the reaction, and a button cannot contain a button */}
-      <EmojiReactionGroup reactions={reactions} onReactionClick={handleReactionClick} showAddButton={false} />
-      {showAddButton && (
-        <EmojiReactionPicker
-          isOpen={isPickerOpen}
-          handleToggle={setIsPickerOpen}
-          onChange={handleEmojiSelect}
-          label={<EmojiReactionButton />}
-          placement="bottom-start"
-        />
-      )}
+    <div className="relative">
+      <EmojiReactionGroup
+        disabled={disabled}
+        reactions={reactions}
+        onReactionClick={handleReactionClick}
+        showAddButton={showAddButton}
+        addReactionButton={
+          <EmojiReactionPicker
+            isOpen={isPickerOpen}
+            handleToggle={setIsPickerOpen}
+            onChange={handleEmojiSelect}
+            disabled={disabled}
+            render={<EmojiReactionButton />}
+            placement="bottom-start"
+          />
+        }
+      />
     </div>
   );
 });
