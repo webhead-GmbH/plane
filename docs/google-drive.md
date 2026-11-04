@@ -62,15 +62,19 @@ Press **Choose folder** and walk down to it: the top level shows My Drive, Share
 
 The **Project folders** list shows every project with the folder it keeps its files in.
 
-- For a project without one, the folders whose names look like the project's come first in the list, with how close the match is. Names are compared without case, accents, spaces or punctuation.
-- A folder is a **clear match** when it carries the project's own name, give or take spacing, punctuation, a company form such as GmbH or e.U., or one letter: for the project "Fisch Gruber", `fisch-gruber`, `Fisch Gruber GmbH` and `Fish Gruber` are clear matches. `Gruber`, `Fischer Gruber` or `Fisch Gruber 2024` are only suggested, because they may be another client's folder. Two clear matches for one project are not chosen between either.
+Project folders are named after the project's identifier and its name, with a dash between them: the project 209 "ATTN-SEEKR Webseite" has the folder `209 - ATTN-SEEKR Webseite`. Plane names the folders it creates this way, and looks for this name first.
+
+- For a project without a folder, the folders that look like its own come first in the list, with how close the match is. Names are compared without case, accents, spaces or punctuation, and without the number in front.
+- A folder named with the project's identifier is its **clear match**, whatever follows the dash: for the project 288 "Alias Immo", `288 - Alias` is. The dash may be any kind, and the spaces around it may be missing when the identifier is a number (`288-Alias`).
+- A project with no such folder can still have a clear match among the folders without a number in front: one that carries the project's own name, give or take spacing, punctuation, a company form such as GmbH or e.U., or one letter. For the project "Fisch Gruber", `fisch-gruber`, `Fisch Gruber GmbH` and `Fish Gruber` are clear matches. `Gruber`, `Fischer Gruber` or `Fisch Gruber 2024` are only suggested, because they may be another client's folder.
+- A folder named with another project's number is never a clear match, even with the same name (`290 - Biohof Radl` for the project 284 "Biohof Radl"): it is suggested, at most as an 80% match. Two clear matches for one project are not chosen between either.
 - **Use "…"** links a project to its clear match in one click, and **Link N clear matches** at the top links all such projects at once. Everything else is left for you to choose.
-- The **⋯** menu next to the list can create a folder named after the project, or choose a folder inside the projects folder at any depth. To use a folder elsewhere in Drive, move it into the projects folder first.
+- The **⋯** menu next to the list can create the project's folder (named as above), or choose a folder inside the projects folder at any depth. To use a folder elsewhere in Drive, move it into the projects folder first.
 - A linked project shows its folder (it opens in Google Drive) and how it was linked: chosen, matched by name, or created by Plane. Its **⋯** menu changes or unlinks the folder. Unlinking leaves the folder and its files in Drive.
 
 ## New projects
 
-With **Give new projects a folder** switched on, a new project is linked as soon as it is created: to its clear match in the projects folder, or, if there is none, to a new folder named after it there. This happens in the background and takes a few seconds. A project whose name has two clear matches gets a new folder of its own; link it to the right one in the settings if that is what you meant.
+With **Give new projects a folder** switched on, a new project is linked as soon as it is created: to its clear match in the projects folder, or, if there is none, to a new folder there, named with its identifier and name. This happens in the background and takes a few seconds. A project that has folders like its own but no single clear match (two folders with its number or name, or one with its name and another project's number) is left unlinked rather than given a folder beside them: choose its folder in the settings.
 
 ## Files on a work item
 

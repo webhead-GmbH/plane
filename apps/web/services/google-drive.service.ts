@@ -44,7 +44,8 @@ export type TDriveFolderSuggestion = {
 };
 
 export type TDriveProjectRow = {
-  project: { id: string; name: string; identifier: string };
+  /** new_folder_name: what "Create folder" calls it, the team's "209 - Name". */
+  project: { id: string; name: string; identifier: string; new_folder_name: string };
   folder: (TDriveFolderRef & { method: "chosen" | "matched" | "created" }) | null;
   suggestions: TDriveFolderSuggestion[];
 };

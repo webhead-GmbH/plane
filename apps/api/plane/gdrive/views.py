@@ -28,7 +28,7 @@ from plane.app.views.base import BaseAPIView
 from plane.db.models import Issue, Project, ProjectMember, Workspace, WorkspaceMember
 from plane.gdrive import client as google
 from plane.gdrive.client import DriveClient, DriveError, folder_id_from
-from plane.gdrive.matching import confident_match
+from plane.gdrive.matching import confident_match, folder_name_for
 from plane.gdrive.models import DriveConnection, DriveFile, DriveIssueFolder, DriveProjectFolder
 from plane.gdrive.services import (
     connection_for,
@@ -300,7 +300,13 @@ class DriveFoldersEndpoint(BaseAPIView):
 
 def _project_row(connection, project, link, folders_ready):
     return {
-        "project": {"id": str(project.id), "name": project.name, "identifier": project.identifier},
+        "project": {
+            "id": str(project.id),
+            "name": project.name,
+            "identifier": project.identifier,
+            # What "Create folder" would call it.
+            "new_folder_name": folder_name_for(project.identifier, project.name),
+        },
         "folder": (
             {"id": link.folder_id, "name": link.folder_name, "url": _folder_url(link.folder_id), "method": link.method}
             if link
@@ -347,7 +353,7 @@ class DriveLinkSuggestedEndpoint(BaseAPIView):
             for project in Project.objects.filter(workspace=workspace, archived_at__isnull=True):
                 if project.id in linked_ids:
                     continue
-                match = confident_match(project.name, folders)
+                match = confident_match(project.name, folders, project.identifier)
                 if match:
                     link_project(connection, project, match["id"], request.user, DriveProjectFolder.Method.MATCHED)
                     linked += 1

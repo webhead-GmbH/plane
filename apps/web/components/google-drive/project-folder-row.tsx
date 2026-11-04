@@ -188,7 +188,7 @@ export const DriveProjectFolderRow = ({ workspaceSlug, row, folders, rootFolder,
               />
               <MenuContent align="end">
                 <MenuItem
-                  label={t(`${I18N}.projects.create`, { name: project.name })}
+                  label={t(`${I18N}.projects.create`, { name: project.new_folder_name })}
                   icon={<Icon icon={FolderPlus} />}
                   onClick={create}
                 />

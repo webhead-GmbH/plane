@@ -31,7 +31,7 @@ from django.utils import timezone
 # Module imports
 from plane.db.models import FileAsset, Issue
 from plane.gdrive.client import FOLDER_MIME, DriveClient, DriveError
-from plane.gdrive.matching import confident_match, rank, same_name
+from plane.gdrive.matching import confident_match, folder_name_for, looks_taken, rank
 from plane.gdrive.models import DriveConnection, DriveFile, DriveIssueFolder, DriveProjectFolder
 
 logger = logging.getLogger(__name__)
@@ -83,9 +83,9 @@ def forget_root_folders(connection):
 
 
 def suggestions_for(connection, project, limit=5):
-    """The folders most like the project's name; "clear" marks the one linking suggested folders would pick."""
+    """The folders most like the project; "clear" marks the one linking suggested folders would pick."""
     folders = root_folders(connection)
-    clear = confident_match(project.name, folders)
+    clear = confident_match(project.name, folders, project.identifier)
     return [
         {
             "id": folder["id"],
@@ -93,7 +93,7 @@ def suggestions_for(connection, project, limit=5):
             "score": value,
             "clear": bool(clear and clear["id"] == folder["id"]),
         }
-        for folder, value in rank(project.name, folders, limit=limit)
+        for folder, value in rank(project.name, folders, limit=limit, identifier=project.identifier)
     ]
 
 
@@ -121,30 +121,32 @@ def link_project(connection, project, folder_id, user=None, method=DriveProjectF
 
 
 def create_project_folder(connection, project, user=None):
-    """Make a folder named after the project under the root, and link it."""
+    """Make the project's folder under the root, named the team's way ("209 - Name"), and link it."""
     with _lock(f"project:{project.id}"):
         existing = DriveProjectFolder.objects.filter(project=project).first()
         if existing:
             return existing
-        folder = DriveClient(connection).create_folder(connection.root_folder_id, project.name.strip())
+        name = folder_name_for(project.identifier, project.name)
+        folder = DriveClient(connection).create_folder(connection.root_folder_id, name)
         forget_root_folders(connection)
         DriveProjectFolder.all_objects.filter(project=project).delete()
         return DriveProjectFolder.objects.create(
             workspace_id=project.workspace_id,
             project=project,
             folder_id=folder["id"],
-            folder_name=folder.get("name", project.name),
+            folder_name=folder.get("name", name),
             method=DriveProjectFolder.Method.CREATED,
             created_by=user,
         )
 
 
 def link_new_project(project, user=None):
-    """For a project just made: its existing folder if the name clearly matches one, else a new one.
+    """For a project just made: its existing folder if one clearly is, else a new one.
 
-    Returns what was done: "matched", "created", "ambiguous" when two folders carry
-    its name and a person has to say which, or "skipped" when the workspace has no
-    ready connection or does not want this.
+    Returns what was done: "matched", "created", "ambiguous" when folders carry its
+    identifier or name but none clearly enough (two of them, or one named for
+    another project's number) and a person has to say which, or "skipped" when the
+    workspace has no ready connection or does not want this.
     """
     connection = ready_connection_for(project.workspace_id)
     if connection is None or not connection.auto_link_new_projects:
@@ -153,12 +155,12 @@ def link_new_project(project, user=None):
         return "skipped"
     forget_root_folders(connection)
     folders = root_folders(connection)
-    match = confident_match(project.name, folders)
+    match = confident_match(project.name, folders, project.identifier)
     if match:
         link_project(connection, project, match["id"], user, DriveProjectFolder.Method.MATCHED)
         return "matched"
-    if any(same_name(project.name, folder["name"]) for folder in folders):
-        # Not a third folder with the name, and not a guess between the two.
+    if looks_taken(project.name, folders, project.identifier):
+        # Not another folder beside the ones that look like its own, and not a guess between them.
         return "ambiguous"
     create_project_folder(connection, project, user)
     return "created"

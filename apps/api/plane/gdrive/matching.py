@@ -13,6 +13,12 @@ Linking without asking is held to more: the same name give or take spacing,
 punctuation, a company form or one letter, and no other folder like it. A
 folder that only looks alike ("Gruber", "Fischer Gruber" for "Fisch Gruber")
 may be another client's, and a file put there by mistake is a file shown to them.
+
+The team names a project's folder after its identifier and its name, as in
+"209 - ATTN-SEEKR Webseite" (the identifier is the project's number in the CRM).
+A folder named that way for the project is its folder, whatever the name after
+the dash has drifted to; one named for another project's number is never linked
+by itself, however alike the names.
 """
 
 # Python imports
@@ -24,6 +30,51 @@ from difflib import SequenceMatcher
 LEGAL_FORMS = {"gmbh", "mbh", "ag", "kg", "og", "ug", "gbr", "eu", "ek", "e", "u", "k", "co", "se", "ltd", "inc", "llc"}
 # A letter off counts as a slip only in a name at least this long; in a short one it is another name.
 MIN_LENGTH_FOR_A_SLIP = 6
+# A folder named for another project's number is offered at most this alike, never as a sure thing.
+ANOTHER_NUMBER_AT_MOST = 0.8
+# "209 - ATTN-SEEKR Webseite": a project number, then a dash (any kind), then the name.
+NUMBERED = re.compile(r"\s*(\d+)\s*[-–—]\s*(?=\S)")
+
+
+def folder_name_for(identifier, name):
+    """The name the team gives a project's folder: "209 - ATTN-SEEKR Webseite"."""
+    identifier, name = (identifier or "").strip(), " ".join((name or "").split())
+    return f"{identifier} - {name}" if identifier else name
+
+
+def _number(folder_name):
+    """The project number a folder is named for, or None for a folder named some other way."""
+    found = NUMBERED.match(folder_name or "")
+    return int(found.group(1)) if found else None
+
+
+def _word_prefix(identifier):
+    # A word needs the spaces round the dash, or "ATTN-SEEKR" would be project ATTN's folder.
+    return re.compile(rf"\s*{re.escape(identifier)}\s+[-–—]\s+(?=\S)", re.IGNORECASE)
+
+
+def carries_identifier(identifier, folder_name):
+    """Whether the folder is named the team's way for this project: its identifier, a dash, a name."""
+    identifier = (identifier or "").strip()
+    if not identifier:
+        return False
+    if identifier.isdigit():
+        return _number(folder_name) == int(identifier)
+    return _word_prefix(identifier).match(folder_name or "") is not None
+
+
+def bare_name(identifier, folder_name):
+    """The folder's name without the project number (or this project's identifier) in front of it."""
+    folder_name = folder_name or ""
+    found = NUMBERED.match(folder_name)
+    if found:
+        return folder_name[found.end() :]
+    identifier = (identifier or "").strip()
+    if identifier and not identifier.isdigit():
+        found = _word_prefix(identifier).match(folder_name)
+        if found:
+            return folder_name[found.end() :]
+    return folder_name
 
 
 def normalize(name):
@@ -54,9 +105,19 @@ def score(project_name, folder_name):
     return round(best, 3)
 
 
-def rank(project_name, folders, limit=5, floor=0.5):
-    """The folders most like the project's name, best first, each with its score."""
-    scored = [(folder, score(project_name, folder["name"])) for folder in folders]
+def project_score(project_name, folder_name, identifier=""):
+    """How alike a folder is to the project, from 0 to 1; a folder named with its identifier is 1."""
+    if carries_identifier(identifier, folder_name):
+        return 1.0
+    value = score(project_name, bare_name(identifier, folder_name))
+    if _number(folder_name) is not None:
+        value = min(value, ANOTHER_NUMBER_AT_MOST)
+    return value
+
+
+def rank(project_name, folders, limit=5, floor=0.5, identifier=""):
+    """The folders most like the project, best first, each with its score."""
+    scored = [(folder, project_score(project_name, folder["name"], identifier)) for folder in folders]
     scored = [item for item in scored if item[1] >= floor]
     scored.sort(key=lambda item: (-item[1], item[0]["name"].lower()))
     return scored[:limit]
@@ -98,7 +159,31 @@ def same_name(project_name, folder_name):
     return min(len(a), len(b)) >= MIN_LENGTH_FOR_A_SLIP and _one_letter_apart(a, b)
 
 
-def confident_match(project_name, folders):
+def clear_matches(project_name, folders, identifier=""):
+    """The folders plainly the project's.
+
+    Those named with its identifier; failing any, those named with no project
+    number that carry its name, give or take a slip of the keyboard.
+    """
+    own = [folder for folder in folders if carries_identifier(identifier, folder["name"])]
+    if own:
+        return own
+    return [
+        folder
+        for folder in folders
+        if _number(folder["name"]) is None and same_name(project_name, bare_name(identifier, folder["name"]))
+    ]
+
+
+def confident_match(project_name, folders, identifier=""):
     """The one folder that is clearly the project's, or None if there is none or more than one."""
-    matches = [folder for folder in folders if same_name(project_name, folder["name"])]
+    matches = clear_matches(project_name, folders, identifier)
     return matches[0] if len(matches) == 1 else None
+
+
+def looks_taken(project_name, folders, identifier=""):
+    """Whether a folder carries the project's identifier or its name, so that a new one would sit beside it."""
+    return any(
+        carries_identifier(identifier, folder["name"]) or same_name(project_name, bare_name(identifier, folder["name"]))
+        for folder in folders
+    )
