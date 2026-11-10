@@ -293,20 +293,44 @@
         "backwards": "Năm phép không thể kết thúc trước khi bắt đầu.",
         "bad_duration": "Hãy viết khoảng thời gian dưới dạng 200:00, 200 hoặc 12000m.",
         "already_there": "Đã có mục cho năm phép này.",
-        "overlapping_year": "Đã có một năm phép bao trùm các ngày này."
+        "overlapping_year": "Đã có một năm phép bao trùm các ngày này.",
+        "reason_required": "Hãy cho biết vì sao con số thay đổi.",
+        "zero_change": "Mức thay đổi 0:00 không làm thay đổi gì."
       },
       "toasts": {
         "added": "Đã thêm năm phép",
         "agreed": "Đã chốt",
         "refused": "Không thể lưu",
-        "try_again": "Vui lòng thử lại."
+        "try_again": "Vui lòng thử lại.",
+        "saved": "Đã lưu năm phép",
+        "deleted": "Đã xóa năm phép",
+        "adjusted": "Đã ghi nhận thay đổi"
       },
       "entitlement_with_unit": "Phép cả năm (giờ:phút)",
       "echo_days": "{duration} · {days, plural, other {khoảng # ngày}}",
       "echo_hours": "{duration}",
       "agreeing": "Đang chốt…",
       "confirm_agree_title": "Chốt con số này?",
-      "confirm_agree_body": "Sau đó {duration} không thể thay đổi ở bất kỳ màn hình nào. Hãy đối chiếu với những gì đã báo cho người đó trước khi chốt."
+      "confirm_agree_body": "Sau đó {duration} không thể sửa hoặc xóa nữa; thay đổi sau này được ghi bên cạnh dưới dạng điều chỉnh, kèm theo lý do. Hãy đối chiếu với những gì đã báo cho người đó trước khi chốt.",
+      "edit": "Sửa",
+      "edit_title": "Sửa năm phép",
+      "save": "Lưu",
+      "delete": "Xóa",
+      "taken_left": "Đã nghỉ {taken} · còn {left}",
+      "left_days": "{days, plural, other {còn khoảng # ngày}}",
+      "adjust": "Điều chỉnh",
+      "adjust_title": "Thay đổi con số đã chốt",
+      "adjust_hint": "Con số đã chốt vẫn giữ nguyên. Thay đổi được ghi bên cạnh, kèm theo lý do.",
+      "adjust_amount": "Mức thay đổi (giờ:phút)",
+      "adjust_amount_placeholder": "ví dụ 40:00, hoặc -8:00 để bớt đi",
+      "adjust_reason": "Lý do",
+      "adjust_reason_placeholder": "Ví dụ: đã sửa sau khi kiểm tra hồ sơ năm trước",
+      "adjust_button": "Ghi nhận thay đổi",
+      "adjustments": "Thay đổi kể từ khi chốt",
+      "adjustment_by": "{person}, {date}",
+      "confirm_delete_title": "Xóa năm phép này?",
+      "confirm_delete_body": "{duration} từ {from} đến {to} sẽ bị xóa. Phần phép đã đăng ký vẫn được lưu lại, nhưng không còn bị trừ vào năm phép nào nữa.",
+      "deleting": "Đang xóa…"
     },
     "holidays": {
       "title": "Ngày lễ",
@@ -709,7 +733,8 @@
         "agreed": "duyệt",
         "closed": "chốt"
       },
-      "last_manager": "Đây là người duy nhất phụ trách nhóm. Bỏ quyền này sẽ khiến không ai truy cập được tháng nào, và cũng không ai cấp lại được. Hãy chỉ định người khác trước."
+      "last_manager": "Đây là người duy nhất phụ trách nhóm. Bỏ quyền này sẽ khiến không ai truy cập được tháng nào, và cũng không ai cấp lại được. Hãy chỉ định người khác trước.",
+      "leave_year_agreed": "Năm phép này đã được chốt nên không thể sửa hoặc xóa nữa. Hãy bấm Điều chỉnh để ghi nhận một thay đổi kèm lý do."
     },
     "detail": {
       "title": "Chi tiết giờ làm",

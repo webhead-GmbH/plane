@@ -619,20 +619,44 @@
         "backwards": "Rok urlopowy nie może kończyć się przed rozpoczęciem.",
         "bad_duration": "Czas należy wpisać jako 200:00, 200 lub 12000m.",
         "already_there": "Dla tego roku urlopowego istnieje już wpis.",
-        "overlapping_year": "Istnieje już rok urlopowy obejmujący te daty."
+        "overlapping_year": "Istnieje już rok urlopowy obejmujący te daty.",
+        "reason_required": "Proszę podać, dlaczego wartość się zmienia.",
+        "zero_change": "Zmiana o 0:00 niczego nie zmienia."
       },
       "toasts": {
         "added": "Rok urlopowy dodany",
         "agreed": "Uznano za ostateczne",
         "refused": "Nie udało się zapisać",
-        "try_again": "Proszę spróbować ponownie."
+        "try_again": "Proszę spróbować ponownie.",
+        "saved": "Rok urlopowy zapisany",
+        "deleted": "Rok urlopowy usunięty",
+        "adjusted": "Zmiana zapisana"
       },
       "entitlement_with_unit": "Urlop na rok (godziny:minuty)",
       "echo_days": "{duration} · {days, plural, one {około # dnia} few {około # dni} many {około # dni} other {około # dnia}}",
       "echo_hours": "{duration}",
       "agreeing": "Uznawanie…",
       "confirm_agree_title": "Zapisać tę wartość jako ostateczną?",
-      "confirm_agree_body": "{duration} nie będzie już można zmienić na żadnym ekranie. Zanim uznasz to za ostateczne, sprawdź, czy zgadza się z tym, co powiedziano tej osobie."
+      "confirm_agree_body": "{duration} nie będzie już można edytować ani usunąć; późniejsza zmiana zostaje zapisana obok jako korekta, razem z powodem. Zanim uznasz to za ostateczne, sprawdź, czy zgadza się z tym, co powiedziano tej osobie.",
+      "edit": "Edytuj",
+      "edit_title": "Edytuj rok urlopowy",
+      "save": "Zapisz",
+      "delete": "Usuń",
+      "taken_left": "Wykorzystano {taken} · pozostało {left}",
+      "left_days": "{days, plural, one {pozostało około # dnia} few {pozostało około # dni} many {pozostało około # dni} other {pozostało około # dnia}}",
+      "adjust": "Skoryguj",
+      "adjust_title": "Zmień wartość uznaną za ostateczną",
+      "adjust_hint": "Wartość uznana za ostateczną pozostaje bez zmian. Zmiana zostaje zapisana obok, razem z powodem.",
+      "adjust_amount": "Zmiana (godziny:minuty)",
+      "adjust_amount_placeholder": "np. 40:00 albo -8:00, aby odjąć część",
+      "adjust_reason": "Powód",
+      "adjust_reason_placeholder": "Na przykład: poprawione po sprawdzeniu zeszłorocznej ewidencji",
+      "adjust_button": "Zapisz zmianę",
+      "adjustments": "Zmiany od uznania za ostateczne",
+      "adjustment_by": "{person}, {date}",
+      "confirm_delete_title": "Usunąć ten rok urlopowy?",
+      "confirm_delete_body": "Zostanie usunięte {duration} urlopu od {from} do {to}. Już zapisany urlop pozostaje w ewidencji, ale przestaje się liczyć do roku urlopowego.",
+      "deleting": "Usuwanie…"
     },
     "holidays": {
       "title": "Dni świąteczne",
@@ -709,7 +733,8 @@
         "agreed": "zatwierdzony",
         "closed": "zamknięty"
       },
-      "last_manager": "To jedyna osoba prowadząca zespół. Odebranie tego sprawi, że nikt nie sięgnie do żadnego miesiąca i nikt tego nie przywróci. Najpierw wyznacz kogoś innego."
+      "last_manager": "To jedyna osoba prowadząca zespół. Odebranie tego sprawi, że nikt nie sięgnie do żadnego miesiąca i nikt tego nie przywróci. Najpierw wyznacz kogoś innego.",
+      "leave_year_agreed": "Ten rok urlopowy jest uznany za ostateczny, więc nie można go już edytować ani usunąć. Naciśnij Skoryguj, aby zapisać zmianę wraz z powodem."
     },
     "detail": {
       "title": "Godziny szczegółowo",

@@ -619,20 +619,44 @@
         "backwards": "L'anno di ferie non può finire prima di iniziare.",
         "bad_duration": "Scriva la durata come 200:00, 200 oppure 12000m.",
         "already_there": "Esiste già una voce per questo anno di ferie.",
-        "overlapping_year": "Esiste già un anno di ferie che copre queste date."
+        "overlapping_year": "Esiste già un anno di ferie che copre queste date.",
+        "reason_required": "Indichi perché il valore cambia.",
+        "zero_change": "Una variazione di 0:00 non cambia nulla."
       },
       "toasts": {
         "added": "Anno di ferie aggiunto",
         "agreed": "Reso definitivo",
         "refused": "Non è stato possibile salvare",
-        "try_again": "Riprovi, per favore."
+        "try_again": "Riprovi, per favore.",
+        "saved": "Anno di ferie salvato",
+        "deleted": "Anno di ferie eliminato",
+        "adjusted": "Variazione registrata"
       },
       "entitlement_with_unit": "Ferie per l’anno (ore:minuti)",
       "echo_days": "{duration} · {days, plural, one {circa # giorno} other {circa # giorni}}",
       "echo_hours": "{duration}",
       "agreeing": "In corso…",
       "confirm_agree_title": "Fissare questo valore come definitivo?",
-      "confirm_agree_body": "{duration} non sarà poi più modificabile in nessuna schermata. Lo confronti con quanto è stato comunicato alla persona prima di renderlo definitivo."
+      "confirm_agree_body": "{duration} non si potrà poi più modificare né eliminare; una variazione successiva viene registrata accanto come rettifica, con il suo motivo. Lo confronti con quanto è stato comunicato alla persona prima di renderlo definitivo.",
+      "edit": "Modifica",
+      "edit_title": "Modifica l’anno di ferie",
+      "save": "Salva",
+      "delete": "Elimina",
+      "taken_left": "{taken} godute · {left} residue",
+      "left_days": "{days, plural, one {resta circa # giorno} many {restano circa # giorni} other {restano circa # giorni}}",
+      "adjust": "Rettifica",
+      "adjust_title": "Rettificare un valore definitivo",
+      "adjust_hint": "Quanto concordato resta com’è. La variazione viene registrata accanto, con il suo motivo.",
+      "adjust_amount": "Variazione (ore:minuti)",
+      "adjust_amount_placeholder": "es. 40:00, oppure -8:00 per sottrarre",
+      "adjust_reason": "Motivo",
+      "adjust_reason_placeholder": "Ad esempio: corretto dopo aver controllato i registri dell’anno scorso",
+      "adjust_button": "Registra la variazione",
+      "adjustments": "Variazioni successive all’accordo",
+      "adjustment_by": "{person}, {date}",
+      "confirm_delete_title": "Eliminare questo anno di ferie?",
+      "confirm_delete_body": "{duration} dal {from} al {to} verrà eliminato. Le ferie già pianificate restano registrate, ma non vengono più scalate da alcun anno di ferie.",
+      "deleting": "Eliminazione…"
     },
     "holidays": {
       "title": "Festività",
@@ -709,7 +733,8 @@
         "agreed": "approvato",
         "closed": "chiuso"
       },
-      "last_manager": "È l’unica persona che segue il team. Toglierglielo lascerebbe nessuno in grado di raggiungere un mese, né di restituirlo. Nomina prima qualcun altro."
+      "last_manager": "È l’unica persona che segue il team. Toglierglielo lascerebbe nessuno in grado di raggiungere un mese, né di restituirlo. Nomina prima qualcun altro.",
+      "leave_year_agreed": "Questo anno di ferie è definitivo, perciò non si può più modificare né eliminare. Prema Rettifica per registrare una variazione con il suo motivo."
     },
     "detail": {
       "title": "Ore in dettaglio",

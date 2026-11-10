@@ -619,20 +619,44 @@
         "backwards": "Anul de concediu nu se poate încheia înainte de a începe.",
         "bad_duration": "Scrieți durata ca 200:00, 200 sau 12000m.",
         "already_there": "Există deja o înregistrare pentru acest an de concediu.",
-        "overlapping_year": "Există deja un an de concediu care acoperă aceste date."
+        "overlapping_year": "Există deja un an de concediu care acoperă aceste date.",
+        "reason_required": "Precizați de ce se modifică valoarea.",
+        "zero_change": "O modificare de 0:00 nu schimbă nimic."
       },
       "toasts": {
         "added": "An de concediu adăugat",
         "agreed": "Stabilit ca definitiv",
         "refused": "Nu s-a putut salva",
-        "try_again": "Vă rugăm să încercați din nou."
+        "try_again": "Vă rugăm să încercați din nou.",
+        "saved": "An de concediu salvat",
+        "deleted": "An de concediu șters",
+        "adjusted": "Modificare înregistrată"
       },
       "entitlement_with_unit": "Concediu pe an (ore:minute)",
       "echo_days": "{duration} · {days, plural, one {aproximativ # zi} few {aproximativ # zile} other {aproximativ # de zile}}",
       "echo_hours": "{duration}",
       "agreeing": "Se stabilește…",
       "confirm_agree_title": "Stabiliți această valoare ca definitivă?",
-      "confirm_agree_body": "{duration} nu va mai putea fi modificat pe niciun ecran după aceea. Verificați valoarea față de ce i s-a spus persoanei înainte de a o stabili."
+      "confirm_agree_body": "{duration} nu va mai putea fi modificat sau șters după aceea; o modificare ulterioară se înregistrează alături ca ajustare, împreună cu motivul. Verificați valoarea față de ce i s-a spus persoanei înainte de a o stabili.",
+      "edit": "Modificați",
+      "edit_title": "Modificați anul de concediu",
+      "save": "Salvați",
+      "delete": "Ștergeți",
+      "taken_left": "Folosit: {taken} · Rămas: {left}",
+      "left_days": "{days, plural, one {mai rămâne aproximativ # zi} few {mai rămân aproximativ # zile} other {mai rămân aproximativ # de zile}}",
+      "adjust": "Ajustați",
+      "adjust_title": "Modificați o valoare stabilită ca definitivă",
+      "adjust_hint": "Ce s-a convenit rămâne neschimbat. Modificarea se înregistrează alături, împreună cu motivul.",
+      "adjust_amount": "Modificare (ore:minute)",
+      "adjust_amount_placeholder": "ex. 40:00 sau -8:00 pentru a scădea",
+      "adjust_reason": "Motiv",
+      "adjust_reason_placeholder": "De exemplu: corectat după verificarea evidențelor de anul trecut",
+      "adjust_button": "Înregistrați modificarea",
+      "adjustments": "Modificări de când s-a convenit",
+      "adjustment_by": "{person}, {date}",
+      "confirm_delete_title": "Ștergeți acest an de concediu?",
+      "confirm_delete_body": "{duration} din perioada {from} – {to} va fi șters. Concediul deja programat rămâne înregistrat, dar nu se mai scade din niciun an de concediu.",
+      "deleting": "Se șterge…"
     },
     "holidays": {
       "title": "Zile de sărbătoare",
@@ -709,7 +733,8 @@
         "agreed": "aprobată",
         "closed": "închisă"
       },
-      "last_manager": "Aceasta este singura persoană care se ocupă de echipă. Retragerea ar lăsa pe nimeni cu acces la vreo lună și pe nimeni să o redea. Numiți mai întâi pe altcineva."
+      "last_manager": "Aceasta este singura persoană care se ocupă de echipă. Retragerea ar lăsa pe nimeni cu acces la vreo lună și pe nimeni să o redea. Numiți mai întâi pe altcineva.",
+      "leave_year_agreed": "Acest an de concediu este stabilit ca definitiv, deci nu mai poate fi modificat sau șters. Apăsați „Ajustați” pentru a înregistra o modificare împreună cu motivul."
     },
     "detail": {
       "title": "Ore în detaliu",

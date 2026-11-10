@@ -619,20 +619,44 @@
         "backwards": "Het verlofjaar kan niet eindigen voordat het begint.",
         "bad_duration": "Schrijf de tijd als 200:00, 200 of 12000m.",
         "already_there": "Voor dit verlofjaar is er al een vermelding.",
-        "overlapping_year": "Er is al een verlofjaar dat deze data omvat."
+        "overlapping_year": "Er is al een verlofjaar dat deze data omvat.",
+        "reason_required": "Geef aan waarom het cijfer verandert.",
+        "zero_change": "Een wijziging van 0:00 verandert niets."
       },
       "toasts": {
         "added": "Verlofjaar toegevoegd",
         "agreed": "Definitief vastgelegd",
         "refused": "Dat kon niet worden opgeslagen",
-        "try_again": "Probeer het opnieuw."
+        "try_again": "Probeer het opnieuw.",
+        "saved": "Verlofjaar opgeslagen",
+        "deleted": "Verlofjaar verwijderd",
+        "adjusted": "Wijziging vastgelegd"
       },
       "entitlement_with_unit": "Verlof voor het jaar (uren:minuten)",
       "echo_days": "{duration} · {days, plural, one {ongeveer # dag} other {ongeveer # dagen}}",
       "echo_hours": "{duration}",
       "agreeing": "Bezig met vastleggen…",
       "confirm_agree_title": "Dit cijfer definitief vastleggen?",
-      "confirm_agree_body": "{duration} kan daarna op geen enkel scherm meer worden gewijzigd. Controleer het aan de hand van wat de persoon is verteld voordat je het vastlegt."
+      "confirm_agree_body": "{duration} kan daarna niet meer worden bewerkt of verwijderd; een latere wijziging wordt ernaast vastgelegd als aanpassing, met de reden. Controleer het aan de hand van wat de persoon is verteld voordat je het vastlegt.",
+      "edit": "Bewerken",
+      "edit_title": "Het verlofjaar bewerken",
+      "save": "Opslaan",
+      "delete": "Verwijderen",
+      "taken_left": "{taken} opgenomen · {left} over",
+      "left_days": "{days, plural, one {nog ongeveer # dag over} other {nog ongeveer # dagen over}}",
+      "adjust": "Aanpassen",
+      "adjust_title": "Een definitief vastgelegd cijfer wijzigen",
+      "adjust_hint": "Wat is afgesproken, blijft zoals het is. De wijziging wordt ernaast vastgelegd, met de reden.",
+      "adjust_amount": "Wijziging (uren:minuten)",
+      "adjust_amount_placeholder": "bijv. 40:00, of -8:00 om er iets af te halen",
+      "adjust_reason": "Waarom",
+      "adjust_reason_placeholder": "Bijvoorbeeld: gecorrigeerd na controle van de gegevens van vorig jaar",
+      "adjust_button": "Wijziging vastleggen",
+      "adjustments": "Wijzigingen sinds de afspraak",
+      "adjustment_by": "{person}, {date}",
+      "confirm_delete_title": "Dit verlofjaar verwijderen?",
+      "confirm_delete_body": "{duration} van {from} tot {to} wordt verwijderd. Verlof dat al is geboekt, blijft vastgelegd, maar telt niet meer mee voor een verlofjaar.",
+      "deleting": "Bezig met verwijderen…"
     },
     "holidays": {
       "title": "Feestdagen",
@@ -709,7 +733,8 @@
         "agreed": "goedgekeurd",
         "closed": "afgesloten"
       },
-      "last_manager": "Dit is de enige persoon die het team beheert. Als je dat weghaalt, kan niemand meer bij de maand van wie dan ook, en kan niemand het teruggeven. Maak eerst iemand anders beheerder."
+      "last_manager": "Dit is de enige persoon die het team beheert. Als je dat weghaalt, kan niemand meer bij de maand van wie dan ook, en kan niemand het teruggeven. Maak eerst iemand anders beheerder.",
+      "leave_year_agreed": "Dit verlofjaar is definitief vastgelegd, dus het kan niet meer worden bewerkt of verwijderd. Kies Aanpassen om een wijziging met de reden vast te leggen."
     },
     "detail": {
       "title": "Uren in detail",

@@ -619,20 +619,44 @@
         "backwards": "The leave year cannot end before it starts.",
         "bad_duration": "Write the time as 200:00, 200 or 12000m.",
         "already_there": "There is already an entry for this leave year.",
-        "overlapping_year": "There is already a leave year covering these dates."
+        "overlapping_year": "There is already a leave year covering these dates.",
+        "reason_required": "Say why the figure changes.",
+        "zero_change": "A change of 0:00 changes nothing."
       },
       "toasts": {
         "added": "Leave year added",
         "agreed": "Held as final",
         "refused": "That could not be saved",
-        "try_again": "Please try again."
+        "try_again": "Please try again.",
+        "saved": "Leave year saved",
+        "deleted": "Leave year deleted",
+        "adjusted": "Change recorded"
       },
       "entitlement_with_unit": "Leave for the year (hours:minutes)",
       "echo_days": "{duration} · {days, plural, one {about # day} other {about # days}}",
       "echo_hours": "{duration}",
       "agreeing": "Holding…",
       "confirm_agree_title": "Hold this figure as final?",
-      "confirm_agree_body": "{duration} can no longer be changed on any screen afterwards. Check it against what the person was told before you hold it."
+      "confirm_agree_body": "{duration} can no longer be edited or deleted afterwards; a later change is recorded beside it as an adjustment, with its reason. Check it against what the person was told before you hold it.",
+      "edit": "Edit",
+      "edit_title": "Edit the leave year",
+      "save": "Save",
+      "delete": "Delete",
+      "taken_left": "{taken} taken · {left} left",
+      "left_days": "{days, plural, one {about # day left} other {about # days left}}",
+      "adjust": "Adjust",
+      "adjust_title": "Change a figure held as final",
+      "adjust_hint": "What was agreed stays as it is. The change is recorded beside it, with its reason.",
+      "adjust_amount": "Change (hours:minutes)",
+      "adjust_amount_placeholder": "e.g. 40:00, or -8:00 to take some away",
+      "adjust_reason": "Why",
+      "adjust_reason_placeholder": "For example: corrected after checking last year's records",
+      "adjust_button": "Record the change",
+      "adjustments": "Changes since it was agreed",
+      "adjustment_by": "{person}, {date}",
+      "confirm_delete_title": "Delete this leave year?",
+      "confirm_delete_body": "{duration} from {from} to {to} will be removed. Leave already booked stays recorded, but no longer counts against a leave year.",
+      "deleting": "Deleting…"
     },
     "holidays": {
       "title": "Public holidays",
@@ -709,7 +733,8 @@
         "agreed": "agreed",
         "closed": "closed"
       },
-      "last_manager": "This is the only person who looks after the team. Taking it away would leave nobody able to reach anyone's month, and nobody able to give it back. Make somebody else a manager first."
+      "last_manager": "This is the only person who looks after the team. Taking it away would leave nobody able to reach anyone's month, and nobody able to give it back. Make somebody else a manager first.",
+      "leave_year_agreed": "This leave year is held as final, so it can no longer be edited or deleted. Press Adjust to record a change with its reason."
     },
     "detail": {
       "title": "Hours in detail",

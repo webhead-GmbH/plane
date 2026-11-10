@@ -293,20 +293,44 @@
         "backwards": "O ano de férias não pode terminar antes de começar.",
         "bad_duration": "Escreva a duração como 200:00, 200 ou 12000m.",
         "already_there": "Já existe um registro para este ano de férias.",
-        "overlapping_year": "Já existe um ano de férias que cobre essas datas."
+        "overlapping_year": "Já existe um ano de férias que cobre essas datas.",
+        "reason_required": "Informe por que o valor muda.",
+        "zero_change": "Uma alteração de 0:00 não muda nada."
       },
       "toasts": {
         "added": "Ano de férias adicionado",
         "agreed": "Marcado como final",
         "refused": "Não foi possível salvar",
-        "try_again": "Por favor, tente novamente."
+        "try_again": "Por favor, tente novamente.",
+        "saved": "Ano de férias salvo",
+        "deleted": "Ano de férias excluído",
+        "adjusted": "Alteração registrada"
       },
       "entitlement_with_unit": "Férias do ano (horas:minutos)",
       "echo_days": "{duration} · {days, plural, one {cerca de # dia} other {cerca de # dias}}",
       "echo_hours": "{duration}",
       "agreeing": "Marcando…",
       "confirm_agree_title": "Registrar este valor como final?",
-      "confirm_agree_body": "{duration} não poderá mais ser alterado em nenhuma tela depois disso. Confira com o que foi dito à pessoa antes de marcar."
+      "confirm_agree_body": "{duration} não poderá mais ser editado nem excluído depois disso; uma alteração posterior fica registrada ao lado como ajuste, com o motivo. Confira com o que foi dito à pessoa antes de marcar.",
+      "edit": "Editar",
+      "edit_title": "Editar ano de férias",
+      "save": "Salvar",
+      "delete": "Excluir",
+      "taken_left": "{taken} tiradas · {left} restantes",
+      "left_days": "{days, plural, one {resta cerca de # dia} many {restam cerca de # dias} other {restam cerca de # dias}}",
+      "adjust": "Ajustar",
+      "adjust_title": "Alterar um valor marcado como final",
+      "adjust_hint": "O que foi acordado continua como está. A alteração fica registrada ao lado, com o motivo.",
+      "adjust_amount": "Alteração (horas:minutos)",
+      "adjust_amount_placeholder": "ex.: 40:00, ou -8:00 para descontar",
+      "adjust_reason": "Motivo",
+      "adjust_reason_placeholder": "Por exemplo: corrigido após conferir os registros do ano passado",
+      "adjust_button": "Registrar a alteração",
+      "adjustments": "Alterações desde o acordo",
+      "adjustment_by": "{person}, {date}",
+      "confirm_delete_title": "Excluir este ano de férias?",
+      "confirm_delete_body": "{duration} de {from} a {to} será removido. As férias já agendadas continuam registradas, mas não são mais descontadas de nenhum ano de férias.",
+      "deleting": "Excluindo…"
     },
     "holidays": {
       "title": "Feriados",
@@ -709,7 +733,8 @@
         "agreed": "aprovado",
         "closed": "fechado"
       },
-      "last_manager": "É a única pessoa que cuida da equipe. Tirar isso deixaria ninguém com acesso a nenhum mês, e ninguém para devolvê-lo. Torne outra pessoa gestora primeiro."
+      "last_manager": "É a única pessoa que cuida da equipe. Tirar isso deixaria ninguém com acesso a nenhum mês, e ninguém para devolvê-lo. Torne outra pessoa gestora primeiro.",
+      "leave_year_agreed": "Este ano de férias está marcado como final, então não pode mais ser editado nem excluído. Clique em Ajustar para registrar uma alteração com o motivo."
     },
     "detail": {
       "title": "Horas em detalhe",

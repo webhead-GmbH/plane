@@ -619,20 +619,44 @@
         "backwards": "Dovolenkový rok sa nemôže skončiť skôr, ako sa začne.",
         "bad_duration": "Čas zapíšte ako 200:00, 200 alebo 12000m.",
         "already_there": "Pre tento rok dovolenky už záznam existuje.",
-        "overlapping_year": "Tieto dátumy už pokrýva iný dovolenkový rok."
+        "overlapping_year": "Tieto dátumy už pokrýva iný dovolenkový rok.",
+        "reason_required": "Uveďte, prečo sa hodnota mení.",
+        "zero_change": "Zmena o 0:00 nič nemení."
       },
       "toasts": {
         "added": "Dovolenkový rok pridaný",
         "agreed": "Zaznamenané ako konečné",
         "refused": "Nepodarilo sa uložiť",
-        "try_again": "Skúste to prosím znova."
+        "try_again": "Skúste to prosím znova.",
+        "saved": "Dovolenkový rok uložený",
+        "deleted": "Dovolenkový rok odstránený",
+        "adjusted": "Zmena zaznamenaná"
       },
       "entitlement_with_unit": "Dovolenka na rok (hodiny:minúty)",
       "echo_days": "{duration} · {days, plural, one {približne # deň} few {približne # dni} many {približne # dňa} other {približne # dní}}",
       "echo_hours": "{duration}",
       "agreeing": "Zaznamenáva sa…",
       "confirm_agree_title": "Zaznamenať túto hodnotu ako konečnú?",
-      "confirm_agree_body": "{duration} sa už potom nedá zmeniť na žiadnej obrazovke. Pred potvrdením to porovnajte s tým, čo bolo osobe povedané."
+      "confirm_agree_body": "{duration} sa už potom nedá upraviť ani odstrániť; neskoršia zmena sa zaznamená vedľa nej ako korekcia aj s dôvodom. Pred potvrdením to porovnajte s tým, čo bolo osobe povedané.",
+      "edit": "Upraviť",
+      "edit_title": "Upraviť dovolenkový rok",
+      "save": "Uložiť",
+      "delete": "Odstrániť",
+      "taken_left": "Vyčerpané: {taken} · zostáva: {left}",
+      "left_days": "{days, plural, one {zostáva približne # deň} few {zostávajú približne # dni} many {zostáva približne # dňa} other {zostáva približne # dní}}",
+      "adjust": "Korigovať",
+      "adjust_title": "Zmeniť hodnotu zaznamenanú ako konečnú",
+      "adjust_hint": "Konečná hodnota zostáva bez zmeny. Zmena sa zaznamená vedľa nej aj s dôvodom.",
+      "adjust_amount": "Zmena (hodiny:minúty)",
+      "adjust_amount_placeholder": "napr. 40:00 alebo -8:00 na odobratie časti",
+      "adjust_reason": "Dôvod",
+      "adjust_reason_placeholder": "Napríklad: opravené po kontrole minuloročných záznamov",
+      "adjust_button": "Zaznamenať zmenu",
+      "adjustments": "Zmeny od potvrdenia",
+      "adjustment_by": "{person}, {date}",
+      "confirm_delete_title": "Odstrániť tento dovolenkový rok?",
+      "confirm_delete_body": "{duration} od {from} do {to} sa odstráni. Už zapísaná dovolenka zostane zaznamenaná, ale už sa nezapočíta do žiadneho dovolenkového roka.",
+      "deleting": "Odstraňuje sa…"
     },
     "holidays": {
       "title": "Sviatky",
@@ -709,7 +733,8 @@
         "agreed": "schválený",
         "closed": "uzavretý"
       },
-      "last_manager": "Toto je jediný človek, ktorý vedie tím. Odobratím by sa nikto nedostal k žiadnemu mesiacu a nikto by to nemohol vrátiť. Najprv určte niekoho iného."
+      "last_manager": "Toto je jediný človek, ktorý vedie tím. Odobratím by sa nikto nedostal k žiadnemu mesiacu a nikto by to nemohol vrátiť. Najprv určte niekoho iného.",
+      "leave_year_agreed": "Tento dovolenkový rok je zaznamenaný ako konečný, preto sa už nedá upraviť ani odstrániť. Stlačte Korigovať a zaznamenajte zmenu aj s dôvodom."
     },
     "detail": {
       "title": "Hodiny podrobne",

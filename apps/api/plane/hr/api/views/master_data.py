@@ -9,6 +9,9 @@ for months that are still open, which is why the endpoints refuse to touch
 anything a closed month depends on.
 """
 
+# Django imports
+from django.db import transaction
+
 # Third-party imports
 from rest_framework import status
 from rest_framework.response import Response
@@ -33,11 +36,12 @@ from plane.hr.models import (
     HrEmploymentProfile,
     HrHoliday,
     HrHolidayCalendar,
+    HrLeaveAdjustment,
     HrLeaveEntitlement,
     HrPeriod,
     HrWorkSchedule,
 )
-from plane.hr.services.audit import record
+from plane.hr.services.audit import differences, record, snapshot
 from plane.hr.services.setup import (
     ensure_absence_types,
     ensure_default_holiday_calendar,
@@ -175,8 +179,6 @@ class HrEmploymentProfileEndpoint(HrWorkspaceConfigEndpoint):
             before = crm_link_for(row)["staff_id"]
             set_crm_staff_id(row, staff_id)
             if before != staff_id:
-                from django.db import transaction
-
                 from plane.bgtasks.crm_sync_task import resync_member_to_crm
 
                 # Hours logged while the person could not be matched, and tasks they
@@ -500,6 +502,23 @@ class HrAbsenceTypeEndpoint(HrWorkspaceConfigEndpoint):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+LEAVE_YEAR_FIELDS = (
+    "leave_year_start",
+    "leave_year_end",
+    "entitlement_minutes",
+    "carryover_minutes",
+    "expires_on",
+    "basis_note",
+    "is_final",
+)
+# Changing a figure that was agreed is an adjustment with its reason, so what was
+# agreed stays readable next to what was done about it.
+AGREED_REFUSAL = {
+    "error": "This leave year has been agreed with the person. Record an adjustment with its reason instead.",
+    "reason": "leave_year_agreed",
+}
+
+
 class HrLeaveEntitlementEndpoint(BaseAPIView):
     """How much leave somebody has for a leave year."""
 
@@ -508,7 +527,7 @@ class HrLeaveEntitlementEndpoint(BaseAPIView):
         profile = readable_profile_or_none(request, profile_id)
         if profile is None:
             return Response({"error": "Not found."}, status=status.HTTP_404_NOT_FOUND)
-        rows = HrLeaveEntitlement.objects.filter(profile_id=profile.id)
+        rows = HrLeaveEntitlement.objects.filter(profile_id=profile.id).prefetch_related("adjustments__created_by")
         return Response(HrLeaveEntitlementSerializer(rows, many=True).data, status=status.HTTP_200_OK)
 
     @hr_permission(MANAGER)
@@ -516,10 +535,11 @@ class HrLeaveEntitlementEndpoint(BaseAPIView):
         profile = readable_profile_or_none(request, profile_id)
         if profile is None:
             return Response({"error": "Not found."}, status=status.HTTP_404_NOT_FOUND)
-        serializer = HrLeaveEntitlementSerializer(data=request.data)
+        serializer = HrLeaveEntitlementSerializer(data=request.data, context={"profile": profile})
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        serializer.save(workspace_id=profile.workspace_id, profile=profile)
+        row = serializer.save(workspace_id=profile.workspace_id, profile=profile)
+        record(profile, request.user, row, "leave_year_added", snapshot(row, LEAVE_YEAR_FIELDS), request=request)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @hr_permission(MANAGER)
@@ -531,20 +551,74 @@ class HrLeaveEntitlementEndpoint(BaseAPIView):
         if row is None:
             return Response({"error": "Not found."}, status=status.HTTP_404_NOT_FOUND)
         if row.is_final:
-            return Response(
-                {
-                    "error": (
-                        "This entitlement has been agreed with the person. Record a "
-                        "further adjustment rather than editing what was agreed."
-                    )
-                },
-                status=status.HTTP_409_CONFLICT,
-            )
-        serializer = HrLeaveEntitlementSerializer(row, data=request.data, partial=True)
+            return Response(AGREED_REFUSAL, status=status.HTTP_409_CONFLICT)
+        before = snapshot(row, LEAVE_YEAR_FIELDS)
+        serializer = HrLeaveEntitlementSerializer(row, data=request.data, partial=True, context={"profile": profile})
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        serializer.save()
+        row = serializer.save()
+        changes = differences(before, snapshot(row, LEAVE_YEAR_FIELDS))
+        if changes:
+            action = "leave_year_agreed" if changes.keys() == {"is_final"} else "leave_year_changed"
+            record(profile, request.user, row, action, changes, request=request)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @hr_permission(MANAGER)
+    def delete(self, request, profile_id, pk):
+        profile = readable_profile_or_none(request, profile_id)
+        if profile is None:
+            return Response({"error": "Not found."}, status=status.HTTP_404_NOT_FOUND)
+        row = HrLeaveEntitlement.objects.filter(profile_id=profile.id, pk=pk).first()
+        if row is None:
+            return Response({"error": "Not found."}, status=status.HTTP_404_NOT_FOUND)
+        if row.is_final:
+            return Response(AGREED_REFUSAL, status=status.HTTP_409_CONFLICT)
+        row_id, removed = row.id, snapshot(row, LEAVE_YEAR_FIELDS)
+        row.delete()
+        record(profile, request.user, row, "leave_year_deleted", removed, request=request, object_id=row_id)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class HrLeaveAdjustmentEndpoint(BaseAPIView):
+    """A change to a leave year's figure after it was agreed, with its reason."""
+
+    @hr_permission(MANAGER)
+    def post(self, request, profile_id, pk):
+        profile = readable_profile_or_none(request, profile_id)
+        if profile is None:
+            return Response({"error": "Not found."}, status=status.HTTP_404_NOT_FOUND)
+        minutes = request.data.get("minutes")
+        reason = str(request.data.get("reason") or "").strip()
+        if isinstance(minutes, bool) or not isinstance(minutes, int) or minutes == 0:
+            return Response(
+                {"minutes": ["Say how much the leave changes, in minutes, and not zero."]},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        if not reason:
+            return Response({"reason": ["Say why the leave changes."]}, status=status.HTTP_400_BAD_REQUEST)
+
+        with transaction.atomic():
+            row = HrLeaveEntitlement.objects.select_for_update().filter(profile_id=profile.id, pk=pk).first()
+            if row is None:
+                return Response({"error": "Not found."}, status=status.HTTP_404_NOT_FOUND)
+            adjustment = HrLeaveAdjustment.objects.create(
+                workspace_id=row.workspace_id, entitlement=row, minutes=minutes, reason=reason
+            )
+            before = row.adjustment_minutes
+            row.adjustment_minutes = before + minutes
+            row.save(update_fields=["adjustment_minutes", "updated_at", "updated_by"])
+
+        record(
+            profile,
+            request.user,
+            adjustment,
+            "leave_year_adjusted",
+            {"adjustment_minutes": {"from": before, "to": row.adjustment_minutes}, "leave_year": str(row.id)},
+            reason=reason,
+            request=request,
+        )
+        row = HrLeaveEntitlement.objects.prefetch_related("adjustments__created_by").get(pk=row.pk)
+        return Response(HrLeaveEntitlementSerializer(row).data, status=status.HTTP_201_CREATED)
 
 
 class HrSetupEndpoint(BaseAPIView):

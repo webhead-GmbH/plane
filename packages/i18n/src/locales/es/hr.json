@@ -607,20 +607,44 @@
         "backwards": "El año de vacaciones no puede terminar antes de empezar.",
         "bad_duration": "Escriba la duración como 200:00, 200 o 12000m.",
         "already_there": "Ya hay una entrada para este año de vacaciones.",
-        "overlapping_year": "Ya hay un año de vacaciones que cubre estas fechas."
+        "overlapping_year": "Ya hay un año de vacaciones que cubre estas fechas.",
+        "reason_required": "Indique por qué cambia la cifra.",
+        "zero_change": "Un cambio de 0:00 no cambia nada."
       },
       "toasts": {
         "added": "Año de vacaciones añadido",
         "agreed": "Cifra fijada",
         "refused": "No se ha podido guardar",
-        "try_again": "Inténtelo de nuevo."
+        "try_again": "Inténtelo de nuevo.",
+        "saved": "Año de vacaciones guardado",
+        "deleted": "Año de vacaciones eliminado",
+        "adjusted": "Cambio registrado"
       },
       "entitlement_with_unit": "Vacaciones del año (horas:minutos)",
       "echo_days": "{duration} · {days, plural, one {unos # día} other {unos # días}}",
       "echo_hours": "{duration}",
       "agreeing": "Fijando…",
       "confirm_agree_title": "¿Fijar esta cifra como definitiva?",
-      "confirm_agree_body": "{duration} ya no podrá cambiarse en ninguna pantalla. Compruébelo con lo que se le dijo a la persona antes de fijarlo."
+      "confirm_agree_body": "{duration} ya no podrá editarse ni eliminarse; un cambio posterior se registra al lado como ajuste, con su motivo. Compruébelo con lo que se le dijo a la persona antes de fijarlo.",
+      "edit": "Editar",
+      "edit_title": "Editar el año de vacaciones",
+      "save": "Guardar",
+      "delete": "Eliminar",
+      "taken_left": "Usado: {taken} · Restante: {left}",
+      "left_days": "{days, plural, one {queda aproximadamente # día} other {quedan aproximadamente # días}}",
+      "adjust": "Ajustar",
+      "adjust_title": "Cambiar una cifra fijada",
+      "adjust_hint": "Lo acordado se mantiene tal cual. El cambio se registra al lado, con su motivo.",
+      "adjust_amount": "Cambio (horas:minutos)",
+      "adjust_amount_placeholder": "p. ej. 40:00, o -8:00 para restar",
+      "adjust_reason": "Motivo",
+      "adjust_reason_placeholder": "Por ejemplo: corregido tras revisar los registros del año pasado",
+      "adjust_button": "Registrar el cambio",
+      "adjustments": "Cambios desde el acuerdo",
+      "adjustment_by": "{person}, {date}",
+      "confirm_delete_title": "¿Eliminar este año de vacaciones?",
+      "confirm_delete_body": "Se eliminará {duration} de {from} a {to}. Las vacaciones ya reservadas siguen registradas, pero ya no se descuentan de ningún año de vacaciones.",
+      "deleting": "Eliminando…"
     },
     "statement": {
       "title": "Antes de facturar",
@@ -709,7 +733,8 @@
         "agreed": "aprobado",
         "closed": "cerrado"
       },
-      "last_manager": "Es la única persona que se ocupa del equipo. Quitárselo dejaría a nadie con acceso a ningún mes, y a nadie que pueda devolverlo. Nombre antes a otra persona."
+      "last_manager": "Es la única persona que se ocupa del equipo. Quitárselo dejaría a nadie con acceso a ningún mes, y a nadie que pueda devolverlo. Nombre antes a otra persona.",
+      "leave_year_agreed": "Este año de vacaciones tiene la cifra fijada, así que ya no se puede editar ni eliminar. Pulse Ajustar para registrar un cambio con su motivo."
     },
     "detail": {
       "title": "Horas en detalle",
