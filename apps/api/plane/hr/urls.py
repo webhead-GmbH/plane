@@ -31,6 +31,7 @@ from plane.hr.api.views import (
     HrInvoiceAcceptVarianceEndpoint,
     HrInvoiceEndpoint,
     HrInvoiceReconcileEndpoint,
+    HrLeaveAdjustmentEndpoint,
     HrLeaveEntitlementEndpoint,
     HrAccessEndpoint,
     HrMeEndpoint,
@@ -107,6 +108,11 @@ urlpatterns = [
         "employees/<uuid:profile_id>/leave/<uuid:pk>/",
         HrLeaveEntitlementEndpoint.as_view(),
         name="hr-leave-detail",
+    ),
+    path(
+        "employees/<uuid:profile_id>/leave/<uuid:pk>/adjustments/",
+        HrLeaveAdjustmentEndpoint.as_view(),
+        name="hr-leave-adjustments",
     ),
     path(
         "employees/<uuid:profile_id>/opening-balances/",

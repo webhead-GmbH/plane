@@ -5,7 +5,7 @@
 from .base import HrBaseModel
 from .people import HrContract, HrEmploymentProfile
 from .schedule import HrHoliday, HrHolidayCalendar, HrWorkSchedule
-from .absence import HrAbsence, HrAbsenceType, HrLeaveEntitlement
+from .absence import HrAbsence, HrAbsenceType, HrLeaveAdjustment, HrLeaveEntitlement
 from .timekeeping import HrAttendanceDay, HrTimeEntry
 from .period import HrOpeningBalance, HrPeriod, HrPeriodDay
 from .money import HrInvoiceDocument, HrRateCard
@@ -23,6 +23,7 @@ __all__ = [
     "HrHolidayCalendar",
     "HrImportBatch",
     "HrInvoiceDocument",
+    "HrLeaveAdjustment",
     "HrLeaveEntitlement",
     "HrOpeningBalance",
     "HrPeriod",

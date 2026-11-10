@@ -245,3 +245,39 @@ class HrLeaveEntitlement(HrBaseModel):
                 name="hr_leave_year_valid_range",
             ),
         ]
+
+
+class HrLeaveAdjustment(HrBaseModel):
+    """A change to a leave year after its figure was agreed, with the reason for it.
+
+    Kept as rows of their own rather than by editing the agreed figure, so what was
+    agreed with the person stays readable next to what was done about it later, and
+    by whom. The leave year's ``adjustment_minutes`` is the sum of these, kept on
+    the year so that every balance reads one row rather than adding these up.
+    """
+
+    workspace = models.ForeignKey(
+        "db.Workspace",
+        on_delete=models.CASCADE,
+        related_name="hr_leave_adjustments",
+    )
+    entitlement = models.ForeignKey(
+        HrLeaveEntitlement,
+        on_delete=models.CASCADE,
+        related_name="adjustments",
+    )
+    # Signed: leave can be given and taken away.
+    minutes = models.IntegerField()
+    reason = models.TextField()
+
+    def __str__(self):
+        return f"{self.entitlement_id} {self.minutes:+d}"
+
+    class Meta:
+        verbose_name = "HR Leave Adjustment"
+        verbose_name_plural = "HR Leave Adjustments"
+        db_table = "hr_leave_adjustments"
+        ordering = ("created_at",)
+        constraints = [
+            models.CheckConstraint(condition=~models.Q(minutes=0), name="hr_leave_adjustment_changes_something"),
+        ]

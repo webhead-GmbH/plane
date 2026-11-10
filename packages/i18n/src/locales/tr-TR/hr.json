@@ -607,20 +607,44 @@
         "backwards": "İzin yılı, başlamadan önce bitemez.",
         "bad_duration": "Süreyi 200:00, 200 veya 12000m biçiminde yazın.",
         "already_there": "Bu izin yılı için zaten bir kayıt var.",
-        "overlapping_year": "Bu tarihleri kapsayan bir izin yılı zaten var."
+        "overlapping_year": "Bu tarihleri kapsayan bir izin yılı zaten var.",
+        "reason_required": "Değerin neden değiştiğini belirtin.",
+        "zero_change": "0:00 değerinde bir değişiklik hiçbir şeyi değiştirmez."
       },
       "toasts": {
         "added": "İzin yılı eklendi",
         "agreed": "Kesinleştirildi",
         "refused": "Bu kaydedilemedi",
-        "try_again": "Lütfen tekrar deneyin."
+        "try_again": "Lütfen tekrar deneyin.",
+        "saved": "İzin yılı kaydedildi",
+        "deleted": "İzin yılı silindi",
+        "adjusted": "Değişiklik kaydedildi"
       },
       "entitlement_with_unit": "Yıllık izin (saat:dakika)",
       "echo_days": "{duration} · {days, plural, one {yaklaşık # gün} other {yaklaşık # gün}}",
       "echo_hours": "{duration}",
       "agreeing": "Kesinleştiriliyor…",
       "confirm_agree_title": "Bu değer kesinleştirilsin mi?",
-      "confirm_agree_body": "{duration} sonrasında hiçbir ekranda değiştirilemez. Kesinleştirmeden önce kişiye söylenenle karşılaştırın."
+      "confirm_agree_body": "{duration} sonrasında düzenlenemez veya silinemez; sonradan yapılan bir değişiklik, gerekçesiyle birlikte yanına düzeltme olarak kaydedilir. Kesinleştirmeden önce kişiye söylenenle karşılaştırın.",
+      "edit": "Düzenle",
+      "edit_title": "İzin yılını düzenle",
+      "save": "Kaydet",
+      "delete": "Sil",
+      "taken_left": "{taken} kullanıldı · {left} kaldı",
+      "left_days": "{days, plural, one {yaklaşık # gün kaldı} other {yaklaşık # gün kaldı}}",
+      "adjust": "Düzelt",
+      "adjust_title": "Kesinleştirilmiş bir değeri değiştir",
+      "adjust_hint": "Kesinleştirilen değer olduğu gibi kalır. Değişiklik, gerekçesiyle birlikte yanına kaydedilir.",
+      "adjust_amount": "Değişiklik (saat:dakika)",
+      "adjust_amount_placeholder": "örn. 40:00 ya da azaltmak için -8:00",
+      "adjust_reason": "Gerekçe",
+      "adjust_reason_placeholder": "Örneğin: geçen yılın kayıtları kontrol edildikten sonra düzeltildi",
+      "adjust_button": "Değişikliği kaydet",
+      "adjustments": "Kesinleştirildikten sonraki değişiklikler",
+      "adjustment_by": "{person}, {date}",
+      "confirm_delete_title": "Bu izin yılı silinsin mi?",
+      "confirm_delete_body": "{from} – {to} arasındaki {duration} kaldırılacak. Önceden girilmiş izinler kayıtlı kalır, ancak artık hiçbir izin yılından düşülmez.",
+      "deleting": "Siliniyor…"
     },
     "statement": {
       "title": "Faturanızı kesmeden önce",
@@ -709,7 +733,8 @@
         "agreed": "onaylandı",
         "closed": "kapatıldı"
       },
-      "last_manager": "Ekibi yöneten tek kişi bu. Bunu almak, kimsenin hiçbir aya erişememesine ve kimsenin geri verememesine yol açar. Önce başka birini yönetici yapın."
+      "last_manager": "Ekibi yöneten tek kişi bu. Bunu almak, kimsenin hiçbir aya erişememesine ve kimsenin geri verememesine yol açar. Önce başka birini yönetici yapın.",
+      "leave_year_agreed": "Bu izin yılı kesinleştirildi, bu yüzden artık düzenlenemez veya silinemez. Gerekçesiyle bir değişiklik kaydetmek için Düzelt düğmesine basın."
     },
     "detail": {
       "title": "Saatler ayrıntılı",

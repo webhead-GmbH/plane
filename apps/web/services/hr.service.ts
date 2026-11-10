@@ -502,12 +502,28 @@ export type THrLeaveEntitlement = {
   entitlement_minutes: number;
   /** Signed: leave can be carried forward, and it can also be taken in advance. */
   carryover_minutes: number;
+  /** The sum of the adjustments; it moves only with them. */
   adjustment_minutes: number;
   granted_minutes: number;
+  /** Approved leave inside the year, by the month's own arithmetic. */
+  taken_minutes: number;
+  /** Signed: somebody allowed leave in advance is over, and that is worth seeing. */
+  remaining_minutes: number;
+  adjustments: THrLeaveAdjustment[];
   expires_on: string | null;
   basis_note: string;
   /** Agreed with the person, after which it is adjusted rather than edited. */
   is_final: boolean;
+};
+
+/** A change to a leave year after it was agreed, with its reason. */
+export type THrLeaveAdjustment = {
+  id: string;
+  /** Signed: leave can be given and taken away. */
+  minutes: number;
+  reason: string;
+  created_at: string;
+  created_by_name: string;
 };
 
 /** How somebody is paid for a stretch of time. */
@@ -1220,6 +1236,28 @@ export class HrService extends APIService {
     payload: Partial<THrLeaveEntitlement>
   ): Promise<THrLeaveEntitlement> {
     return this.patch(`${this.base}/employees/${profileId}/leave/${entitlementId}/`, payload)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw withStatus(error);
+      });
+  }
+
+  /** Refused once the figure has been agreed; adjust it instead. */
+  async deleteLeaveEntitlement(profileId: string, entitlementId: string): Promise<void> {
+    return this.delete(`${this.base}/employees/${profileId}/leave/${entitlementId}/`)
+      .then(() => undefined)
+      .catch((error) => {
+        throw withStatus(error);
+      });
+  }
+
+  /** Answers with the leave year as it stands after the change. */
+  async adjustLeaveEntitlement(
+    profileId: string,
+    entitlementId: string,
+    payload: { minutes: number; reason: string }
+  ): Promise<THrLeaveEntitlement> {
+    return this.post(`${this.base}/employees/${profileId}/leave/${entitlementId}/adjustments/`, payload)
       .then((response) => response?.data)
       .catch((error) => {
         throw withStatus(error);

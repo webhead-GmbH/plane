@@ -293,20 +293,44 @@
         "backwards": "年假年度的結束日不能早於起始日。",
         "bad_duration": "請將時間長度寫成 200:00、200 或 12000m。",
         "already_there": "該假期年度已有記錄。",
-        "overlapping_year": "已有一個年假年度涵蓋這些日期。"
+        "overlapping_year": "已有一個年假年度涵蓋這些日期。",
+        "reason_required": "請說明這個數字為什麼要變更。",
+        "zero_change": "增減 0:00 不會改變任何東西。"
       },
       "toasts": {
         "added": "年假年度已新增",
         "agreed": "已定為最終值",
         "refused": "無法儲存",
-        "try_again": "請再試一次。"
+        "try_again": "請再試一次。",
+        "saved": "年假年度已儲存",
+        "deleted": "年假年度已刪除",
+        "adjusted": "變更已記錄"
       },
       "entitlement_with_unit": "本年度假期（小時:分鐘）",
       "echo_days": "{duration} · {days, plural, other {約 # 天}}",
       "echo_hours": "{duration}",
       "agreeing": "正在確定…",
       "confirm_agree_title": "將此數字確定為最終值？",
-      "confirm_agree_body": "{duration} 之後在任何畫面上都不能再更改。請先和當事人被告知的數字核對，再確定下來。"
+      "confirm_agree_body": "{duration} 之後無法再編輯或刪除；日後的變更會以調整的形式，連同原因一起記錄在旁邊。請先和當事人被告知的數字核對，再確定下來。",
+      "edit": "編輯",
+      "edit_title": "編輯年假年度",
+      "save": "儲存",
+      "delete": "刪除",
+      "taken_left": "已休 {taken} · 剩餘 {left}",
+      "left_days": "{days, plural, other {剩餘約 # 天}}",
+      "adjust": "調整",
+      "adjust_title": "更改已定為最終值的數字",
+      "adjust_hint": "原先定下的數字維持不變。這次變更會連同原因一起記錄在旁邊。",
+      "adjust_amount": "增減（小時:分鐘）",
+      "adjust_amount_placeholder": "例如 40:00，要扣除則填 -8:00",
+      "adjust_reason": "原因",
+      "adjust_reason_placeholder": "例如：核對去年的記錄後更正",
+      "adjust_button": "記錄變更",
+      "adjustments": "確定後的變更",
+      "adjustment_by": "{person}，{date}",
+      "confirm_delete_title": "刪除這個年假年度？",
+      "confirm_delete_body": "{from} 至 {to} 的 {duration} 將被刪除。已登記的假期仍會留有記錄，但不再從任何年假年度中扣除。",
+      "deleting": "正在刪除…"
     },
     "holidays": {
       "title": "國定假日",
@@ -709,7 +733,8 @@
         "agreed": "批准",
         "closed": "關閉"
       },
-      "last_manager": "這是唯一負責團隊的人。取消後將沒有人能存取任何月份，也沒有人能恢復。請先指定另一個人。"
+      "last_manager": "這是唯一負責團隊的人。取消後將沒有人能存取任何月份，也沒有人能恢復。請先指定另一個人。",
+      "leave_year_agreed": "這個年假年度已定為最終值，因此無法再編輯或刪除。若要連同原因記錄變更，請按「調整」。"
     },
     "detail": {
       "title": "工時明細",

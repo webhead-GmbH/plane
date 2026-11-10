@@ -293,20 +293,44 @@
         "backwards": "年度の終了日を開始日より前にはできません。",
         "bad_duration": "時間は200:00、200、12000mのように入力してください。",
         "already_there": "この休暇年度の記録はすでにあります。",
-        "overlapping_year": "この期間と重なる休暇年度がすでにあります。"
+        "overlapping_year": "この期間と重なる休暇年度がすでにあります。",
+        "reason_required": "数値を変更する理由を入力してください。",
+        "zero_change": "増減が0:00では何も変わりません。"
       },
       "toasts": {
         "added": "年次休暇の年度を追加しました",
         "agreed": "確定しました",
         "refused": "保存できませんでした",
-        "try_again": "もう一度お試しください。"
+        "try_again": "もう一度お試しください。",
+        "saved": "年次休暇の年度を保存しました",
+        "deleted": "年次休暇の年度を削除しました",
+        "adjusted": "変更を記録しました"
       },
       "entitlement_with_unit": "年間の休暇（時間:分）",
       "echo_days": "{duration} · {days, plural, other {約#日}}",
       "echo_hours": "{duration}",
       "agreeing": "確定しています…",
       "confirm_agree_title": "この数値を確定しますか？",
-      "confirm_agree_body": "{duration}は以降どの画面からも変更できなくなります。確定する前に、本人に伝えた内容と合っているか確認してください。"
+      "confirm_agree_body": "{duration}は以降、編集も削除もできなくなり、後からの変更は調整として理由とともにその横に記録されます。確定する前に、本人に伝えた内容と合っているか確認してください。",
+      "edit": "編集",
+      "edit_title": "年次休暇の年度を編集",
+      "save": "保存",
+      "delete": "削除",
+      "taken_left": "取得 {taken} · 残り {left}",
+      "left_days": "{days, plural, other {残り約#日}}",
+      "adjust": "調整",
+      "adjust_title": "確定済みの数値を変更",
+      "adjust_hint": "確定した内容はそのまま残ります。変更は理由とともにその横に記録されます。",
+      "adjust_amount": "増減（時間:分）",
+      "adjust_amount_placeholder": "例：40:00、減らす場合は-8:00",
+      "adjust_reason": "理由",
+      "adjust_reason_placeholder": "例：昨年の記録を確認したうえで修正しました",
+      "adjust_button": "変更を記録",
+      "adjustments": "確定後の変更",
+      "adjustment_by": "{person}、{date}",
+      "confirm_delete_title": "この年次休暇の年度を削除しますか？",
+      "confirm_delete_body": "{from}から{to}までの{duration}が削除されます。すでに登録された休暇は記録に残りますが、どの休暇年度からも差し引かれなくなります。",
+      "deleting": "削除しています…"
     },
     "holidays": {
       "title": "祝日",
@@ -709,7 +733,8 @@
         "agreed": "承認済み",
         "closed": "締め済み"
       },
-      "last_manager": "チームを担当しているのはこの人だけです。外すと誰もどの月にも到達できなくなり、戻せる人もいなくなります。先に別の人を担当者にしてください。"
+      "last_manager": "チームを担当しているのはこの人だけです。外すと誰もどの月にも到達できなくなり、戻せる人もいなくなります。先に別の人を担当者にしてください。",
+      "leave_year_agreed": "この年次休暇の年度は確定済みのため、編集も削除もできません。理由を添えて変更を記録するには「調整」を押してください。"
     },
     "detail": {
       "title": "時間の内訳",

@@ -24,6 +24,7 @@ from plane.hr.models import (
     HrEmploymentProfile,
     HrHoliday,
     HrHolidayCalendar,
+    HrLeaveAdjustment,
     HrLeaveEntitlement,
     HrPeriod,
     HrPeriodDay,
@@ -31,6 +32,7 @@ from plane.hr.models import (
     HrWorkSchedule,
 )
 from plane.hr.api.serializers.base import HrBaseSerializer
+from plane.hr.services.leave import taken_between
 from plane.hr.utils.crm_link import crm_link_for
 
 
@@ -348,8 +350,30 @@ class HrAttendanceDaySerializer(HrBaseSerializer):
         read_only_fields = ["workspace", "profile", "net_minutes", "locked_period"]
 
 
+class HrLeaveAdjustmentSerializer(HrBaseSerializer):
+    created_by_name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = HrLeaveAdjustment
+        fields = ["id", "minutes", "reason", "created_at", "created_by_name"]
+        read_only_fields = fields
+
+    def get_created_by_name(self, obj):
+        user = obj.created_by
+        return (user.display_name or user.email) if user else ""
+
+
 class HrLeaveEntitlementSerializer(HrBaseSerializer):
+    """A leave year, with what has been taken out of it and what is left.
+
+    Pass the person as ``context["profile"]`` when writing, so a year laid over
+    another one is refused here rather than charging leave to the wrong year.
+    """
+
     granted_minutes = serializers.IntegerField(read_only=True)
+    taken_minutes = serializers.SerializerMethodField()
+    remaining_minutes = serializers.SerializerMethodField()
+    adjustments = HrLeaveAdjustmentSerializer(many=True, read_only=True)
 
     class Meta:
         model = HrLeaveEntitlement
@@ -362,11 +386,49 @@ class HrLeaveEntitlementSerializer(HrBaseSerializer):
             "carryover_minutes",
             "adjustment_minutes",
             "granted_minutes",
+            "taken_minutes",
+            "remaining_minutes",
+            "adjustments",
             "expires_on",
             "basis_note",
             "is_final",
         ]
-        read_only_fields = ["workspace", "profile"]
+        # The adjustments add up to adjustment_minutes; it moves only with them.
+        read_only_fields = ["workspace", "profile", "adjustment_minutes"]
+
+    def _taken(self, obj):
+        # Asked twice per row (taken, then remaining), and each asking reads a year of absences.
+        taken = self.context.setdefault("_leave_taken", {})
+        if obj.pk not in taken:
+            taken[obj.pk] = taken_between(obj.profile, obj.leave_year_start, obj.leave_year_end)
+        return taken[obj.pk]
+
+    def get_taken_minutes(self, obj):
+        return self._taken(obj)
+
+    def get_remaining_minutes(self, obj):
+        # Signed: somebody allowed leave in advance is over, and that is worth seeing.
+        return obj.granted_minutes - self._taken(obj)
+
+    def validate(self, data):
+        start = data.get("leave_year_start", getattr(self.instance, "leave_year_start", None))
+        end = data.get("leave_year_end", getattr(self.instance, "leave_year_end", None))
+        if start and end and end <= start:
+            raise serializers.ValidationError({"leave_year_end": "The leave year must end after it starts."})
+        profile = self.context.get("profile")
+        if profile is not None and start and end:
+            # Any overlap, not just the same first day: the later year would win where
+            # they overlap and charge leave to a year nobody meant to open.
+            overlapping = HrLeaveEntitlement.objects.filter(
+                profile_id=profile.id, leave_year_start__lte=end, leave_year_end__gte=start
+            )
+            if self.instance is not None:
+                overlapping = overlapping.exclude(pk=self.instance.pk)
+            if overlapping.exists():
+                raise serializers.ValidationError(
+                    {"leave_year_start": "There is already a leave year covering these dates."}
+                )
+        return data
 
 
 class HrPeriodDaySerializer(HrBaseSerializer):

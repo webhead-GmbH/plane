@@ -293,20 +293,44 @@
         "backwards": "L’année de congés ne peut pas se terminer avant de commencer.",
         "bad_duration": "Saisissez la durée sous la forme 200:00, 200 ou 12000m.",
         "already_there": "Une entrée existe déjà pour cette année de congés.",
-        "overlapping_year": "Une année de congés couvre déjà ces dates."
+        "overlapping_year": "Une année de congés couvre déjà ces dates.",
+        "reason_required": "Indiquez pourquoi le chiffre change.",
+        "zero_change": "Une modification de 0:00 ne change rien."
       },
       "toasts": {
         "added": "Année de congés ajoutée",
         "agreed": "Rendu définitif",
         "refused": "Impossible d’enregistrer",
-        "try_again": "Veuillez réessayer."
+        "try_again": "Veuillez réessayer.",
+        "saved": "Année de congés enregistrée",
+        "deleted": "Année de congés supprimée",
+        "adjusted": "Modification enregistrée"
       },
       "entitlement_with_unit": "Congés pour l’année (heures:minutes)",
       "echo_days": "{duration} · {days, plural, one {environ # jour} other {environ # jours}}",
       "echo_hours": "{duration}",
       "agreeing": "Enregistrement définitif…",
       "confirm_agree_title": "Fixer ce montant définitivement ?",
-      "confirm_agree_body": "{duration} ne pourra plus être modifié nulle part ensuite. Vérifiez ce chiffre avec ce qui a été annoncé à la personne avant de le rendre définitif."
+      "confirm_agree_body": "{duration} ne pourra plus être modifié ni supprimé ensuite ; une modification ultérieure est enregistrée à côté comme ajustement, avec son motif. Vérifiez ce chiffre avec ce qui a été annoncé à la personne avant de le rendre définitif.",
+      "edit": "Modifier",
+      "edit_title": "Modifier l’année de congés",
+      "save": "Enregistrer",
+      "delete": "Supprimer",
+      "taken_left": "Pris : {taken} · Restant : {left}",
+      "left_days": "{days, plural, one {environ # jour restant} many {environ # jours restants} other {environ # jours restants}}",
+      "adjust": "Ajuster",
+      "adjust_title": "Modifier un chiffre définitif",
+      "adjust_hint": "Ce qui a été convenu reste tel quel. La modification est enregistrée à côté, avec son motif.",
+      "adjust_amount": "Modification (heures:minutes)",
+      "adjust_amount_placeholder": "ex. 40:00, ou -8:00 pour en retirer",
+      "adjust_reason": "Motif",
+      "adjust_reason_placeholder": "Par exemple : corrigé après vérification des registres de l’an dernier",
+      "adjust_button": "Enregistrer la modification",
+      "adjustments": "Modifications depuis l’accord",
+      "adjustment_by": "{person}, {date}",
+      "confirm_delete_title": "Supprimer cette année de congés ?",
+      "confirm_delete_body": "{duration} du {from} au {to} sera supprimé. Les congés déjà posés restent enregistrés, mais ne sont plus imputés sur aucune année de congés.",
+      "deleting": "Suppression…"
     },
     "holidays": {
       "title": "Jours fériés",
@@ -709,7 +733,8 @@
         "agreed": "validé",
         "closed": "clôturé"
       },
-      "last_manager": "C’est la seule personne qui s’occupe de l’équipe. Le lui retirer laisserait plus personne capable d’accéder à un mois, ni de le rendre. Désignez d’abord quelqu’un d’autre."
+      "last_manager": "C’est la seule personne qui s’occupe de l’équipe. Le lui retirer laisserait plus personne capable d’accéder à un mois, ni de le rendre. Désignez d’abord quelqu’un d’autre.",
+      "leave_year_agreed": "Cette année de congés est définitive, elle ne peut donc plus être modifiée ni supprimée. Appuyez sur Ajuster pour enregistrer une modification avec son motif."
     },
     "detail": {
       "title": "Heures en détail",

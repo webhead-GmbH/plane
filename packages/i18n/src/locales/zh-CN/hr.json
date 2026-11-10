@@ -619,20 +619,44 @@
         "backwards": "年假年度的结束日期不能早于开始日期。",
         "bad_duration": "请将时长写作 200:00、200 或 12000m。",
         "already_there": "该假期年度已有记录。",
-        "overlapping_year": "已有一个年假年度包含这些日期。"
+        "overlapping_year": "已有一个年假年度包含这些日期。",
+        "reason_required": "请说明更改这个数字的原因。",
+        "zero_change": "增减 0:00 不会改变任何内容。"
       },
       "toasts": {
         "added": "年假年度已添加",
         "agreed": "已确定为最终值",
         "refused": "无法保存",
-        "try_again": "请重试。"
+        "try_again": "请重试。",
+        "saved": "年假年度已保存",
+        "deleted": "年假年度已删除",
+        "adjusted": "更改已记录"
       },
       "entitlement_with_unit": "本年度假期（小时:分钟）",
       "echo_days": "{duration} · {days, plural, other {约 # 天}}",
       "echo_hours": "{duration}",
       "agreeing": "正在确定…",
       "confirm_agree_title": "将此数字确定为最终值？",
-      "confirm_agree_body": "{duration} 此后在任何页面上都无法再更改。确定之前，请与告知本人的数字核对一致。"
+      "confirm_agree_body": "{duration} 此后无法再编辑或删除；之后的更改会作为调整，连同原因一起记录在旁边。确定之前，请与告知本人的数字核对一致。",
+      "edit": "编辑",
+      "edit_title": "编辑年假年度",
+      "save": "保存",
+      "delete": "删除",
+      "taken_left": "已休 {taken} · 剩余 {left}",
+      "left_days": "{days, plural, other {剩余约 # 天}}",
+      "adjust": "调整",
+      "adjust_title": "更改已确定为最终值的数字",
+      "adjust_hint": "原先确定的数字保持不变。此次更改会连同原因一起记录在旁边。",
+      "adjust_amount": "增减（小时:分钟）",
+      "adjust_amount_placeholder": "例如 40:00，减少则填 -8:00",
+      "adjust_reason": "原因",
+      "adjust_reason_placeholder": "例如：核对去年的记录后更正",
+      "adjust_button": "记录更改",
+      "adjustments": "确定后的更改",
+      "adjustment_by": "{person}，{date}",
+      "confirm_delete_title": "删除此年假年度？",
+      "confirm_delete_body": "{from} 至 {to} 的 {duration} 将被删除。已登记的假期仍会保留记录，但不再从任何年假年度中扣除。",
+      "deleting": "正在删除…"
     },
     "holidays": {
       "title": "节假日",
@@ -709,7 +733,8 @@
         "agreed": "批准",
         "closed": "关闭"
       },
-      "last_manager": "这是唯一负责团队的人。取消后将没有人能访问任何月份，也没有人能恢复。请先指定另一个人。"
+      "last_manager": "这是唯一负责团队的人。取消后将没有人能访问任何月份，也没有人能恢复。请先指定另一个人。",
+      "leave_year_agreed": "此年假年度已确定为最终值，因此无法再编辑或删除。如需连同原因记录更改，请点击“调整”。"
     },
     "detail": {
       "title": "工时明细",

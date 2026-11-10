@@ -220,6 +220,15 @@ export function parseDuration(input: string): number | null {
   return null;
 }
 
+/** As parseDuration, but a leading minus takes time away: carried-over leave and adjustments go both ways. */
+export function parseSignedDuration(input: string): number | null {
+  const text = input.trim();
+  const negative = text.startsWith("-");
+  const size = parseDuration(negative ? text.slice(1) : text);
+  if (size === null) return null;
+  return negative ? -size : size;
+}
+
 /**
  * The readable part of a refusal, whichever shape it arrives in.
  *

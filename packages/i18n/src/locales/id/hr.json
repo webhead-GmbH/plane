@@ -607,20 +607,44 @@
         "backwards": "Tahun cuti tidak boleh berakhir sebelum tanggal mulainya.",
         "bad_duration": "Tulis durasinya sebagai 200:00, 200 atau 12000m.",
         "already_there": "Sudah ada entri untuk tahun cuti ini.",
-        "overlapping_year": "Sudah ada tahun cuti yang mencakup tanggal-tanggal ini."
+        "overlapping_year": "Sudah ada tahun cuti yang mencakup tanggal-tanggal ini.",
+        "reason_required": "Sebutkan alasan angka ini berubah.",
+        "zero_change": "Perubahan 0:00 tidak mengubah apa pun."
       },
       "toasts": {
         "added": "Tahun cuti ditambahkan",
         "agreed": "Ditetapkan final",
         "refused": "Tidak dapat disimpan",
-        "try_again": "Silakan coba lagi."
+        "try_again": "Silakan coba lagi.",
+        "saved": "Tahun cuti disimpan",
+        "deleted": "Tahun cuti dihapus",
+        "adjusted": "Perubahan dicatat"
       },
       "entitlement_with_unit": "Cuti setahun (jam:menit)",
       "echo_days": "{duration} · {days, plural, other {sekitar # hari}}",
       "echo_hours": "{duration}",
       "agreeing": "Menetapkan…",
       "confirm_agree_title": "Tetapkan angka ini sebagai final?",
-      "confirm_agree_body": "{duration} tidak dapat diubah lagi di layar mana pun setelah ini. Cocokkan dulu dengan apa yang sudah disampaikan kepada orangnya sebelum Anda menetapkannya."
+      "confirm_agree_body": "{duration} tidak dapat diubah atau dihapus lagi setelah ini; perubahan selanjutnya dicatat di sampingnya sebagai penyesuaian, beserta alasannya. Cocokkan dulu dengan apa yang sudah disampaikan kepada orangnya sebelum Anda menetapkannya.",
+      "edit": "Ubah",
+      "edit_title": "Ubah tahun cuti",
+      "save": "Simpan",
+      "delete": "Hapus",
+      "taken_left": "{taken} terpakai · sisa {left}",
+      "left_days": "{days, plural, other {sisa sekitar # hari}}",
+      "adjust": "Sesuaikan",
+      "adjust_title": "Ubah angka yang ditetapkan final",
+      "adjust_hint": "Angka yang sudah ditetapkan tetap seperti semula. Perubahannya dicatat di sampingnya, beserta alasannya.",
+      "adjust_amount": "Perubahan (jam:menit)",
+      "adjust_amount_placeholder": "mis. 40:00, atau -8:00 untuk mengurangi",
+      "adjust_reason": "Alasan",
+      "adjust_reason_placeholder": "Misalnya: dikoreksi setelah memeriksa catatan tahun lalu",
+      "adjust_button": "Catat perubahan",
+      "adjustments": "Perubahan sejak ditetapkan",
+      "adjustment_by": "{person}, {date}",
+      "confirm_delete_title": "Hapus tahun cuti ini?",
+      "confirm_delete_body": "{duration} dari {from} sampai {to} akan dihapus. Cuti yang sudah dicatat tetap tersimpan, tetapi tidak lagi mengurangi tahun cuti mana pun.",
+      "deleting": "Menghapus…"
     },
     "holidays": {
       "title": "Hari libur nasional",
@@ -709,7 +733,8 @@
         "agreed": "disetujui",
         "closed": "ditutup"
       },
-      "last_manager": "Ini satu-satunya orang yang menangani tim. Mencabutnya membuat tidak ada yang bisa mengakses bulan mana pun, dan tidak ada yang bisa mengembalikannya. Jadikan orang lain pengelola dulu."
+      "last_manager": "Ini satu-satunya orang yang menangani tim. Mencabutnya membuat tidak ada yang bisa mengakses bulan mana pun, dan tidak ada yang bisa mengembalikannya. Jadikan orang lain pengelola dulu.",
+      "leave_year_agreed": "Tahun cuti ini sudah ditetapkan final, jadi tidak dapat diubah atau dihapus lagi. Tekan Sesuaikan untuk mencatat perubahan beserta alasannya."
     },
     "detail": {
       "title": "Rincian jam",

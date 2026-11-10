@@ -619,20 +619,44 @@
         "backwards": "Das Urlaubsjahr darf nicht enden, bevor es beginnt.",
         "bad_duration": "Geben Sie die Zeit als 200:00, 200 oder 12000m ein.",
         "already_there": "Für dieses Urlaubsjahr gibt es bereits einen Eintrag.",
-        "overlapping_year": "Für diesen Zeitraum gibt es bereits ein Urlaubsjahr."
+        "overlapping_year": "Für diesen Zeitraum gibt es bereits ein Urlaubsjahr.",
+        "reason_required": "Geben Sie an, warum sich der Wert ändert.",
+        "zero_change": "Eine Änderung um 0:00 ändert nichts."
       },
       "toasts": {
         "added": "Urlaubsjahr hinzugefügt",
         "agreed": "Endgültig festgehalten",
         "refused": "Speichern nicht möglich",
-        "try_again": "Bitte versuchen Sie es erneut."
+        "try_again": "Bitte versuchen Sie es erneut.",
+        "saved": "Urlaubsjahr gespeichert",
+        "deleted": "Urlaubsjahr gelöscht",
+        "adjusted": "Änderung erfasst"
       },
       "entitlement_with_unit": "Urlaub für das Jahr (Stunden:Minuten)",
       "echo_days": "{duration} · {days, plural, one {etwa # Tag} other {etwa # Tage}}",
       "echo_hours": "{duration}",
       "agreeing": "Wird festgehalten…",
       "confirm_agree_title": "Diesen Wert als endgültig festhalten?",
-      "confirm_agree_body": "{duration} lässt sich danach auf keiner Seite mehr ändern. Prüfen Sie den Wert gegen das, was der Person gesagt wurde, bevor Sie ihn festhalten."
+      "confirm_agree_body": "{duration} lässt sich danach nicht mehr bearbeiten oder löschen; eine spätere Änderung wird als Anpassung mit ihrem Grund daneben erfasst. Prüfen Sie den Wert gegen das, was der Person gesagt wurde, bevor Sie ihn festhalten.",
+      "edit": "Bearbeiten",
+      "edit_title": "Urlaubsjahr bearbeiten",
+      "save": "Speichern",
+      "delete": "Löschen",
+      "taken_left": "{taken} genommen · {left} übrig",
+      "left_days": "{days, plural, one {noch etwa # Tag übrig} other {noch etwa # Tage übrig}}",
+      "adjust": "Anpassen",
+      "adjust_title": "Endgültig festgehaltenen Wert ändern",
+      "adjust_hint": "Was vereinbart wurde, bleibt unverändert. Die Änderung wird mit ihrem Grund daneben erfasst.",
+      "adjust_amount": "Änderung (Stunden:Minuten)",
+      "adjust_amount_placeholder": "z. B. 40:00 oder -8:00, um etwas abzuziehen",
+      "adjust_reason": "Grund",
+      "adjust_reason_placeholder": "Zum Beispiel: nach Prüfung der Unterlagen aus dem Vorjahr korrigiert",
+      "adjust_button": "Änderung erfassen",
+      "adjustments": "Änderungen seit der Vereinbarung",
+      "adjustment_by": "{person}, {date}",
+      "confirm_delete_title": "Dieses Urlaubsjahr löschen?",
+      "confirm_delete_body": "{duration} von {from} bis {to} wird entfernt. Bereits gebuchter Urlaub bleibt erfasst, wird aber auf kein Urlaubsjahr mehr angerechnet.",
+      "deleting": "Wird gelöscht…"
     },
     "holidays": {
       "title": "Feiertage",
@@ -709,7 +733,8 @@
         "agreed": "freigegeben",
         "closed": "abgeschlossen"
       },
-      "last_manager": "Das ist die einzige Person, die das Team betreut. Wird ihr das entzogen, kommt niemand mehr an irgendeinen Monat heran — und niemand kann es zurückgeben. Machen Sie zuerst jemand anderen zur Teamleitung."
+      "last_manager": "Das ist die einzige Person, die das Team betreut. Wird ihr das entzogen, kommt niemand mehr an irgendeinen Monat heran — und niemand kann es zurückgeben. Machen Sie zuerst jemand anderen zur Teamleitung.",
+      "leave_year_agreed": "Dieses Urlaubsjahr ist endgültig festgehalten, deshalb lässt es sich nicht mehr bearbeiten oder löschen. Klicken Sie auf Anpassen, um eine Änderung mit ihrem Grund zu erfassen."
     },
     "detail": {
       "title": "Stunden im Detail",
