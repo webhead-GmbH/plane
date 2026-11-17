@@ -23,6 +23,7 @@ from plane.utils.path_validator import sanitize_filename
 from plane.db.models import FileAsset, Project, ProjectMember, User, Workspace
 from plane.app.permissions import WorkspaceUserPermission
 from plane.api.views.base import BaseAPIView
+from plane.app.views.asset.v2 import can_modify_asset
 from plane.api.serializers import (
     UserAssetUploadSerializer,
     AssetUpdateSerializer,
@@ -672,15 +673,16 @@ class GenericAssetEndpoint(BaseAPIView):
                     {"error": "You don't have access to this asset."},
                     status=status.HTTP_403_FORBIDDEN,
                 )
+            if not can_modify_asset(request.user, asset):
+                return Response(
+                    {"error": "You don't have the required permissions."},
+                    status=status.HTTP_403_FORBIDDEN,
+                )
 
-            # Update is_uploaded status, confirming an upload only when its file is in storage
-            is_uploaded = request.data.get("is_uploaded", asset.is_uploaded)
-            if is_uploaded and not asset.is_uploaded:
-                not_stored = confirm_upload(asset)
-                if not_stored:
-                    return not_stored
-            else:
-                asset.is_uploaded = is_uploaded
+            # Confirming an upload only ever marks the asset as uploaded, and only when its file is in storage
+            not_stored = confirm_upload(asset)
+            if not_stored:
+                return not_stored
 
             # Update storage metadata if not present
             if not asset.storage_metadata:

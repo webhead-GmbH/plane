@@ -103,6 +103,8 @@ export function CustomImageNodeView(props: CustomImageNodeViewProps) {
       try {
         hasRetriedOnMount.current = true;
 
+        // The src is stored document content. The host checks it before any request: a file in Google Drive
+        // is kept as it is (its source is not an asset id), and the asset store refuses anything but an asset id.
         const newAssetId = await extension.options.duplicateImage(imgNodeSrc);
 
         if (!newAssetId) {

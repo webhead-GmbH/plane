@@ -10,7 +10,7 @@ import { setToast } from "@plane/blocks/toast";
 import { API_BASE_URL } from "@plane/constants";
 import type { TFileHandler } from "@plane/editor";
 import { useTranslation } from "@plane/i18n";
-import { getEditorAssetDownloadSrc, getEditorAssetSrc } from "@plane/utils";
+import { getEditorAssetDownloadSrc, getEditorAssetSrc, isValidAssetId } from "@plane/utils";
 // components
 import { trackEditorDriveUpload } from "@/components/google-drive/editor-uploads";
 import { driveErrorMessage } from "@/components/google-drive/errors";
@@ -69,6 +69,7 @@ export const useEditorConfig = () => {
         cancel: fileService.cancelUpload,
         checkIfAssetExists: async (assetId: string) => {
           if (driveFileId(assetId)) return true;
+          if (!isValidAssetId(assetId)) return false;
           const res = await fileService.checkIfAssetExists(workspaceSlug, assetId);
           return res?.exists ?? false;
         },
@@ -77,7 +78,7 @@ export const useEditorConfig = () => {
           if (driveFileId(src)) return;
           if (src?.startsWith("http")) {
             await fileService.deleteOldWorkspaceAsset(workspaceId, src);
-          } else {
+          } else if (isValidAssetId(src)) {
             await fileService.deleteNewAsset(
               getEditorAssetSrc({
                 assetId: src,
@@ -123,7 +124,7 @@ export const useEditorConfig = () => {
           if (driveFileId(src)) return;
           if (src?.startsWith("http")) {
             await fileService.restoreOldEditorAsset(workspaceId, src);
-          } else {
+          } else if (isValidAssetId(src)) {
             await fileService.restoreNewAsset(workspaceSlug, src);
           }
         },

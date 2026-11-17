@@ -9,8 +9,8 @@ When writing TypeScript code, prioritize using modern features and best practice
 
 ## Global Themes Across 5.x
 
-1. **Standard decorators are here; legacy decorators are legacy.**
-   New TC39-compliant decorators landed in 5.0 and were extended in 5.2 (metadata). Old `experimentalDecorators`-style behavior is still supported but should be treated as legacy.
+1. **This repo uses legacy decorators.**
+   `@plane/decorators`, `@plane/logger` and `apps/live` enable `experimentalDecorators` (with `emitDecoratorMetadata` and `reflect-metadata`), and the controllers read their routes through `reflect-metadata`. Keep using that style there; do not mix in TC39 standard decorators, which also do not support parameter decorators.
 
 2. **Type system is more precise and less noisy.**
    Major work went into narrowing, control flow analysis, error messages, and new helpers like `NoInfer`, inferred predicates, and better `undefined`/`never`/uninitialized checks.
@@ -19,7 +19,7 @@ When writing TypeScript code, prioritize using modern features and best practice
    Options like `--moduleResolution bundler`, `--module nodenext`/`node18`, `--rewriteRelativeImportExtensions`, `--erasableSyntaxOnly`, and `--verbatimModuleSyntax` are about playing nicely with ESM, Node 18+/22+, direct TypeScript execution, and bundlers.
 
 4. **The standard library keeps tracking modern JS.**
-   Support for new ES features (iterator helpers, `Object.groupBy`/`Map.groupBy`, new Set/ES2024 APIs) shows up as type declarations and sometimes extra checks (regex syntax checking, etc.).
+   Support for new ES features (iterator helpers, `Object.groupBy`/`Map.groupBy`, new Set/ES2024 APIs) shows up as type declarations and sometimes extra checks (regex syntax checking, etc.). Whether you can use them depends on the package's `lib`: the shared presets in `packages/typescript-config` use `es2023` (`base.json`, `node-library.json`, `react-library.json`) and `ES2022` (`react-router.json`, used by the apps).
 
 When generating or refactoring code, prefer these newer idioms, and avoid patterns that conflict with updated checks.
 
@@ -31,7 +31,7 @@ When generating or refactoring code, prefer these newer idioms, and avoid patter
   ```typescript
   declare function names<const T extends string[]>(...names: T): void;
   ```
-- **`@satisfies` Operator (5.0)**: Use `satisfies` to validate types without widening them.
+- **`satisfies` Operator (4.9; JSDoc `@satisfies` in 5.0)**: Use `satisfies` to validate types without widening them.
 - **Inferred Type Predicates (5.5)**: Allow TypeScript to infer type predicates for functions that filter arrays or check types, reducing the need for explicit `is` return types.
 - **`NoInfer` Utility (5.4)**: Use `NoInfer<T>` to block inference for specific type arguments when you want them to be determined by other arguments.
 - **Narrowing**:
@@ -42,7 +42,7 @@ When generating or refactoring code, prefer these newer idioms, and avoid patter
 
 ### Syntax & Control Flow
 
-- **Decorators (5.0)**: Use standard ECMAScript decorators (Stage 3).
+- **Decorators**: Follow the existing `experimentalDecorators` style (see Global Themes); do not introduce standard decorators.
 - **`using` Declarations (5.2)**: Use `using` for explicit resource management (Disposable pattern) instead of manual cleanup.
   ```typescript
   using resource = new Resource();
@@ -59,6 +59,8 @@ When generating or refactoring code, prefer these newer idioms, and avoid patter
 
 ### Standard Library & Built-ins
 
+Only use these when the package's `lib` includes ES2024/ESNext; with the current `es2023`/`ES2022` presets they do not type-check.
+
 - **Iterator Helpers (5.6)**: Use new iterator methods (map, filter, etc.) if targeting modern environments.
 - **Set Methods (5.5)**: Utilize new `Set` methods like `union`, `intersection`, etc., when available.
 - **`Object.groupBy` / `Map.groupBy` (5.4)**: Use these standard methods for grouping instead of external libraries like Lodash when appropriate.
@@ -66,7 +68,7 @@ When generating or refactoring code, prefer these newer idioms, and avoid patter
 
 ### Configuration & Tooling
 
-- **`--moduleResolution bundler` (5.0)**: Assume this resolution strategy for modern web projects (Vite, Next.js, etc.).
+- **`--moduleResolution bundler` (5.0)**: Assume this resolution strategy for modern web projects (Vite, React Router, etc.). The apps use React Router framework mode on Vite; none uses Next.js.
 - **`--erasableSyntaxOnly` (5.8)**: Be aware of this flag; avoid TypeScript-specific syntax that cannot be simply erased (like `enum`s or `namespaces`) if the project aims for maximum compatibility with tools like Node.js's `--strip-types`. Prefer `const` objects or unions over `enum`s if requested.
 
 ## Specific Coding Patterns
@@ -78,7 +80,7 @@ When generating or refactoring code, prefer these newer idioms, and avoid patter
 
 ### Classes
 
-- **Parameter Decorators (5.0/5.2)**: Use modern standard decorators.
+- **Decorators**: Use the legacy `experimentalDecorators` style already used by `@plane/decorators`.
 - **`super` Property Access (5.3)**: Avoid accessing instance fields via `super`.
 
 ### Error Handling
@@ -95,7 +97,7 @@ When generating or refactoring code, prefer these newer idioms, and avoid patter
 
 ### TypeScript 5.0
 
-- **Decorators**: Use standard decorators unless `experimentalDecorators` is explicitly enabled.
+- **Decorators**: Standard decorators are available, but this repo enables `experimentalDecorators` where decorators are used; follow that.
 - **`const` Type Parameters**: Use for literal inference.
 - **Enums**: All enums are union enums.
 - **Modules**: `--moduleResolution bundler` and `--verbatimModuleSyntax` are key for modern bundlers.

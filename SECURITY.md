@@ -4,7 +4,7 @@ This document outlines the security protocols and vulnerability reporting guidel
 
 ## Reporting a vulnerability
 
-If you have identified a security vulnerability, submit your findings to [security@plane.so](mailto:security@plane.so).
+If you have identified a security vulnerability, report it privately through [GitHub's private vulnerability reporting](https://github.com/makeplane/plane/security/advisories/new) or submit your findings to [security@plane.so](mailto:security@plane.so). Do not open a public issue or pull request for it.
 Ensure your report includes all relevant information needed for us to reproduce and assess the issue. Include the IP address or URL of the affected system.
 
 To ensure a responsible and effective disclosure process, please adhere to the following:
