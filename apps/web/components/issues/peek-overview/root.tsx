@@ -22,6 +22,7 @@ import { useIssueStoreType } from "@/hooks/use-issue-layout-store";
 import { useWorkItemProperties } from "@/hooks/use-issue-properties";
 // local imports
 import type { TIssueOperations } from "../issue-detail";
+import { toastWorkItemUpdateFailed } from "../worklog/update-refusal";
 import { IssueView } from "./view";
 
 export const IssuePeekOverview = observer(function IssuePeekOverview(props: IWorkItemPeekOverview) {
@@ -83,13 +84,7 @@ export const IssuePeekOverview = observer(function IssuePeekOverview(props: IWor
               fetchActivities(workspaceSlug, projectId, issueId);
               return;
             })
-            .catch((_error) => {
-              setToast({
-                title: t("toast.error"),
-                type: "error",
-                message: t("entity.update.failed", { entity: t("issue.label", { count: 1 }) }),
-              });
-            });
+            .catch((failure) => toastWorkItemUpdateFailed(failure, t));
         }
       },
       remove: async (workspaceSlug: string, projectId: string, issueId: string) => {

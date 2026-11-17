@@ -16,6 +16,7 @@ import { EIssuesStoreType } from "@plane/types";
 import emptyIssue from "@/app/assets/empty-state/issue.svg?url";
 // components
 import { EmptyState } from "@/components/common/empty-state";
+import { toastWorkItemUpdateFailed } from "@/components/issues/worklog/update-refusal";
 // hooks
 import { useAppTheme } from "@/hooks/store/use-app-theme";
 import { useIssueDetail } from "@/hooks/store/use-issue-detail";
@@ -96,11 +97,7 @@ export const IssueDetailRoot = observer(function IssueDetailRoot(props: TIssueDe
           await updateIssue(workspaceSlug, projectId, issueId, data);
         } catch (error) {
           console.log("Error in updating issue:", error);
-          setToast({
-            title: t("common.error.label"),
-            type: "error",
-            message: t("entity.update.failed", { entity: t("issue.label") }),
-          });
+          toastWorkItemUpdateFailed(error, t);
         }
       },
       remove: async (workspaceSlug: string, projectId: string, issueId: string) => {
@@ -110,14 +107,14 @@ export const IssueDetailRoot = observer(function IssueDetailRoot(props: TIssueDe
           setToast({
             title: t("common.success"),
             type: "success",
-            message: t("entity.delete.success", { entity: t("issue.label") }),
+            message: t("entity.delete.success", { entity: t("issue.label", { count: 1 }) }),
           });
         } catch (error) {
           console.log("Error in deleting issue:", error);
           setToast({
             title: t("common.error.label"),
             type: "error",
-            message: t("entity.delete.failed", { entity: t("issue.label") }),
+            message: t("entity.delete.failed", { entity: t("issue.label", { count: 1 }) }),
           });
         }
       },
