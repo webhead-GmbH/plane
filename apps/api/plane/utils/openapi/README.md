@@ -12,7 +12,7 @@ plane/utils/openapi/
 ├── responses.py         # Common OpenAPI responses
 ├── examples.py          # Common OpenAPI examples
 ├── decorators.py        # Helper decorators for different endpoint types
-└── hooks.py            # Schema processing hooks (pre/post processing)
+└── hooks.py            # Schema preprocessing hook and summary helper
 ```
 
 ## Usage
@@ -40,8 +40,7 @@ from plane.utils.openapi.responses import UNAUTHORIZED_RESPONSE
 
 ### auth.py
 
-- `APIKeyAuthenticationExtension` - X-API-Key authentication
-- `APITokenAuthenticationExtension` - Bearer token authentication
+- `APIKeyAuthenticationExtension` - X-API-Key authentication (imported in `plane/api/apps.py` so drf-spectacular registers it)
 
 ### parameters.py
 
@@ -61,52 +60,22 @@ from plane.utils.openapi.responses import UNAUTHORIZED_RESPONSE
 
 ### decorators.py
 
-- `workspace_docs()` - For workspace endpoints
-- `project_docs()` - For project endpoints
-- `issue_docs()` - For issue/work item endpoints
-- `asset_docs()` - For asset endpoints
+One `*_docs()` decorator per resource, each wrapping `extend_schema` with the right tag and shared defaults:
+`user_docs`, `workspace_docs`, `project_docs`, `cycle_docs`, `issue_docs`, `intake_docs`, `asset_docs`, `work_item_docs`, `label_docs`, `issue_link_docs`, `issue_comment_docs`, `issue_activity_docs`, `issue_attachment_docs`, `work_item_relation_docs`, `module_docs`, `module_issue_docs`, `state_docs`, `sticky_docs`, `estimate_docs`, `estimate_point_docs`.
 
 ### hooks.py
 
-- `preprocess_filter_api_v1_paths()` - Filters API v1 paths
-- `postprocess_assign_tags()` - Assigns tags based on URL patterns
-- `generate_operation_summary()` - Generates operation summaries
+- `preprocess_filter_api_v1_paths()` - Keeps only `/api/v1/` paths and drops `PUT` operations and any path containing `server`
+- `generate_operation_summary()` - Generates operation summaries (exported, not wired into the settings)
 
-## Migration Status
+## Configuration
 
-✅ **FULLY COMPLETE** - All components from the legacy `openapi_spec_helpers.py` have been successfully migrated to this modular structure and the old file has been completely removed. All imports have been updated to use the new modular structure.
+The schema is only generated when `ENABLE_DRF_SPECTACULAR=1` is set in the API environment. `plane/settings/common.py` then loads `SPECTACULAR_SETTINGS` from `plane/settings/openapi.py` (which registers the preprocessing hook) and `plane/urls.py` serves:
 
-### What was migrated:
+- `/api/schema/` - OpenAPI schema
+- `/api/schema/swagger-ui/` - Swagger UI
+- `/api/schema/redoc/` - ReDoc
 
-- ✅ All authentication extensions
-- ✅ All common parameters and responses
-- ✅ All helper decorators
-- ✅ All schema processing hooks
-- ✅ All examples and reusable components
-- ✅ All asset view decorators converted to use new helpers
-- ✅ All view imports updated to new module paths
-- ✅ Legacy file completely removed
+## Where it is used
 
-### Files updated:
-
-- `plane/api/views/asset.py` - All methods use new `@asset_docs` helpers
-- `plane/api/views/project.py` - Import updated
-- `plane/api/views/user.py` - Import updated
-- `plane/api/views/state.py` - Import updated
-- `plane/api/views/intake.py` - Import updated
-- `plane/api/views/member.py` - Import updated
-- `plane/api/views/module.py` - Import updated
-- `plane/api/views/cycle.py` - Import updated
-- `plane/api/views/issue.py` - Import updated
-- `plane/settings/common.py` - Hook paths updated
-- `plane/api/apps.py` - Auth extension import updated
-
-## Benefits
-
-1. **Better Organization**: Related functionality is grouped together
-2. **Easier Maintenance**: Changes to specific areas only affect relevant files
-3. **Improved Discoverability**: Clear module names make it easy to find what you need
-4. **Backwards Compatibility**: All existing imports continue to work
-5. **Reduced Coupling**: Import only what you need from specific modules
-6. **Consistent Documentation**: All endpoints now use standardized helpers
-7. **Massive Code Reduction**: ~80% reduction in decorator bloat using reusable components
+All public API views in `plane/api/views/` import from this module: `asset.py`, `cycle.py`, `estimate.py`, `intake.py`, `invite.py`, `issue.py`, `member.py`, `module.py`, `project.py`, `state.py`, `sticky.py` and `user.py`. The legacy `openapi_spec_helpers.py` file has been removed.

@@ -9,7 +9,7 @@ import { MAX_FILE_SIZE } from "@plane/constants";
 import type { TFileHandler } from "@plane/editor";
 import type { TTranslationStore } from "@plane/i18n";
 import { SitesFileService } from "@plane/services";
-import { getFileURL } from "@plane/utils";
+import { getFileURL, isValidAssetId } from "@plane/utils";
 // helpers
 import { describeFileUploadError, showFileUploadError, showUnsupportedEditorFiles } from "./file-upload-error.helper";
 // services
@@ -20,7 +20,9 @@ const sitesFileService = new SitesFileService();
  * @param {string} anchor
  */
 export const getEditorAssetSrc = (anchor: string, assetId: string): string | undefined => {
-  const url = getFileURL(`/api/public/assets/v2/anchor/${anchor}/${assetId}/`);
+  // the asset id is read from an editor node, which is stored document content
+  if (!isValidAssetId(assetId)) return undefined;
+  const url = getFileURL(`/api/public/assets/v2/anchor/${anchor}/${encodeURIComponent(assetId)}/`);
   return url;
 };
 
@@ -65,7 +67,7 @@ export const getEditorFileHandlers = (args: TArgs): TFileHandler => {
     delete: async (src: string) => {
       if (src?.startsWith("http")) {
         await sitesFileService.deleteOldEditorAsset(workspaceId, src);
-      } else {
+      } else if (isValidAssetId(src)) {
         await sitesFileService.deleteNewAsset(getEditorAssetSrc(anchor, src) ?? "");
       }
     },
@@ -73,7 +75,7 @@ export const getEditorFileHandlers = (args: TArgs): TFileHandler => {
     restore: async (src: string) => {
       if (src?.startsWith("http")) {
         await sitesFileService.restoreOldEditorAsset(workspaceId, src);
-      } else {
+      } else if (isValidAssetId(src)) {
         await sitesFileService.restoreNewAsset(anchor, src);
       }
     },
