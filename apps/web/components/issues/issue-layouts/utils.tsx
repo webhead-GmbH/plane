@@ -760,10 +760,11 @@ export const getBlockViewDetails = (
  * @param iconKey
  */
 export function SpreadSheetPropertyIcon(props: ISvgIcons & { iconKey: string }) {
-  const { iconKey } = props;
+  // iconKey picks the icon; passed on, it ends up as an unknown attribute on the <svg>.
+  const { iconKey, ...iconProps } = props;
   const Icon = SpreadSheetPropertyIconMap[iconKey];
   if (!Icon) return null;
-  return <Icon {...props} />;
+  return <Icon {...iconProps} />;
 }
 
 /**
