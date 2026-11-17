@@ -53,6 +53,7 @@ import { ModuleSelect } from "@/components/dropdowns/module/module-select";
 import { PrioritySelect } from "@/components/dropdowns/priority/priority-select";
 import { StateSelect } from "@/components/dropdowns/state/state-select";
 import { WorkItemTimerButton } from "@/components/issues/worklog/list-timer-button";
+import { toastWorkItemUpdateFailed } from "@/components/issues/worklog/update-refusal";
 // hooks
 import { useProjectEstimates } from "@/hooks/store/estimates";
 import { useEstimate } from "@/hooks/store/estimates/use-estimate";
@@ -165,7 +166,11 @@ export const IssueProperties = observer(function IssueProperties(props: IIssuePr
   );
 
   const handleState = async (stateId: string) => {
-    if (updateIssue) await updateIssue(issue.project_id, issue.id, { state_id: stateId });
+    if (!updateIssue) return;
+    // A refused move (a timer still running, say) snaps back; say why rather than nothing.
+    await updateIssue(issue.project_id, issue.id, { state_id: stateId }).catch((error) =>
+      toastWorkItemUpdateFailed(error, t)
+    );
   };
 
   const handlePriority = async (value: TIssuePriorities) => {

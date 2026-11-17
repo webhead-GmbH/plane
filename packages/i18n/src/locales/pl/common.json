@@ -717,6 +717,7 @@
     "log_work": "Zarejestruj pracę",
     "start_timer": "Uruchom licznik",
     "stop_timer": "Zatrzymaj licznik",
+    "stop_timer_first": "Dla tego elementu pracy nadal działa licznik. Należy go zatrzymać, zanim element pracy będzie mógł przejść do tego stanu.",
     "logged": "zarejestrowano",
     "log_work_for": "Zarejestruj pracę dla",
     "select_member": "Wybierz członka",

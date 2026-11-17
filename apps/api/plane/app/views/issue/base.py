@@ -696,7 +696,9 @@ class IssueViewSet(BaseViewSet):
                 return Response(
                     {
                         "error": "Stop the running timer before moving this work item to a state "
-                        "where time cannot be tracked."
+                        "where time cannot be tracked.",
+                        # Named so the client can say it in the reader's language.
+                        "reason": "timer_running",
                     },
                     status=status.HTTP_400_BAD_REQUEST,
                 )

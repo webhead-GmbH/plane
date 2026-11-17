@@ -717,6 +717,7 @@
     "log_work": "Log work",
     "start_timer": "Start timer",
     "stop_timer": "Stop timer",
+    "stop_timer_first": "A timer is still running on this work item. It has to be stopped before the work item can move to this state.",
     "logged": "logged",
     "log_work_for": "Log work for",
     "select_member": "Select member",

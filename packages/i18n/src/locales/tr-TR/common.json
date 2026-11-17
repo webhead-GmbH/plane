@@ -717,6 +717,7 @@
     "log_work": "Çalışma kaydet",
     "start_timer": "Zamanlayıcıyı başlat",
     "stop_timer": "Zamanlayıcıyı durdur",
+    "stop_timer_first": "Bu iş öğesinde hâlâ çalışan bir zamanlayıcı var. İş öğesinin bu duruma taşınabilmesi için önce zamanlayıcının durdurulması gerekir.",
     "logged": "kaydedildi",
     "log_work_for": "Çalışma kaydedilecek kişi",
     "select_member": "Üye seçin",

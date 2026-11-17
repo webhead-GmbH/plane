@@ -717,6 +717,7 @@
     "log_work": "Registrar trabajo",
     "start_timer": "Iniciar temporizador",
     "stop_timer": "Detener temporizador",
+    "stop_timer_first": "Todavía hay un temporizador en marcha en este elemento de trabajo. Debe detenerse antes de que el elemento de trabajo pueda pasar a este estado.",
     "logged": "registrado",
     "log_work_for": "Registrar trabajo para",
     "select_member": "Seleccionar miembro",

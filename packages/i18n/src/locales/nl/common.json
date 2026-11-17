@@ -717,6 +717,7 @@
     "log_work": "Werk registreren",
     "start_timer": "Timer starten",
     "stop_timer": "Timer stoppen",
+    "stop_timer_first": "Er loopt nog een timer op dit werkitem. Deze moet worden gestopt voordat het werkitem naar deze status kan gaan.",
     "logged": "geregistreerd",
     "log_work_for": "Werk registreren voor",
     "select_member": "Lid selecteren",
