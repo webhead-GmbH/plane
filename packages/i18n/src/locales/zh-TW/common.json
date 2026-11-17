@@ -717,6 +717,7 @@
     "log_work": "記錄工作",
     "start_timer": "啟動計時器",
     "stop_timer": "停止計時器",
+    "stop_timer_first": "此工作事項仍有計時器正在執行。必須先停止計時器，才能將工作事項移至此狀態。",
     "logged": "記錄了",
     "log_work_for": "記錄工作的成員",
     "select_member": "選擇成員",

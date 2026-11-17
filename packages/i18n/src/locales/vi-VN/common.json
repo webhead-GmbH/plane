@@ -717,6 +717,7 @@
     "log_work": "Ghi nhận công việc",
     "start_timer": "Bắt đầu bộ đếm giờ",
     "stop_timer": "Dừng bộ đếm giờ",
+    "stop_timer_first": "Bộ đếm giờ vẫn đang chạy trên mục công việc này. Cần dừng bộ đếm giờ trước khi mục công việc có thể chuyển sang trạng thái này.",
     "logged": "đã ghi nhận",
     "log_work_for": "Ghi nhận công việc cho",
     "select_member": "Chọn thành viên",

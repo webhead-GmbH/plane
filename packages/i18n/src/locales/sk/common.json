@@ -717,6 +717,7 @@
     "log_work": "Zaznamenať prácu",
     "start_timer": "Spustiť časovač",
     "stop_timer": "Zastaviť časovač",
+    "stop_timer_first": "Na tejto pracovnej položke stále beží časovač. Skôr ako bude možné pracovnú položku presunúť do tohto stavu, musí byť zastavený.",
     "logged": "zaznamenané",
     "log_work_for": "Zaznamenať prácu pre",
     "select_member": "Vyberte člena",

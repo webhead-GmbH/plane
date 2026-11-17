@@ -717,6 +717,7 @@
     "log_work": "Registra lavoro",
     "start_timer": "Avvia timer",
     "stop_timer": "Ferma timer",
+    "stop_timer_first": "Su questo elemento di lavoro è ancora attivo un timer. Deve essere fermato prima che l'elemento di lavoro possa passare a questo stato.",
     "logged": "registrato",
     "log_work_for": "Registra lavoro per",
     "select_member": "Seleziona membro",

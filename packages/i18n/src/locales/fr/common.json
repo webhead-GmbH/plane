@@ -717,6 +717,7 @@
     "log_work": "Enregistrer du temps",
     "start_timer": "Démarrer le chronomètre",
     "stop_timer": "Arrêter le chronomètre",
+    "stop_timer_first": "Un chronomètre tourne encore sur cet élément de travail. Il doit être arrêté avant que l’élément de travail puisse passer à cet état.",
     "logged": "enregistré",
     "log_work_for": "Enregistrer du temps pour",
     "select_member": "Sélectionner un membre",

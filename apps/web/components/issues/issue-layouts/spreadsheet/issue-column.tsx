@@ -11,7 +11,9 @@ import type { IIssueDisplayProperties, TIssue } from "@plane/types";
 // constants
 import { SPREADSHEET_COLUMNS } from "../utils";
 // components
+import { useTranslation } from "@plane/i18n";
 import { shouldRenderColumn } from "@/helpers/issue-filter.helper";
+import { toastWorkItemUpdateFailed } from "@/components/issues/worklog/update-refusal";
 import { WithDisplayPropertiesHOC } from "../properties/with-display-properties-HOC";
 
 type Props = {
@@ -25,6 +27,7 @@ type Props = {
 
 export const IssueColumn = observer(function IssueColumn(props: Props) {
   const { displayProperties, issueDetail, disableUserActions, property, updateIssue } = props;
+  const { t } = useTranslation();
   // router
   const tableCellRef = useRef<HTMLTableCellElement | null>(null);
 
@@ -35,7 +38,9 @@ export const IssueColumn = observer(function IssueColumn(props: Props) {
   if (!Column) return null;
 
   const handleUpdateIssue = async (issue: TIssue, data: Partial<TIssue>) => {
-    if (updateIssue) await updateIssue(issue.project_id, issue.id, data);
+    if (!updateIssue) return;
+    // Said here: the store has already put the cell back, and nothing above would.
+    await updateIssue(issue.project_id, issue.id, data).catch((error) => toastWorkItemUpdateFailed(error, t));
   };
 
   return (

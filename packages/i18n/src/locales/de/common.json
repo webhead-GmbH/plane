@@ -717,6 +717,7 @@
     "log_work": "Arbeit erfassen",
     "start_timer": "Timer starten",
     "stop_timer": "Timer stoppen",
+    "stop_timer_first": "Für dieses Arbeitselement läuft noch ein Timer. Er muss gestoppt werden, bevor das Arbeitselement in diesen Status wechseln kann.",
     "logged": "erfasst",
     "log_work_for": "Arbeit erfassen für",
     "select_member": "Mitglied auswählen",

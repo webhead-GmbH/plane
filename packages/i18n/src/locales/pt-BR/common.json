@@ -717,6 +717,7 @@
     "log_work": "Registrar trabalho",
     "start_timer": "Iniciar cronômetro",
     "stop_timer": "Parar cronômetro",
+    "stop_timer_first": "Ainda há um cronômetro em execução neste item de trabalho. Ele precisa ser parado antes que o item de trabalho possa ser movido para este estado.",
     "logged": "registrado",
     "log_work_for": "Registrar trabalho para",
     "select_member": "Selecionar membro",

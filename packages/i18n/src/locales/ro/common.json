@@ -717,6 +717,7 @@
     "log_work": "Înregistrează timpul lucrat",
     "start_timer": "Pornește cronometrul",
     "stop_timer": "Oprește cronometrul",
+    "stop_timer_first": "Un cronometru este încă pornit pentru această activitate. Acesta trebuie oprit înainte ca activitatea să poată trece în această stare.",
     "logged": "înregistrat",
     "log_work_for": "Înregistrează timpul lucrat pentru",
     "select_member": "Selectează un membru",

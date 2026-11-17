@@ -717,6 +717,7 @@
     "log_work": "Catat pekerjaan",
     "start_timer": "Mulai pengatur waktu",
     "stop_timer": "Hentikan pengatur waktu",
+    "stop_timer_first": "Pengatur waktu masih berjalan pada item kerja ini. Pengatur waktu tersebut harus dihentikan sebelum item kerja dapat dipindahkan ke status ini.",
     "logged": "tercatat",
     "log_work_for": "Catat pekerjaan untuk",
     "select_member": "Pilih anggota",
