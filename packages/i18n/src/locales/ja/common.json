@@ -497,6 +497,8 @@
     "completed_on": "完了日",
     "update_project": "プロジェクトを更新",
     "identifier_already_exists": "識別子は既に存在します",
+    "identifier_used_by": "{state, select, archived {識別子は既にアーカイブされたプロジェクト {project} で使用されています} other {識別子は既にプロジェクト {project} で使用されています}}",
+    "identifier_reserved_by": "{state, select, archived {識別子は既に予約されています：アーカイブされたプロジェクト {project} が以前使用しており、現在の識別子は {current} です} other {識別子は既に予約されています：プロジェクト {project} が以前使用しており、現在の識別子は {current} です}}",
     "add_more": "さらに追加",
     "defaults": "デフォルト",
     "add_label": "ラベルを追加",

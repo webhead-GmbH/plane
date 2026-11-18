@@ -497,6 +497,8 @@
     "completed_on": "Завършено на",
     "update_project": "Обнови проекта",
     "identifier_already_exists": "Идентификаторът вече съществува",
+    "identifier_used_by": "{state, select, archived {Идентификаторът вече се използва от архивирания проект {project}} other {Идентификаторът вече се използва от проекта {project}}}",
+    "identifier_reserved_by": "{state, select, archived {Идентификаторът вече е резервиран: архивираният проект {project} го е използвал преди, а сега използва {current}} other {Идентификаторът вече е резервиран: проектът {project} го е използвал преди, а сега използва {current}}}",
     "add_more": "Добави още",
     "defaults": "По подразбиране",
     "add_label": "Добави етикет",

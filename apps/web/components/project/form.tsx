@@ -34,6 +34,8 @@ import { usePlatformOS } from "@/hooks/use-platform-os";
 // services
 import { ProjectService } from "@/services/project";
 // local imports
+import { identifierTakenMessage } from "./identifier-taken";
+import type { TReservedIdentifier } from "./identifier-taken";
 import { ProjectNetworkIcon } from "./project-network-icon";
 
 export interface IProjectDetailsForm {
@@ -198,7 +200,12 @@ export function ProjectDetailsForm(props: IProjectDetailsForm) {
       await projectService
         .checkProjectIdentifierAvailability(workspaceSlug, payload.identifier ?? "")
         .then(async (res) => {
-          if (res.exists) return setError("identifier", { message: t("common.identifier_already_exists") });
+          // A project keeps the reservation of the identifier it was created with after it is changed, so going
+          // back to that one is not taking somebody else's.
+          const holder = (res.identifiers as TReservedIdentifier[] | undefined)?.find(
+            (reserved) => reserved.project !== project.id
+          );
+          if (holder) return setError("identifier", { message: identifierTakenMessage(holder, t) });
           return handleUpdateChange(payload);
         });
     else await handleUpdateChange(payload);

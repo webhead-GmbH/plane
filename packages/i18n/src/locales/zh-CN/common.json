@@ -497,6 +497,8 @@
     "completed_on": "Completed on",
     "update_project": "更新项目",
     "identifier_already_exists": "标识符已存在",
+    "identifier_used_by": "{state, select, archived {标识符已被项目 {project} 使用（该项目已归档）} other {标识符已被项目 {project} 使用}}",
+    "identifier_reserved_by": "{state, select, archived {标识符已被保留：已归档的项目 {project} 曾使用该标识符，现在使用 {current}} other {标识符已被保留：项目 {project} 曾使用该标识符，现在使用 {current}}}",
     "add_more": "添加更多",
     "defaults": "默认值",
     "add_label": "添加标签",

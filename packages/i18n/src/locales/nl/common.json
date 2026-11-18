@@ -497,6 +497,8 @@
     "completed_on": "Voltooid op",
     "update_project": "Project bijwerken",
     "identifier_already_exists": "Identificatie bestaat al",
+    "identifier_used_by": "{state, select, archived {Identificatie wordt al gebruikt door het gearchiveerde project {project}} other {Identificatie wordt al gebruikt door het project {project}}}",
+    "identifier_reserved_by": "{state, select, archived {Identificatie is al gereserveerd: het gearchiveerde project {project} gebruikte deze eerder en gebruikt nu {current}} other {Identificatie is al gereserveerd: het project {project} gebruikte deze eerder en gebruikt nu {current}}}",
     "add_more": "Meer toevoegen",
     "defaults": "Standaardwaarden",
     "add_label": "Label toevoegen",

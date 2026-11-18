@@ -497,6 +497,8 @@
     "completed_on": "Completed on",
     "update_project": "Aktualizovať projekt",
     "identifier_already_exists": "Identifikátor už existuje",
+    "identifier_used_by": "{state, select, archived {Identifikátor sa už používa v archivovanom projekte {project}} other {Identifikátor sa už používa v projekte {project}}}",
+    "identifier_reserved_by": "{state, select, archived {Identifikátor je už rezervovaný: archivovaný projekt {project} ho predtým používal a teraz používa {current}} other {Identifikátor je už rezervovaný: projekt {project} ho predtým používal a teraz používa {current}}}",
     "add_more": "Pridať viac",
     "defaults": "Predvolené",
     "add_label": "Pridať štítok",

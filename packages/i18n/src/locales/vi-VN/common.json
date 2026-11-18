@@ -497,6 +497,8 @@
     "completed_on": "Completed on",
     "update_project": "Cập nhật dự án",
     "identifier_already_exists": "Định danh đã tồn tại",
+    "identifier_used_by": "{state, select, archived {Định danh đã được sử dụng bởi dự án đã lưu trữ {project}} other {Định danh đã được sử dụng bởi dự án {project}}}",
+    "identifier_reserved_by": "{state, select, archived {Định danh đã được dành riêng: dự án đã lưu trữ {project} từng dùng định danh này và hiện đang dùng {current}} other {Định danh đã được dành riêng: dự án {project} từng dùng định danh này và hiện đang dùng {current}}}",
     "add_more": "Thêm nữa",
     "defaults": "Mặc định",
     "add_label": "Thêm nhãn",

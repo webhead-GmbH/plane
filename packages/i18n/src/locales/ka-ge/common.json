@@ -497,6 +497,8 @@
     "completed_on": "Completed on",
     "update_project": "პროექტის განახლება",
     "identifier_already_exists": "იდენტიფიკატორი უკვე არსებობს",
+    "identifier_used_by": "{state, select, archived {იდენტიფიკატორს უკვე იყენებს დაარქივებული პროექტი {project}} other {იდენტიფიკატორს უკვე იყენებს პროექტი {project}}}",
+    "identifier_reserved_by": "{state, select, archived {იდენტიფიკატორი უკვე დაჯავშნილია: დაარქივებული პროექტი {project} მას ადრე იყენებდა და ახლა მისი იდენტიფიკატორია {current}} other {იდენტიფიკატორი უკვე დაჯავშნილია: პროექტი {project} მას ადრე იყენებდა და ახლა მისი იდენტიფიკატორია {current}}}",
     "add_more": "მეტის დამატება",
     "defaults": "ნაგულისხმევი",
     "add_label": "იარლიყის დამატება",

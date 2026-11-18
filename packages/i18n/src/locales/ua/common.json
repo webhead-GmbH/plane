@@ -497,6 +497,8 @@
     "completed_on": "Completed on",
     "update_project": "Оновити проєкт",
     "identifier_already_exists": "Такий ідентифікатор уже існує",
+    "identifier_used_by": "{state, select, archived {Такий ідентифікатор уже використовується в заархівованому проєкті {project}} other {Такий ідентифікатор уже використовується в проєкті {project}}}",
+    "identifier_reserved_by": "{state, select, archived {Такий ідентифікатор уже зарезервований: заархівований проєкт {project} використовував його раніше, а тепер використовує {current}} other {Такий ідентифікатор уже зарезервований: проєкт {project} використовував його раніше, а тепер використовує {current}}}",
     "add_more": "Додати ще",
     "defaults": "Типові",
     "add_label": "Додати мітку",
