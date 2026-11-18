@@ -497,6 +497,8 @@
     "completed_on": "Completed on",
     "update_project": "Actualizează proiectul",
     "identifier_already_exists": "Identificatorul există deja",
+    "identifier_used_by": "{state, select, archived {Identificatorul este deja folosit de proiectul arhivat {project}} other {Identificatorul este deja folosit de proiectul {project}}}",
+    "identifier_reserved_by": "{state, select, archived {Identificatorul este deja rezervat: proiectul arhivat {project} l-a folosit anterior și folosește acum {current}} other {Identificatorul este deja rezervat: proiectul {project} l-a folosit anterior și folosește acum {current}}}",
     "add_more": "Adaugă mai mult",
     "defaults": "Implicit",
     "add_label": "Adaugă etichetă",

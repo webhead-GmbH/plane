@@ -497,6 +497,8 @@
     "completed_on": "Completed on",
     "update_project": "Mettre à jour le projet",
     "identifier_already_exists": "L’identifiant existe déjà",
+    "identifier_used_by": "{state, select, archived {L’identifiant est déjà utilisé par le projet archivé {project}} other {L’identifiant est déjà utilisé par le projet {project}}}",
+    "identifier_reserved_by": "{state, select, archived {L’identifiant est déjà réservé : le projet archivé {project} l’utilisait auparavant et utilise désormais {current}} other {L’identifiant est déjà réservé : le projet {project} l’utilisait auparavant et utilise désormais {current}}}",
     "add_more": "Ajouter plus",
     "defaults": "Par défaut",
     "add_label": "Ajouter une étiquette",

@@ -497,6 +497,8 @@
     "completed_on": "Completed on",
     "update_project": "更新專案",
     "identifier_already_exists": "識別碼已存在",
+    "identifier_used_by": "{state, select, archived {識別碼已被專案 {project} 使用（該專案已封存）} other {識別碼已被專案 {project} 使用}}",
+    "identifier_reserved_by": "{state, select, archived {識別碼已被保留：已封存的專案 {project} 曾使用此識別碼，目前使用 {current}} other {識別碼已被保留：專案 {project} 曾使用此識別碼，目前使用 {current}}}",
     "add_more": "新增更多",
     "defaults": "預設值",
     "add_label": "新增標籤",

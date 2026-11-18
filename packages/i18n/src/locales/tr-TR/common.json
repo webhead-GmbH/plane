@@ -497,6 +497,8 @@
     "completed_on": "Completed on",
     "update_project": "Projeyi güncelle",
     "identifier_already_exists": "Tanımlayıcı zaten var",
+    "identifier_used_by": "{state, select, archived {Tanımlayıcı zaten arşivlenmiş {project} projesi tarafından kullanılıyor} other {Tanımlayıcı zaten {project} projesi tarafından kullanılıyor}}",
+    "identifier_reserved_by": "{state, select, archived {Tanımlayıcı zaten rezerve edilmiş: arşivlenmiş {project} projesi bunu daha önce kullandı, şu anda ise {current} tanımlayıcısını kullanıyor} other {Tanımlayıcı zaten rezerve edilmiş: {project} projesi bunu daha önce kullandı, şu anda ise {current} tanımlayıcısını kullanıyor}}",
     "add_more": "Daha fazla ekle",
     "defaults": "Varsayılanlar",
     "add_label": "Etiket ekle",

@@ -497,6 +497,8 @@
     "completed_on": "Completed on",
     "update_project": "Atualizar projeto",
     "identifier_already_exists": "O identificador já existe",
+    "identifier_used_by": "{state, select, archived {O identificador já está em uso pelo projeto arquivado {project}} other {O identificador já está em uso pelo projeto {project}}}",
+    "identifier_reserved_by": "{state, select, archived {O identificador já está reservado: o projeto arquivado {project} o usava antes e agora usa {current}} other {O identificador já está reservado: o projeto {project} o usava antes e agora usa {current}}}",
     "add_more": "Adicionar mais",
     "defaults": "Padrões",
     "add_label": "Adicionar etiqueta",

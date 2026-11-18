@@ -450,9 +450,46 @@ class ProjectIdentifierEndpoint(BaseAPIView):
         if name == "":
             return Response({"error": "Name is required"}, status=status.HTTP_400_BAD_REQUEST)
 
-        exists = ProjectIdentifier.objects.filter(name=name, workspace__slug=slug).values("id", "name", "project")
+        reserved = list(
+            ProjectIdentifier.objects.filter(name=name, workspace__slug=slug).values(
+                "id",
+                "name",
+                "project",
+                "project__name",
+                "project__identifier",
+                "project__archived_at",
+                "project__network",
+            )
+        )
 
-        return Response({"exists": len(exists), "identifiers": exists}, status=status.HTTP_200_OK)
+        # Saying which project holds an identifier is what makes a refusal something a person can act on, but
+        # a private project's name is not for everybody: workspace admins, its members and anyone, when it is
+        # public, may see it.
+        is_admin = WorkspaceMember.objects.filter(
+            workspace__slug=slug, member=request.user, role=ROLE.ADMIN.value, is_active=True
+        ).exists()
+        member_of = set(
+            ProjectMember.objects.filter(
+                member=request.user, is_active=True, project_id__in=[row["project"] for row in reserved]
+            ).values_list("project_id", flat=True)
+        )
+
+        identifiers = []
+        for row in reserved:
+            visible = is_admin or row["project__network"] == ProjectNetwork.PUBLIC.value or row["project"] in member_of
+            identifiers.append(
+                {
+                    "id": row["id"],
+                    "name": row["name"],
+                    "project": row["project"],
+                    "project_name": row["project__name"] if visible else None,
+                    # Its identifier now, which a reservation outlives a change of.
+                    "project_identifier": row["project__identifier"] if visible else None,
+                    "project_archived": (row["project__archived_at"] is not None) if visible else None,
+                }
+            )
+
+        return Response({"exists": len(identifiers), "identifiers": identifiers}, status=status.HTTP_200_OK)
 
     @allow_permission([ROLE.ADMIN, ROLE.MEMBER], level="WORKSPACE")
     def delete(self, request, slug):

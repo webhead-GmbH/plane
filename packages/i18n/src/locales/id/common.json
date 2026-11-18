@@ -497,6 +497,8 @@
     "completed_on": "Completed on",
     "update_project": "Perbarui proyek",
     "identifier_already_exists": "Pengidentifikasi sudah ada",
+    "identifier_used_by": "{state, select, archived {Pengidentifikasi sudah digunakan oleh proyek yang diarsipkan {project}} other {Pengidentifikasi sudah digunakan oleh proyek {project}}}",
+    "identifier_reserved_by": "{state, select, archived {Pengidentifikasi sudah dicadangkan: proyek yang diarsipkan {project} pernah menggunakannya dan kini menggunakan {current}} other {Pengidentifikasi sudah dicadangkan: proyek {project} pernah menggunakannya dan kini menggunakan {current}}}",
     "add_more": "Tambah lebih banyak",
     "defaults": "Pola dasar",
     "add_label": "Tambah label",

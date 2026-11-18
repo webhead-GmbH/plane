@@ -497,6 +497,8 @@
     "completed_on": "Completed on",
     "update_project": "프로젝트 업데이트",
     "identifier_already_exists": "식별자가 이미 존재합니다",
+    "identifier_used_by": "{state, select, archived {식별자가 이미 아카이브된 프로젝트 {project}에서 사용 중입니다} other {식별자가 이미 프로젝트 {project}에서 사용 중입니다}}",
+    "identifier_reserved_by": "{state, select, archived {식별자가 이미 예약되어 있습니다: 아카이브된 프로젝트 {project}에서 이전에 사용했으며, 현재는 {current}을(를) 사용합니다} other {식별자가 이미 예약되어 있습니다: 프로젝트 {project}에서 이전에 사용했으며, 현재는 {current}을(를) 사용합니다}}",
     "add_more": "더 추가",
     "defaults": "기본값",
     "add_label": "레이블 추가",

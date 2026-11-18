@@ -497,6 +497,8 @@
     "completed_on": "Completed on",
     "update_project": "Update project",
     "identifier_already_exists": "Identifier already exists",
+    "identifier_used_by": "{state, select, archived {Identifier already in use by the archived project {project}} other {Identifier already in use by the project {project}}}",
+    "identifier_reserved_by": "{state, select, archived {Identifier already reserved: the archived project {project} used it before and is now {current}} other {Identifier already reserved: the project {project} used it before and is now {current}}}",
     "add_more": "Add more",
     "defaults": "Defaults",
     "add_label": "Add label",

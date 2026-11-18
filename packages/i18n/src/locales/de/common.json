@@ -497,6 +497,8 @@
     "completed_on": "Abgeschlossen am",
     "update_project": "Projekt aktualisieren",
     "identifier_already_exists": "Der Bezeichner existiert bereits",
+    "identifier_used_by": "{state, select, archived {Der Bezeichner wird bereits vom archivierten Projekt {project} verwendet} other {Der Bezeichner wird bereits vom Projekt {project} verwendet}}",
+    "identifier_reserved_by": "{state, select, archived {Der Bezeichner ist bereits reserviert: Das archivierte Projekt {project} hat ihn früher verwendet und nutzt jetzt {current}} other {Der Bezeichner ist bereits reserviert: Das Projekt {project} hat ihn früher verwendet und nutzt jetzt {current}}}",
     "add_more": "Mehr hinzufügen",
     "defaults": "Standardwerte",
     "add_label": "Label hinzufügen",
