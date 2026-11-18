@@ -42,6 +42,7 @@ export enum CORE_EXTENSIONS {
   TASK_ITEM = "taskItem",
   TASK_LIST = "taskList",
   TEXT_ALIGN = "textAlign",
+  TEXT_DIRECTION = "textDirection",
   TEXT_STYLE = "textStyle",
   TYPOGRAPHY = "typography",
   UNDERLINE = "underline",

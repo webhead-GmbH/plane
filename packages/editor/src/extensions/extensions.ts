@@ -24,6 +24,7 @@ import {
   CustomQuoteExtension,
   CustomTextAlignExtension,
   CustomTypographyExtension,
+  TextDirectionExtension,
   ImageExtension,
   ListKeymap,
   Table,
@@ -120,6 +121,7 @@ export const CoreEditorExtensions = (args: TArguments): Extensions => {
     CharacterCount,
     CustomColorExtension,
     CustomTextAlignExtension,
+    TextDirectionExtension,
     CustomCalloutExtension,
     UtilityExtension({
       disabledExtensions,
