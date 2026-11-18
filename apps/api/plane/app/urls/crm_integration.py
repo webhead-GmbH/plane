@@ -10,6 +10,7 @@ from plane.app.views import (
     CrmIntegrationSyncEndpoint,
     CrmEventsWebhookEndpoint,
     CrmTimerWebhookEndpoint,
+    ProjectIdentifierChangeImpactEndpoint,
 )
 
 
@@ -35,6 +36,12 @@ urlpatterns = [
         "workspaces/<str:slug>/crm-integration/timer-webhook/",
         CrmTimerWebhookEndpoint.as_view(),
         name="crm-integration-timer-webhook",
+    ),
+    # What changing a project's Project ID would do in the CRM and in Drive; the settings screen asks first.
+    path(
+        "workspaces/<str:slug>/projects/<uuid:project_id>/identifier-change/",
+        ProjectIdentifierChangeImpactEndpoint.as_view(),
+        name="project-identifier-change-impact",
     ),
     # Also called by the CRM: the projects and ticket tasks made there.
     path(

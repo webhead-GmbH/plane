@@ -29,6 +29,26 @@ def link_new_project_to_drive(sender, instance, created, **kwargs):
     transaction.on_commit(lambda: link_new_project_folder.delay(project_id, user_id))
 
 
+@receiver(post_init, sender=Project)
+def remember_identifier(sender, instance, **kwargs):
+    # From the instance's own fields: a query that left the identifier out fetches nothing here.
+    instance._drive_identifier = instance.__dict__.get("identifier")
+
+
+@receiver(post_save, sender=Project)
+def follow_identifier(sender, instance, created, **kwargs):
+    """The folders' names carry the Project ID, so a change of it is handed to a task that renames them."""
+    before, after = getattr(instance, "_drive_identifier", None), instance.identifier
+    instance._drive_identifier = after
+    if created or not before or before == after:
+        return
+    from plane.gdrive.tasks import rename_folders_for_new_identifier
+
+    project_id = str(instance.id)
+    # After the commit, in a task: saving a project never waits on Google.
+    transaction.on_commit(lambda: rename_folders_for_new_identifier.delay(project_id, before))
+
+
 def _follow(issue_id, before, after):
     """Hand the files that left the text, or came back to it, to a task: Google is not waited on."""
     if before == after:

@@ -15,7 +15,14 @@ from django.core.cache import cache
 from plane.db.models import Project, User
 from plane.gdrive.client import DriveError
 from plane.gdrive.references import follow_text
-from plane.gdrive.services import link_new_project, move_description_images, move_plane_attachments, moving_key
+from plane.gdrive.services import (
+    link_new_project,
+    move_description_images,
+    move_plane_attachments,
+    moving_key,
+    ready_connection_for,
+    rename_folders_for_identifier,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -34,6 +41,24 @@ def link_new_project_folder(project_id, user_id=None):
         return
     if outcome != "skipped":
         logger.info("Project %s: Google Drive folder %s.", project_id, outcome)
+
+
+@shared_task(bind=True, max_retries=3)
+def rename_folders_for_new_identifier(self, project_id, old_identifier):
+    """Rename the project's Drive folders to carry its new Project ID; the files stay where they are."""
+    project = Project.objects.filter(pk=project_id).first()
+    if project is None:
+        return
+    connection = ready_connection_for(project.workspace_id)
+    if connection is None:
+        return
+    try:
+        renamed = rename_folders_for_identifier(connection, project, old_identifier)
+    except DriveError as error:
+        logger.warning("Could not rename the Google Drive folders of project %s: %s", project_id, error.message)
+        raise self.retry(countdown=60, exc=error) from error
+    if renamed:
+        logger.info("Project %s: renamed %s Google Drive folder(s) for its new Project ID.", project_id, renamed)
 
 
 @shared_task

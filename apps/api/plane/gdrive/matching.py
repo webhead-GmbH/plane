@@ -63,6 +63,18 @@ def carries_identifier(identifier, folder_name):
     return _word_prefix(identifier).match(folder_name or "") is not None
 
 
+def renamed_for_identifier(old_identifier, new_identifier, folder_name):
+    """The folder's name once the project's identifier has changed, or None when it is to be left alone.
+
+    Only a folder named the team's way with the old identifier ("209 - ATTN-SEEKR Webseite") follows it:
+    what comes after the dash is kept as it is, since the team writes it by hand and it drifts from the
+    project's name on purpose. A folder named some other way is somebody's choice.
+    """
+    if old_identifier == new_identifier or not carries_identifier(old_identifier, folder_name):
+        return None
+    return folder_name_for(new_identifier, bare_name(old_identifier, folder_name))
+
+
 def bare_name(identifier, folder_name):
     """The folder's name without the project number (or this project's identifier) in front of it."""
     folder_name = folder_name or ""
