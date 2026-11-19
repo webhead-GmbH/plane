@@ -50,23 +50,26 @@ The server's administrator can change these ([settings](05-operations.md#setting
 
 A scope is a promise made on the approval screen. Each is narrow and named for what it lets the app _see_.
 
-| Scope             | The person is told                                                                                                                                 | Unlocks                                                                                                                  |
-| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| `profile`         | "Your name, your time zone and the workspaces you belong to."                                                                                      | `GET /me/`                                                                                                               |
-| `time:read`       | "Whether each day is a working day, a public holiday or a day off for you, the hours you have worked, and the work item your timer is running on." | `GET /me/day/`, `/me/days/`, `/me/time/`, `/me/timer/`                                                                   |
-| `leave:read`      | "Your leave balance, and the kind of absence (for example holiday or sick leave) booked on a day off."                                             | `GET /me/leave/`, `/me/absences/`; adds the absence _type_ to day answers                                                |
-| `work_items:read` | "The projects you are a member of and the work items you can see in them, with their comments."                                                    | `GET /projects/`, `/work-items/`, `/workspaces/{slug}/work-items/{ref}/`; adds work item names to time and timer answers |
+| Scope              | The person is told                                                                                                                                           | Unlocks                                                                                                                  |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------ |
+| `profile`          | "Your name, your time zone and the workspaces you belong to."                                                                                                | `GET /me/`                                                                                                               |
+| `time:read`        | "Whether each day is a working day, a public holiday or a day off for you, the hours you have worked, and the work item your timer is running on."           | `GET /me/day/`, `/me/days/`, `/me/time/`, `/me/timer/`                                                                   |
+| `leave:read`       | "Your leave balance, and the kind of absence (for example holiday or sick leave) booked on a day off."                                                       | `GET /me/leave/`, `/me/absences/`; adds the absence _type_ to day answers                                                |
+| `work_items:read`  | "The projects you are a member of and the work items you can see in them, with their comments."                                                              | `GET /projects/`, `/work-items/`, `/workspaces/{slug}/work-items/{ref}/`; adds work item names to time and timer answers |
+| `work_items:write` | "Create work items, change their state, priority, dates, assignees and labels, and add comments, as you. Everything it does shows in Plane under your name." | Creating and changing work items, comments and attachments. **Can make changes.**                                        |
+| `time:write`       | "Start and stop your timer, and add hours to your time, as you."                                                                                             | `POST /me/timer/start/`, `/me/timer/stop/`, `/me/time-entries/`. **Can make changes.**                                   |
 
 How scopes combine:
 
 - **Ask only for what you use.** People read the list. A bot that only needs to know whether today is a working day should ask for `profile time:read` and nothing else.
 - **Some answers get richer with more scopes**, and are deliberately plain without them. Example: with only `time:read`, a day off is reported as `{"kind": "absence"}` — enough to know not to ask for a report. With `leave:read` as well, the answer also says it is sick leave or annual leave. The reason for a sick day is health information; do not ask for it unless you must.
 - **Scopes cannot be added to an existing connection.** To get more, run the link flow again; the person sees and approves the new list.
-- **An app can only request scopes it was registered with.** Registration is the ceiling.
+- **An app can only request scopes it was registered with.** Registration is the ceiling. An app registered without naming scopes gets the **read-only** ones; being allowed to change people's work is an explicit decision by the administrator ([how](05-operations.md#registering-an-app)).
+- **Write scopes are shown differently.** The approval screen marks them "Can make changes". Ask for them only when the person has asked your bot to do something, and say what it will do.
 
 ## What a token is, and is not
 
-A token **is** the person, restricted to its scopes, to the Agent API, and to read operations in version 1.
+A token **is** the person, restricted to its scopes and to the Agent API. With only read scopes it can only read; with a write scope it can make exactly the changes that scope names, as the person, under the same rules the web app applies to them.
 
 A token is **not**:
 

@@ -78,6 +78,14 @@
       "work_items_read": {
         "title": "Vos projets et éléments de travail",
         "description": "Les projets dont vous êtes membre et les éléments de travail que vous pouvez y voir, avec leurs commentaires."
+      },
+      "work_items_write": {
+        "title": "Créer et modifier des éléments de travail pour vous",
+        "description": "Créer des éléments de travail, modifier leur état, leur priorité, leurs dates, les personnes assignées et leurs étiquettes, et ajouter des commentaires, en votre nom. Tout ce que l’application fait apparaît dans Plane sous votre nom."
+      },
+      "time_write": {
+        "title": "Suivre votre temps",
+        "description": "Démarrer et arrêter votre chronomètre et ajouter des heures à votre temps, en votre nom."
       }
     }
   }

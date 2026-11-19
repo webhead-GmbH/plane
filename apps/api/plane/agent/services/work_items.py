@@ -18,16 +18,27 @@ that app's very next call, because there is nothing remembered to go stale.
 # Python imports
 import html
 import re
+from uuid import UUID
 
 # Django imports
 from django.conf import settings
-from django.db.models import Exists, OuterRef, Sum, Value
+from django.db.models import Exists, F, OuterRef, Prefetch, Sum, Value
 from django.db.models.functions import Coalesce
 from django.utils.html import strip_tags
 
 # Module imports
 from plane.api.views.issue import visible_issue_q
-from plane.db.models import Issue, IssueWorkLog, Project, ProjectMember, WorkspaceMember
+from plane.agent.errors import invalid_request
+from plane.db.models import (
+    Issue,
+    IssueAssignee,
+    IssueComment,
+    IssueLabel,
+    IssueWorkLog,
+    Project,
+    ProjectMember,
+    WorkspaceMember,
+)
 from plane.hr.services.computation import minutes_from_seconds
 
 # Longest stretch of text from a work item or comment handed over in one piece.
@@ -120,8 +131,8 @@ def compact(issue):
         "start_date": issue.start_date.isoformat() if issue.start_date else None,
         "target_date": issue.target_date.isoformat() if issue.target_date else None,
         "estimate": issue.estimate_point.value if issue.estimate_point_id else None,
-        "assignees": [{"id": str(person.id), "display_name": person.display_name} for person in issue.assignees.all()],
-        "labels": [label.name for label in issue.labels.all()],
+        "assignees": [{"id": str(person.id), "display_name": person.display_name} for person in assignees_of(issue)],
+        "labels": [label.name for label in labels_of(issue)],
         "parent": str(issue.parent_id) if issue.parent_id else None,
         "created_at": issue.created_at.isoformat(),
         "updated_at": issue.updated_at.isoformat(),
@@ -131,6 +142,79 @@ def compact(issue):
 
 
 def with_relations(queryset):
+    """Everything `compact` reads, fetched together.
+
+    The people and labels come through their link rows, not through the many-to-many
+    shortcut: that shortcut also returns links that were deleted (somebody taken off a work
+    item still appears on it), and a person who has since left the project is not an
+    assignee any more, whatever the old link says. Same rule the web app's own lists apply.
+    """
     return queryset.select_related("project", "workspace", "state", "estimate_point").prefetch_related(
-        "assignees", "labels"
+        Prefetch(
+            "issue_assignee",
+            queryset=IssueAssignee.objects.filter(
+                assignee__member_project__is_active=True,
+                assignee__member_project__project_id=F("project_id"),
+            ).select_related("assignee"),
+        ),
+        Prefetch("label_issue", queryset=IssueLabel.objects.select_related("label")),
     )
+
+
+def assignees_of(issue):
+    """The people on a work item, once each. Needs `with_relations`."""
+    seen = {}
+    for link in issue.issue_assignee.all():
+        seen.setdefault(link.assignee_id, link.assignee)
+    return list(seen.values())
+
+
+def labels_of(issue):
+    seen = {}
+    for link in issue.label_issue.all():
+        seen.setdefault(link.label_id, link.label)
+    return list(seen.values())
+
+
+MAX_COMMENTS = 30
+
+
+def parse_uuid(raw, name):
+    try:
+        return UUID(raw)
+    except (TypeError, ValueError, AttributeError):
+        raise invalid_request(f"{name} must be an id.")
+
+
+def resolve(user, slug, ref):
+    """The work item a short reference (`WEB-1`, any case) or an id names, if the person can see it.
+
+    An id is tried first: the tail of a UUID can be all digits, and must not be mistaken for
+    the number of a work item.
+    """
+    items = visible_issues(user).filter(workspace__slug=slug)
+    try:
+        items = items.filter(id=UUID(ref))
+    except (TypeError, ValueError, AttributeError):
+        project_identifier, _, number = (ref or "").rpartition("-")
+        if not (project_identifier and number.isdigit()):
+            raise invalid_request("ref must be a work item reference such as WEB-12, or its id.")
+        items = items.filter(project__identifier__iexact=project_identifier, sequence_id=int(number))
+    return with_relations(with_my_time(items, user)).first()
+
+
+def detail(issue):
+    """A work item with its description and recent comments, as plain text."""
+    comments = IssueComment.objects.filter(issue=issue).select_related("actor").order_by("-created_at")[:MAX_COMMENTS]
+    payload = compact(issue)
+    payload["description"] = plain_text(issue.description_html or issue.description_stripped)
+    payload["comments"] = [
+        {
+            "id": str(comment.id),
+            "author": comment.actor.display_name if comment.actor_id else None,
+            "created_at": comment.created_at.isoformat(),
+            "text": plain_text(comment.comment_html or comment.comment_stripped, 5000),
+        }
+        for comment in reversed(list(comments))
+    ]
+    return payload

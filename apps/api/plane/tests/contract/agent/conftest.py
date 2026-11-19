@@ -143,6 +143,11 @@ def bearer(access_token):
     return http
 
 
+def client_with(app, person, scope):
+    """A bearer client for a person who linked the app with exactly these scopes."""
+    return bearer(app.link(person, scope=scope)["access_token"])
+
+
 @pytest.fixture(autouse=True)
 def private_throttle_cache(monkeypatch):
     """Give every test its own rate-limit counters.
@@ -153,11 +158,40 @@ def private_throttle_cache(monkeypatch):
     """
     from django.core.cache.backends.locmem import LocMemCache
 
-    from plane.agent.throttles import ClientRateThrottle, ConsentRateThrottle, GrantRateThrottle, OAuthRateThrottle
+    from plane.agent.throttles import (
+        ClientRateThrottle,
+        ConsentRateThrottle,
+        GrantRateThrottle,
+        OAuthRateThrottle,
+        WriteRateThrottle,
+    )
 
     cache = LocMemCache(f"agent-throttle-{uuid4().hex}", {})
-    for throttle in (GrantRateThrottle, ClientRateThrottle, OAuthRateThrottle, ConsentRateThrottle):
+    for throttle in (GrantRateThrottle, ClientRateThrottle, OAuthRateThrottle, ConsentRateThrottle, WriteRateThrottle):
         monkeypatch.setattr(throttle, "cache", cache)
+
+
+@pytest.fixture(autouse=True)
+def background_tasks(monkeypatch, mock_celery):
+    """Stand in for the Celery tasks a write sends.
+
+    Sending them for real would put messages on the development broker, for work items that
+    exist only in the test database. `mock_celery` stops every task from being sent (saving a
+    worklog, for one, wakes the CRM mirror); the ones a write is *meant* to send are recorded
+    on top of that, so a test can check that the activity and webhook pipelines were told, and
+    told the right thing.
+    """
+    from unittest import mock
+
+    from plane.agent.services import writes
+
+    recorded = mock.MagicMock()
+    monkeypatch.setattr(writes.issue_activity, "delay", recorded.issue_activity)
+    monkeypatch.setattr(writes.model_activity, "delay", recorded.model_activity)
+    from plane.agent.services import files
+
+    monkeypatch.setattr(files.get_asset_object_metadata, "delay", recorded.asset_metadata)
+    return recorded
 
 
 @pytest.fixture

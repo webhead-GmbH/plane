@@ -191,3 +191,33 @@ class AgentAuditLog(models.Model):
         verbose_name = "Agent audit log"
         ordering = ("-created_at",)
         indexes = [models.Index(fields=["grant", "-created_at"], name="agent_audit_grant")]
+
+
+class AgentIdempotencyKey(models.Model):
+    """The answer to a write, kept so that asking again with the same key does not do it twice.
+
+    Chat apps retry (a webhook is delivered twice, a model calls a tool again, a network
+    drops the reply), and every one of those would otherwise create a second work item, a
+    second comment, another hour on somebody's month. The app names each *intended* action
+    with a key; the first time, the action is done and its answer is stored here; every
+    later time with the same key, the stored answer comes back and nothing is done.
+    """
+
+    id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False)
+    grant = models.ForeignKey(AgentGrant, on_delete=models.CASCADE, related_name="+")
+    # SHA-256 of the key the app chose; keys are only unique within one connection.
+    key_hash = models.CharField(max_length=64)
+    # SHA-256 of what was asked. The same key with something different is a mistake in the
+    # app, and is refused rather than answered with the wrong thing.
+    request_hash = models.CharField(max_length=64)
+    # Null while the first request is still being worked on.
+    status_code = models.PositiveSmallIntegerField(null=True, blank=True)
+    response_body = models.JSONField(null=True, blank=True)
+    created_at = models.DateTimeField(default=timezone.now)
+    expires_at = models.DateTimeField()
+
+    class Meta:
+        db_table = "agent_idempotency_keys"
+        verbose_name = "Agent idempotency key"
+        constraints = [models.UniqueConstraint(fields=["grant", "key_hash"], name="agent_idempotency_once")]
+        indexes = [models.Index(fields=["expires_at"], name="agent_idempotency_expires")]

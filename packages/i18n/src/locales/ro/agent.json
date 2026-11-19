@@ -78,6 +78,14 @@
       "work_items_read": {
         "title": "Proiectele și activitățile tale",
         "description": "Proiectele din care faci parte și activitățile pe care le poți vedea în ele, împreună cu comentariile."
+      },
+      "work_items_write": {
+        "title": "Crearea și modificarea activităților în numele tău",
+        "description": "Creează activități, le schimbă starea, prioritatea, datele, responsabilii și etichetele și adaugă comentarii, în numele tău. Tot ce face apare în Plane sub numele tău."
+      },
+      "time_write": {
+        "title": "Urmărirea timpului tău",
+        "description": "Pornește și oprește cronometrul tău și adaugă ore la timpul tău, în numele tău."
       }
     }
   }

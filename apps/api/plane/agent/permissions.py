@@ -13,14 +13,14 @@ from plane.agent.errors import insufficient_scope
 
 
 class HasRequiredScope(BasePermission):
-    """The view names the one scope it needs as `required_scope`.
+    """The view names the one scope it needs as `required_scope` (or one per method as `required_scopes`).
 
     A view that names none is refused rather than allowed: forgetting to say what a
     new endpoint needs must not turn it into one that needs nothing.
     """
 
     def has_permission(self, request, view):
-        required = getattr(view, "required_scope", None)
+        required = view.scope_for(request.method) if hasattr(view, "scope_for") else None
         principal = request.auth
         if required is None or not isinstance(principal, AgentPrincipal):
             return False

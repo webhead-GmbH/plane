@@ -3,9 +3,7 @@
 # See the LICENSE file for details.
 
 # Django imports
-from django.db import IntegrityError
 from django.db.models import Sum
-from django.utils import timezone
 
 # Third Party imports
 from rest_framework.response import Response
@@ -15,14 +13,18 @@ from rest_framework import status
 from .. import BaseViewSet, BaseAPIView
 from plane.app.permissions import allow_permission, ROLE
 from plane.app.serializers import IssueWorkLogSerializer
-from plane.db.models import IssueWorkLog, Issue, ProjectMember, IssueAssignee
+from plane.db.models import IssueWorkLog, Issue, ProjectMember
+from plane.utils.work_timer import (
+    NO_DESCRIPTION_CHANGE,
+    TimerRefused,
+    allowed_state_groups,
+    start_timer,
+    stop_timer,
+)
 
 
-def get_timer_allowed_state_groups(project):
-    """Effective state groups on which a timer may start: project override, else workspace default."""
-    if project.worklog_timer_state_groups is not None:
-        return project.worklog_timer_state_groups
-    return project.workspace.worklog_timer_state_groups or ["started"]
+# The rules live in one place so connected apps are held to the same ones.
+get_timer_allowed_state_groups = allowed_state_groups
 
 
 class IssueWorkLogViewSet(BaseViewSet):
@@ -250,58 +252,11 @@ class IssueTimerEndpoint(BaseAPIView):
     @allow_permission([ROLE.ADMIN, ROLE.MEMBER])
     def post(self, request, slug, project_id, issue_id):
         """Start a timer. Only issue assignees can start; auto-stops previous active timer."""
-        # Validate that the user is assigned to this issue
-        is_assignee = IssueAssignee.objects.filter(
-            issue_id=issue_id,
-            assignee=request.user,
-        ).exists()
-
-        # Admins who are explicitly assigned can also start the timer
-        if not is_assignee:
-            return Response(
-                {"error": "Only assignees of this issue can start the timer."},
-                status=status.HTTP_403_FORBIDDEN,
-            )
-
-        # Enforce the workspace/project state-group policy for starting a timer
         issue = Issue.objects.select_related("workspace", "project", "state").get(pk=issue_id)
-        allowed_groups = get_timer_allowed_state_groups(issue.project)
-        if not issue.state or issue.state.group not in allowed_groups:
-            return Response(
-                {"error": "A timer cannot be started on a work item in its current state."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        # Auto-stop any pre-existing active timer for this user (on any issue)
-        existing = IssueWorkLog.objects.filter(
-            logged_by=request.user,
-            duration__isnull=True,
-        ).first()
-
-        if existing:
-            elapsed = int((timezone.now() - existing.started_at).total_seconds())
-            existing.duration = max(elapsed, 1)
-            existing.save(update_fields=["duration", "updated_at"])
-
-        # Create the new timer entry
         try:
-            worklog = IssueWorkLog.objects.create(
-                workspace=issue.workspace,
-                project_id=project_id,
-                issue_id=issue_id,
-                logged_by=request.user,
-                started_at=timezone.now(),
-                logged_at=timezone.now(),
-                duration=None,
-                created_by=request.user,
-                updated_by=request.user,
-            )
-        except IntegrityError:
-            return Response(
-                {"error": "A timer is already running for this issue."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
+            worklog = start_timer(request.user, issue)
+        except TimerRefused as refusal:
+            return Response({"error": refusal.message}, status=refusal.status)
         return Response(IssueWorkLogSerializer(worklog).data, status=status.HTTP_201_CREATED)
 
     @allow_permission([ROLE.ADMIN, ROLE.MEMBER])
@@ -344,12 +299,8 @@ class IssueTimerEndpoint(BaseAPIView):
                 status=status.HTTP_404_NOT_FOUND,
             )
 
-        elapsed = int((timezone.now() - worklog.started_at).total_seconds())
-        worklog.duration = max(elapsed, 1)
-        if request.data.get("description") is not None:
-            worklog.description = request.data.get("description") or None
-        worklog.updated_by = request.user
-        worklog.save(update_fields=["duration", "description", "updated_by", "updated_at"])
+        description = request.data.get("description")
+        stop_timer(worklog, request.user, NO_DESCRIPTION_CHANGE if description is None else description)
 
         return Response(IssueWorkLogSerializer(worklog).data, status=status.HTTP_200_OK)
 

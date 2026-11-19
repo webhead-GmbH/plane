@@ -48,8 +48,16 @@ AUDIT_RETENTION = timedelta(days=_int("AGENT_AUDIT_RETENTION_DAYS", 180))
 # How long finished sign-in records and spent tokens are kept after they end.
 EXPIRED_RETENTION = timedelta(days=7)
 
+# How long a repeated write with the same Idempotency-Key is answered with the first answer.
+IDEMPOTENCY_TTL = timedelta(hours=_int("AGENT_IDEMPOTENCY_RETENTION_HOURS", 24))
+# Hours may be added for today and this many days back, no further: an app writing time that
+# a payroll month may already have counted should have to say so to a person, not to an API.
+MAX_BACKDATE_DAYS = _int("AGENT_MAX_BACKDATE_DAYS", 31)
+
 # DRF rate strings.
 GRANT_RATE_LIMIT = os.environ.get("AGENT_GRANT_RATE_LIMIT", "120/minute")
+# Writes are limited much harder than reads: every one can notify somebody or change what is billed.
+WRITE_RATE_LIMIT = os.environ.get("AGENT_WRITE_RATE_LIMIT", "30/minute")
 CLIENT_RATE_LIMIT = os.environ.get("AGENT_CLIENT_RATE_LIMIT", "1200/minute")
 OAUTH_RATE_LIMIT = os.environ.get("AGENT_OAUTH_RATE_LIMIT", "60/minute")
 

@@ -78,6 +78,14 @@
       "work_items_read": {
         "title": "Projeleriniz ve iş öğeleriniz",
         "description": "Üyesi olduğunuz projeler ve bunlarda görebildiğiniz iş öğeleri, yorumlarıyla birlikte."
+      },
+      "work_items_write": {
+        "title": "Sizin adınıza iş öğeleri oluşturma ve değiştirme",
+        "description": "Adınıza iş öğeleri oluşturur, durumlarını, önceliklerini, tarihlerini, atananlarını ve etiketlerini değiştirir ve yorum ekler. Yaptığı her şey Plane’de sizin adınızla görünür."
+      },
+      "time_write": {
+        "title": "Sürenizi takip etme",
+        "description": "Adınıza zamanlayıcınızı başlatır ve durdurur, sürenize saat ekler."
       }
     }
   }

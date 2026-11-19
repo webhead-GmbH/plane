@@ -17,7 +17,7 @@ from django.utils import timezone
 # Module imports
 from plane.agent.models import AgentAuditLog, AgentAuthorizationRequest, AgentClient, AgentGrant, AgentToken
 from plane.agent.oauth import validate_redirect_uri
-from plane.agent.scopes import SCOPES, describe, parse_scope_string
+from plane.agent.scopes import READ_ONLY_SCOPES, SCOPES, describe, parse_scope_string
 from plane.agent.tasks import purge_expired
 from plane.agent.text import clean_display_text
 from plane.agent.tokens import hash_secret
@@ -45,8 +45,13 @@ class TestRegisteringApps:
         client = AgentClient.objects.get(client_id=client_id)
         assert secret.startswith("plane_cs_") and client_id.startswith("plane_client_")
         assert client.secret_hash == hash_secret(secret) and secret not in client.secret_hash
-        assert client.allowed_scopes == list(SCOPES) and client.redirect_uris == ["https://bot.example.com/cb"]
+        assert client.allowed_scopes == READ_ONLY_SCOPES and client.redirect_uris == ["https://bot.example.com/cb"]
+        assert not set(client.allowed_scopes) & {"work_items:write", "time:write"}, "changing things is opt-in"
         assert secret not in run("list")
+
+    def test_scopes_that_change_things_have_to_be_named(self):
+        run("create", "--name", "Writer", "--redirect-uri", "https://b.example.com/cb", "--scope", "work_items:write")
+        assert AgentClient.objects.get().allowed_scopes == ["work_items:write"]
 
     def test_scopes_can_be_narrowed_and_unknown_ones_are_refused(self):
         run("create", "--name", "Bot", "--redirect-uri", "https://b.example.com/cb", "--scope", "profile")

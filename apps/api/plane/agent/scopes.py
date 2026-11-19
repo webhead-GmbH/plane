@@ -33,6 +33,8 @@ PROFILE = "profile"
 TIME_READ = "time:read"
 LEAVE_READ = "leave:read"
 WORK_ITEMS_READ = "work_items:read"
+WORK_ITEMS_WRITE = "work_items:write"
+TIME_WRITE = "time:write"
 
 _SCOPES = (
     Scope(
@@ -56,9 +58,24 @@ _SCOPES = (
         "Your projects and work items",
         "The projects you are a member of and the work items you can see in them, with their comments.",
     ),
+    Scope(
+        WORK_ITEMS_WRITE,
+        "Create and change work items for you",
+        "Create work items, change their state, priority, dates, assignees and labels, and add comments, as you. "
+        "Everything it does shows in Plane under your name.",
+        writes=True,
+    ),
+    Scope(
+        TIME_WRITE,
+        "Track your time",
+        "Start and stop your timer, and add hours to your time, as you.",
+        writes=True,
+    ),
 )
 
 SCOPES = {scope.id: scope for scope in _SCOPES}
+# What an app is registered for when nobody names scopes: everything that cannot change anything.
+READ_ONLY_SCOPES = [scope.id for scope in _SCOPES if not scope.writes]
 
 
 def parse_scope_string(value):

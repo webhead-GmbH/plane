@@ -30,6 +30,20 @@ class GrantRateThrottle(SimpleRateThrottle):
         return f"throttle_agent_grant_{grant.id}" if grant is not None else None
 
 
+class WriteRateThrottle(SimpleRateThrottle):
+    """Much tighter than reads, per connection: a write can notify a colleague or change billed time."""
+
+    scope = "agent_write"
+    rate = conf.WRITE_RATE_LIMIT
+
+    def get_cache_key(self, request, view):
+        # Reading on a path that can also write is not writing.
+        if request.method in ("GET", "HEAD", "OPTIONS"):
+            return None
+        grant = getattr(request.auth, "grant", None)
+        return f"throttle_agent_write_{grant.id}" if grant is not None else None
+
+
 class ClientRateThrottle(SimpleRateThrottle):
     scope = "agent_client"
     rate = conf.CLIENT_RATE_LIMIT

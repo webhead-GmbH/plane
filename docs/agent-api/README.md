@@ -4,7 +4,7 @@ The Agent API lets an application you run — a chat bot, a scheduled assistant,
 
 It was designed for a Telegram bot that talks to each employee, but nothing in it is specific to Telegram. Any server-side application can use it.
 
-> **Status — version 1, read-only.** Everything in this version reads. Creating work items, assigning, commenting, starting timers, manager reports and push notifications are planned and will arrive as additional scopes and endpoints in the same `v1`; apps that do not ask for the new scopes are unaffected. See [Roadmap](#roadmap).
+> **Status — version 1: reading and acting.** An app can read a person's days, hours, leave, projects and work items, and — only with the extra scopes the person approves — create and change work items, comment, attach files, and start and stop their timer or add hours. Manager reports and push notifications are planned as further scopes and endpoints in the same `v1`; apps that do not ask for them are unaffected. See [Roadmap](#roadmap).
 
 ---
 
@@ -192,18 +192,32 @@ Save the new refresh token **before** you use the new access token. If you ever 
 
 ## What the API offers (version 1)
 
-| Question your bot has                                        | Endpoint                                   | Scope                                       |
-| ------------------------------------------------------------ | ------------------------------------------ | ------------------------------------------- |
-| Who is this, and which workspaces are they in?               | `GET /me/`                                 | `profile`                                   |
-| Is today a working day for them?                             | `GET /me/day/`                             | `time:read`                                 |
-| Which of the next days are working days, holidays, days off? | `GET /me/days/`                            | `time:read`                                 |
-| How much have they worked, and on what?                      | `GET /me/time/`                            | `time:read` (+ `work_items:read` for names) |
-| What is their timer running on right now?                    | `GET /me/timer/`                           | `time:read` (+ `work_items:read`)           |
-| How much leave do they have left?                            | `GET /me/leave/`                           | `leave:read`                                |
-| What leave is booked?                                        | `GET /me/absences/`                        | `leave:read`                                |
-| Which projects are they in?                                  | `GET /projects/`                           | `work_items:read`                           |
-| What are they assigned to, what is due?                      | `GET /work-items/`                         | `work_items:read`                           |
-| What does this task say, what was discussed?                 | `GET /workspaces/{slug}/work-items/{ref}/` | `work_items:read`                           |
+| Question your bot has                                        | Endpoint                                                                  | Scope                                       |
+| ------------------------------------------------------------ | ------------------------------------------------------------------------- | ------------------------------------------- |
+| Who is this, and which workspaces are they in?               | `GET /me/`                                                                | `profile`                                   |
+| Is today a working day for them?                             | `GET /me/day/`                                                            | `time:read`                                 |
+| Which of the next days are working days, holidays, days off? | `GET /me/days/`                                                           | `time:read`                                 |
+| How much have they worked, and on what?                      | `GET /me/time/`                                                           | `time:read` (+ `work_items:read` for names) |
+| What is their timer running on right now?                    | `GET /me/timer/`                                                          | `time:read` (+ `work_items:read`)           |
+| How much leave do they have left?                            | `GET /me/leave/`                                                          | `leave:read`                                |
+| What leave is booked?                                        | `GET /me/absences/`                                                       | `leave:read`                                |
+| Which projects are they in?                                  | `GET /projects/`                                                          | `work_items:read`                           |
+| What are they assigned to, what is due?                      | `GET /work-items/`                                                        | `work_items:read`                           |
+| What does this task say, what was discussed?                 | `GET /workspaces/{slug}/work-items/{ref}/`                                | `work_items:read`                           |
+| Who can I assign to, which states and labels exist?          | `GET /workspaces/{slug}/projects/{id}/members/`, `…/states/`, `…/labels/` | `work_items:read`                           |
+
+**Acting for the person** (each needs its own scope, shown to the person as "can make changes"):
+
+| What the person asked the bot to do               | Endpoint                                                | Scope              |
+| ------------------------------------------------- | ------------------------------------------------------- | ------------------ |
+| Create a task (with description, assignee, dates) | `POST /workspaces/{slug}/projects/{id}/work-items/`     | `work_items:write` |
+| Move it, re-prioritise it, assign or unassign     | `PATCH /workspaces/{slug}/work-items/{ref}/`            | `work_items:write` |
+| Add a comment                                     | `POST /workspaces/{slug}/work-items/{ref}/comments/`    | `work_items:write` |
+| Attach a file the person sent                     | `POST /workspaces/{slug}/work-items/{ref}/attachments/` | `work_items:write` |
+| Start or stop their timer                         | `POST /me/timer/start/`, `POST /me/timer/stop/`         | `time:write`       |
+| Add hours they worked                             | `POST /me/time-entries/`                                | `time:write`       |
+
+Every change is made **as the person**, with the same rules as in the web app, and appears in Plane under their name. Creating and attaching need an `Idempotency-Key`, and creating or changing can be previewed with `?dry_run=true` so the bot can ask "create this?" before it does. See [Making changes](03-api-reference.md#making-changes).
 
 Full detail in the [API reference](03-api-reference.md).
 
@@ -226,9 +240,9 @@ These explain the shape of everything else.
 
 Not available yet (planned, in this order):
 
-1. **Write actions** with their own scopes (`work_items:write`, `timer:write`): create a work item with description and files, assign, change state, comment, start and stop the timer. The same permission rules and refusals as the web app apply (for example, a work item cannot be marked done while a timer runs on it).
-2. **Manager views** (`team:read`): capacity and workload of the people a manager is responsible for, to answer "will they be done by next week?".
-3. **Events**: Plane calls your bot when something changes (assigned, due date moved) so it need not poll.
+1. **Manager views** (`team:read`): capacity and workload of the people a manager is responsible for, to answer "will they be done by next week?". Until then, the bot can only report on the person it is connected to.
+2. **Events**: Plane calls your bot when something changes (assigned, due date moved) so it need not poll.
+3. **More ways to change work**: editing a description, linking work items, moving work between projects. (A description can be set when a work item is created but not replaced afterwards, on purpose: the web app edits descriptions live, and overwriting one from outside is not safe to do blindly. Add a comment instead.)
 
 If you need one of these sooner, say which; the design leaves room for each.
 

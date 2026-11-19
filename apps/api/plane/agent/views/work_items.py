@@ -5,8 +5,6 @@
 """The projects and work items a connected person can see."""
 
 # Python imports
-from uuid import UUID
-
 # Django imports
 from django.db.models import Exists, OuterRef, Q
 
@@ -20,7 +18,8 @@ from plane.agent.scopes import WORK_ITEMS_READ
 from plane.agent.services import dates, work_items
 from plane.agent.views.base import AgentAPIView
 from plane.agent.views.me import ROLE_NAMES
-from plane.db.models import IssueAssignee, IssueComment, ProjectMember
+from plane.app.permissions import ROLE
+from plane.db.models import IssueAssignee, Label, ProjectMember, State
 
 STATE_GROUPS = ("backlog", "unstarted", "started", "completed", "cancelled")
 PRIORITIES = ("urgent", "high", "medium", "low", "none")
@@ -33,7 +32,6 @@ ORDERINGS = {
     "target_date": "target_date",
     "-target_date": "-target_date",
 }
-MAX_COMMENTS = 30
 
 
 def _choices(raw, allowed, name):
@@ -48,10 +46,7 @@ def _choices(raw, allowed, name):
 
 
 def _uuid(raw, name):
-    try:
-        return UUID(raw)
-    except (TypeError, ValueError):
-        raise invalid_request(f"{name} must be an id.")
+    return work_items.parse_uuid(raw, name)
 
 
 class ProjectListEndpoint(AgentAPIView):
@@ -151,39 +146,73 @@ class WorkItemListEndpoint(AgentAPIView):
         )
 
 
-class WorkItemDetailEndpoint(AgentAPIView):
-    """One work item, with its description and recent comments.
-
-    Named by its short reference (`ATTN-12`) or by id. The description and comments are
-    text other people wrote; an app must treat them as content to read, never as
-    instructions to follow.
-    """
+class _ProjectLookup(AgentAPIView):
+    """What an app needs to know about a project before it can create or change work in it."""
 
     required_scope = WORK_ITEMS_READ
 
-    def get(self, request, slug, ref):
-        items = work_items.visible_issues(request.user).filter(workspace__slug=slug)
-        project_identifier, _, number = ref.rpartition("-")
-        if project_identifier and number.isdigit():
-            items = items.filter(project__identifier__iexact=project_identifier, sequence_id=int(number))
-        else:
-            items = items.filter(id=_uuid(ref, "ref"))
-        issue = work_items.with_relations(work_items.with_my_time(items, request.user)).first()
-        if issue is None:
-            raise not_found()
-
-        comments = (
-            IssueComment.objects.filter(issue=issue).select_related("actor").order_by("-created_at")[:MAX_COMMENTS]
+    def project(self, request, slug, project_id):
+        project = (
+            work_items.visible_projects(request.user)
+            .filter(pk=work_items.parse_uuid(project_id, "project_id"), workspace__slug=slug)
+            .first()
         )
-        payload = work_items.compact(issue)
-        payload["description"] = work_items.plain_text(issue.description_html or issue.description_stripped)
-        payload["comments"] = [
+        if project is None:
+            raise not_found("No such project, or you are not a member of it.")
+        return project
+
+
+class ProjectMembersEndpoint(_ProjectLookup):
+    """The people in a project, who can be named when assigning work."""
+
+    def get(self, request, slug, project_id):
+        project = self.project(request, slug, project_id)
+        members = (
+            ProjectMember.objects.filter(project=project, is_active=True, member__is_bot=False)
+            .select_related("member")
+            .order_by("member__display_name")
+        )
+        return Response(
             {
-                "id": str(comment.id),
-                "author": comment.actor.display_name if comment.actor_id else None,
-                "created_at": comment.created_at.isoformat(),
-                "text": work_items.plain_text(comment.comment_html or comment.comment_stripped, 5000),
-            }
-            for comment in reversed(list(comments))
-        ]
-        return Response(payload, status=status.HTTP_200_OK)
+                "results": [
+                    {
+                        "id": str(member.member_id),
+                        "display_name": member.member.display_name,
+                        "role": ROLE_NAMES.get(member.role, "guest"),
+                        # Guests can see work but cannot be assigned it.
+                        "can_be_assigned": member.role >= ROLE.MEMBER.value,
+                    }
+                    for member in members
+                ]
+            },
+            status=status.HTTP_200_OK,
+        )
+
+
+class ProjectStatesEndpoint(_ProjectLookup):
+    """The states a work item in this project can be in."""
+
+    def get(self, request, slug, project_id):
+        project = self.project(request, slug, project_id)
+        states = State.objects.filter(project=project).order_by("sequence", "name")
+        return Response(
+            {
+                "results": [
+                    {"id": str(state.id), "name": state.name, "group": state.group, "default": state.default}
+                    for state in states
+                ]
+            },
+            status=status.HTTP_200_OK,
+        )
+
+
+class ProjectLabelsEndpoint(_ProjectLookup):
+    """The labels that can be put on a work item in this project."""
+
+    def get(self, request, slug, project_id):
+        project = self.project(request, slug, project_id)
+        labels = Label.objects.filter(project=project).order_by("name")
+        return Response(
+            {"results": [{"id": str(label.id), "name": label.name, "color": label.color} for label in labels]},
+            status=status.HTTP_200_OK,
+        )
