@@ -28,6 +28,26 @@ export type TCrmIntegrationPayload = Partial<TCrmIntegration> & {
   crm_api_key?: string;
 };
 
+/** What changing a project's Project ID would do outside Plane, so a screen can ask before saving it. */
+export type TIdentifierChangeImpact = {
+  /** Set only when the CRM maps projects by identifier. */
+  crm: {
+    /** The CRM project number the project is filed under now; null when its Project ID is not a number. */
+    current: number | null;
+    /** The one it would be filed under; null when the new Project ID is not a number. */
+    target: number | null;
+    /** How many CRM tasks would move to it, with their timers and hours. */
+    tasks: number;
+    /** What the CRM calls that project, when it could be read. */
+    target_name: string | null;
+  } | null;
+  /** Set only when the project has a Google Drive folder. */
+  drive: {
+    folder: { from: string; to: string } | null;
+    work_items: number;
+  } | null;
+};
+
 export type TCrmConnectionTest = {
   success: boolean;
   projects_count?: number;
@@ -37,6 +57,20 @@ export type TCrmConnectionTest = {
 export class CrmIntegrationService extends APIService {
   constructor() {
     super(API_BASE_URL);
+  }
+
+  async identifierChangeImpact(
+    workspaceSlug: string,
+    projectId: string,
+    identifier: string
+  ): Promise<TIdentifierChangeImpact> {
+    return this.get(`/api/workspaces/${workspaceSlug}/projects/${projectId}/identifier-change/`, {
+      params: { identifier },
+    })
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
   }
 
   async retrieve(workspaceSlug: string): Promise<TCrmIntegration> {

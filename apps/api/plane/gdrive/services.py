@@ -31,7 +31,7 @@ from django.utils import timezone
 # Module imports
 from plane.db.models import FileAsset, Issue
 from plane.gdrive.client import FOLDER_MIME, DriveClient, DriveError
-from plane.gdrive.matching import confident_match, folder_name_for, looks_taken, rank
+from plane.gdrive.matching import confident_match, folder_name_for, looks_taken, rank, renamed_for_identifier
 from plane.gdrive.models import DriveConnection, DriveFile, DriveIssueFolder, DriveProjectFolder
 
 logger = logging.getLogger(__name__)
@@ -205,6 +205,94 @@ def ensure_issue_folder(connection, issue):
             folder_id=folder["id"],
             folder_name=folder.get("name", name),
         )
+
+
+def planned_renames(project, new_identifier):
+    """What the names in Drive would become if the project's Project ID went to ``new_identifier``.
+
+    Worked out from the names Plane has on record, with no call to Google, so a screen can say it before
+    the change is saved. None when the project has no folder or Drive is not connected.
+    """
+    if ready_connection_for(project.workspace_id) is None:
+        return None
+    link = DriveProjectFolder.objects.filter(project=project).first()
+    if link is None:
+        return None
+    old = project.identifier
+    folder = renamed_for_identifier(old, new_identifier, link.folder_name)
+    work_items = sum(
+        1
+        for item in DriveIssueFolder.objects.filter(project=project).select_related("issue")
+        if item.folder_name == f"{old}-{item.issue.sequence_id}"
+    )
+    return {
+        "folder": {"from": link.folder_name, "to": folder} if folder else None,
+        "work_items": work_items,
+    }
+
+
+def _rename_if_named(client, folder_id, new_name_for):
+    """Rename a folder, going by the name it has in Drive now: somebody's own rename is left alone.
+
+    ``new_name_for`` gets the folder's name and answers with the new one, or None to leave it.
+    Returns the new name when it was renamed.
+    """
+    try:
+        meta = client.get(folder_id, fields="id,name,trashed")
+    except DriveError as error:
+        if error.status == 404:
+            return None  # gone from Drive: nothing to follow
+        raise
+    if meta.get("trashed"):
+        return None
+    name = meta.get("name", "")
+    new_name = new_name_for(name)
+    if not new_name or new_name == name:
+        return None
+    client.rename(folder_id, new_name)
+    return new_name
+
+
+def rename_folders_for_identifier(connection, project, old_identifier):
+    """Make the folder names in Drive follow a changed Project ID.
+
+    The files stay where they are: they belong to the project, which is linked to its folder by Drive's own
+    id, so nothing needs moving. What goes stale is the names, which carry the identifier: the project's
+    folder ("209 - Name") and each work item's folder in "Tasks" ("209-12"). Read at run time, the identifier
+    the project has now, not the one the change started from, so 209 to 210 and back settles on 209.
+
+    Returns how many folders were renamed. Raises the first transient Drive error once the others are done,
+    so a retry only has what is left to do.
+    """
+    new_identifier = project.identifier
+    link = DriveProjectFolder.objects.filter(project=project).first()
+    if link is None or old_identifier == new_identifier:
+        return 0
+    client = DriveClient(connection)
+    renamed = 0
+    failure = None
+
+    new_name = _rename_if_named(
+        client, link.folder_id, lambda name: renamed_for_identifier(old_identifier, new_identifier, name)
+    )
+    if new_name:
+        DriveProjectFolder.objects.filter(pk=link.pk).update(folder_name=new_name)
+        renamed += 1
+
+    for item in DriveIssueFolder.objects.filter(project=project).select_related("issue"):
+        old_name, wanted = f"{old_identifier}-{item.issue.sequence_id}", f"{new_identifier}-{item.issue.sequence_id}"
+        try:
+            new_name = _rename_if_named(client, item.folder_id, lambda name: wanted if name == old_name else None)
+        except DriveError as error:
+            failure = failure or error
+            continue
+        if new_name:
+            DriveIssueFolder.objects.filter(pk=item.pk).update(folder_name=new_name)
+            renamed += 1
+
+    if failure:
+        raise failure
+    return renamed
 
 
 def start_upload(connection, issue, user, name, size, mime_type, source, origin=None):

@@ -34,6 +34,7 @@ import { usePlatformOS } from "@/hooks/use-platform-os";
 // services
 import { ProjectService } from "@/services/project";
 // local imports
+import { useProjectIdentifierChange } from "./identifier-change";
 import { identifierTakenMessage } from "./identifier-taken";
 import type { TReservedIdentifier } from "./identifier-taken";
 import { ProjectNetworkIcon } from "./project-network-icon";
@@ -55,6 +56,7 @@ export function ProjectDetailsForm(props: IProjectDetailsForm) {
   // store hooks
   const { updateProject } = useProject();
   const { isMobile } = usePlatformOS();
+  const { confirmIdentifierChange, identifierChangeDialog } = useProjectIdentifierChange(workspaceSlug, projectId);
 
   // form info
   const {
@@ -206,6 +208,8 @@ export function ProjectDetailsForm(props: IProjectDetailsForm) {
             (reserved) => reserved.project !== project.id
           );
           if (holder) return setError("identifier", { message: identifierTakenMessage(holder, t) });
+          // A change that reaches the CRM or Google Drive is asked about first.
+          if (!(await confirmIdentifierChange(payload.identifier ?? ""))) return;
           return handleUpdateChange(payload);
         });
     else await handleUpdateChange(payload);
@@ -216,6 +220,7 @@ export function ProjectDetailsForm(props: IProjectDetailsForm) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
+      {identifierChangeDialog}
       <div className="relative h-44 w-full">
         <div className="absolute inset-0 rounded-md bg-gradient-to-t from-black/80 via-black/50 to-transparent" />
         <CoverImage src={coverImage} alt="Project cover image" className="h-44 w-full rounded-md" />

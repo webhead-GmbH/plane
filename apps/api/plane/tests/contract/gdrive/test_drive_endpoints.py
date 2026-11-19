@@ -16,12 +16,12 @@ from rest_framework.test import APIClient
 
 # Module imports
 from plane.app.permissions import ROLE
-from plane.db.models import FileAsset, Issue, IssueComment, State
+from plane.db.models import FileAsset, Issue, IssueComment, Project, State
 from plane.gdrive.client import FOLDER_MIME, DriveError
 from plane.gdrive.models import DriveConnection, DriveFile, DriveIssueFolder, DriveProjectFolder
 from plane.gdrive.references import follow_text
-from plane.gdrive.services import link_new_project, move_description_images
-from plane.gdrive.tasks import move_plane_attachments_to_drive
+from plane.gdrive.services import link_new_project, move_description_images, planned_renames
+from plane.gdrive.tasks import move_plane_attachments_to_drive, rename_folders_for_new_identifier
 from plane.tests.factories import (
     ProjectFactory,
     ProjectMemberFactory,
@@ -43,6 +43,7 @@ class FakeDrive:
         self.sessions = {}
         self.trashed = []
         self.untrashed = []
+        self.renamed = []
 
     def add_folder(self, name, parent=ROOT):
         folder_id = f"folder-id-{len(self.items):04d}"
@@ -112,6 +113,10 @@ class FakeDrive:
 
     def untrash(self, file_id):
         self.untrashed.append(file_id)
+
+    def rename(self, file_id, name):
+        self.items[file_id]["name"] = name
+        self.renamed.append((file_id, name))
 
 
 @pytest.fixture
@@ -716,3 +721,112 @@ class TestImagesOfNewWorkItems:
         assert move_description_images(issue.id) == (0, 0)
         issue.refresh_from_db()
         assert str(asset.id) in issue.description_html
+
+
+class TestFoldersFollowTheProjectID:
+    """The files stay with their project; the names of the folders, which carry the Project ID, follow it."""
+
+    @pytest.fixture
+    def numbered(self, setup, drive):
+        """The project is 209, its folder "209 - Fisch Gruber" with one work item folder, "209-1" in Tasks."""
+        Project.objects.filter(pk=setup["project"].pk).update(identifier="209")
+        project = Project.objects.get(pk=setup["project"].pk)
+        folder = drive.add_folder("209 - Fisch Gruber")
+        tasks = drive.add_folder("Tasks", folder)
+        link = DriveProjectFolder.objects.create(
+            workspace=setup["workspace"],
+            project=project,
+            folder_id=folder,
+            folder_name="209 - Fisch Gruber",
+            tasks_folder_id=tasks,
+        )
+        issue_folder = drive.add_folder(f"209-{setup['issue'].sequence_id}", tasks)
+        DriveIssueFolder.objects.create(
+            workspace=setup["workspace"],
+            project=project,
+            issue=setup["issue"],
+            folder_id=issue_folder,
+            folder_name=f"209-{setup['issue'].sequence_id}",
+        )
+        return {"project": project, "folder": folder, "issue_folder": issue_folder, "link": link}
+
+    def change_to(self, project, identifier, capture):
+        """Change the Project ID the way a save does, with the task run on the spot."""
+        with mock.patch(
+            "plane.gdrive.tasks.rename_folders_for_new_identifier.delay",
+            side_effect=lambda project_id, old: rename_folders_for_new_identifier.run(project_id, old),
+        ):
+            with capture(execute=True):
+                saved = Project.objects.get(pk=project.pk)
+                saved.identifier = identifier
+                saved.save()
+
+    def test_the_project_folder_and_the_work_item_folders_take_the_new_id(
+        self, setup, drive, numbered, django_capture_on_commit_callbacks
+    ):
+        self.change_to(numbered["project"], "210", django_capture_on_commit_callbacks)
+        issue = setup["issue"]
+        assert drive.items[numbered["folder"]]["name"] == "210 - Fisch Gruber"
+        assert drive.items[numbered["issue_folder"]]["name"] == f"210-{issue.sequence_id}"
+        assert DriveProjectFolder.objects.get(pk=numbered["link"].pk).folder_name == "210 - Fisch Gruber"
+        assert DriveIssueFolder.objects.get(issue=issue).folder_name == f"210-{issue.sequence_id}"
+
+    def test_nothing_moves_so_the_files_stay_where_they_are(
+        self, setup, drive, numbered, django_capture_on_commit_callbacks
+    ):
+        before = {key: list(item["parents"]) for key, item in drive.items.items()}
+        self.change_to(numbered["project"], "210", django_capture_on_commit_callbacks)
+        assert {key: item["parents"] for key, item in drive.items.items()} == before
+        assert DriveProjectFolder.objects.get(pk=numbered["link"].pk).folder_id == numbered["folder"]
+
+    def test_going_back_to_the_old_id_renames_them_back(
+        self, setup, drive, numbered, django_capture_on_commit_callbacks
+    ):
+        self.change_to(numbered["project"], "210", django_capture_on_commit_callbacks)
+        self.change_to(numbered["project"], "209", django_capture_on_commit_callbacks)
+        assert drive.items[numbered["folder"]]["name"] == "209 - Fisch Gruber"
+        assert drive.items[numbered["issue_folder"]]["name"] == f"209-{setup['issue'].sequence_id}"
+
+    def test_what_comes_after_the_dash_is_left_as_the_team_wrote_it(
+        self, setup, drive, numbered, django_capture_on_commit_callbacks
+    ):
+        drive.items[numbered["folder"]]["name"] = "209 - Fisch (Gruber GmbH)"
+        self.change_to(numbered["project"], "210", django_capture_on_commit_callbacks)
+        assert drive.items[numbered["folder"]]["name"] == "210 - Fisch (Gruber GmbH)"
+
+    def test_a_folder_somebody_named_another_way_is_left_alone(
+        self, setup, drive, numbered, django_capture_on_commit_callbacks
+    ):
+        drive.items[numbered["folder"]]["name"] = "Fisch Gruber Archiv"
+        drive.items[numbered["issue_folder"]]["name"] = "Logo files"
+        self.change_to(numbered["project"], "210", django_capture_on_commit_callbacks)
+        assert drive.renamed == []
+
+    def test_a_project_without_a_folder_changes_nothing(self, setup, drive, django_capture_on_commit_callbacks):
+        self.change_to(setup["project"], "210", django_capture_on_commit_callbacks)
+        assert drive.renamed == []
+
+    def test_saving_a_project_without_a_new_id_asks_for_nothing(
+        self, setup, drive, numbered, django_capture_on_commit_callbacks
+    ):
+        with mock.patch("plane.gdrive.tasks.rename_folders_for_new_identifier.delay") as asked:
+            with django_capture_on_commit_callbacks(execute=True):
+                saved = Project.objects.get(pk=numbered["project"].pk)
+                saved.name = "Fisch Gruber GmbH"
+                saved.save()
+        asked.assert_not_called()
+
+    def test_a_folder_gone_from_drive_is_skipped(self, setup, drive, numbered, django_capture_on_commit_callbacks):
+        del drive.items[numbered["issue_folder"]]
+        self.change_to(numbered["project"], "210", django_capture_on_commit_callbacks)
+        assert drive.items[numbered["folder"]]["name"] == "210 - Fisch Gruber"
+
+    def test_the_names_are_known_before_the_change_is_saved(self, setup, drive, numbered):
+        plan = planned_renames(numbered["project"], "210")
+        assert plan == {"folder": {"from": "209 - Fisch Gruber", "to": "210 - Fisch Gruber"}, "work_items": 1}
+        assert drive.renamed == []
+
+    def test_there_is_nothing_to_plan_without_a_connection(self, setup, drive, numbered):
+        assert planned_renames(numbered["project"], "210")["folder"]["to"] == "210 - Fisch Gruber"
+        DriveConnection.objects.filter(workspace=setup["workspace"]).delete()
+        assert planned_renames(numbered["project"], "210") is None
