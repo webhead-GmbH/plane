@@ -78,6 +78,14 @@
       "work_items_read": {
         "title": "Twoje projekty i elementy pracy",
         "description": "Projekty, których jesteś członkiem, i elementy pracy, które możesz w nich widzieć, wraz z komentarzami."
+      },
+      "work_items_write": {
+        "title": "Tworzenie i zmienianie elementów pracy w Twoim imieniu",
+        "description": "Tworzy elementy pracy, zmienia ich stan, priorytet, terminy, przypisane osoby i etykiety oraz dodaje komentarze w Twoim imieniu. Wszystko, co robi, jest widoczne w Plane pod Twoim imieniem."
+      },
+      "time_write": {
+        "title": "Śledzenie Twojego czasu",
+        "description": "Uruchamia i zatrzymuje Twój licznik oraz dodaje godziny do Twojego czasu, w Twoim imieniu."
       }
     }
   }

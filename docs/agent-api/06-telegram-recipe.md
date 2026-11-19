@@ -6,7 +6,7 @@ A worked design for the bot this API was built for: it talks to each employee on
 
 This page is a **recipe**, not a framework: it says what to call when, what to keep, and where the traps are. Read the [Security guide](04-security-guide.md) first; the choices below assume it.
 
-> **What version 1 can and cannot do.** It can read a person's days, hours, timer, leave, projects and work items — everything this recipe's check-ins need. It **cannot yet** create or change work items, attach files, assign people, start timers, or answer questions about other people ("report to the manager"). Those are on the [roadmap](README.md#roadmap). Where this recipe touches them it says so.
+> **What version 1 can and cannot do.** It can read a person's days, hours, timer, leave, projects and work items — everything the check-ins need — and, with the write scopes the person approves, **act for them**: create and change work items, assign, comment, attach files, start and stop their timer, add hours (§5.4). It **cannot yet** answer questions about other people ("report to the manager") or call your bot when something changes. Those are on the [roadmap](README.md#roadmap).
 
 ---
 
@@ -61,7 +61,7 @@ Only in a **private** chat. When someone sends `/start` or `/connect`:
 
 1. If `message.chat.type != "private"`, answer "Please message me directly" and stop.
 2. Create a `pending_links` row: new random `state`, new PKCE verifier/challenge, `telegram_user_id = message.from.id`, `chat_id = message.chat.id`.
-3. `POST /oauth/requests/` with `account_provider=telegram`, `account_id=<message.from.id>`, `account_username`, `account_name`, `redirect_uri` (your callback), `scope` (`profile time:read work_items:read` for the check-ins), `state`, `code_challenge`.
+3. `POST /oauth/requests/` with `account_provider=telegram`, `account_id=<message.from.id>`, `account_username`, `account_name`, `redirect_uri` (your callback), `scope` (`profile time:read work_items:read` for the check-ins; add `work_items:write time:write` only if the bot offers to act, §5.4), `state`, `code_challenge`.
 4. Reply with a message containing an **inline URL button** "Connect my Plane account" whose URL is the returned `authorization_url`.
 
 ### 3.2 The callback
@@ -162,7 +162,7 @@ timer = plane_get(person, "/me/timer/").json()
 if timer["running"]: remind("Your timer is still running on WEB-1 — stop it?")
 ```
 
-(You can only _remind_; stopping a timer needs the write scopes that arrive later.)
+(With `time:write` the reminder can carry a **[Stop timer]** button — see §5.4. Without it you can only remind.)
 
 ### 5.3 Friday: will next week work?
 
@@ -176,6 +176,50 @@ open_items = plane_get(person, "/work-items/", assignee="me",
 Estimates live on the work item (`estimate`, in whatever unit the project uses) and the person's own time on it in `my_logged_minutes`. **Compute the verdict in code** — for example "estimated minutes still to do vs. `capacity_min`" for items due next week — and only then let the model phrase it. Report only what you can compute; where estimates are missing, say "no estimate" rather than guessing.
 
 > **Reporting to a manager.** Version 1 has no endpoint for "my team". If you want a manager summary now, build it from what each employee told _you_, and **tell employees up front that it happens** (see the [security guide](04-security-guide.md#3-personal-data-and-language-models)). A proper manager view with its own scope is planned; when it arrives, use it instead of storing employees' data about each other.
+
+### 5.4 When the person asks the bot to do something
+
+"Create a task in the website project: fix the header on mobile, give it to Sam, due Friday, here is a screenshot." Everything the person says is a _request_; nothing is done until they confirm it. The flow has five steps, and **the first four are your code, not the model's**.
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant P as Person (Telegram)
+    participant B as Your bot
+    participant M as Language model
+    participant X as Plane
+
+    P->>B: "Create a task in Website: fix the header, give it to Sam, due Friday" + screenshot
+    B->>M: extract {project name, title, assignee name, due date} (JSON only)
+    M-->>B: {"project": "website", "title": "Fix the header", "assignee": "sam", "due": "friday"}
+    B->>X: GET /projects/ · GET …/members/  (match names in code)
+    B->>X: POST …/work-items/?dry_run=true  (ids from Plane's own lists)
+    X-->>B: would_create {project, state, assignees [Sam Colleague], dates…}
+    B->>P: "Create 'Fix the header' in Website Relaunch, assigned to Sam Colleague, due 6 Mar?"  [Create] [Cancel]
+    P->>B: taps [Create]
+    B->>X: POST …/work-items/  (Idempotency-Key: tg-<update_id>-create)
+    X-->>B: 201 {ref: WEB-14, url}
+    B->>X: POST …/work-items/WEB-14/attachments/  (the screenshot, key tg-<update_id>-file-1)
+    B->>P: "Created WEB-14 — <url>"
+```
+
+1. **Understand.** Ask the model to turn the message into a small, fixed JSON shape (title, project _name_, assignee _name_, due date). Validate that shape in code. The model returns names, never ids.
+2. **Resolve in code.** Fetch `GET /projects/` and match the project name against it yourself; fetch `GET /workspaces/{slug}/projects/{id}/members/` and match the person's name. More than one match, or none: **ask the person**, with buttons listing the candidates. Pass `can_be_assigned: false` people (guests) over.
+3. **Preview with Plane.** Call the create endpoint with `?dry_run=true`. Its answer (`would_create`) holds the resolved project, state, assignee names and dates in Plane's words. Show _that_ to the person.
+4. **Wait for the tap.** Store the pending action (the exact request body, the person, a fresh random id) and send the confirmation message with buttons. Only a tap on _that_ message's button, from _that_ person's Telegram id, within a few minutes, releases it. A model never calls this endpoint directly.
+5. **Do it once.** Send the real request with an `Idempotency-Key` built from the Telegram update that carried the tap — for example `tg-<update_id>-create`. If Telegram redelivers the update, or your process retries, the same key makes Plane return the first answer instead of creating a second work item. Reply with `ref` and `url`.
+
+**Files.** Telegram gives your bot a `file_id`; download it (bots can download up to 20 MB), then `POST …/attachments/` as multipart with its own key (`tg-<update_id>-file-<n>`). Send only what the person sent in this conversation. The server refuses over its size limit (5 MB by default), SVG images and types outside the allow-list; tell the person, in words, which.
+
+**Comments, state, assignment.** The same five steps with `POST …/comments/` or `PATCH …/work-items/{ref}/`. For `PATCH`, say what to add and what to remove (`add_assignees`, `remove_assignees`); the preview (`would_change`) shows _from_ and _to_. A comment is posted **under the person's name**, so show them the exact text before sending it.
+
+**Timer.** "Start my timer on WEB-14": resolve `WEB-14` among their assigned work (`GET /work-items/?assignee=me`), confirm, `POST /me/timer/start/`. The answer's `stopped_previous` tells you if another timer was ended in the process — say so ("I stopped your timer on WEB-9"). "Stop": `POST /me/timer/stop/`, with their note if they gave one. The evening nudge in §5.2 can now carry a **[Stop timer]** button.
+
+**Hours.** "Log 2 hours on WEB-14 for yesterday": read back the minutes _and_ the day ("120 minutes on WEB-14, Tue 3 Mar — add?") and have them confirm; use the endpoint's `date` for any day but today. Hours become pay and invoices, so: never infer them, never round them up, never add a number the person did not give you. If Plane answers `409 month_settled`, that month is closed; tell the person they have to ask whoever reopens months, and do not try another way.
+
+**When Plane says no.** Show the person Plane's reason in plain words and stop — `forbidden` (their role does not allow it), `not_assigned` (they are not assigned, so no timer), `state_not_allowed` (the work is in a state where time is not tracked), `timer_running` (stop the timer before moving it there). Do not retry a refusal; retry only `429` and `5xx`, with the same key.
+
+**What to store about an action.** The pending request until it is confirmed or expires; afterwards only _that it happened_ — the key, the person, the ids Plane returned. Not the text.
 
 ## 6. Using a language model safely
 

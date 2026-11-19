@@ -124,6 +124,19 @@ class AgentAPIView(AgentResponseMixin, APIView):
     throttle_classes = [GrantRateThrottle, ClientRateThrottle]
     http_method_names = ["get", "head", "options"]
     required_scope = None
+    # For a path that reads with one scope and changes with another: `{"GET": ..., "PATCH": ...}`.
+    required_scopes = None
+
+    def scope_for(self, method):
+        """The one scope this endpoint needs for this HTTP method, or None if it names none."""
+        if self.required_scopes:
+            return self.required_scopes.get("GET" if method == "HEAD" else method)
+        return self.required_scope
+
+    @classmethod
+    def all_scopes(cls):
+        """Every scope the endpoint names, for tests and documentation."""
+        return set((cls.required_scopes or {}).values()) | ({cls.required_scope} - {None})
 
     @property
     def grant(self):

@@ -15,6 +15,7 @@ from plane.db.models import (
     IssueAssignee,
     IssueComment,
     IssueWorkLog,
+    Label,
     Project,
     ProjectMember,
     State,
@@ -157,3 +158,7 @@ def absent(profile, first, last=None, *, kind=None, state=HrAbsence.State.APPROV
 def at(year, month, day, hour=12, minute=0):
     """A timezone-aware moment in UTC."""
     return datetime(year, month, day, hour, minute, tzinfo=dt_timezone.utc)
+
+
+def make_label(project, name="bug"):
+    return Label.objects.create(project=project, workspace=project.workspace, name=name, color="#ff0000")

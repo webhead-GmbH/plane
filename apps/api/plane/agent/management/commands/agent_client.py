@@ -23,7 +23,7 @@ from django.utils import timezone
 # Module imports
 from plane.agent import oauth
 from plane.agent.models import AgentClient, AgentGrant
-from plane.agent.scopes import SCOPES, unknown_scopes
+from plane.agent.scopes import READ_ONLY_SCOPES, unknown_scopes
 from plane.agent.tokens import CLIENT_ID_PREFIX, CLIENT_SECRET_PREFIX, hash_secret, new_secret
 
 
@@ -61,7 +61,10 @@ class Command(BaseCommand):
             "--scope",
             action="append",
             dest="scopes",
-            help=f"A scope the app may ask for (default: all of {', '.join(SCOPES)}). May be repeated.",
+            help=(
+                "A scope the app may ask for. May be repeated. Default: every scope that only reads "
+                f"({', '.join(READ_ONLY_SCOPES)}); scopes that change things must be named."
+            ),
         )
 
         sub.add_parser("list", help="Show registered apps.")
@@ -86,7 +89,9 @@ class Command(BaseCommand):
         getattr(self, f"_{options['action'].replace('-', '_')}")(options)
 
     def _create(self, options):
-        scopes = options["scopes"] or list(SCOPES)
+        # An app that names nothing gets the scopes that only read. Being allowed to change
+        # people's work is a decision somebody makes on purpose, not a default.
+        scopes = options["scopes"] or READ_ONLY_SCOPES
         if unknown_scopes(scopes):
             raise CommandError(f"Unknown scope(s): {', '.join(unknown_scopes(scopes))}.")
         _check_redirect_uris(options["redirect_uris"])

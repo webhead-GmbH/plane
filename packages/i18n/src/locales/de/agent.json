@@ -78,6 +78,14 @@
       "work_items_read": {
         "title": "Ihre Projekte und Arbeitselemente",
         "description": "Die Projekte, in denen Sie Mitglied sind, und die Arbeitselemente, die Sie dort sehen können, samt Kommentaren."
+      },
+      "work_items_write": {
+        "title": "Arbeitselemente für Sie erstellen und ändern",
+        "description": "Arbeitselemente in Ihrem Namen erstellen, ihren Status, ihre Priorität, ihre Termine, Zugewiesenen und Labels ändern und Kommentare hinzufügen. Alles, was die App tut, erscheint in Plane unter Ihrem Namen."
+      },
+      "time_write": {
+        "title": "Ihre Zeit erfassen",
+        "description": "Ihren Timer starten und stoppen und Stunden zu Ihrer Zeit hinzufügen, jeweils in Ihrem Namen."
       }
     }
   }

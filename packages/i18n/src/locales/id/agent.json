@@ -78,6 +78,14 @@
       "work_items_read": {
         "title": "Proyek dan item kerja Anda",
         "description": "Proyek yang Anda ikuti dan item kerja yang dapat Anda lihat di dalamnya, beserta komentarnya."
+      },
+      "work_items_write": {
+        "title": "Membuat dan mengubah item kerja atas nama Anda",
+        "description": "Membuat item kerja, mengubah status, prioritas, tanggal, penugas, dan labelnya, serta menambahkan komentar atas nama Anda. Semua yang dilakukannya tampil di Plane dengan nama Anda."
+      },
+      "time_write": {
+        "title": "Melacak waktu Anda",
+        "description": "Memulai dan menghentikan pengatur waktu Anda serta menambahkan jam ke waktu Anda, atas nama Anda."
       }
     }
   }

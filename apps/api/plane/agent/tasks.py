@@ -12,7 +12,7 @@ from celery import shared_task
 
 # Module imports
 from plane.agent import conf
-from plane.agent.models import AgentAuditLog, AgentAuthorizationRequest, AgentToken
+from plane.agent.models import AgentAuditLog, AgentAuthorizationRequest, AgentIdempotencyKey, AgentToken
 from plane.utils.exception_logger import log_exception
 
 
@@ -30,6 +30,7 @@ def purge_expired(now=None):
         "requests": AgentAuthorizationRequest.objects.filter(expires_at__lt=cutoff).delete()[0],
         "tokens": AgentToken.objects.filter(expires_at__lt=cutoff).delete()[0],
         "audit_lines": AgentAuditLog.objects.filter(created_at__lt=now - conf.AUDIT_RETENTION).delete()[0],
+        "idempotency_keys": AgentIdempotencyKey.objects.filter(expires_at__lt=now).delete()[0],
     }
 
 

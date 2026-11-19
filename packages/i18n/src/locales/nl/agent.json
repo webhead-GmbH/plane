@@ -78,6 +78,14 @@
       "work_items_read": {
         "title": "Je projecten en werkitems",
         "description": "De projecten waarvan je lid bent en de werkitems die je daarin kunt zien, met hun reacties."
+      },
+      "work_items_write": {
+        "title": "Werkitems voor je aanmaken en wijzigen",
+        "description": "Werkitems aanmaken, hun status, prioriteit, data, toegewezenen en labels wijzigen en reacties toevoegen, namens jou. Alles wat de app doet, verschijnt in Plane onder jouw naam."
+      },
+      "time_write": {
+        "title": "Je tijd bijhouden",
+        "description": "Je timer starten en stoppen en uren aan je tijd toevoegen, namens jou."
       }
     }
   }

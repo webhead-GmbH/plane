@@ -28,7 +28,22 @@ from plane.agent.views.timekeeping import (
     TimeSummaryEndpoint,
     TimerEndpoint,
 )
-from plane.agent.views.work_items import ProjectListEndpoint, WorkItemDetailEndpoint, WorkItemListEndpoint
+from plane.agent.views.work_items import (
+    ProjectLabelsEndpoint,
+    ProjectListEndpoint,
+    ProjectMembersEndpoint,
+    ProjectStatesEndpoint,
+    WorkItemListEndpoint,
+)
+from plane.agent.views.writes import (
+    AttachmentCreateEndpoint,
+    CommentCreateEndpoint,
+    TimeEntryCreateEndpoint,
+    TimerStartEndpoint,
+    TimerStopEndpoint,
+    WorkItemCreateEndpoint,
+    WorkItemEndpoint,
+)
 
 # For connected apps
 v1_patterns = [
@@ -46,7 +61,41 @@ v1_patterns = [
     # Projects and work items
     path("v1/projects/", ProjectListEndpoint.as_view(), name="agent-projects"),
     path("v1/work-items/", WorkItemListEndpoint.as_view(), name="agent-work-items"),
-    path("v1/workspaces/<str:slug>/work-items/<str:ref>/", WorkItemDetailEndpoint.as_view(), name="agent-work-item"),
+    path("v1/workspaces/<str:slug>/work-items/<str:ref>/", WorkItemEndpoint.as_view(), name="agent-work-item"),
+    path(
+        "v1/workspaces/<str:slug>/projects/<str:project_id>/members/",
+        ProjectMembersEndpoint.as_view(),
+        name="agent-project-members",
+    ),
+    path(
+        "v1/workspaces/<str:slug>/projects/<str:project_id>/states/",
+        ProjectStatesEndpoint.as_view(),
+        name="agent-project-states",
+    ),
+    path(
+        "v1/workspaces/<str:slug>/projects/<str:project_id>/labels/",
+        ProjectLabelsEndpoint.as_view(),
+        name="agent-project-labels",
+    ),
+    # Changing things
+    path(
+        "v1/workspaces/<str:slug>/projects/<str:project_id>/work-items/",
+        WorkItemCreateEndpoint.as_view(),
+        name="agent-work-item-create",
+    ),
+    path(
+        "v1/workspaces/<str:slug>/work-items/<str:ref>/comments/",
+        CommentCreateEndpoint.as_view(),
+        name="agent-comment-create",
+    ),
+    path(
+        "v1/workspaces/<str:slug>/work-items/<str:ref>/attachments/",
+        AttachmentCreateEndpoint.as_view(),
+        name="agent-attachment-create",
+    ),
+    path("v1/me/timer/start/", TimerStartEndpoint.as_view(), name="agent-timer-start"),
+    path("v1/me/timer/stop/", TimerStopEndpoint.as_view(), name="agent-timer-stop"),
+    path("v1/me/time-entries/", TimeEntryCreateEndpoint.as_view(), name="agent-time-entry-create"),
 ]
 
 # For the web app
