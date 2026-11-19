@@ -15,6 +15,7 @@
       "plane_account_help": "Aplikacja będzie działać w Twoim imieniu z użyciem tego konta.",
       "scopes_heading": "Do czego aplikacja „{app}” uzyska dostęp",
       "can_change": "Może wprowadzać zmiany",
+      "sees_others": "Pokazuje dane innych osób",
       "allow": "Zezwól",
       "revoke_hint": "Ten dostęp możesz w każdej chwili cofnąć w ustawieniach profilu, w sekcji Połączone aplikacje.",
       "redirecting": "Przekierowujemy Cię z powrotem do aplikacji „{app}”…",
@@ -86,6 +87,10 @@
       "time_write": {
         "title": "Śledzenie Twojego czasu",
         "description": "Uruchamia i zatrzymuje Twój licznik oraz dodaje godziny do Twojego czasu, w Twoim imieniu."
+      },
+      "team_read": {
+        "title": "Dni, godziny i obciążenie Twojego zespołu",
+        "description": "Dla osób z Twojego zespołu: w które dni pracują, ile godzin przepracowały i ile mają otwartej pracy. Nigdy powód dnia wolnego. Działa tylko wtedy, gdy w Plane odpowiadasz za zespół."
       }
     }
   }

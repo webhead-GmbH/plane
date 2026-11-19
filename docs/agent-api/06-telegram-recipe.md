@@ -175,7 +175,7 @@ open_items = plane_get(person, "/work-items/", assignee="me",
 
 Estimates live on the work item (`estimate`, in whatever unit the project uses) and the person's own time on it in `my_logged_minutes`. **Compute the verdict in code** — for example "estimated minutes still to do vs. `capacity_min`" for items due next week — and only then let the model phrase it. Report only what you can compute; where estimates are missing, say "no estimate" rather than guessing.
 
-> **Reporting to a manager.** Version 1 has no endpoint for "my team". If you want a manager summary now, build it from what each employee told _you_, and **tell employees up front that it happens** (see the [security guide](04-security-guide.md#3-personal-data-and-language-models)). A proper manager view with its own scope is planned; when it arrives, use it instead of storing employees' data about each other.
+> **Reporting to a manager.** Use the manager view, [`team:read`](03-api-reference.md#your-team-managers), on **the manager's own connection**, rather than collecting what employees told you and passing it on. See §5.5.
 
 ### 5.4 When the person asks the bot to do something
 
@@ -220,6 +220,39 @@ sequenceDiagram
 **When Plane says no.** Show the person Plane's reason in plain words and stop — `forbidden` (their role does not allow it), `not_assigned` (they are not assigned, so no timer), `state_not_allowed` (the work is in a state where time is not tracked), `timer_running` (stop the timer before moving it there). Do not retry a refusal; retry only `429` and `5xx`, with the same key.
 
 **What to store about an action.** The pending request until it is confirmed or expires; afterwards only _that it happened_ — the key, the person, the ids Plane returned. Not the text.
+
+### 5.5 For managers: who has room?
+
+"Who could take another task next week?" and the Friday report to a manager are answered from the **manager's own connection** (one made with `team:read`; see [Your team](03-api-reference.md#your-team-managers)), never from what employees told your bot.
+
+```python
+# Everybody on the team for next week, 25 at a time. The manager's token, the manager's private chat.
+rows, page = [], {"limit": 25}
+while True:
+    body = plane_get(manager, "/team/workload/", **{"from": next_monday, "to": next_sunday}, **page)
+    if body.status_code == 403 and body.json()["error"] == "not_a_manager":
+        return tell(manager, "Plane no longer lists you as a manager, so I can't show your team.")
+    body = body.json()
+    rows += body["results"]
+    if body["next_offset"] is None:
+        break
+    page["offset"] = body["next_offset"]
+
+for person in rows:
+    if not person["capacity"]["has_schedule"]:
+        continue   # Plane has no working week for them: "unknown", not "no capacity"
+    work = person["open_work"]
+    person["committed"] = work["due_in_span"] + work["overdue"]
+```
+
+Decide in code, then let the model phrase it:
+
+- **Room** is `capacity.expected_minutes` against what is due: `open_work.due_in_span` and `overdue`. Somebody with expected hours and nothing due is who to offer a new task. Somebody whose `expected_minutes` is small because of `days_away` is away part of the week, which is all you may say; you do not know why.
+- **What is behind a number**: fetch `GET /team/{user_id}/work-items/?state_group=backlog,unstarted,started&order_by=target_date` for the people the manager asks about, and read `target_date` and `estimate`. Estimates are the project's own unit, not hours.
+- **`no_due_date`** is the number to watch: work without a date cannot be planned.
+- Send the figures to the **manager only**, and never rank people. "Who has room" is planning; "who works least" is performance assessment (see [Security guide §4b](04-security-guide.md#4b-managers-reading-about-colleagues)).
+- Give a language model `person A`, `person B` and the figures, not names; put the names back in your code.
+- Stop at `not_a_manager`. Do not fall back to an older answer.
 
 ## 6. Using a language model safely
 

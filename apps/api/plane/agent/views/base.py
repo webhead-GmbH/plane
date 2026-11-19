@@ -142,6 +142,18 @@ class AgentAPIView(AgentResponseMixin, APIView):
     def grant(self):
         return self.request.auth.grant
 
+    @property
+    def audit_detail(self):
+        """What a view wants written beside the call: ids only, never content.
+
+        A view that reads somebody else's information puts `subjects` here, so the log can
+        say whose it was.
+        """
+        return self.__dict__.setdefault("_audit_detail", {})
+
+    def audit_subjects(self, user_ids):
+        self.audit_detail["subjects"] = sorted({str(user_id) for user_id in user_ids})
+
     def finalize_response(self, request, response, *args, **kwargs):
         response = super().finalize_response(request, response, *args, **kwargs)
         principal = getattr(request, "auth", None)
@@ -149,5 +161,11 @@ class AgentAPIView(AgentResponseMixin, APIView):
         # refused ones must not become a flood of rows, and a throttled call is by
         # definition one of a flood.
         if isinstance(principal, AgentPrincipal) and response.status_code != status.HTTP_429_TOO_MANY_REQUESTS:
-            audit.record("api", request=request, grant=principal.grant, status_code=response.status_code)
+            audit.record(
+                "api",
+                request=request,
+                grant=principal.grant,
+                status_code=response.status_code,
+                **self.audit_detail,
+            )
         return response

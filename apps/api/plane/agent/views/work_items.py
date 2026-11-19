@@ -79,6 +79,60 @@ class ProjectListEndpoint(AgentAPIView):
         )
 
 
+def narrow(query, items):
+    """The filters a work item list accepts, applied to work items already limited to what may be shown."""
+    if query.get("workspace"):
+        items = items.filter(workspace__slug=query["workspace"])
+    if query.get("project"):
+        items = items.filter(project_id=_uuid(query["project"], "project"))
+
+    groups = _choices(query.get("state_group"), STATE_GROUPS, "state_group")
+    if groups:
+        items = items.filter(state__group__in=groups)
+    priorities = _choices(query.get("priority"), PRIORITIES, "priority")
+    if priorities:
+        items = items.filter(priority__in=priorities)
+
+    due_before, due_after = (
+        dates.parse_date(query.get("due_before"), "due_before"),
+        dates.parse_date(query.get("due_after"), "due_after"),
+    )
+    if due_before:
+        items = items.filter(target_date__lte=due_before)
+    if due_after:
+        items = items.filter(target_date__gte=due_after)
+    updated_since = dates.parse_datetime(query.get("updated_since"), "updated_since")
+    if updated_since:
+        items = items.filter(updated_at__gte=updated_since)
+
+    text = (query.get("q") or "").strip()
+    if text:
+        if len(text) > 200:
+            raise invalid_request("q is too long.")
+        items = items.filter(Q(name__icontains=text) | Q(description_stripped__icontains=text))
+    return items
+
+
+def page_of(query, items, time_of):
+    """One page of work items, in the order asked for, with the hours `time_of` has logged on each."""
+    limit, offset = dates.parse_page(query)
+    order = ORDERINGS.get(query.get("order_by", "-updated_at"))
+    if order is None:
+        raise invalid_request(f"order_by must be one of: {', '.join(ORDERINGS)}.")
+
+    total = items.count()
+    page = work_items.with_relations(work_items.with_my_time(items, time_of)).order_by(order, "id")[
+        offset : offset + limit
+    ]
+    return {
+        "count": total,
+        "limit": limit,
+        "offset": offset,
+        "next_offset": offset + limit if offset + limit < total else None,
+        "results": [work_items.compact(issue) for issue in page],
+    }
+
+
 class WorkItemListEndpoint(AgentAPIView):
     """Work items the person can see, narrowed by what the app asks for."""
 
@@ -86,64 +140,15 @@ class WorkItemListEndpoint(AgentAPIView):
 
     def get(self, request):
         query = request.query_params
-        limit, offset = dates.parse_page(query)
-
         items = work_items.visible_issues(request.user)
-        if query.get("workspace"):
-            items = items.filter(workspace__slug=query["workspace"])
-        if query.get("project"):
-            items = items.filter(project_id=_uuid(query["project"], "project"))
 
         assignee = query.get("assignee")
         if assignee == "me":
             items = items.filter(Exists(IssueAssignee.objects.filter(issue_id=OuterRef("id"), assignee=request.user)))
         elif assignee:
-            raise invalid_request("assignee must be 'me'.")
+            raise invalid_request("assignee must be 'me'. To see a colleague's work, use /team/{user_id}/work-items/.")
 
-        groups = _choices(query.get("state_group"), STATE_GROUPS, "state_group")
-        if groups:
-            items = items.filter(state__group__in=groups)
-        priorities = _choices(query.get("priority"), PRIORITIES, "priority")
-        if priorities:
-            items = items.filter(priority__in=priorities)
-
-        due_before, due_after = (
-            dates.parse_date(query.get("due_before"), "due_before"),
-            dates.parse_date(query.get("due_after"), "due_after"),
-        )
-        if due_before:
-            items = items.filter(target_date__lte=due_before)
-        if due_after:
-            items = items.filter(target_date__gte=due_after)
-        updated_since = dates.parse_datetime(query.get("updated_since"), "updated_since")
-        if updated_since:
-            items = items.filter(updated_at__gte=updated_since)
-
-        text = (query.get("q") or "").strip()
-        if text:
-            if len(text) > 200:
-                raise invalid_request("q is too long.")
-            items = items.filter(Q(name__icontains=text) | Q(description_stripped__icontains=text))
-
-        order = ORDERINGS.get(query.get("order_by", "-updated_at"))
-        if order is None:
-            raise invalid_request(f"order_by must be one of: {', '.join(ORDERINGS)}.")
-
-        total = items.count()
-        page = work_items.with_relations(work_items.with_my_time(items, request.user)).order_by(order, "id")[
-            offset : offset + limit
-        ]
-        results = [work_items.compact(issue) for issue in page]
-        return Response(
-            {
-                "count": total,
-                "limit": limit,
-                "offset": offset,
-                "next_offset": offset + limit if offset + limit < total else None,
-                "results": results,
-            },
-            status=status.HTTP_200_OK,
-        )
+        return Response(page_of(query, narrow(query, items), request.user), status=status.HTTP_200_OK)
 
 
 class _ProjectLookup(AgentAPIView):

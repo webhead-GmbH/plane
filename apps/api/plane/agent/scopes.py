@@ -27,6 +27,10 @@ class Scope:
     description: str
     # Whether it lets the app change anything.
     writes: bool = False
+    # Whether it lets the app see *other people's* information, people who never
+    # approved anything themselves. Shown on the consent screen next to "can make
+    # changes", and left out of what an app is registered for by default.
+    others: bool = False
 
 
 PROFILE = "profile"
@@ -35,6 +39,7 @@ LEAVE_READ = "leave:read"
 WORK_ITEMS_READ = "work_items:read"
 WORK_ITEMS_WRITE = "work_items:write"
 TIME_WRITE = "time:write"
+TEAM_READ = "team:read"
 
 _SCOPES = (
     Scope(
@@ -71,11 +76,21 @@ _SCOPES = (
         "Start and stop your timer, and add hours to your time, as you.",
         writes=True,
     ),
+    Scope(
+        TEAM_READ,
+        "Your team's days, hours and workload",
+        "For the people on your team: which days they work, how many hours they have worked, and how much open work "
+        "they have. Never the reason for a day off. It works only while you look after the team in Plane.",
+        others=True,
+    ),
 )
 
 SCOPES = {scope.id: scope for scope in _SCOPES}
-# What an app is registered for when nobody names scopes: everything that cannot change anything.
-READ_ONLY_SCOPES = [scope.id for scope in _SCOPES if not scope.writes]
+# What an app is registered for when nobody names scopes: what concerns only the person who links it and cannot
+# change anything. Seeing colleagues' information and changing things are both asked for by name.
+DEFAULT_SCOPES = [scope.id for scope in _SCOPES if not scope.writes and not scope.others]
+# The old name, for code written against the first release.
+READ_ONLY_SCOPES = DEFAULT_SCOPES
 
 
 def parse_scope_string(value):
@@ -99,6 +114,7 @@ def describe(scope_ids):
             "title": SCOPES[scope_id].title,
             "description": SCOPES[scope_id].description,
             "writes": SCOPES[scope_id].writes,
+            "others": SCOPES[scope_id].others,
         }
         for scope_id in scope_ids
         if scope_id in SCOPES

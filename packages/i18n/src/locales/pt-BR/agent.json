@@ -15,6 +15,7 @@
       "plane_account_help": "O aplicativo agirá em seu nome com esta conta.",
       "scopes_heading": "A que {app} terá acesso",
       "can_change": "Pode fazer alterações",
+      "sees_others": "Mostra dados de outras pessoas",
       "allow": "Permitir",
       "revoke_hint": "Você pode retirar este acesso a qualquer momento nas configurações do seu perfil, em Aplicativos conectados.",
       "redirecting": "Levando você de volta a {app}…",
@@ -86,6 +87,10 @@
       "time_write": {
         "title": "Registrar o seu tempo",
         "description": "Iniciar e parar o seu cronômetro e adicionar horas ao seu tempo, em seu nome."
+      },
+      "team_read": {
+        "title": "Dias, horas e carga de trabalho da sua equipe",
+        "description": "Para as pessoas da sua equipe: em quais dias trabalham, quantas horas trabalharam e quanto trabalho em aberto têm. Nunca o motivo de uma folga. Funciona apenas enquanto você cuidar da equipe no Plane."
       }
     }
   }

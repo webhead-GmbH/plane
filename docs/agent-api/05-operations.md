@@ -51,7 +51,7 @@ The secret is shown only now. Store it in the app's secret store.
 
 - **The secret is shown once.** Only its SHA-256 hash is stored; there is no way to read it back. Hand it to the app's developer through your secret-sharing channel, not by email or chat.
 - `--redirect-uri` (repeatable) is the **exact** address people are sent back to. Matching is character-for-character: no wildcards, no prefix matching, no query-string flexibility. Use `https`; plain `http` is accepted only for `localhost`, `127.0.0.1` and `::1`, for development. No fragments, no credentials in the address.
-- `--scope` (repeatable) is the **ceiling**: the most this app may ever ask for. Omit it and the app is allowed only the **read-only** scopes (`profile`, `time:read`, `leave:read`, `work_items:read`): the scopes that change things (`work_items:write`, `time:write`) are never a default and must be named on purpose. Give an app only what its purpose needs. If the app asks for less, that is fine; if it asks for more, the request is refused.
+- `--scope` (repeatable) is the **ceiling**: the most this app may ever ask for. Omit it and the app is allowed only the scopes that **read the linking person's own information** (`profile`, `time:read`, `leave:read`, `work_items:read`): the scopes that change things (`work_items:write`, `time:write`) and the one that shows **other people's** information (`team:read`) are never a default and must be named on purpose. Give an app only what its purpose needs. If the app asks for less, that is fine; if it asks for more, the request is refused.
 
 To let an app act for people (create work items, comment, attach files, start timers, add hours) name the write scopes as well:
 
@@ -61,6 +61,13 @@ python manage.py agent_client update plane_client_Ab3… \
 ```
 
 This only raises the **ceiling**. A person still has to approve each write scope on the approval screen, and connections that already exist keep what they were given: the person connects again to grant more. Grant write scopes only to an app whose developers have read the [Security guide](04-security-guide.md#4a-acting-on-a-persons-behalf).
+
+To let an app report on a manager's team (`team:read`), name that scope too, and only for an app whose developers have read the [Security guide](04-security-guide.md#4b-managers-reading-about-colleagues). Agree it with the data-protection officer and the works council first: it lets a tool read colleagues' days, hours and open work. It does nothing for a person who is not a manager in Plane (the flag on their employment record, or an instance administrator), and it ends for a manager the moment the flag is taken away: nothing has to be revoked.
+
+```bash
+python manage.py agent_client update plane_client_Ab3… \
+    --set-scopes profile time:read work_items:read work_items:write time:write team:read
+```
 
 Register **separate apps for development and production.**
 
@@ -138,7 +145,7 @@ Table `agent_audit_logs`. One row per event, **without content**: no query strin
 | `client_id`, `grant_id`, `user_id` | Whom it concerned.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | `method`, `path`, `status_code`    | For `api` events.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | `ip_address`, `user_agent`         | The caller's.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
-| `detail`                           | Small JSON; never personal content.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| `detail`                           | Small JSON; never personal content. On `api` events that read colleagues' information (`/team/…`), `detail.subjects` lists the **ids of the people** the call covered, so you can answer "whose figures did this app read, and when?":                                                                                                                                                                                                                                                                                                                                                                                       |
 
 Examples:
 
@@ -147,6 +154,12 @@ Examples:
 SELECT created_at, event, method, path, status_code
 FROM agent_audit_logs
 WHERE user_id = '<user uuid>' AND created_at > now() - interval '1 day'
+ORDER BY created_at DESC;
+
+-- Which of the connection's calls read colleagues' figures, and about whom?
+SELECT created_at, path, detail->'subjects' AS people
+FROM agent_audit_logs
+WHERE user_id = '<manager uuid>' AND path LIKE '/api/agent/v1/team/%'
 ORDER BY created_at DESC;
 
 -- Any replayed tokens (stolen or buggy clients)?

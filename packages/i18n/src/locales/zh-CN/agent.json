@@ -15,6 +15,7 @@
       "plane_account_help": "该应用将使用此账户代表你操作。",
       "scopes_heading": "{app} 将可以访问",
       "can_change": "可进行更改",
+      "sees_others": "可查看他人的信息",
       "allow": "允许",
       "revoke_hint": "你可以随时在个人资料设置的“已连接的应用”中收回此访问权限。",
       "redirecting": "正在带你返回 {app}…",
@@ -86,6 +87,10 @@
       "time_write": {
         "title": "记录你的时间",
         "description": "以你的名义启动和停止你的计时器，并为你的时间添加小时数。"
+      },
+      "team_read": {
+        "title": "你团队的工作日、工时和工作量",
+        "description": "针对你团队中的成员：他们哪些天工作、已工作多少小时、还有多少未完成的工作。不包含休假原因。仅在你于 Plane 中负责团队期间有效。"
       }
     }
   }

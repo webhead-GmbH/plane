@@ -15,6 +15,7 @@
       "plane_account_help": "Die App handelt mit diesem Konto für Sie.",
       "scopes_heading": "Worauf {app} Zugriff erhält",
       "can_change": "Kann Änderungen vornehmen",
+      "sees_others": "Zeigt Daten anderer Personen",
       "allow": "Zulassen",
       "revoke_hint": "Sie können diesen Zugriff jederzeit in Ihren Profileinstellungen unter „Verbundene Apps“ wieder entziehen.",
       "redirecting": "Sie werden zu {app} zurückgeleitet …",
@@ -86,6 +87,10 @@
       "time_write": {
         "title": "Ihre Zeit erfassen",
         "description": "Ihren Timer starten und stoppen und Stunden zu Ihrer Zeit hinzufügen, jeweils in Ihrem Namen."
+      },
+      "team_read": {
+        "title": "Tage, Stunden und Auslastung Ihres Teams",
+        "description": "Für die Personen in Ihrem Team: an welchen Tagen sie arbeiten, wie viele Stunden sie gearbeitet haben und wie viel offene Arbeit sie haben. Nie der Grund für einen freien Tag. Gilt nur, solange Sie in Plane das Team betreuen."
       }
     }
   }

@@ -15,6 +15,7 @@
       "plane_account_help": "L’application agira en votre nom avec ce compte.",
       "scopes_heading": "À quoi {app} aura accès",
       "can_change": "Peut effectuer des modifications",
+      "sees_others": "Affiche des données d’autres personnes",
       "allow": "Autoriser",
       "revoke_hint": "Vous pouvez retirer cet accès à tout moment dans les paramètres de votre profil, sous Applications connectées.",
       "redirecting": "Retour vers {app} en cours…",
@@ -86,6 +87,10 @@
       "time_write": {
         "title": "Suivre votre temps",
         "description": "Démarrer et arrêter votre chronomètre et ajouter des heures à votre temps, en votre nom."
+      },
+      "team_read": {
+        "title": "Les jours, les heures et la charge de votre équipe",
+        "description": "Pour les personnes de votre équipe : les jours où elles travaillent, le nombre d’heures travaillées et la quantité de travail en cours. Jamais le motif d’un jour d’absence. Ne fonctionne que tant que vous êtes responsable de l’équipe dans Plane."
       }
     }
   }

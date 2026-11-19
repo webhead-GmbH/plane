@@ -15,6 +15,7 @@
       "plane_account_help": "Uygulama, bu hesapla sizin adınıza işlem yapacak.",
       "scopes_heading": "{app} neye erişebilecek",
       "can_change": "Değişiklik yapabilir",
+      "sees_others": "Başkalarının bilgilerini gösterir",
       "allow": "İzin ver",
       "revoke_hint": "Bu erişimi istediğiniz zaman profil ayarlarınızdaki Bağlı uygulamalar bölümünden geri alabilirsiniz.",
       "redirecting": "Sizi {app} uygulamasına geri götürüyoruz…",
@@ -86,6 +87,10 @@
       "time_write": {
         "title": "Sürenizi takip etme",
         "description": "Adınıza zamanlayıcınızı başlatır ve durdurur, sürenize saat ekler."
+      },
+      "team_read": {
+        "title": "Ekibinizin günleri, saatleri ve iş yükü",
+        "description": "Ekibinizdeki kişiler için: hangi günler çalıştıkları, kaç saat çalıştıkları ve ne kadar açık işleri olduğu. İzin gününün nedeni asla gösterilmez. Yalnızca Plane’de ekipten sorumlu olduğunuz sürece çalışır."
       }
     }
   }
