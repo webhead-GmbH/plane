@@ -1629,6 +1629,15 @@ def issue_activity(
         # Save all the values to database
         issue_activities_created = IssueActivity.objects.bulk_create(issue_activities)
 
+        # Connected apps that asked to hear about assignments, due dates and states. Whatever goes
+        # wrong in there must never be what stops a work item's own activity from being recorded.
+        try:
+            from plane.agent.services.events import announce_activities
+
+            announce_activities(issue_activities_created)
+        except Exception as e:
+            log_exception(e)
+
         if notification:
             notifications.delay(
                 type=type,

@@ -4,7 +4,7 @@ The Agent API lets an application you run — a chat bot, a scheduled assistant,
 
 It was designed for a Telegram bot that talks to each employee, but nothing in it is specific to Telegram. Any server-side application can use it.
 
-> **Status — version 1: reading and acting.** An app can read a person's days, hours, leave, projects and work items, and — only with the extra scopes the person approves — create and change work items, comment, attach files, and start and stop their timer or add hours. A manager's app can also read how their team is doing (days, hours, open work), with a scope of its own that is never a default. Push notifications are planned as further endpoints in the same `v1`; apps that do not ask for them are unaffected. See [Roadmap](#roadmap).
+> **Status — version 1: reading and acting.** An app can read a person's days, hours, leave, projects and work items, and — only with the extra scopes the person approves — create and change work items, comment, attach files, and start and stop their timer or add hours. A manager's app can also read how their team is doing (days, hours, open work), with a scope of its own that is never a default. Plane can also **tell the app when something happens** (assigned, due date or state changed, connection ended) instead of the app asking. Apps that do not use these are unaffected. See [Roadmap](#roadmap).
 
 ---
 
@@ -43,6 +43,7 @@ The person signs in to Plane in their own browser, exactly as they always do. **
 | Building it for Telegram                             | [Telegram bot recipe](06-telegram-recipe.md)                                                                                                   |
 | Responsible for what the bot does with people's data | [Security guide for app developers](04-security-guide.md) — **mandatory reading**                                                              |
 | Running the Plane server                             | [Operations guide](05-operations.md)                                                                                                           |
+| Wanting to be told when work changes                 | [Events](07-events.md)                                                                                                                         |
 | Generating a client or importing into Postman        | [`openapi.yaml`](openapi.yaml)                                                                                                                 |
 
 ### The documents
@@ -55,6 +56,7 @@ The person signs in to Plane in their own browser, exactly as they always do. **
 | 4   | [Security guide](04-security-guide.md)           | What the app developer is obliged to do — secrets, prompt injection, group chats, personal data |
 | 5   | [Operations guide](05-operations.md)             | Registering apps, settings, audit log, revoking, troubleshooting                                |
 | 6   | [Telegram bot recipe](06-telegram-recipe.md)     | A worked design for a daily check-in bot                                                        |
+| 7   | [Events](07-events.md)                           | Being told when something happens: setup, signature, retries, the events                        |
 | —   | [`openapi.yaml`](openapi.yaml)                   | Machine-readable OpenAPI 3.1 description                                                        |
 
 ---
@@ -229,6 +231,8 @@ A colleague's day off is reported as _away_, never why, and only the work the ma
 
 Every change is made **as the person**, with the same rules as in the web app, and appears in Plane under their name. Creating and attaching need an `Idempotency-Key`, and creating or changing can be previewed with `?dry_run=true` so the bot can ask "create this?" before it does. See [Making changes](03-api-reference.md#making-changes).
 
+**Being told** (an address the administrator sets for your app): `work_item.assigned`, `work_item.unassigned`, `work_item.due_date_changed`, `work_item.state_changed` and `connection.revoked`, each a signed request carrying ids only. See [Events](07-events.md).
+
 Full detail in the [API reference](03-api-reference.md).
 
 ---
@@ -250,8 +254,7 @@ These explain the shape of everything else.
 
 Not available yet (planned, in this order):
 
-1. **Events**: Plane calls your bot when something changes (assigned, due date moved) so it need not poll.
-2. **More ways to change work**: editing a description, linking work items, moving work between projects. (A description can be set when a work item is created but not replaced afterwards, on purpose: the web app edits descriptions live, and overwriting one from outside is not safe to do blindly. Add a comment instead.)
+1. **More ways to change work**: editing a description, linking work items, moving work between projects. (A description can be set when a work item is created but not replaced afterwards, on purpose: the web app edits descriptions live, and overwriting one from outside is not safe to do blindly. Add a comment instead.)
 
 If you need one of these sooner, say which; the design leaves room for each.
 

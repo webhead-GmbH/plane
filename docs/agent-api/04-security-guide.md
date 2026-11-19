@@ -101,6 +101,22 @@ What Plane does about it: every change is made with the person's own permissions
 
 What Plane does about it: `team:read` is never an app's default; the person sees it marked on the approval screen; the manager flag is checked on every call, so removing it ends the app's view on the next one; a day off is reported as away without a kind or a note, even to an app that also holds `leave:read`; a colleague's work is counted only in projects the manager is a member of; at most 25 people are returned per call; and the audit log records the **ids of the people** each call covered, so "whose figures did this app read?" always has an answer.
 
+## 4c. Receiving events
+
+If your app is told about events ([Events](07-events.md)), it has an address on the internet that anybody can send requests to.
+
+|              |                                                                                                                                                                                                                                            |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **MUST**     | **Verify the signature on the raw body, in constant time, and check the timestamp (five minutes), before you parse or act on anything.** Without it, anybody who knows the address can make your bot message people or revoke connections. |
+| **MUST NOT** | **Trust what an event says beyond its ids.** Fetch the work item with the person's token and decide from that. An event is a hint; the answer to the fetch is the truth, and it is checked against what the person may see.                |
+| **MUST**     | **Keep the signing secret in a secret store**, separate for development and production, and ask the administrator to replace it (`--new-secret`) if it may have leaked.                                                                    |
+| **MUST**     | **Drop repeats by event id**, and answer `2xx` before doing slow work, so a retry is harmless and the address is not switched off for being slow.                                                                                          |
+| **MUST**     | **Delete a person's tokens and data on `connection.revoked`.** They, or an administrator, ended your access.                                                                                                                               |
+| **SHOULD**   | **Not log request bodies or headers** of event requests beyond the id and type; they link people to work items.                                                                                                                            |
+| **SHOULD**   | **Rate-limit and size-limit the endpoint** like any public address, and reject bodies over a few kilobytes: a real event is under one.                                                                                                     |
+
+What Plane does about it: the address is set by an administrator, never by the app; it must be HTTPS and is checked against internal addresses when set and on every delivery (the connection goes to the address that was checked, redirects are never followed, the answer is never read); the signature secret is derived and never stored; events carry ids only; each event is re-checked against what the person may see before it is made; and an address that keeps failing is switched off.
+
 ## 5. Chat hygiene (especially Telegram)
 
 |              |                                                                                                                                                                                                                 |
@@ -143,6 +159,7 @@ Plane **cannot**: stop your server being compromised, stop the chat provider rea
 - [ ] Work item and comment text is delimited as untrusted data; model output never acts without code checks and, where consequential, the person's confirmation.
 - [ ] Every change is confirmed by the person first, using what `?dry_run=true` returned; ids come only from Plane's own lists; `Idempotency-Key` is built from the source event and reused on retry; hours are never added unless stated and confirmed; files are only those the person sent.
 - [ ] If you use `team:read`: colleagues' figures go only to the manager's private chat, are never ranked or judged, are not sent to a model with names, are not stored beyond the request, and the works council has agreed.
+- [ ] If you receive events: signature verified over the raw body in constant time, timestamp checked, repeats dropped by id, `connection.revoked` deletes tokens, a reconcile runs on start-up.
 - [ ] Data-processing agreements in place with the chat and model providers; processing location known.
 - [ ] Purpose documented and approved by the data-protection officer (and works council, if applicable); people told what the bot does.
 - [ ] Rate limits and `429` handled; results cached sensibly.

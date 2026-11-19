@@ -36,6 +36,8 @@ tags:
   - name: Changing work
   - name: Time tracking
   - name: Team
+  - name: Events
+    description: What Plane sends to your app's address. Signed; ids only.
     description: A manager's view of the people they manage. Only while the person is a manager.
 
 security:
@@ -926,6 +928,123 @@ paths:
         "404": { $ref: "#/components/responses/NotFound" }
         "429": { $ref: "#/components/responses/RateLimited" }
 
+webhooks:
+  work_item.assigned:
+    post:
+      tags: [Events]
+      operationId: eventWorkItemAssigned
+      summary: The person was put on a work item by somebody else
+      description: |
+        Sent to the address the administrator set for your app. **Verify `X-Plane-Agent-Signature` over the raw
+        body before doing anything** (see the Events guide). Delivery is at least once: drop repeats by `id`.
+
+        Needs `work_items:read`. Fetch the work item with the person's token, by `work_item.id` (the `ref` is for display: a project's identifier can be renamed), for details.
+      parameters:
+        - { $ref: "#/components/parameters/EventSignature" }
+        - { $ref: "#/components/parameters/EventTimestamp" }
+        - { $ref: "#/components/parameters/EventDelivery" }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/WorkItemEvent" }
+      responses:
+        "2XX":
+          description: Heard. Answer quickly; the body is never read. Anything else (or no answer within ten seconds) is retried.
+
+  work_item.unassigned:
+    post:
+      tags: [Events]
+      operationId: eventWorkItemUnassigned
+      summary: The person was taken off a work item by somebody else
+      description: |
+        Sent to the address the administrator set for your app. **Verify `X-Plane-Agent-Signature` over the raw
+        body before doing anything** (see the Events guide). Delivery is at least once: drop repeats by `id`.
+
+        Needs `work_items:read`.
+      parameters:
+        - { $ref: "#/components/parameters/EventSignature" }
+        - { $ref: "#/components/parameters/EventTimestamp" }
+        - { $ref: "#/components/parameters/EventDelivery" }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/WorkItemEvent" }
+      responses:
+        "2XX":
+          description: Heard. Answer quickly; the body is never read. Anything else (or no answer within ten seconds) is retried.
+
+  work_item.due_date_changed:
+    post:
+      tags: [Events]
+      operationId: eventWorkItemDueDateChanged
+      summary: The due date of a work item the person is assigned to was changed by somebody else
+      description: |
+        Sent to the address the administrator set for your app. **Verify `X-Plane-Agent-Signature` over the raw
+        body before doing anything** (see the Events guide). Delivery is at least once: drop repeats by `id`.
+
+        Needs `work_items:read`. The new date is not in the event: fetch the work item by `work_item.id`.
+      parameters:
+        - { $ref: "#/components/parameters/EventSignature" }
+        - { $ref: "#/components/parameters/EventTimestamp" }
+        - { $ref: "#/components/parameters/EventDelivery" }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/WorkItemEvent" }
+      responses:
+        "2XX":
+          description: Heard. Answer quickly; the body is never read. Anything else (or no answer within ten seconds) is retried.
+
+  work_item.state_changed:
+    post:
+      tags: [Events]
+      operationId: eventWorkItemStateChanged
+      summary: The state of a work item the person is assigned to was changed by somebody else
+      description: |
+        Sent to the address the administrator set for your app. **Verify `X-Plane-Agent-Signature` over the raw
+        body before doing anything** (see the Events guide). Delivery is at least once: drop repeats by `id`.
+
+        Needs `work_items:read`. The new state is not in the event: fetch the work item by `work_item.id`.
+      parameters:
+        - { $ref: "#/components/parameters/EventSignature" }
+        - { $ref: "#/components/parameters/EventTimestamp" }
+        - { $ref: "#/components/parameters/EventDelivery" }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/WorkItemEvent" }
+      responses:
+        "2XX":
+          description: Heard. Answer quickly; the body is never read. Anything else (or no answer within ten seconds) is retried.
+
+  connection.revoked:
+    post:
+      tags: [Events]
+      operationId: eventConnectionRevoked
+      summary: The person's connection to your app ended, and you did not end it
+      description: |
+        Sent to the address the administrator set for your app. **Verify `X-Plane-Agent-Signature` over the raw
+        body before doing anything** (see the Events guide). Delivery is at least once: drop repeats by `id`.
+
+        Always sent, whatever the scopes. Delete the person's tokens and data. Not sent when the app ended the
+        connection itself, when the same chat account was linked again, or when the connection expired.
+      parameters:
+        - { $ref: "#/components/parameters/EventSignature" }
+        - { $ref: "#/components/parameters/EventTimestamp" }
+        - { $ref: "#/components/parameters/EventDelivery" }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ConnectionRevokedEvent" }
+      responses:
+        "2XX":
+          description: Heard. Answer quickly; the body is never read. Anything else (or no answer within ten seconds) is retried.
+
 components:
   securitySchemes:
     bearerAuth:
@@ -937,6 +1056,24 @@ components:
       scheme: basic
       description: Your app's client id and secret. Recommended.
   parameters:
+    EventSignature:
+      name: X-Plane-Agent-Signature
+      in: header
+      required: true
+      description: "`v1=` and the hex HMAC-SHA256 of `<timestamp>.<raw body>`, keyed with the secret the administrator gave you."
+      schema: { type: string, examples: ["v1=9b1f…"] }
+    EventTimestamp:
+      name: X-Plane-Agent-Timestamp
+      in: header
+      required: true
+      description: Unix time in seconds when this attempt was sent. Refuse anything more than five minutes from your clock.
+      schema: { type: string, examples: ["1772611500"] }
+    EventDelivery:
+      name: X-Plane-Agent-Delivery
+      in: header
+      required: true
+      description: The event's id. The same on every retry; use it to drop repeats.
+      schema: { type: string, format: uuid }
     From:
       name: from
       in: query
@@ -1449,6 +1586,53 @@ components:
         my_logged_minutes:
           type: integer
           description: Finished time the connected person logged on it. Other people's time is never included.
+
+    EventConnection:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        account:
+          type: object
+          description: The chat account you gave when you asked for the link.
+          properties:
+            provider: { type: string, examples: [telegram] }
+            id: { type: string }
+
+    WorkItemEvent:
+      type: object
+      description: Ids and the kind of thing that happened; never a title, a name or a date.
+      properties:
+        id: { type: string, format: uuid, description: "The event's id; also in `X-Plane-Agent-Delivery`." }
+        type:
+          type: string
+          enum: [work_item.assigned, work_item.unassigned, work_item.due_date_changed, work_item.state_changed]
+        created_at: { type: string, format: date-time }
+        connection: { $ref: "#/components/schemas/EventConnection" }
+        data:
+          type: object
+          properties:
+            workspace: { type: string, description: The workspace slug. }
+            work_item:
+              type: object
+              properties:
+                id: { type: string, format: uuid }
+                ref: { type: string, examples: [WEB-12], description: "For showing to people. Fetch by `id`, because a project's identifier can be renamed." }
+                project_id: { type: string, format: uuid }
+
+    ConnectionRevokedEvent:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        type: { type: string, enum: [connection.revoked] }
+        created_at: { type: string, format: date-time }
+        connection: { $ref: "#/components/schemas/EventConnection" }
+        data:
+          type: object
+          properties:
+            reason:
+              type: string
+              enum: [user, admin, security]
+              description: "`security` means a token was replayed. Tell the person; do not reconnect them automatically."
 
     TeamPerson:
       type: object

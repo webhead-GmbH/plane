@@ -54,6 +54,22 @@ IDEMPOTENCY_TTL = timedelta(hours=_int("AGENT_IDEMPOTENCY_RETENTION_HOURS", 24))
 # a payroll month may already have counted should have to say so to a person, not to an API.
 MAX_BACKDATE_DAYS = _int("AGENT_MAX_BACKDATE_DAYS", 31)
 
+# Events (see `services/events.py`). A delivery that is not accepted is tried again after these waits, in
+# seconds; the app has about half an hour to come back before it is given up on. No wait is longer than ten
+# minutes on purpose: a retry waits as an unacknowledged message on the worker, and RabbitMQ closes the
+# channel (and with it every task on that worker) of a consumer that holds one for longer than its
+# `consumer_timeout`, 30 minutes by default.
+WEBHOOK_RETRY_SCHEDULE = (30, 120, 600, 600, 600)
+# One attempt may take this long. A bot that cannot answer in ten seconds is not going to be helped by thirty.
+WEBHOOK_TIMEOUT_SECONDS = _int("AGENT_WEBHOOK_TIMEOUT_SECONDS", 10)
+# Events in a row that could not be delivered at all, after which the address is switched off.
+WEBHOOK_FAILURE_LIMIT = _int("AGENT_WEBHOOK_FAILURE_LIMIT", 10)
+# Events waiting for one connection. An app that is down while a hundred work items are moved needs
+# a poll to catch up, not a hundred stale notifications; past this the newest are dropped.
+MAX_PENDING_EVENTS = _int("AGENT_MAX_PENDING_EVENTS", 200)
+# How long delivered and failed events are kept, for "why did my bot not hear about this".
+EVENT_RETENTION = timedelta(days=_int("AGENT_EVENT_RETENTION_DAYS", 7))
+
 # DRF rate strings.
 GRANT_RATE_LIMIT = os.environ.get("AGENT_GRANT_RATE_LIMIT", "120/minute")
 # Writes are limited much harder than reads: every one can notify somebody or change what is billed.

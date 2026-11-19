@@ -8,6 +8,7 @@ For whoever runs the Plane server. Everything here is done on the server, with t
 - [Registering an app](#registering-an-app)
 - [Managing apps](#managing-apps)
 - [Settings](#settings)
+- [Telling apps about events](#telling-apps-about-events)
 - [Ending connections](#ending-connections)
 - [The audit log](#the-audit-log)
 - [Retention and clean-up](#retention-and-clean-up)
@@ -18,11 +19,11 @@ For whoever runs the Plane server. Everything here is done on the server, with t
 
 ## Deploying
 
-The feature adds one Django app (`agent`) with six tables, a daily clean-up task and new routes under `/api/agent/`. To deploy:
+The feature adds one Django app (`agent`) with seven tables, a daily clean-up task and new routes under `/api/agent/`. To deploy:
 
 1. **Build and roll out** the API image as usual.
-2. **Apply the migration:** `python manage.py migrate` (creates `agent.0001_initial` and `agent.0002_idempotency_keys`; nothing existing is altered).
-3. **Restart the Celery worker and beat** so they pick up the new clean-up task (`plane.agent.tasks.purge_expired_agent_records`, daily at 04:30 UTC).
+2. **Apply the migration:** `python manage.py migrate` (creates `agent.0001_initial`, `agent.0002_idempotency_keys` and `agent.0003_events`; nothing existing is altered).
+3. **Restart the Celery worker and beat** so they pick up the new tasks: the daily clean-up (`plane.agent.tasks.purge_expired_agent_records`, 04:30 UTC) and the ones that tell apps about events (`dispatch_activity_events`, `deliver_agent_event`). **Events need a running worker**: without one nothing is delivered, and nothing else is affected.
 4. **Check `WEB_URL`** is set to the address people open Plane at (for example `https://plane.example.com`). It is used to build the link people are sent; without it the link request fails with `server_error`.
 5. **Deploy the web app** (it contains the approval screen and _Connected apps_).
 
@@ -99,25 +100,51 @@ Shows each app, whether it is active, how many live connections it has, its redi
 
 Environment variables for the API (all optional; the defaults are deliberate):
 
-| Variable                              | Default          | Meaning                                                                                                                                                       |
-| ------------------------------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `WEB_URL`                             | — (**required**) | Public address of the web app; the base of the link people are sent.                                                                                          |
-| `AGENT_REQUEST_LIFETIME_SECONDS`      | `600`            | How long the link given to a person stays valid.                                                                                                              |
-| `AGENT_CODE_LIFETIME_SECONDS`         | `60`             | How long the code from an approval can be exchanged.                                                                                                          |
-| `AGENT_ACCESS_TOKEN_LIFETIME_SECONDS` | `3600`           | Access token lifetime.                                                                                                                                        |
-| `AGENT_REFRESH_TOKEN_LIFETIME_DAYS`   | `90`             | Refresh token lifetime (replaced on every use).                                                                                                               |
-| `AGENT_GRANT_MAX_AGE_DAYS`            | `365`            | A connection ends this long after it was made, however active. `0` removes the limit.                                                                         |
-| `AGENT_REFRESH_REUSE_LEEWAY_SECONDS`  | `10`             | A spent refresh token presented again within this window is treated as a retry; later, as theft.                                                              |
-| `AGENT_AUDIT_RETENTION_DAYS`          | `180`            | How long audit lines are kept.                                                                                                                                |
-| `AGENT_GRANT_RATE_LIMIT`              | `120/minute`     | Per connection (one person). DRF rate syntax.                                                                                                                 |
-| `AGENT_CLIENT_RATE_LIMIT`             | `1200/minute`    | Per app, across everyone.                                                                                                                                     |
-| `AGENT_WRITE_RATE_LIMIT`              | `30/minute`      | Writes (`POST`, `PATCH`) per connection.                                                                                                                      |
-| `AGENT_IDEMPOTENCY_RETENTION_HOURS`   | `24`             | How long a repeated write with the same `Idempotency-Key` is answered with the first answer.                                                                  |
-| `AGENT_MAX_BACKDATE_DAYS`             | `31`             | How far back an app may add hours (never the future, never a settled month).                                                                                  |
-| `AGENT_OAUTH_RATE_LIMIT`              | `60/minute`      | The OAuth endpoints, per source address.                                                                                                                      |
-| `NUM_PROXIES`                         | unset            | Number of reverse proxies in front of Plane. **Set it** so rate limits and the audit log see the real client address — see [Behind a proxy](#behind-a-proxy). |
+| Variable                                       | Default          | Meaning                                                                                                                                                                           |
+| ---------------------------------------------- | ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `WEB_URL`                                      | — (**required**) | Public address of the web app; the base of the link people are sent.                                                                                                              |
+| `AGENT_REQUEST_LIFETIME_SECONDS`               | `600`            | How long the link given to a person stays valid.                                                                                                                                  |
+| `AGENT_CODE_LIFETIME_SECONDS`                  | `60`             | How long the code from an approval can be exchanged.                                                                                                                              |
+| `AGENT_ACCESS_TOKEN_LIFETIME_SECONDS`          | `3600`           | Access token lifetime.                                                                                                                                                            |
+| `AGENT_REFRESH_TOKEN_LIFETIME_DAYS`            | `90`             | Refresh token lifetime (replaced on every use).                                                                                                                                   |
+| `AGENT_GRANT_MAX_AGE_DAYS`                     | `365`            | A connection ends this long after it was made, however active. `0` removes the limit.                                                                                             |
+| `AGENT_REFRESH_REUSE_LEEWAY_SECONDS`           | `10`             | A spent refresh token presented again within this window is treated as a retry; later, as theft.                                                                                  |
+| `AGENT_AUDIT_RETENTION_DAYS`                   | `180`            | How long audit lines are kept.                                                                                                                                                    |
+| `AGENT_GRANT_RATE_LIMIT`                       | `120/minute`     | Per connection (one person). DRF rate syntax.                                                                                                                                     |
+| `AGENT_CLIENT_RATE_LIMIT`                      | `1200/minute`    | Per app, across everyone.                                                                                                                                                         |
+| `AGENT_WRITE_RATE_LIMIT`                       | `30/minute`      | Writes (`POST`, `PATCH`) per connection.                                                                                                                                          |
+| `AGENT_IDEMPOTENCY_RETENTION_HOURS`            | `24`             | How long a repeated write with the same `Idempotency-Key` is answered with the first answer.                                                                                      |
+| `AGENT_MAX_BACKDATE_DAYS`                      | `31`             | How far back an app may add hours (never the future, never a settled month).                                                                                                      |
+| `AGENT_OAUTH_RATE_LIMIT`                       | `60/minute`      | The OAuth endpoints, per source address.                                                                                                                                          |
+| `AGENT_WEBHOOK_TIMEOUT_SECONDS`                | `10`             | How long Plane waits for an app to answer an event.                                                                                                                               |
+| `AGENT_WEBHOOK_FAILURE_LIMIT`                  | `10`             | Events in a row that could not be delivered at all, after which an app's address is switched off.                                                                                 |
+| `AGENT_MAX_PENDING_EVENTS`                     | `200`            | Events waiting for one connection; past this the newest are dropped (the app polls to catch up).                                                                                  |
+| `AGENT_EVENT_RETENTION_DAYS`                   | `7`              | How long events, and the record of whether they were delivered, are kept.                                                                                                         |
+| `WEBHOOK_ALLOWED_HOSTS`, `WEBHOOK_ALLOWED_IPS` | unset            | Plane's own webhook settings, which events share: hosts (or networks) the operator trusts, so a bot on the private network can be told. Otherwise internal addresses are refused. |
+| `NUM_PROXIES`                                  | unset            | Number of reverse proxies in front of Plane. **Set it** so rate limits and the audit log see the real client address — see [Behind a proxy](#behind-a-proxy).                     |
 
 Shortening a lifetime applies to tokens issued afterwards.
+
+## Telling apps about events
+
+An app can be told when something happens to its people's work ([Events](07-events.md) is the guide for its developers). You switch it on per app, with an address you have checked:
+
+```bash
+python manage.py agent_client webhook plane_client_Ab3… --url https://bot.example.com/plane/events
+```
+
+It prints the **signing secret**, which you pass to the developer. The secret is not stored: it is derived from the server's `SECRET_KEY`, the app and a version number, so `--show-secret` prints it again, `--new-secret` replaces it at once (the old one stops verifying), and **changing `SECRET_KEY` changes every app's secret**. `agent_client list` shows each app's address and whether it is on.
+
+- The address must be HTTPS and must not resolve to an internal or private address, unless you have allowed the host (`WEBHOOK_ALLOWED_HOSTS`) or network (`WEBHOOK_ALLOWED_IPS`), the same settings Plane's own webhooks use. For a bot on the same private network, allow its host name; plain `http://` is accepted only for such hosts. The check is made when you set the address and on every delivery.
+- Events are sent by the Celery worker. Each is a row in `agent_events` (ids only, no content) with its outcome: `pending`, `delivered`, `failed`, how many attempts, and the last status or error. Kept `AGENT_EVENT_RETENTION_DAYS` days.
+- An app that does not answer is retried after 30 s, 2 min and then three times at 10 min (six attempts, about half an hour), then that event is `failed`. No wait is longer than ten minutes on purpose: a retry waits as an unacknowledged message on the worker, and RabbitMQ closes the channel of a consumer that holds one for longer than its `consumer_timeout` (30 minutes by default). After `AGENT_WEBHOOK_FAILURE_LIMIT` such events in a row the address is **switched off** (`webhook_disabled_at`, and an audit line `webhook_disabled` with the reason `failures`, or `address_refused` if the address stopped being acceptable). Setting the address again (`--url`) switches it back on.
+- `connection.revoked` is sent when a person or an administrator ends a connection (`revoke-grants` sends it), or a token replay does; not when the app ended it itself.
+
+```sql
+-- Why did the bot not hear about this?
+SELECT created_at, event_type, status, attempts, last_status_code, last_error
+FROM agent_events WHERE grant_id = '<connection uuid>' ORDER BY created_at DESC LIMIT 20;
+```
 
 ## Ending connections
 
@@ -205,6 +232,8 @@ The audit log contains caller IP addresses and user agents. Set the retention to
 | Everything works, then `invalid_grant` on refresh for one person                 | Revoked by them or by you; the 365-day limit passed; their account was deactivated; a token was replayed (see `reuse_detected` in the audit log). | The person connects again. If replays recur, look for an app that refreshes from two workers at once. |
 | `429` on the OAuth endpoints for no apparent reason                              | Proxy hides client addresses (`NUM_PROXIES` not set).                                                                                             | Set `NUM_PROXIES`.                                                                                    |
 | `403 insufficient_scope`                                                         | The connection was made without that scope.                                                                                                       | The person connects again with it.                                                                    |
+| `403 not_a_manager` on `/team/…`                                                 | The person is not a manager in Plane (any longer): the flag is on their employment record, or they are an instance administrator.                 | Nothing to fix on the app's side; give the person the flag if they should have it.                    |
+| An app says it gets no events                                                    | No address set, or switched off after failures (`agent_client list`); no worker running; the connection lacks `work_items:read`.                  | `agent_client webhook … --url …`; start the worker; look in `agent_events`.                           |
 | A person says "my bot stopped"                                                   | Check _Connected apps_ for that person; check the audit log for `revoked`/`reuse_detected`.                                                       | —                                                                                                     |
 
 ---
