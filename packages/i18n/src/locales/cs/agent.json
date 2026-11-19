@@ -1,0 +1,84 @@
+{
+  "agent": {
+    "consent": {
+      "page_title": "Připojit aplikaci",
+      "title": "Aplikace „{app}“ se chce připojit k vašemu účtu Plane",
+      "description": "Pokud to povolíte, aplikace „{app}“ bude moci v Plane jednat vaším jménem, ale jen v rozsahu přístupu uvedeném níže.",
+      "warning_title": "Povolte to jen tehdy, pokud jste to sami zahájili",
+      "warning_description": "Zkontrolujte, že účet níže patří vám a že jste právě požádali aplikaci „{app}“ o připojení. Pokud vám tento odkaz poslal někdo jiný, zvolte Zrušit.",
+      "account_heading": "Účet, který se propojuje",
+      "account_service": "Služba",
+      "account_name": "Jméno",
+      "account_username": "Uživatelské jméno",
+      "account_id": "ID",
+      "plane_account_heading": "Váš účet Plane",
+      "plane_account_help": "Aplikace bude jednat vaším jménem pod tímto účtem.",
+      "scopes_heading": "K čemu bude mít aplikace „{app}“ přístup",
+      "can_change": "Může provádět změny",
+      "allow": "Povolit",
+      "revoke_hint": "Tento přístup můžete kdykoli odebrat v nastavení profilu v části Připojené aplikace.",
+      "redirecting": "Vracíme vás do aplikace „{app}“…",
+      "continue": "Pokračovat",
+      "expired_title": "Platnost odkazu vypršela",
+      "expired_description": "Odkaz pro připojení aplikace funguje jen jednou a jen několik minut. Vraťte se do aplikace a vyžádejte si nový.",
+      "error_title": "Nepodařilo se to dokončit",
+      "error_description": "Požadavek se nepodařilo dokončit. Zkuste to znovu nebo si od aplikace vyžádejte nový odkaz.",
+      "framed_title": "Otevřete tuto stránku samostatně",
+      "framed_description": "Z bezpečnostních důvodů tato stránka nefunguje uvnitř jiné stránky. Pro pokračování ji otevřete na nové kartě.",
+      "framed_open": "Otevřít na nové kartě"
+    },
+    "connected_apps": {
+      "nav_label": "Připojené aplikace",
+      "title": "Připojené aplikace",
+      "description": "Aplikace, kterým jste povolili jednat v Plane vaším jménem. Odeberte ty, které už nepoužíváte.",
+      "fields": {
+        "access": "Přístup",
+        "linked": "Připojeno",
+        "last_used": "Naposledy použito",
+        "expires": "Vyprší"
+      },
+      "not_used_yet": "Zatím nepoužito",
+      "no_expiry": "Nikdy",
+      "revoke": "Odebrat",
+      "revoke_aria": "Odebrat přístup aplikaci „{app}“",
+      "revoke_title": "Odebrat přístup aplikaci „{app}“?",
+      "revoke_description": "Aplikace „{app}“ okamžitě přestane fungovat. Později ji můžete připojit znovu.",
+      "revoke_confirm": "Odebrat přístup",
+      "revoking": "Odebírání…",
+      "revoke_success": {
+        "title": "Přístup odebrán",
+        "message": "Aplikace „{app}“ už nemůže jednat vaším jménem."
+      },
+      "revoke_error": {
+        "title": "Přístup se nepodařilo odebrat",
+        "message": "Něco se pokazilo. Zkuste to prosím znovu."
+      },
+      "empty": {
+        "title": "Žádné připojené aplikace",
+        "description": "Jakmile připojíte aplikaci ke svému účtu Plane, zobrazí se zde."
+      },
+      "load_error": {
+        "title": "Připojené aplikace se nepodařilo načíst",
+        "description": "Zkontrolujte připojení a zkuste to znovu."
+      }
+    },
+    "scopes": {
+      "profile": {
+        "title": "Vaše jméno a pracovní prostory",
+        "description": "Vaše jméno, vaše časové pásmo a pracovní prostory, do kterých patříte."
+      },
+      "time_read": {
+        "title": "Vaše pracovní dny a čas",
+        "description": "Zda je daný den pro vás pracovním dnem, státním svátkem nebo dnem volna, kolik hodin jste odpracovali a u které pracovní položky běží váš časovač."
+      },
+      "leave_read": {
+        "title": "Vaše dovolená",
+        "description": "Váš zůstatek dovolené a druh nepřítomnosti (například dovolená nebo nemoc) zapsaný na den volna."
+      },
+      "work_items_read": {
+        "title": "Vaše projekty a pracovní položky",
+        "description": "Projekty, jejichž jste členem, a pracovní položky, které v nich vidíte, včetně komentářů."
+      }
+    }
+  }
+}

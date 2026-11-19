@@ -1,0 +1,84 @@
+{
+  "agent": {
+    "consent": {
+      "page_title": "App verbinden",
+      "title": "{app} möchte sich mit Ihrem Plane-Konto verbinden",
+      "description": "Wenn Sie dies zulassen, kann {app} in Plane für Sie handeln – aber nur im unten aufgeführten Umfang.",
+      "warning_title": "Lassen Sie dies nur zu, wenn Sie es selbst gestartet haben",
+      "warning_description": "Prüfen Sie, ob das Konto unten Ihnen gehört und ob Sie {app} gerade eben um die Verbindung gebeten haben. Wenn jemand anderes Ihnen diesen Link geschickt hat, wählen Sie Abbrechen.",
+      "account_heading": "Das zu verknüpfende Konto",
+      "account_service": "Dienst",
+      "account_name": "Name",
+      "account_username": "Benutzername",
+      "account_id": "ID",
+      "plane_account_heading": "Ihr Plane-Konto",
+      "plane_account_help": "Die App handelt mit diesem Konto für Sie.",
+      "scopes_heading": "Worauf {app} Zugriff erhält",
+      "can_change": "Kann Änderungen vornehmen",
+      "allow": "Zulassen",
+      "revoke_hint": "Sie können diesen Zugriff jederzeit in Ihren Profileinstellungen unter „Verbundene Apps“ wieder entziehen.",
+      "redirecting": "Sie werden zu {app} zurückgeleitet …",
+      "continue": "Weiter",
+      "expired_title": "Dieser Link ist abgelaufen",
+      "expired_description": "Ein Link zum Verbinden einer App funktioniert nur einmal und nur wenige Minuten lang. Kehren Sie zur App zurück und fordern Sie einen neuen an.",
+      "error_title": "Das hat nicht geklappt",
+      "error_description": "Die Anfrage konnte nicht abgeschlossen werden. Versuchen Sie es erneut oder fordern Sie bei der App einen neuen Link an.",
+      "framed_title": "Diese Seite einzeln öffnen",
+      "framed_description": "Zu Ihrer Sicherheit funktioniert diese Seite nicht innerhalb einer anderen Seite. Öffnen Sie sie in einem neuen Tab, um fortzufahren.",
+      "framed_open": "In neuem Tab öffnen"
+    },
+    "connected_apps": {
+      "nav_label": "Verbundene Apps",
+      "title": "Verbundene Apps",
+      "description": "Apps, denen Sie erlaubt haben, in Plane für Sie zu handeln. Entfernen Sie alle, die Sie nicht mehr nutzen.",
+      "fields": {
+        "access": "Zugriff",
+        "linked": "Verbunden",
+        "last_used": "Zuletzt verwendet",
+        "expires": "Läuft ab"
+      },
+      "not_used_yet": "Noch nicht verwendet",
+      "no_expiry": "Nie",
+      "revoke": "Entziehen",
+      "revoke_aria": "Zugriff für {app} entziehen",
+      "revoke_title": "Zugriff für {app} entziehen?",
+      "revoke_description": "{app} funktioniert sofort nicht mehr. Sie können die App später erneut verbinden.",
+      "revoke_confirm": "Zugriff entziehen",
+      "revoking": "Wird entzogen …",
+      "revoke_success": {
+        "title": "Zugriff entzogen",
+        "message": "{app} kann nicht mehr für Sie handeln."
+      },
+      "revoke_error": {
+        "title": "Zugriff konnte nicht entzogen werden",
+        "message": "Etwas ist schiefgegangen. Bitte versuchen Sie es erneut."
+      },
+      "empty": {
+        "title": "Keine verbundenen Apps",
+        "description": "Wenn Sie eine App mit Ihrem Plane-Konto verbinden, erscheint sie hier."
+      },
+      "load_error": {
+        "title": "Verbundene Apps konnten nicht geladen werden",
+        "description": "Prüfen Sie Ihre Verbindung und versuchen Sie es erneut."
+      }
+    },
+    "scopes": {
+      "profile": {
+        "title": "Ihr Name und Ihre Arbeitsbereiche",
+        "description": "Ihr Name, Ihre Zeitzone und die Arbeitsbereiche, denen Sie angehören."
+      },
+      "time_read": {
+        "title": "Ihre Arbeitstage und Arbeitszeit",
+        "description": "Ob ein Tag für Sie ein Arbeitstag, ein Feiertag oder ein freier Tag ist, die Stunden, die Sie gearbeitet haben, und das Arbeitselement, auf dem Ihr Timer läuft."
+      },
+      "leave_read": {
+        "title": "Ihr Urlaub",
+        "description": "Ihr Urlaubssaldo und die Art der Abwesenheit (zum Beispiel Urlaub oder Krankenstand), die für einen freien Tag eingetragen ist."
+      },
+      "work_items_read": {
+        "title": "Ihre Projekte und Arbeitselemente",
+        "description": "Die Projekte, in denen Sie Mitglied sind, und die Arbeitselemente, die Sie dort sehen können, samt Kommentaren."
+      }
+    }
+  }
+}

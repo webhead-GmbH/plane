@@ -1,0 +1,136 @@
+# Copyright (c) 2023-present Plane Software, Inc. and contributors
+# SPDX-License-Identifier: AGPL-3.0-only
+# See the LICENSE file for details.
+
+"""Which work items a connected person may see, and how they are described to an app.
+
+Visibility is not re-invented here. It is the rule the rest of Plane already applies
+(`visible_issue_q`): an active member of the project sees everything in it, except
+that a guest sees only what they created unless the project lets guests see more.
+On top of that, drafts, archived items, items in archived projects and work awaiting
+triage are left out, as in the web app's own lists, and so is anything in a
+workspace the person has since left.
+
+Everything is decided at query time. Taking someone out of a project takes effect on
+that app's very next call, because there is nothing remembered to go stale.
+"""
+
+# Python imports
+import html
+import re
+
+# Django imports
+from django.conf import settings
+from django.db.models import Exists, OuterRef, Sum, Value
+from django.db.models.functions import Coalesce
+from django.utils.html import strip_tags
+
+# Module imports
+from plane.api.views.issue import visible_issue_q
+from plane.db.models import Issue, IssueWorkLog, Project, ProjectMember, WorkspaceMember
+from plane.hr.services.computation import minutes_from_seconds
+
+# Longest stretch of text from a work item or comment handed over in one piece.
+MAX_TEXT = 20000
+
+
+def visible_issues(user):
+    """The work items this person can see, as a queryset to narrow further."""
+    can_view = Issue.issue_objects.filter(id=OuterRef("id")).filter(visible_issue_q(user)).values("id")
+    still_in_workspace = WorkspaceMember.objects.filter(
+        workspace_id=OuterRef("workspace_id"), member=user, is_active=True
+    )
+    return Issue.issue_objects.filter(Exists(can_view), Exists(still_in_workspace))
+
+
+def visible_projects(user):
+    """Projects the person is an active member of, in workspaces they still belong to."""
+    member_of = ProjectMember.objects.filter(project_id=OuterRef("id"), member=user, is_active=True)
+    still_in_workspace = WorkspaceMember.objects.filter(
+        workspace_id=OuterRef("workspace_id"), member=user, is_active=True
+    )
+    return Project.objects.filter(archived_at__isnull=True).filter(Exists(member_of), Exists(still_in_workspace))
+
+
+def with_my_time(queryset, user):
+    """Annotate each work item with the seconds this person has logged on it."""
+    mine = (
+        IssueWorkLog.objects.filter(issue_id=OuterRef("id"), logged_by=user, duration__isnull=False)
+        .order_by()
+        .values("issue_id")
+        .annotate(total=Sum("duration"))
+        .values("total")
+    )
+    return queryset.annotate(my_logged_seconds=Coalesce(mine, Value(0)))
+
+
+def reference(issue):
+    """The short name people use for a work item: the project's identifier and its number."""
+    return f"{issue.project.identifier}-{issue.sequence_id}"
+
+
+def web_url(issue):
+    base = (getattr(settings, "WEB_URL", None) or getattr(settings, "APP_BASE_URL", None) or "").rstrip("/")
+    return f"{base}/{issue.workspace.slug}/browse/{reference(issue)}/" if base else None
+
+
+_DROPPED_ELEMENTS = re.compile(r"<\s*(script|style)\b[^>]*>.*?<\s*/\s*\1\s*>", re.IGNORECASE | re.DOTALL)
+_LINE_BREAKS = re.compile(r"<\s*br\s*/?\s*>", re.IGNORECASE)
+_BLOCK_ENDS = re.compile(r"<\s*/\s*(p|div|h[1-6]|li|tr|blockquote|pre|ul|ol)\s*>", re.IGNORECASE)
+_LIST_ITEM = re.compile(r"<\s*li\b[^>]*>", re.IGNORECASE)
+
+
+def plain_text(value, limit=MAX_TEXT):
+    """Markup removed, paragraphs kept apart and whitespace tidied, for text a program will read.
+
+    Scripts and styles are dropped with their contents. Paragraph and list structure is
+    kept as line breaks, because a description whose paragraphs run together reads as
+    one confused sentence. What comes back is still somebody else's words: it is the
+    app's job not to treat it as an instruction to anyone.
+    """
+    if not value:
+        return ""
+    text = _DROPPED_ELEMENTS.sub("", str(value))
+    text = _LIST_ITEM.sub("- ", _LINE_BREAKS.sub("\n", text))
+    text = _BLOCK_ENDS.sub("\n", text)
+    text = html.unescape(strip_tags(text))
+    text = re.sub(r"[ \t ]+", " ", text)
+    text = re.sub(r" *\n *", "\n", text)
+    text = re.sub(r"\n{3,}", "\n\n", text).strip()
+    return text[:limit]
+
+
+def compact(issue):
+    """A work item as a list shows it. Needs `project`, `workspace`, `state` and the prefetches below."""
+    return {
+        "id": str(issue.id),
+        "ref": reference(issue),
+        "url": web_url(issue),
+        "name": issue.name,
+        "workspace": issue.workspace.slug,
+        "project": {
+            "id": str(issue.project_id),
+            "name": issue.project.name,
+            "identifier": issue.project.identifier,
+        },
+        "state": (
+            {"id": str(issue.state_id), "name": issue.state.name, "group": issue.state.group} if issue.state else None
+        ),
+        "priority": issue.priority,
+        "start_date": issue.start_date.isoformat() if issue.start_date else None,
+        "target_date": issue.target_date.isoformat() if issue.target_date else None,
+        "estimate": issue.estimate_point.value if issue.estimate_point_id else None,
+        "assignees": [{"id": str(person.id), "display_name": person.display_name} for person in issue.assignees.all()],
+        "labels": [label.name for label in issue.labels.all()],
+        "parent": str(issue.parent_id) if issue.parent_id else None,
+        "created_at": issue.created_at.isoformat(),
+        "updated_at": issue.updated_at.isoformat(),
+        "completed_at": issue.completed_at.isoformat() if issue.completed_at else None,
+        "my_logged_minutes": minutes_from_seconds(getattr(issue, "my_logged_seconds", 0) or 0),
+    }
+
+
+def with_relations(queryset):
+    return queryset.select_related("project", "workspace", "state", "estimate_point").prefetch_related(
+        "assignees", "labels"
+    )

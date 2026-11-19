@@ -1,0 +1,84 @@
+{
+  "agent": {
+    "consent": {
+      "page_title": "Conectar um aplicativo",
+      "title": "{app} quer se conectar à sua conta do Plane",
+      "description": "Se você permitir, {app} poderá agir em seu nome no Plane, mas somente dentro do acesso listado abaixo.",
+      "warning_title": "Permita somente se foi você quem iniciou",
+      "warning_description": "Confira se a conta abaixo é sua e se você acabou de pedir que {app} se conectasse. Se outra pessoa lhe enviou este link, escolha Cancelar.",
+      "account_heading": "A conta que será vinculada",
+      "account_service": "Serviço",
+      "account_name": "Nome",
+      "account_username": "Nome de usuário",
+      "account_id": "ID",
+      "plane_account_heading": "Sua conta do Plane",
+      "plane_account_help": "O aplicativo agirá em seu nome com esta conta.",
+      "scopes_heading": "A que {app} terá acesso",
+      "can_change": "Pode fazer alterações",
+      "allow": "Permitir",
+      "revoke_hint": "Você pode retirar este acesso a qualquer momento nas configurações do seu perfil, em Aplicativos conectados.",
+      "redirecting": "Levando você de volta a {app}…",
+      "continue": "Continuar",
+      "expired_title": "Este link expirou",
+      "expired_description": "Um link para conectar um aplicativo funciona uma única vez e por apenas alguns minutos. Volte ao aplicativo e peça um novo.",
+      "error_title": "Não foi possível concluir",
+      "error_description": "Não foi possível concluir a solicitação. Tente novamente ou peça um novo link ao aplicativo.",
+      "framed_title": "Abra esta página separadamente",
+      "framed_description": "Para a sua segurança, esta página não funciona dentro de outra página. Abra-a em uma nova aba para continuar.",
+      "framed_open": "Abrir em uma nova aba"
+    },
+    "connected_apps": {
+      "nav_label": "Aplicativos conectados",
+      "title": "Aplicativos conectados",
+      "description": "Aplicativos que você permitiu agir em seu nome no Plane. Remova os que você não usa mais.",
+      "fields": {
+        "access": "Acesso",
+        "linked": "Conectado em",
+        "last_used": "Último uso",
+        "expires": "Expira em"
+      },
+      "not_used_yet": "Ainda não usado",
+      "no_expiry": "Nunca",
+      "revoke": "Revogar",
+      "revoke_aria": "Revogar o acesso de {app}",
+      "revoke_title": "Revogar o acesso de {app}?",
+      "revoke_description": "{app} deixará de funcionar imediatamente. Você poderá conectá-lo novamente depois.",
+      "revoke_confirm": "Revogar acesso",
+      "revoking": "Revogando…",
+      "revoke_success": {
+        "title": "Acesso revogado",
+        "message": "{app} não pode mais agir em seu nome."
+      },
+      "revoke_error": {
+        "title": "Não foi possível revogar o acesso",
+        "message": "Algo deu errado. Tente novamente."
+      },
+      "empty": {
+        "title": "Nenhum aplicativo conectado",
+        "description": "Quando você conectar um aplicativo à sua conta do Plane, ele aparecerá aqui."
+      },
+      "load_error": {
+        "title": "Não foi possível carregar seus aplicativos conectados",
+        "description": "Verifique sua conexão e tente novamente."
+      }
+    },
+    "scopes": {
+      "profile": {
+        "title": "Seu nome e seus espaços de trabalho",
+        "description": "Seu nome, seu fuso horário e os espaços de trabalho aos quais você pertence."
+      },
+      "time_read": {
+        "title": "Seus dias e seu tempo de trabalho",
+        "description": "Se cada dia é para você um dia útil, um feriado ou um dia de folga, as horas que você trabalhou e o item de trabalho em que o seu cronômetro está rodando."
+      },
+      "leave_read": {
+        "title": "Suas férias e licenças",
+        "description": "Seu saldo de férias e o tipo de ausência (por exemplo, férias ou atestado médico) registrada em um dia de folga."
+      },
+      "work_items_read": {
+        "title": "Seus projetos e itens de trabalho",
+        "description": "Os projetos de que você é membro e os itens de trabalho que você pode ver neles, com seus comentários."
+      }
+    }
+  }
+}

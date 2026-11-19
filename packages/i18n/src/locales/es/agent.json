@@ -1,0 +1,84 @@
+{
+  "agent": {
+    "consent": {
+      "page_title": "Conectar una aplicación",
+      "title": "{app} quiere conectarse a tu cuenta de Plane",
+      "description": "Si lo permites, {app} podrá actuar en tu nombre en Plane, pero solo dentro del acceso que se indica a continuación.",
+      "warning_title": "Permítelo solo si lo has iniciado tú",
+      "warning_description": "Comprueba que la cuenta de abajo es tuya y que acabas de pedirle a {app} que se conecte. Si otra persona te envió este enlace, elige Cancelar.",
+      "account_heading": "La cuenta que se va a vincular",
+      "account_service": "Servicio",
+      "account_name": "Nombre",
+      "account_username": "Nombre de usuario",
+      "account_id": "ID",
+      "plane_account_heading": "Tu cuenta de Plane",
+      "plane_account_help": "La aplicación actuará en tu nombre con esta cuenta.",
+      "scopes_heading": "A qué tendrá acceso {app}",
+      "can_change": "Puede hacer cambios",
+      "allow": "Permitir",
+      "revoke_hint": "Puedes retirar este acceso en cualquier momento en los ajustes de tu perfil, en Aplicaciones conectadas.",
+      "redirecting": "Volviendo a {app}…",
+      "continue": "Continuar",
+      "expired_title": "Este enlace ha caducado",
+      "expired_description": "Un enlace para conectar una aplicación solo funciona una vez y durante unos minutos. Vuelve a la aplicación y pide uno nuevo.",
+      "error_title": "No hemos podido completar la solicitud",
+      "error_description": "No se pudo completar la solicitud. Inténtalo de nuevo o pide un enlace nuevo a la aplicación.",
+      "framed_title": "Abre esta página por separado",
+      "framed_description": "Por tu seguridad, esta página no funciona dentro de otra página. Ábrela en una pestaña nueva para continuar.",
+      "framed_open": "Abrir en una pestaña nueva"
+    },
+    "connected_apps": {
+      "nav_label": "Aplicaciones conectadas",
+      "title": "Aplicaciones conectadas",
+      "description": "Aplicaciones a las que has permitido actuar en tu nombre en Plane. Elimina las que ya no uses.",
+      "fields": {
+        "access": "Acceso",
+        "linked": "Conectada",
+        "last_used": "Último uso",
+        "expires": "Caduca"
+      },
+      "not_used_yet": "Aún sin usar",
+      "no_expiry": "Nunca",
+      "revoke": "Revocar",
+      "revoke_aria": "Revocar el acceso de {app}",
+      "revoke_title": "¿Revocar el acceso de {app}?",
+      "revoke_description": "{app} dejará de funcionar de inmediato. Podrás volver a conectarla más tarde.",
+      "revoke_confirm": "Revocar acceso",
+      "revoking": "Revocando…",
+      "revoke_success": {
+        "title": "Acceso revocado",
+        "message": "{app} ya no puede actuar en tu nombre."
+      },
+      "revoke_error": {
+        "title": "No se pudo revocar el acceso",
+        "message": "Algo salió mal. Inténtalo de nuevo."
+      },
+      "empty": {
+        "title": "No hay aplicaciones conectadas",
+        "description": "Cuando conectes una aplicación a tu cuenta de Plane, aparecerá aquí."
+      },
+      "load_error": {
+        "title": "No se pudieron cargar tus aplicaciones conectadas",
+        "description": "Comprueba tu conexión e inténtalo de nuevo."
+      }
+    },
+    "scopes": {
+      "profile": {
+        "title": "Tu nombre y tus espacios de trabajo",
+        "description": "Tu nombre, tu zona horaria y los espacios de trabajo a los que perteneces."
+      },
+      "time_read": {
+        "title": "Tus días y tu tiempo de trabajo",
+        "description": "Si cada día es para ti un día laborable, un día festivo o un día libre, las horas que has trabajado y el elemento de trabajo en el que está corriendo tu temporizador."
+      },
+      "leave_read": {
+        "title": "Tus vacaciones y permisos",
+        "description": "Tu saldo de vacaciones y el tipo de ausencia (por ejemplo, vacaciones o baja por enfermedad) registrada en un día libre."
+      },
+      "work_items_read": {
+        "title": "Tus proyectos y elementos de trabajo",
+        "description": "Los proyectos de los que eres miembro y los elementos de trabajo que puedes ver en ellos, con sus comentarios."
+      }
+    }
+  }
+}

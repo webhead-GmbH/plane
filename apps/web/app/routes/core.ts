@@ -405,6 +405,14 @@ export const coreRoutes: RouteConfigEntry[] = [
     layout("./(all)/settings/profile/layout.tsx", [
       route("settings/profile/:profileTabId", "./(all)/settings/profile/[profileTabId]/page.tsx"),
     ]),
+
+    // --------------------------------------------------------------------
+    // CONNECT AN APP (the page a chat bot's link opens)
+    // --------------------------------------------------------------------
+
+    layout("./(all)/connect/agent/[requestToken]/layout.tsx", [
+      route("connect/agent/:requestToken", "./(all)/connect/agent/[requestToken]/page.tsx"),
+    ]),
   ]),
 
   // ========================================================================

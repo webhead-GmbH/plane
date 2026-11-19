@@ -1,0 +1,84 @@
+{
+  "agent": {
+    "consent": {
+      "page_title": "Pripojiť aplikáciu",
+      "title": "Aplikácia „{app}“ sa chce pripojiť k vášmu účtu Plane",
+      "description": "Ak to povolíte, aplikácia „{app}“ bude môcť v Plane konať vaším menom, ale len v rozsahu prístupu uvedenom nižšie.",
+      "warning_title": "Povoľte to len vtedy, ak ste to spustili vy sami",
+      "warning_description": "Skontrolujte, že účet nižšie patrí vám a že ste práve požiadali aplikáciu „{app}“ o pripojenie. Ak vám tento odkaz poslal niekto iný, zvoľte Zrušiť.",
+      "account_heading": "Účet, ktorý sa prepája",
+      "account_service": "Služba",
+      "account_name": "Meno",
+      "account_username": "Používateľské meno",
+      "account_id": "ID",
+      "plane_account_heading": "Váš účet Plane",
+      "plane_account_help": "Aplikácia bude konať vaším menom pod týmto účtom.",
+      "scopes_heading": "K čomu bude mať aplikácia „{app}“ prístup",
+      "can_change": "Môže vykonávať zmeny",
+      "allow": "Povoliť",
+      "revoke_hint": "Tento prístup môžete kedykoľvek odobrať v nastaveniach profilu v časti Pripojené aplikácie.",
+      "redirecting": "Vraciame vás do aplikácie „{app}“…",
+      "continue": "Pokračovať",
+      "expired_title": "Platnosť odkazu vypršala",
+      "expired_description": "Odkaz na pripojenie aplikácie funguje len raz a len niekoľko minút. Vráťte sa do aplikácie a vyžiadajte si nový.",
+      "error_title": "Nepodarilo sa to dokončiť",
+      "error_description": "Požiadavku sa nepodarilo dokončiť. Skúste to znova alebo si od aplikácie vyžiadajte nový odkaz.",
+      "framed_title": "Otvorte túto stránku samostatne",
+      "framed_description": "Z bezpečnostných dôvodov táto stránka nefunguje vo vnútri inej stránky. Na pokračovanie ju otvorte na novej karte.",
+      "framed_open": "Otvoriť na novej karte"
+    },
+    "connected_apps": {
+      "nav_label": "Pripojené aplikácie",
+      "title": "Pripojené aplikácie",
+      "description": "Aplikácie, ktorým ste povolili konať v Plane vaším menom. Odstráňte tie, ktoré už nepoužívate.",
+      "fields": {
+        "access": "Prístup",
+        "linked": "Pripojené",
+        "last_used": "Naposledy použité",
+        "expires": "Vyprší"
+      },
+      "not_used_yet": "Zatiaľ nepoužité",
+      "no_expiry": "Nikdy",
+      "revoke": "Odobrať",
+      "revoke_aria": "Odobrať prístup aplikácii „{app}“",
+      "revoke_title": "Odobrať prístup aplikácii „{app}“?",
+      "revoke_description": "Aplikácia „{app}“ okamžite prestane fungovať. Neskôr ju môžete pripojiť znova.",
+      "revoke_confirm": "Odobrať prístup",
+      "revoking": "Odoberá sa…",
+      "revoke_success": {
+        "title": "Prístup odobratý",
+        "message": "Aplikácia „{app}“ už nemôže konať vaším menom."
+      },
+      "revoke_error": {
+        "title": "Prístup sa nepodarilo odobrať",
+        "message": "Niečo sa pokazilo. Skúste to prosím znova."
+      },
+      "empty": {
+        "title": "Žiadne pripojené aplikácie",
+        "description": "Keď pripojíte aplikáciu k svojmu účtu Plane, zobrazí sa tu."
+      },
+      "load_error": {
+        "title": "Pripojené aplikácie sa nepodarilo načítať",
+        "description": "Skontrolujte pripojenie a skúste to znova."
+      }
+    },
+    "scopes": {
+      "profile": {
+        "title": "Vaše meno a pracovné priestory",
+        "description": "Vaše meno, vaše časové pásmo a pracovné priestory, do ktorých patríte."
+      },
+      "time_read": {
+        "title": "Vaše pracovné dni a čas",
+        "description": "Či je daný deň pre vás pracovným dňom, štátnym sviatkom alebo dňom voľna, koľko hodín ste odpracovali a pri ktorej pracovnej položke beží váš časovač."
+      },
+      "leave_read": {
+        "title": "Vaša dovolenka",
+        "description": "Váš zostatok dovolenky a druh neprítomnosti (napríklad dovolenka alebo choroba) zapísaný na deň voľna."
+      },
+      "work_items_read": {
+        "title": "Vaše projekty a pracovné položky",
+        "description": "Projekty, ktorých ste členom, a pracovné položky, ktoré v nich vidíte, vrátane komentárov."
+      }
+    }
+  }
+}

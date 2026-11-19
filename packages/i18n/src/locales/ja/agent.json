@@ -1,0 +1,84 @@
+{
+  "agent": {
+    "consent": {
+      "page_title": "アプリを連携する",
+      "title": "{app} がPlaneアカウントへの連携を求めています",
+      "description": "許可すると、{app} はPlane上であなたに代わって操作できます。ただし、下に挙げたアクセスの範囲に限られます。",
+      "warning_title": "ご自身で開始した場合にのみ許可してください",
+      "warning_description": "下のアカウントがご自身のものであること、そして今ちょうど {app} に連携を依頼したことを確認してください。このリンクを他の人から受け取った場合は、キャンセルを選んでください。",
+      "account_heading": "連携されるアカウント",
+      "account_service": "サービス",
+      "account_name": "名前",
+      "account_username": "ユーザー名",
+      "account_id": "ID",
+      "plane_account_heading": "あなたのPlaneアカウント",
+      "plane_account_help": "アプリはこのアカウントであなたに代わって操作します。",
+      "scopes_heading": "{app} がアクセスできる内容",
+      "can_change": "変更を加えられます",
+      "allow": "許可",
+      "revoke_hint": "このアクセスは、プロフィール設定の「連携アプリ」からいつでも取り消せます。",
+      "redirecting": "{app} に戻っています…",
+      "continue": "続ける",
+      "expired_title": "このリンクは有効期限が切れています",
+      "expired_description": "アプリを連携するためのリンクは、1回かつ数分間のみ有効です。アプリに戻って、新しいリンクを依頼してください。",
+      "error_title": "完了できませんでした",
+      "error_description": "リクエストを完了できませんでした。もう一度お試しいただくか、アプリに新しいリンクを依頼してください。",
+      "framed_title": "このページを単独で開いてください",
+      "framed_description": "安全のため、このページは別のページの中では動作しません。新しいタブで開いて続行してください。",
+      "framed_open": "新しいタブで開く"
+    },
+    "connected_apps": {
+      "nav_label": "連携アプリ",
+      "title": "連携アプリ",
+      "description": "Planeであなたに代わって操作することを許可したアプリです。使わなくなったものは削除してください。",
+      "fields": {
+        "access": "アクセス",
+        "linked": "連携日",
+        "last_used": "最終使用",
+        "expires": "有効期限"
+      },
+      "not_used_yet": "未使用",
+      "no_expiry": "なし",
+      "revoke": "取り消す",
+      "revoke_aria": "{app} のアクセスを取り消す",
+      "revoke_title": "{app} のアクセスを取り消しますか？",
+      "revoke_description": "{app} はすぐに動作しなくなります。後で再度連携することもできます。",
+      "revoke_confirm": "アクセスを取り消す",
+      "revoking": "取り消し中…",
+      "revoke_success": {
+        "title": "アクセスを取り消しました",
+        "message": "{app} はあなたに代わって操作できなくなりました。"
+      },
+      "revoke_error": {
+        "title": "アクセスを取り消せませんでした",
+        "message": "問題が発生しました。もう一度お試しください。"
+      },
+      "empty": {
+        "title": "連携アプリはありません",
+        "description": "Planeアカウントにアプリを連携すると、ここに表示されます。"
+      },
+      "load_error": {
+        "title": "連携アプリを読み込めませんでした",
+        "description": "接続を確認して、もう一度お試しください。"
+      }
+    },
+    "scopes": {
+      "profile": {
+        "title": "あなたの名前とワークスペース",
+        "description": "あなたの名前、タイムゾーン、所属しているワークスペース。"
+      },
+      "time_read": {
+        "title": "あなたの勤務日と時間",
+        "description": "各日があなたにとって勤務日・祝日・休みのどれか、働いた時間、タイマーが動いている作業項目。"
+      },
+      "leave_read": {
+        "title": "あなたの休暇",
+        "description": "休暇の残日数と、休みの日に登録された欠勤の種類（たとえば休暇や病気休暇）。"
+      },
+      "work_items_read": {
+        "title": "あなたのプロジェクトと作業項目",
+        "description": "あなたがメンバーであるプロジェクトと、その中で閲覧できる作業項目（コメントを含む）。"
+      }
+    }
+  }
+}

@@ -1,0 +1,84 @@
+{
+  "agent": {
+    "consent": {
+      "page_title": "Connecter une application",
+      "title": "{app} souhaite se connecter à votre compte Plane",
+      "description": "Si vous l’autorisez, {app} pourra agir en votre nom dans Plane, mais uniquement dans les limites d’accès indiquées ci-dessous.",
+      "warning_title": "N’autorisez cela que si vous êtes à l’origine de la demande",
+      "warning_description": "Vérifiez que le compte ci-dessous est bien le vôtre et que vous venez de demander la connexion à {app}. Si quelqu’un d’autre vous a envoyé ce lien, choisissez Annuler.",
+      "account_heading": "Le compte à associer",
+      "account_service": "Service",
+      "account_name": "Nom",
+      "account_username": "Nom d’utilisateur",
+      "account_id": "ID",
+      "plane_account_heading": "Votre compte Plane",
+      "plane_account_help": "L’application agira en votre nom avec ce compte.",
+      "scopes_heading": "À quoi {app} aura accès",
+      "can_change": "Peut effectuer des modifications",
+      "allow": "Autoriser",
+      "revoke_hint": "Vous pouvez retirer cet accès à tout moment dans les paramètres de votre profil, sous Applications connectées.",
+      "redirecting": "Retour vers {app} en cours…",
+      "continue": "Continuer",
+      "expired_title": "Ce lien a expiré",
+      "expired_description": "Un lien de connexion d’application ne fonctionne qu’une seule fois et pendant quelques minutes seulement. Retournez dans l’application et demandez-en un nouveau.",
+      "error_title": "Impossible de terminer l’opération",
+      "error_description": "La demande n’a pas pu aboutir. Réessayez, ou demandez un nouveau lien à l’application.",
+      "framed_title": "Ouvrez cette page séparément",
+      "framed_description": "Pour votre sécurité, cette page ne fonctionne pas à l’intérieur d’une autre page. Ouvrez-la dans un nouvel onglet pour continuer.",
+      "framed_open": "Ouvrir dans un nouvel onglet"
+    },
+    "connected_apps": {
+      "nav_label": "Applications connectées",
+      "title": "Applications connectées",
+      "description": "Les applications que vous avez autorisées à agir en votre nom dans Plane. Supprimez celles que vous n’utilisez plus.",
+      "fields": {
+        "access": "Accès",
+        "linked": "Connectée le",
+        "last_used": "Dernière utilisation",
+        "expires": "Expire le"
+      },
+      "not_used_yet": "Pas encore utilisée",
+      "no_expiry": "Jamais",
+      "revoke": "Révoquer",
+      "revoke_aria": "Révoquer l’accès de {app}",
+      "revoke_title": "Révoquer l’accès de {app} ?",
+      "revoke_description": "{app} cessera de fonctionner immédiatement. Vous pourrez la reconnecter plus tard.",
+      "revoke_confirm": "Révoquer l’accès",
+      "revoking": "Révocation en cours…",
+      "revoke_success": {
+        "title": "Accès révoqué",
+        "message": "{app} ne peut plus agir en votre nom."
+      },
+      "revoke_error": {
+        "title": "Impossible de révoquer l’accès",
+        "message": "Une erreur s’est produite. Veuillez réessayer."
+      },
+      "empty": {
+        "title": "Aucune application connectée",
+        "description": "Lorsque vous connectez une application à votre compte Plane, elle apparaît ici."
+      },
+      "load_error": {
+        "title": "Impossible de charger vos applications connectées",
+        "description": "Vérifiez votre connexion et réessayez."
+      }
+    },
+    "scopes": {
+      "profile": {
+        "title": "Votre nom et vos espaces de travail",
+        "description": "Votre nom, votre fuseau horaire et les espaces de travail auxquels vous appartenez."
+      },
+      "time_read": {
+        "title": "Vos jours et votre temps de travail",
+        "description": "Si chaque jour est pour vous un jour de travail, un jour férié ou un jour de congé, les heures que vous avez travaillées et l’élément de travail sur lequel votre chronomètre tourne."
+      },
+      "leave_read": {
+        "title": "Vos congés",
+        "description": "Votre solde de congés et le type d’absence (par exemple congé ou arrêt maladie) enregistré sur un jour d’absence."
+      },
+      "work_items_read": {
+        "title": "Vos projets et éléments de travail",
+        "description": "Les projets dont vous êtes membre et les éléments de travail que vous pouvez y voir, avec leurs commentaires."
+      }
+    }
+  }
+}
