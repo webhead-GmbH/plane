@@ -1,0 +1,84 @@
+{
+  "agent": {
+    "consent": {
+      "page_title": "连接应用",
+      "title": "{app} 想要连接到你的 Plane 账户",
+      "description": "如果你允许，{app} 可以在 Plane 中代表你操作，但仅限于下方列出的访问范围。",
+      "warning_title": "仅当这是你本人发起的操作时才允许",
+      "warning_description": "请确认下方的账户是你自己的，并且你刚刚请求 {app} 进行连接。如果这个链接是别人发给你的，请选择取消。",
+      "account_heading": "将要关联的账户",
+      "account_service": "服务",
+      "account_name": "名称",
+      "account_username": "用户名",
+      "account_id": "ID",
+      "plane_account_heading": "你的 Plane 账户",
+      "plane_account_help": "该应用将使用此账户代表你操作。",
+      "scopes_heading": "{app} 将可以访问",
+      "can_change": "可进行更改",
+      "allow": "允许",
+      "revoke_hint": "你可以随时在个人资料设置的“已连接的应用”中收回此访问权限。",
+      "redirecting": "正在带你返回 {app}…",
+      "continue": "继续",
+      "expired_title": "此链接已过期",
+      "expired_description": "连接应用的链接只能使用一次，且仅在几分钟内有效。请返回该应用并重新获取链接。",
+      "error_title": "无法完成此操作",
+      "error_description": "请求未能完成。请重试，或向该应用重新获取链接。",
+      "framed_title": "请单独打开此页面",
+      "framed_description": "为了你的安全，此页面无法在其他页面内使用。请在新标签页中打开以继续。",
+      "framed_open": "在新标签页中打开"
+    },
+    "connected_apps": {
+      "nav_label": "已连接的应用",
+      "title": "已连接的应用",
+      "description": "你已允许其在 Plane 中代表你操作的应用。请移除不再使用的应用。",
+      "fields": {
+        "access": "访问权限",
+        "linked": "连接时间",
+        "last_used": "上次使用",
+        "expires": "到期时间"
+      },
+      "not_used_yet": "尚未使用",
+      "no_expiry": "永不",
+      "revoke": "撤销",
+      "revoke_aria": "撤销 {app} 的访问权限",
+      "revoke_title": "撤销 {app} 的访问权限？",
+      "revoke_description": "{app} 将立即停止工作。你之后可以重新连接它。",
+      "revoke_confirm": "撤销访问权限",
+      "revoking": "正在撤销…",
+      "revoke_success": {
+        "title": "已撤销访问权限",
+        "message": "{app} 无法再代表你操作。"
+      },
+      "revoke_error": {
+        "title": "无法撤销访问权限",
+        "message": "出了点问题，请重试。"
+      },
+      "empty": {
+        "title": "没有已连接的应用",
+        "description": "将应用连接到你的 Plane 账户后，它会显示在这里。"
+      },
+      "load_error": {
+        "title": "无法加载已连接的应用",
+        "description": "请检查网络连接后重试。"
+      }
+    },
+    "scopes": {
+      "profile": {
+        "title": "你的姓名和工作区",
+        "description": "你的姓名、时区，以及你所属的工作区。"
+      },
+      "time_read": {
+        "title": "你的工作日和时间",
+        "description": "每一天对你来说是工作日、法定节假日还是休息日，你已工作的小时数，以及你的计时器正在计时的工作项。"
+      },
+      "leave_read": {
+        "title": "你的休假",
+        "description": "你的休假余额，以及登记在休息日上的缺勤类型（例如休假或病假）。"
+      },
+      "work_items_read": {
+        "title": "你的项目和工作项",
+        "description": "你所在的项目，以及你可以在其中查看的工作项（含评论）。"
+      }
+    }
+  }
+}

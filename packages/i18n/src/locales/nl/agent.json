@@ -1,0 +1,84 @@
+{
+  "agent": {
+    "consent": {
+      "page_title": "Een app koppelen",
+      "title": "{app} wil verbinding maken met je Plane-account",
+      "description": "Als je dit toestaat, kan {app} in Plane namens jou handelen, maar alleen binnen de toegang die hieronder staat.",
+      "warning_title": "Sta dit alleen toe als je het zelf hebt gestart",
+      "warning_description": "Controleer of het account hieronder van jou is en of je {app} zojuist hebt gevraagd om te koppelen. Heeft iemand anders je deze link gestuurd, kies dan Annuleren.",
+      "account_heading": "Het account dat wordt gekoppeld",
+      "account_service": "Dienst",
+      "account_name": "Naam",
+      "account_username": "Gebruikersnaam",
+      "account_id": "ID",
+      "plane_account_heading": "Je Plane-account",
+      "plane_account_help": "De app handelt namens jou met dit account.",
+      "scopes_heading": "Waartoe {app} toegang krijgt",
+      "can_change": "Kan wijzigingen aanbrengen",
+      "allow": "Toestaan",
+      "revoke_hint": "Je kunt deze toegang op elk moment intrekken in je profielinstellingen, onder Gekoppelde apps.",
+      "redirecting": "Je gaat terug naar {app}…",
+      "continue": "Doorgaan",
+      "expired_title": "Deze link is verlopen",
+      "expired_description": "Een link om een app te koppelen werkt maar één keer en slechts een paar minuten. Ga terug naar de app en vraag een nieuwe aan.",
+      "error_title": "Dit is niet gelukt",
+      "error_description": "De aanvraag kon niet worden voltooid. Probeer het opnieuw of vraag de app om een nieuwe link.",
+      "framed_title": "Open deze pagina apart",
+      "framed_description": "Voor je veiligheid werkt deze pagina niet binnen een andere pagina. Open hem in een nieuw tabblad om door te gaan.",
+      "framed_open": "Openen in een nieuw tabblad"
+    },
+    "connected_apps": {
+      "nav_label": "Gekoppelde apps",
+      "title": "Gekoppelde apps",
+      "description": "Apps die je hebt toegestaan om in Plane namens jou te handelen. Verwijder de apps die je niet meer gebruikt.",
+      "fields": {
+        "access": "Toegang",
+        "linked": "Gekoppeld",
+        "last_used": "Laatst gebruikt",
+        "expires": "Verloopt"
+      },
+      "not_used_yet": "Nog niet gebruikt",
+      "no_expiry": "Nooit",
+      "revoke": "Intrekken",
+      "revoke_aria": "Toegang van {app} intrekken",
+      "revoke_title": "Toegang van {app} intrekken?",
+      "revoke_description": "{app} werkt meteen niet meer. Je kunt de app later opnieuw koppelen.",
+      "revoke_confirm": "Toegang intrekken",
+      "revoking": "Bezig met intrekken…",
+      "revoke_success": {
+        "title": "Toegang ingetrokken",
+        "message": "{app} kan niet meer namens jou handelen."
+      },
+      "revoke_error": {
+        "title": "Toegang intrekken is niet gelukt",
+        "message": "Er is iets misgegaan. Probeer het opnieuw."
+      },
+      "empty": {
+        "title": "Geen gekoppelde apps",
+        "description": "Als je een app aan je Plane-account koppelt, verschijnt die hier."
+      },
+      "load_error": {
+        "title": "Je gekoppelde apps konden niet worden geladen",
+        "description": "Controleer je verbinding en probeer het opnieuw."
+      }
+    },
+    "scopes": {
+      "profile": {
+        "title": "Je naam en werkruimtes",
+        "description": "Je naam, je tijdzone en de werkruimtes waartoe je behoort."
+      },
+      "time_read": {
+        "title": "Je werkdagen en werktijd",
+        "description": "Of een dag voor jou een werkdag, een feestdag of een vrije dag is, de uren die je hebt gewerkt en het werkitem waarop je timer loopt."
+      },
+      "leave_read": {
+        "title": "Je verlof",
+        "description": "Je verlofsaldo en het soort afwezigheid (bijvoorbeeld vakantie of ziekte) dat op een vrije dag is geboekt."
+      },
+      "work_items_read": {
+        "title": "Je projecten en werkitems",
+        "description": "De projecten waarvan je lid bent en de werkitems die je daarin kunt zien, met hun reacties."
+      }
+    }
+  }
+}

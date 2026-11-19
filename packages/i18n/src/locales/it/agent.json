@@ -1,0 +1,84 @@
+{
+  "agent": {
+    "consent": {
+      "page_title": "Collega un’app",
+      "title": "{app} vuole collegarsi al tuo account Plane",
+      "description": "Se lo consenti, {app} potrà agire per tuo conto in Plane, ma solo entro l’accesso elencato qui sotto.",
+      "warning_title": "Consentilo solo se l’hai avviato tu",
+      "warning_description": "Verifica che l’account qui sotto sia tuo e che tu abbia appena chiesto a {app} di collegarsi. Se questo link ti è stato inviato da qualcun altro, scegli Annulla.",
+      "account_heading": "L’account da collegare",
+      "account_service": "Servizio",
+      "account_name": "Nome",
+      "account_username": "Nome utente",
+      "account_id": "ID",
+      "plane_account_heading": "Il tuo account Plane",
+      "plane_account_help": "L’app agirà per tuo conto con questo account.",
+      "scopes_heading": "A cosa avrà accesso {app}",
+      "can_change": "Può apportare modifiche",
+      "allow": "Consenti",
+      "revoke_hint": "Puoi revocare questo accesso in qualsiasi momento dalle impostazioni del profilo, in App collegate.",
+      "redirecting": "Ti riportiamo su {app}…",
+      "continue": "Continua",
+      "expired_title": "Questo link è scaduto",
+      "expired_description": "Un link per collegare un’app funziona una sola volta e solo per pochi minuti. Torna all’app e chiedine uno nuovo.",
+      "error_title": "Non è stato possibile completare l’operazione",
+      "error_description": "La richiesta non è stata completata. Riprova oppure chiedi un nuovo link all’app.",
+      "framed_title": "Apri questa pagina da sola",
+      "framed_description": "Per la tua sicurezza, questa pagina non funziona all’interno di un’altra pagina. Aprila in una nuova scheda per continuare.",
+      "framed_open": "Apri in una nuova scheda"
+    },
+    "connected_apps": {
+      "nav_label": "App collegate",
+      "title": "App collegate",
+      "description": "Le app a cui hai consentito di agire per tuo conto in Plane. Rimuovi quelle che non usi più.",
+      "fields": {
+        "access": "Accesso",
+        "linked": "Collegata il",
+        "last_used": "Ultimo utilizzo",
+        "expires": "Scade il"
+      },
+      "not_used_yet": "Non ancora usata",
+      "no_expiry": "Mai",
+      "revoke": "Revoca",
+      "revoke_aria": "Revoca l’accesso di {app}",
+      "revoke_title": "Revocare l’accesso di {app}?",
+      "revoke_description": "{app} smetterà di funzionare subito. Potrai ricollegarla in seguito.",
+      "revoke_confirm": "Revoca accesso",
+      "revoking": "Revoca in corso…",
+      "revoke_success": {
+        "title": "Accesso revocato",
+        "message": "{app} non può più agire per tuo conto."
+      },
+      "revoke_error": {
+        "title": "Impossibile revocare l’accesso",
+        "message": "Qualcosa è andato storto. Riprova."
+      },
+      "empty": {
+        "title": "Nessuna app collegata",
+        "description": "Quando colleghi un’app al tuo account Plane, comparirà qui."
+      },
+      "load_error": {
+        "title": "Impossibile caricare le tue app collegate",
+        "description": "Controlla la connessione e riprova."
+      }
+    },
+    "scopes": {
+      "profile": {
+        "title": "Il tuo nome e i tuoi spazi di lavoro",
+        "description": "Il tuo nome, il tuo fuso orario e gli spazi di lavoro a cui appartieni."
+      },
+      "time_read": {
+        "title": "I tuoi giorni e il tuo tempo di lavoro",
+        "description": "Se ogni giorno è per te lavorativo, festivo o di riposo, le ore che hai lavorato e l’elemento di lavoro su cui è in corso il tuo timer."
+      },
+      "leave_read": {
+        "title": "Le tue ferie e i tuoi permessi",
+        "description": "Il tuo saldo ferie e il tipo di assenza (ad esempio ferie o malattia) registrata in un giorno di riposo."
+      },
+      "work_items_read": {
+        "title": "I tuoi progetti e i tuoi elementi di lavoro",
+        "description": "I progetti di cui sei membro e gli elementi di lavoro che puoi vedere al loro interno, con i relativi commenti."
+      }
+    }
+  }
+}

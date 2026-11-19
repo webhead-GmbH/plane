@@ -1,0 +1,84 @@
+{
+  "agent": {
+    "consent": {
+      "page_title": "앱 연결",
+      "title": "{app}에서 Plane 계정에 연결하려고 합니다",
+      "description": "허용하면 {app}이(가) Plane에서 사용자를 대신해 작업할 수 있습니다. 단, 아래에 나열된 접근 범위 안에서만 가능합니다.",
+      "warning_title": "직접 시작한 경우에만 허용하세요",
+      "warning_description": "아래 계정이 본인 것이고 방금 {app}에 연결을 요청했는지 확인하세요. 다른 사람이 이 링크를 보냈다면 취소를 선택하세요.",
+      "account_heading": "연결될 계정",
+      "account_service": "서비스",
+      "account_name": "이름",
+      "account_username": "사용자 이름",
+      "account_id": "ID",
+      "plane_account_heading": "내 Plane 계정",
+      "plane_account_help": "앱이 이 계정으로 사용자를 대신해 작업합니다.",
+      "scopes_heading": "{app}이(가) 접근할 수 있는 항목",
+      "can_change": "변경할 수 있음",
+      "allow": "허용",
+      "revoke_hint": "이 접근 권한은 프로필 설정의 연결된 앱에서 언제든지 해제할 수 있습니다.",
+      "redirecting": "{app}(으)로 돌아가는 중입니다…",
+      "continue": "계속",
+      "expired_title": "이 링크가 만료되었습니다",
+      "expired_description": "앱 연결 링크는 한 번만, 몇 분 동안만 사용할 수 있습니다. 앱으로 돌아가 새 링크를 요청하세요.",
+      "error_title": "완료하지 못했습니다",
+      "error_description": "요청을 완료하지 못했습니다. 다시 시도하거나 앱에 새 링크를 요청하세요.",
+      "framed_title": "이 페이지를 따로 여세요",
+      "framed_description": "안전을 위해 이 페이지는 다른 페이지 안에서 작동하지 않습니다. 새 탭에서 열어 계속하세요.",
+      "framed_open": "새 탭에서 열기"
+    },
+    "connected_apps": {
+      "nav_label": "연결된 앱",
+      "title": "연결된 앱",
+      "description": "Plane에서 사용자를 대신해 작업하도록 허용한 앱입니다. 더 이상 사용하지 않는 앱은 제거하세요.",
+      "fields": {
+        "access": "접근 권한",
+        "linked": "연결일",
+        "last_used": "마지막 사용",
+        "expires": "만료"
+      },
+      "not_used_yet": "아직 사용 안 함",
+      "no_expiry": "없음",
+      "revoke": "해제",
+      "revoke_aria": "{app}의 접근 권한 해제",
+      "revoke_title": "{app}의 접근 권한을 해제할까요?",
+      "revoke_description": "{app}이(가) 즉시 작동을 멈춥니다. 나중에 다시 연결할 수 있습니다.",
+      "revoke_confirm": "접근 권한 해제",
+      "revoking": "해제하는 중…",
+      "revoke_success": {
+        "title": "접근 권한을 해제했습니다",
+        "message": "{app}이(가) 더 이상 사용자를 대신해 작업할 수 없습니다."
+      },
+      "revoke_error": {
+        "title": "접근 권한을 해제하지 못했습니다",
+        "message": "문제가 발생했습니다. 다시 시도해 주세요."
+      },
+      "empty": {
+        "title": "연결된 앱이 없습니다",
+        "description": "Plane 계정에 앱을 연결하면 여기에 표시됩니다."
+      },
+      "load_error": {
+        "title": "연결된 앱을 불러오지 못했습니다",
+        "description": "연결 상태를 확인하고 다시 시도하세요."
+      }
+    },
+    "scopes": {
+      "profile": {
+        "title": "내 이름과 작업 공간",
+        "description": "내 이름, 시간대, 그리고 내가 속한 작업 공간."
+      },
+      "time_read": {
+        "title": "내 근무일과 시간",
+        "description": "각 날짜가 나에게 근무일, 공휴일, 휴일 중 무엇인지, 내가 일한 시간, 그리고 내 타이머가 실행 중인 작업 항목."
+      },
+      "leave_read": {
+        "title": "내 휴가",
+        "description": "내 휴가 잔여일과, 휴일에 등록된 부재 유형(예: 휴가 또는 병가)."
+      },
+      "work_items_read": {
+        "title": "내 프로젝트와 작업 항목",
+        "description": "내가 멤버인 프로젝트와 그 안에서 볼 수 있는 작업 항목(댓글 포함)."
+      }
+    }
+  }
+}

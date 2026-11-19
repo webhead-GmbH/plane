@@ -112,6 +112,7 @@ INSTALLED_APPS = [
     "plane.license",
     "plane.hr",
     "plane.gdrive",
+    "plane.agent",
     "plane.api",
     "plane.authentication",
     # Third-party things
@@ -408,6 +409,8 @@ CELERY_IMPORTS = (
     # employee time and absence
     "plane.hr.bgtasks.timer_sweeper",
     "plane.hr.bgtasks.ledger_rebuild",
+    # connected apps (chat bots and the like)
+    "plane.agent.tasks",
     # management tasks
     "plane.bgtasks.dummy_data_task",
     # issue version tasks

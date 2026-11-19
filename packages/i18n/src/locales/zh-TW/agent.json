@@ -1,0 +1,84 @@
+{
+  "agent": {
+    "consent": {
+      "page_title": "連接應用程式",
+      "title": "{app} 想要連接到你的 Plane 帳號",
+      "description": "如果你允許，{app} 可以在 Plane 中代表你操作，但僅限於下方列出的存取範圍。",
+      "warning_title": "僅在這是你本人發起的操作時才允許",
+      "warning_description": "請確認下方的帳號是你自己的，並且你剛剛要求 {app} 進行連接。如果這個連結是別人傳給你的，請選擇取消。",
+      "account_heading": "即將關聯的帳號",
+      "account_service": "服務",
+      "account_name": "名稱",
+      "account_username": "使用者名稱",
+      "account_id": "ID",
+      "plane_account_heading": "你的 Plane 帳號",
+      "plane_account_help": "此應用程式將使用這個帳號代表你操作。",
+      "scopes_heading": "{app} 將可以存取",
+      "can_change": "可進行變更",
+      "allow": "允許",
+      "revoke_hint": "你可以隨時在個人資料設定的「已連接的應用程式」中收回此存取權限。",
+      "redirecting": "正在帶你返回 {app}…",
+      "continue": "繼續",
+      "expired_title": "此連結已過期",
+      "expired_description": "連接應用程式的連結只能使用一次，且僅在幾分鐘內有效。請返回該應用程式並重新取得連結。",
+      "error_title": "無法完成此操作",
+      "error_description": "請求未能完成。請重試，或向該應用程式重新取得連結。",
+      "framed_title": "請單獨開啟此頁面",
+      "framed_description": "為了你的安全，此頁面無法在其他頁面內使用。請在新分頁中開啟以繼續。",
+      "framed_open": "在新分頁中開啟"
+    },
+    "connected_apps": {
+      "nav_label": "已連接的應用程式",
+      "title": "已連接的應用程式",
+      "description": "你已允許其在 Plane 中代表你操作的應用程式。請移除不再使用的應用程式。",
+      "fields": {
+        "access": "存取權限",
+        "linked": "連接時間",
+        "last_used": "上次使用",
+        "expires": "到期時間"
+      },
+      "not_used_yet": "尚未使用",
+      "no_expiry": "永不",
+      "revoke": "撤銷",
+      "revoke_aria": "撤銷 {app} 的存取權限",
+      "revoke_title": "撤銷 {app} 的存取權限？",
+      "revoke_description": "{app} 將立即停止運作。你之後可以重新連接它。",
+      "revoke_confirm": "撤銷存取權限",
+      "revoking": "正在撤銷…",
+      "revoke_success": {
+        "title": "已撤銷存取權限",
+        "message": "{app} 無法再代表你操作。"
+      },
+      "revoke_error": {
+        "title": "無法撤銷存取權限",
+        "message": "發生了一些問題，請重試。"
+      },
+      "empty": {
+        "title": "沒有已連接的應用程式",
+        "description": "將應用程式連接到你的 Plane 帳號後，它會顯示在這裡。"
+      },
+      "load_error": {
+        "title": "無法載入已連接的應用程式",
+        "description": "請檢查網路連線後重試。"
+      }
+    },
+    "scopes": {
+      "profile": {
+        "title": "你的姓名和工作區",
+        "description": "你的姓名、時區，以及你所屬的工作區。"
+      },
+      "time_read": {
+        "title": "你的工作日和時間",
+        "description": "每一天對你來說是工作日、國定假日還是休息日，你已工作的小時數，以及你的計時器正在計時的工作事項。"
+      },
+      "leave_read": {
+        "title": "你的休假",
+        "description": "你的休假餘額，以及登記在休息日上的缺勤類型（例如休假或病假）。"
+      },
+      "work_items_read": {
+        "title": "你的專案和工作事項",
+        "description": "你所在的專案，以及你可以在其中檢視的工作事項（含留言）。"
+      }
+    }
+  }
+}

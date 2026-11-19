@@ -1,0 +1,84 @@
+{
+  "agent": {
+    "consent": {
+      "page_title": "Connect an app",
+      "title": "{app} wants to connect to your Plane account",
+      "description": "If you allow this, {app} can act for you in Plane, but only within the access listed below.",
+      "warning_title": "Only allow this if you started it yourself",
+      "warning_description": "Check that the account below is yours and that you asked {app} to connect just now. If someone else sent you this link, choose Cancel.",
+      "account_heading": "The account being linked",
+      "account_service": "Service",
+      "account_name": "Name",
+      "account_username": "Username",
+      "account_id": "ID",
+      "plane_account_heading": "Your Plane account",
+      "plane_account_help": "The app will act for you as this account.",
+      "scopes_heading": "What {app} will have access to",
+      "can_change": "Can make changes",
+      "allow": "Allow",
+      "revoke_hint": "You can take this access back at any time in your profile settings, under Connected apps.",
+      "redirecting": "Taking you back to {app}…",
+      "continue": "Continue",
+      "expired_title": "This link has expired",
+      "expired_description": "A link to connect an app works once and only for a few minutes. Go back to the app and ask for a new one.",
+      "error_title": "We could not complete this",
+      "error_description": "The request could not be completed. Try again, or ask the app for a new link.",
+      "framed_title": "Open this page on its own",
+      "framed_description": "For your safety, this page does not work inside another page. Open it in a new tab to continue.",
+      "framed_open": "Open in a new tab"
+    },
+    "connected_apps": {
+      "nav_label": "Connected apps",
+      "title": "Connected apps",
+      "description": "Apps you have allowed to act for you in Plane. Remove any you no longer use.",
+      "fields": {
+        "access": "Access",
+        "linked": "Linked",
+        "last_used": "Last used",
+        "expires": "Expires"
+      },
+      "not_used_yet": "Not used yet",
+      "no_expiry": "Never",
+      "revoke": "Revoke",
+      "revoke_aria": "Revoke access for {app}",
+      "revoke_title": "Revoke access for {app}?",
+      "revoke_description": "{app} will stop working immediately. You can connect it again later.",
+      "revoke_confirm": "Revoke access",
+      "revoking": "Revoking…",
+      "revoke_success": {
+        "title": "Access revoked",
+        "message": "{app} can no longer act for you."
+      },
+      "revoke_error": {
+        "title": "Could not revoke access",
+        "message": "Something went wrong. Please try again."
+      },
+      "empty": {
+        "title": "No connected apps",
+        "description": "When you connect an app to your Plane account, it appears here."
+      },
+      "load_error": {
+        "title": "Could not load your connected apps",
+        "description": "Check your connection and try again."
+      }
+    },
+    "scopes": {
+      "profile": {
+        "title": "Your name and workspaces",
+        "description": "Your name, your time zone and the workspaces you belong to."
+      },
+      "time_read": {
+        "title": "Your working days and time",
+        "description": "Whether each day is a working day, a public holiday or a day off for you, the hours you have worked, and the work item your timer is running on."
+      },
+      "leave_read": {
+        "title": "Your leave",
+        "description": "Your leave balance, and the kind of absence (for example holiday or sick leave) booked on a day off."
+      },
+      "work_items_read": {
+        "title": "Your projects and work items",
+        "description": "The projects you are a member of and the work items you can see in them, with their comments."
+      }
+    }
+  }
+}

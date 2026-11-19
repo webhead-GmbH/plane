@@ -1,0 +1,84 @@
+{
+  "agent": {
+    "consent": {
+      "page_title": "Kết nối ứng dụng",
+      "title": "{app} muốn kết nối với tài khoản Plane của bạn",
+      "description": "Nếu bạn cho phép, {app} có thể thay bạn thực hiện thao tác trong Plane, nhưng chỉ trong phạm vi quyền truy cập được liệt kê bên dưới.",
+      "warning_title": "Chỉ cho phép nếu chính bạn đã bắt đầu việc này",
+      "warning_description": "Hãy kiểm tra tài khoản bên dưới là của bạn và bạn vừa yêu cầu {app} kết nối. Nếu người khác gửi cho bạn liên kết này, hãy chọn Hủy.",
+      "account_heading": "Tài khoản sẽ được liên kết",
+      "account_service": "Dịch vụ",
+      "account_name": "Tên",
+      "account_username": "Tên người dùng",
+      "account_id": "ID",
+      "plane_account_heading": "Tài khoản Plane của bạn",
+      "plane_account_help": "Ứng dụng sẽ thay bạn thực hiện thao tác bằng tài khoản này.",
+      "scopes_heading": "{app} sẽ có quyền truy cập vào",
+      "can_change": "Có thể thực hiện thay đổi",
+      "allow": "Cho phép",
+      "revoke_hint": "Bạn có thể thu hồi quyền truy cập này bất cứ lúc nào trong cài đặt hồ sơ, ở mục Ứng dụng đã kết nối.",
+      "redirecting": "Đang đưa bạn quay lại {app}…",
+      "continue": "Tiếp tục",
+      "expired_title": "Liên kết này đã hết hạn",
+      "expired_description": "Liên kết kết nối ứng dụng chỉ dùng được một lần và chỉ trong vài phút. Hãy quay lại ứng dụng và yêu cầu một liên kết mới.",
+      "error_title": "Không thể hoàn tất",
+      "error_description": "Không thể hoàn tất yêu cầu. Hãy thử lại hoặc yêu cầu ứng dụng cấp liên kết mới.",
+      "framed_title": "Hãy mở trang này riêng",
+      "framed_description": "Vì an toàn của bạn, trang này không hoạt động bên trong một trang khác. Hãy mở trong thẻ mới để tiếp tục.",
+      "framed_open": "Mở trong thẻ mới"
+    },
+    "connected_apps": {
+      "nav_label": "Ứng dụng đã kết nối",
+      "title": "Ứng dụng đã kết nối",
+      "description": "Các ứng dụng bạn đã cho phép thay bạn thực hiện thao tác trong Plane. Hãy gỡ những ứng dụng bạn không còn dùng.",
+      "fields": {
+        "access": "Quyền truy cập",
+        "linked": "Đã kết nối",
+        "last_used": "Dùng lần cuối",
+        "expires": "Hết hạn"
+      },
+      "not_used_yet": "Chưa sử dụng",
+      "no_expiry": "Không bao giờ",
+      "revoke": "Thu hồi",
+      "revoke_aria": "Thu hồi quyền truy cập của {app}",
+      "revoke_title": "Thu hồi quyền truy cập của {app}?",
+      "revoke_description": "{app} sẽ ngừng hoạt động ngay lập tức. Bạn có thể kết nối lại sau.",
+      "revoke_confirm": "Thu hồi quyền truy cập",
+      "revoking": "Đang thu hồi…",
+      "revoke_success": {
+        "title": "Đã thu hồi quyền truy cập",
+        "message": "{app} không còn có thể thay bạn thực hiện thao tác."
+      },
+      "revoke_error": {
+        "title": "Không thể thu hồi quyền truy cập",
+        "message": "Đã xảy ra lỗi. Vui lòng thử lại."
+      },
+      "empty": {
+        "title": "Chưa có ứng dụng nào được kết nối",
+        "description": "Khi bạn kết nối một ứng dụng với tài khoản Plane, ứng dụng đó sẽ hiển thị ở đây."
+      },
+      "load_error": {
+        "title": "Không thể tải các ứng dụng đã kết nối",
+        "description": "Hãy kiểm tra kết nối của bạn và thử lại."
+      }
+    },
+    "scopes": {
+      "profile": {
+        "title": "Tên và không gian làm việc của bạn",
+        "description": "Tên của bạn, múi giờ của bạn và các không gian làm việc bạn tham gia."
+      },
+      "time_read": {
+        "title": "Ngày và thời gian làm việc của bạn",
+        "description": "Mỗi ngày với bạn là ngày làm việc, ngày lễ hay ngày nghỉ, số giờ bạn đã làm, và mục công việc mà bộ đếm giờ của bạn đang chạy."
+      },
+      "leave_read": {
+        "title": "Ngày phép của bạn",
+        "description": "Số ngày phép còn lại của bạn và loại vắng mặt (ví dụ nghỉ phép hoặc nghỉ ốm) được ghi vào một ngày nghỉ."
+      },
+      "work_items_read": {
+        "title": "Dự án và mục công việc của bạn",
+        "description": "Các dự án bạn là thành viên và các mục công việc bạn có thể xem trong đó, kèm bình luận."
+      }
+    }
+  }
+}

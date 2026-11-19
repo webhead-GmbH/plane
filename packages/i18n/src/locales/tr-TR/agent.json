@@ -1,0 +1,84 @@
+{
+  "agent": {
+    "consent": {
+      "page_title": "Uygulama bağla",
+      "title": "{app}, Plane hesabınıza bağlanmak istiyor",
+      "description": "İzin verirseniz {app}, Plane’de sizin adınıza işlem yapabilir; ancak yalnızca aşağıda listelenen erişim kapsamında.",
+      "warning_title": "Yalnızca bunu siz başlattıysanız izin verin",
+      "warning_description": "Aşağıdaki hesabın size ait olduğunu ve {app} uygulamasından az önce bağlanmasını istediğinizi kontrol edin. Bu bağlantıyı size başka biri gönderdiyse İptal’i seçin.",
+      "account_heading": "Bağlanan hesap",
+      "account_service": "Hizmet",
+      "account_name": "Ad",
+      "account_username": "Kullanıcı adı",
+      "account_id": "ID",
+      "plane_account_heading": "Plane hesabınız",
+      "plane_account_help": "Uygulama, bu hesapla sizin adınıza işlem yapacak.",
+      "scopes_heading": "{app} neye erişebilecek",
+      "can_change": "Değişiklik yapabilir",
+      "allow": "İzin ver",
+      "revoke_hint": "Bu erişimi istediğiniz zaman profil ayarlarınızdaki Bağlı uygulamalar bölümünden geri alabilirsiniz.",
+      "redirecting": "Sizi {app} uygulamasına geri götürüyoruz…",
+      "continue": "Devam et",
+      "expired_title": "Bu bağlantının süresi doldu",
+      "expired_description": "Uygulama bağlama bağlantısı yalnızca bir kez ve birkaç dakika boyunca çalışır. Uygulamaya dönün ve yeni bir bağlantı isteyin.",
+      "error_title": "Bu işlem tamamlanamadı",
+      "error_description": "İstek tamamlanamadı. Tekrar deneyin veya uygulamadan yeni bir bağlantı isteyin.",
+      "framed_title": "Bu sayfayı ayrı açın",
+      "framed_description": "Güvenliğiniz için bu sayfa başka bir sayfanın içinde çalışmaz. Devam etmek için yeni sekmede açın.",
+      "framed_open": "Yeni sekmede aç"
+    },
+    "connected_apps": {
+      "nav_label": "Bağlı uygulamalar",
+      "title": "Bağlı uygulamalar",
+      "description": "Plane’de sizin adınıza işlem yapmasına izin verdiğiniz uygulamalar. Artık kullanmadıklarınızı kaldırın.",
+      "fields": {
+        "access": "Erişim",
+        "linked": "Bağlanma",
+        "last_used": "Son kullanım",
+        "expires": "Bitiş"
+      },
+      "not_used_yet": "Henüz kullanılmadı",
+      "no_expiry": "Hiçbir zaman",
+      "revoke": "Geri al",
+      "revoke_aria": "{app} erişimini geri al",
+      "revoke_title": "{app} erişimi geri alınsın mı?",
+      "revoke_description": "{app} hemen çalışmayı bırakacak. Daha sonra yeniden bağlayabilirsiniz.",
+      "revoke_confirm": "Erişimi geri al",
+      "revoking": "Geri alınıyor…",
+      "revoke_success": {
+        "title": "Erişim geri alındı",
+        "message": "{app} artık sizin adınıza işlem yapamaz."
+      },
+      "revoke_error": {
+        "title": "Erişim geri alınamadı",
+        "message": "Bir şeyler ters gitti. Lütfen tekrar deneyin."
+      },
+      "empty": {
+        "title": "Bağlı uygulama yok",
+        "description": "Plane hesabınıza bir uygulama bağladığınızda burada görünür."
+      },
+      "load_error": {
+        "title": "Bağlı uygulamalarınız yüklenemedi",
+        "description": "Bağlantınızı kontrol edip tekrar deneyin."
+      }
+    },
+    "scopes": {
+      "profile": {
+        "title": "Adınız ve çalışma alanlarınız",
+        "description": "Adınız, saat diliminiz ve üyesi olduğunuz çalışma alanları."
+      },
+      "time_read": {
+        "title": "Çalışma günleriniz ve süreniz",
+        "description": "Her günün sizin için iş günü, resmi tatil veya izin günü olup olmadığı, çalıştığınız saatler ve zamanlayıcınızın çalıştığı iş öğesi."
+      },
+      "leave_read": {
+        "title": "İzinleriniz",
+        "description": "İzin bakiyeniz ve izinli bir güne kaydedilen yokluk türü (örneğin yıllık izin veya hastalık izni)."
+      },
+      "work_items_read": {
+        "title": "Projeleriniz ve iş öğeleriniz",
+        "description": "Üyesi olduğunuz projeler ve bunlarda görebildiğiniz iş öğeleri, yorumlarıyla birlikte."
+      }
+    }
+  }
+}
