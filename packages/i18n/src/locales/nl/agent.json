@@ -15,6 +15,7 @@
       "plane_account_help": "De app handelt namens jou met dit account.",
       "scopes_heading": "Waartoe {app} toegang krijgt",
       "can_change": "Kan wijzigingen aanbrengen",
+      "sees_others": "Toont gegevens van anderen",
       "allow": "Toestaan",
       "revoke_hint": "Je kunt deze toegang op elk moment intrekken in je profielinstellingen, onder Gekoppelde apps.",
       "redirecting": "Je gaat terug naar {app}…",
@@ -86,6 +87,10 @@
       "time_write": {
         "title": "Je tijd bijhouden",
         "description": "Je timer starten en stoppen en uren aan je tijd toevoegen, namens jou."
+      },
+      "team_read": {
+        "title": "De dagen, uren en werkdruk van je team",
+        "description": "Voor de mensen in je team: op welke dagen ze werken, hoeveel uur ze hebben gewerkt en hoeveel openstaand werk ze hebben. Nooit de reden van een vrije dag. Werkt alleen zolang je in Plane het team beheert."
       }
     }
   }

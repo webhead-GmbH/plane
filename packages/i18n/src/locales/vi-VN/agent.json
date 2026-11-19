@@ -15,6 +15,7 @@
       "plane_account_help": "Ứng dụng sẽ thay bạn thực hiện thao tác bằng tài khoản này.",
       "scopes_heading": "{app} sẽ có quyền truy cập vào",
       "can_change": "Có thể thực hiện thay đổi",
+      "sees_others": "Hiển thị thông tin của người khác",
       "allow": "Cho phép",
       "revoke_hint": "Bạn có thể thu hồi quyền truy cập này bất cứ lúc nào trong cài đặt hồ sơ, ở mục Ứng dụng đã kết nối.",
       "redirecting": "Đang đưa bạn quay lại {app}…",
@@ -86,6 +87,10 @@
       "time_write": {
         "title": "Theo dõi thời gian của bạn",
         "description": "Bắt đầu và dừng bộ đếm giờ của bạn, và thêm giờ vào thời gian của bạn, dưới danh nghĩa của bạn."
+      },
+      "team_read": {
+        "title": "Ngày làm việc, giờ làm và khối lượng công việc của nhóm bạn",
+        "description": "Dành cho những người trong nhóm của bạn: họ làm việc vào những ngày nào, đã làm bao nhiêu giờ và còn bao nhiêu việc đang mở. Không bao giờ có lý do nghỉ. Chỉ hoạt động khi bạn đang phụ trách nhóm trong Plane."
       }
     }
   }

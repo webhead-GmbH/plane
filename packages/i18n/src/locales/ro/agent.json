@@ -15,6 +15,7 @@
       "plane_account_help": "Aplicația va acționa în numele tău cu acest cont.",
       "scopes_heading": "La ce va avea acces {app}",
       "can_change": "Poate face modificări",
+      "sees_others": "Arată datele altor persoane",
       "allow": "Permite",
       "revoke_hint": "Poți retrage acest acces oricând din setările profilului, la Aplicații conectate.",
       "redirecting": "Te ducem înapoi la {app}…",
@@ -86,6 +87,10 @@
       "time_write": {
         "title": "Urmărirea timpului tău",
         "description": "Pornește și oprește cronometrul tău și adaugă ore la timpul tău, în numele tău."
+      },
+      "team_read": {
+        "title": "Zilele, orele și volumul de lucru ale echipei tale",
+        "description": "Pentru persoanele din echipa ta: în ce zile lucrează, câte ore au lucrat și cât de multă muncă deschisă au. Niciodată motivul unei zile libere. Funcționează doar cât timp te ocupi de echipă în Plane."
       }
     }
   }

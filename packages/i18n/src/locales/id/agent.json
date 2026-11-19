@@ -15,6 +15,7 @@
       "plane_account_help": "Aplikasi akan bertindak atas nama Anda dengan akun ini.",
       "scopes_heading": "Apa yang dapat diakses {app}",
       "can_change": "Dapat membuat perubahan",
+      "sees_others": "Menampilkan informasi orang lain",
       "allow": "Izinkan",
       "revoke_hint": "Anda dapat mencabut akses ini kapan saja di pengaturan profil, pada Aplikasi terhubung.",
       "redirecting": "Mengembalikan Anda ke {app}…",
@@ -86,6 +87,10 @@
       "time_write": {
         "title": "Melacak waktu Anda",
         "description": "Memulai dan menghentikan pengatur waktu Anda serta menambahkan jam ke waktu Anda, atas nama Anda."
+      },
+      "team_read": {
+        "title": "Hari, jam, dan beban kerja tim Anda",
+        "description": "Untuk orang-orang di tim Anda: hari apa mereka bekerja, berapa jam yang sudah mereka kerjakan, dan berapa banyak pekerjaan terbuka yang mereka miliki. Tidak pernah alasan hari libur. Hanya berlaku selama Anda mengelola tim di Plane."
       }
     }
   }
