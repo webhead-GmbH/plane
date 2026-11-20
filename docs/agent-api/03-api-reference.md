@@ -467,7 +467,7 @@ The shape used in lists, in `/me/time/` and in `/me/timer/`:
 
 **Scope:** `work_items:read`
 
-The projects the person is an active member of. **Query:** `workspace` — a workspace slug, to narrow.
+The projects the person is an active member of, **and, in a workspace they administer, every project of that workspace**, as the web app lists them for an admin. **Query:** `workspace` — a workspace slug, to narrow.
 
 ```json
 {
@@ -478,13 +478,14 @@ The projects the person is an active member of. **Query:** `workspace` — a wor
       "identifier": "WEB",
       "workspace": "acme",
       "description": "",
-      "role": "member"
+      "role": "member",
+      "is_member": true
     }
   ]
 }
 ```
 
-`role` is the person's role in that project: `admin`, `member` or `guest`.
+`role` is the person's role in that project: `admin`, `member` or `guest`. `is_member` is `false`, and `role` is `null`, for a project an administrator of the workspace sees in the list without being in it. **Being listed is not being able to act**, exactly as in the web app: for such a project the work items, members, states and labels answer `404`, and creating work there is refused until the person joins. Use `is_member` to tell the projects a person can work in from the ones that merely exist (for example when you map chat topics to projects). Archived projects are not listed, and members and guests are shown only the projects they are in.
 
 ### `GET /work-items/`
 
@@ -760,7 +761,7 @@ With `?dry_run=true`: `{"dry_run": true, "valid": true, "ref": "WEB-1", "would_c
 
 **Scope:** `work_items:write` · **Needs:** `Idempotency-Key` · **Role:** admin or member of the project
 
-Send the file as `multipart/form-data` in a field named **`file`** — nothing else. Plane puts it **where the web app would**: in the workspace's Google Drive folder for the work item if Drive is set up for the workspace, otherwise in Plane's own file storage.
+Send the file as `multipart/form-data` in a field named **`file`** — nothing else. Plane puts it **where the web app would**: in the workspace's Google Drive folder for the work item if Drive is set up for the workspace, otherwise in Plane's own file storage. A project that has no Drive folder yet (for example one made before Drive was connected) is given one by the first file, the way a new project is: the folder its name clearly matches, or a new one named the team's way (`209 - Name`). If the workspace does not link projects by itself, or Drive cannot tell which of several similar folders is the project's, the file is kept in Plane's storage (`storage` says `plane`) and is moved into Drive once somebody links the project. It is never an error for want of a folder.
 
 ```bash
 curl -sS -X POST "$PLANE/api/agent/v1/workspaces/acme/work-items/WEB-1/attachments/" \

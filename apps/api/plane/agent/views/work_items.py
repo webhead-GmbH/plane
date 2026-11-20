@@ -50,12 +50,12 @@ def _uuid(raw, name):
 
 
 class ProjectListEndpoint(AgentAPIView):
-    """The projects the person is a member of."""
+    """The projects the person is a member of, and all of a workspace's if they administer it."""
 
     required_scope = WORK_ITEMS_READ
 
     def get(self, request):
-        projects = work_items.visible_projects(request.user).select_related("workspace")
+        projects = work_items.listed_projects(request.user).select_related("workspace")
         if request.query_params.get("workspace"):
             projects = projects.filter(workspace__slug=request.query_params["workspace"])
         roles = dict(
@@ -70,7 +70,10 @@ class ProjectListEndpoint(AgentAPIView):
                         "identifier": project.identifier,
                         "workspace": project.workspace.slug,
                         "description": work_items.plain_text(project.description, 2000),
-                        "role": ROLE_NAMES.get(roles.get(project.id), "guest"),
+                        # Null where the person is not a member: they see that the project exists, as an
+                        # admin does in the web app, and can do nothing in it.
+                        "role": ROLE_NAMES.get(roles[project.id], "guest") if project.id in roles else None,
+                        "is_member": project.id in roles,
                     }
                     for project in projects.order_by("workspace__slug", "name")
                 ]

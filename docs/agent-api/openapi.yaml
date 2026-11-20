@@ -287,8 +287,13 @@ paths:
     get:
       tags: [Projects and work items]
       operationId: listProjects
-      summary: Projects the person is an active member of
-      description: "**Scope:** `work_items:read`."
+      summary: Projects the person is in, and all of a workspace's projects if they administer it
+      description: |
+        **Scope:** `work_items:read`. The projects the person is an active member of and, in a workspace they
+        administer, every project of it, as the web app lists them for an admin. For a project the person is
+        not a member of, `is_member` is false and `role` is null: it is listed, nothing more. Its work items,
+        members, states and labels answer 404 and creating work there is refused. Archived projects are not
+        listed.
       parameters:
         - name: workspace
           in: query
@@ -615,7 +620,10 @@ paths:
 
         Send the file as `multipart/form-data` in one field named `file`, and nothing else. It is stored where
         the web app would put it: the workspace's Google Drive folder for the work item when Drive is set up,
-        otherwise Plane's own file storage. Limited to the web app's size and file-type allow-list; **SVG
+        otherwise Plane's own file storage. A project with no Drive folder yet is given one by the first file
+        (the folder its name clearly matches, or a new one), unless the workspace does not link projects by
+        itself or Drive cannot tell which folder is the project's: then the file is kept in Plane's storage
+        until the project is linked. Limited to the web app's size and file-type allow-list; **SVG
         images are refused**. Any directory part of the file name is removed.
       parameters:
         - { $ref: "#/components/parameters/Slug" }
@@ -1562,7 +1570,8 @@ components:
         identifier: { type: string }
         workspace: { type: string, description: The workspace slug. }
         description: { type: string }
-        role: { type: string, enum: [admin, member, guest] }
+        role: { type: [string, "null"], enum: [admin, member, guest, null], description: "Null where the person is not a member." }
+        is_member: { type: boolean, description: Whether the person can work in the project. False for a project an admin only sees listed. }
 
     WorkItem:
       type: object

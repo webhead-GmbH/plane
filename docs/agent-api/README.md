@@ -206,7 +206,7 @@ Save the new refresh token **before** you use the new access token. If you ever 
 | What is their timer running on right now?                    | `GET /me/timer/`                                                          | `time:read` (+ `work_items:read`)           |
 | How much leave do they have left?                            | `GET /me/leave/`                                                          | `leave:read`                                |
 | What leave is booked?                                        | `GET /me/absences/`                                                       | `leave:read`                                |
-| Which projects are they in?                                  | `GET /projects/`                                                          | `work_items:read`                           |
+| Which projects are they in (an admin: every project)?        | `GET /projects/`                                                          | `work_items:read`                           |
 | What are they assigned to, what is due?                      | `GET /work-items/`                                                        | `work_items:read`                           |
 | What does this task say, what was discussed?                 | `GET /workspaces/{slug}/work-items/{ref}/`                                | `work_items:read`                           |
 | Who can I assign to, which states and labels exist?          | `GET /workspaces/{slug}/projects/{id}/members/`, `…/states/`, `…/labels/` | `work_items:read`                           |

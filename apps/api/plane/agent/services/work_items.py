@@ -22,7 +22,7 @@ from uuid import UUID
 
 # Django imports
 from django.conf import settings
-from django.db.models import Exists, F, OuterRef, Prefetch, Sum, Value
+from django.db.models import Exists, F, OuterRef, Prefetch, Q, Sum, Value
 from django.db.models.functions import Coalesce
 from django.utils.html import strip_tags
 
@@ -39,6 +39,7 @@ from plane.db.models import (
     ProjectMember,
     WorkspaceMember,
 )
+from plane.app.permissions import ROLE
 from plane.hr.services.computation import minutes_from_seconds
 
 # Longest stretch of text from a work item or comment handed over in one piece.
@@ -61,6 +62,22 @@ def visible_projects(user):
         workspace_id=OuterRef("workspace_id"), member=user, is_active=True
     )
     return Project.objects.filter(archived_at__isnull=True).filter(Exists(member_of), Exists(still_in_workspace))
+
+
+def listed_projects(user):
+    """The projects the person is shown in a list: their own, and, as in the web app, every project of a
+    workspace they administer.
+
+    Being listed is not being able to act. In a project the person is not a member of, the web app lets
+    a workspace admin see that it exists and nothing more, and so does this: its work items, members,
+    states and labels stay out of reach and creating work there is refused until they join.
+    """
+    administers = WorkspaceMember.objects.filter(
+        workspace_id=OuterRef("workspace_id"), member=user, is_active=True, role=ROLE.ADMIN.value
+    )
+    return Project.objects.filter(archived_at__isnull=True).filter(
+        Q(pk__in=visible_projects(user).values("pk")) | Q(Exists(administers))
+    )
 
 
 def with_my_time(queryset, user):

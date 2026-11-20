@@ -211,6 +211,10 @@ The audit log contains caller IP addresses and user agents. Set the retention to
 
 **CRM.** Timers and hours an app writes are mirrored to the CRM (when that integration is on) by the same signals as ones from the web app. A bad write by a bot is therefore also a bad write in the CRM; that is one more reason to keep the write scopes to apps whose developers have read the security guide.
 
+## Files and Google Drive
+
+A file attached through the API goes where the web app would put it: into the workspace's Google Drive folder for the work item when Drive is connected (`<root>/<project folder>/Tasks/<WEB-12>/`), otherwise into Plane's own storage. A project with **no Drive folder yet** is given one by its first file, by the same rule as a project just made: link the folder whose name clearly matches the project, or create `<Project ID> - <name>` under the root. This follows the workspace's _link new projects automatically_ setting, so a workspace that turned it off gets no folders it did not ask for. When Plane may not make a folder, or cannot tell which of several similar folders is the project's, the file waits in Plane's storage and is moved into Drive after someone links the project in _Settings → Google Drive_, like any attachment from before the folder. A Google Drive outage while making the folder is `502 storage_unavailable`, with the reason.
+
 ## Behind a proxy
 
 - **Trailing slashes.** Every route ends in `/`. Do not configure the proxy to strip them.

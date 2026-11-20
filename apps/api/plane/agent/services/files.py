@@ -36,8 +36,14 @@ from plane.bgtasks.issue_activities_task import issue_activity
 from plane.bgtasks.storage_metadata_task import get_asset_object_metadata
 from plane.db.models import FileAsset
 from plane.gdrive.client import DriveClient, DriveError
-from plane.gdrive.models import DriveFile
-from plane.gdrive.services import MOVE_CHUNK, finish_upload, ready_connection_for, start_upload
+from plane.gdrive.models import DriveFile, DriveProjectFolder
+from plane.gdrive.services import (
+    MOVE_CHUNK,
+    finish_upload,
+    link_new_project,
+    ready_connection_for,
+    start_upload,
+)
 from plane.settings.storage import S3Storage, StorageUnavailable
 from plane.utils.attachment_type import attachment_type
 from plane.utils.exception_logger import log_exception
@@ -86,9 +92,33 @@ def digest(data):
 def attach(request, user, issue, name, kind, data):
     """Put the file where this workspace keeps work item files, and tell the activity feed."""
     connection = ready_connection_for(issue.workspace_id)
-    if connection is not None:
+    if connection is not None and _project_has_drive_folder(issue.project, user):
         return _to_drive(connection, user, issue, name, kind, data)
     return _to_plane(request, user, issue, name, kind, data)
+
+
+def _project_has_drive_folder(project, user):
+    """Whether the project has a Drive folder to keep work item folders in, finding or making one if it may.
+
+    A project that was made before Drive was connected has none, and an app that is only told "storage
+    unavailable" cannot do anything about that. So the first file for such a project does what Plane does
+    for a project just made (`link_new_project`): link the folder its name clearly matches, or make one named
+    the team's way. When Plane may not (the workspace does not link projects by itself) or cannot decide
+    (several folders look like the project's), the answer is no, and the file goes to Plane's storage, from
+    where it is moved into Drive once somebody links the project, like any attachment from before the folder.
+    """
+    if DriveProjectFolder.objects.filter(project=project).exists():
+        return True
+    try:
+        link_new_project(project, user)
+    except DriveError as error:
+        raise AgentError(
+            "storage_unavailable",
+            f"The project's folder in Google Drive could not be made: {error}",
+            status_code=502,
+        )
+    # Asked again rather than read from the answer: another upload may have made the folder a moment ago.
+    return DriveProjectFolder.objects.filter(project=project).exists()
 
 
 def _to_drive(connection, user, issue, name, kind, data):
