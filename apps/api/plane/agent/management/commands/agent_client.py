@@ -96,6 +96,12 @@ class Command(BaseCommand):
         webhook.add_argument(
             "--show-secret", action="store_true", dest="show_secret", help="Print the signing secret again."
         )
+        webhook.add_argument(
+            "--send-test",
+            action="store_true",
+            dest="send_test",
+            help="Send one signed `webhook.test` to the address now and say whether the app answered.",
+        )
 
         revoke = sub.add_parser("revoke-grants", help="End every connection an app has, or one person's.")
         revoke.add_argument("client_id")
@@ -214,6 +220,10 @@ class Command(BaseCommand):
         )
         self.stdout.write(f"  address:   {client.webhook_url} ({state})")
         self.stdout.write(f"  failures:  {client.webhook_failures} in a row")
+        if options["send_test"]:
+            heard, what = events.send_test(client)
+            style = self.style.SUCCESS if heard else self.style.ERROR
+            self.stdout.write(style(f"  test:      {'the app answered' if heard else 'NOT delivered'} ({what})"))
         if changed or options["show_secret"]:
             self.stdout.write(f"  secret:    {events.webhook_secret(client)}")
             self.stdout.write(

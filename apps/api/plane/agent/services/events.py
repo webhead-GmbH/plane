@@ -28,6 +28,7 @@ import hashlib
 import hmac
 import json
 import time
+import uuid
 from collections import defaultdict
 from urllib.parse import urlsplit
 
@@ -54,7 +55,9 @@ UNASSIGNED = "work_item.unassigned"
 DUE_DATE_CHANGED = "work_item.due_date_changed"
 STATE_CHANGED = "work_item.state_changed"
 CONNECTION_REVOKED = "connection.revoked"
-EVENT_TYPES = (ASSIGNED, UNASSIGNED, DUE_DATE_CHANGED, STATE_CHANGED, CONNECTION_REVOKED)
+# Sent only when an administrator asks (`agent_client webhook --send-test`), to check that an address and a secret work.
+WEBHOOK_TEST = "webhook.test"
+EVENT_TYPES = (ASSIGNED, UNASSIGNED, DUE_DATE_CHANGED, STATE_CHANGED, CONNECTION_REVOKED, WEBHOOK_TEST)
 
 # The fields of an activity that become events, and nothing else does.
 WATCHED_FIELDS = ("assignees", "target_date", "state")
@@ -309,6 +312,61 @@ def switch_off(client, why):
     audit.record("webhook_disabled", client=client, reason=why)
 
 
+def _post(client, event_id, event_type, body):
+    """Sign `body` and send it to the app's address. Raises ValueError if the address is refused, or a requests one."""
+    timestamp = str(int(time.time()))
+    headers = {
+        "Content-Type": "application/json",
+        "User-Agent": "Plane-Agent-Events/1",
+        SIGNATURE_HEADER: sign(webhook_secret(client), timestamp, body),
+        TIMESTAMP_HEADER: timestamp,
+        EVENT_HEADER: event_type,
+        # The same on every retry of this event: what the app removes repeats by.
+        DELIVERY_HEADER: event_id,
+    }
+    return pinned_fetch(
+        "POST",
+        client.webhook_url,
+        allowed_ips=settings.WEBHOOK_ALLOWED_IPS,
+        allowed_hosts=settings.WEBHOOK_ALLOWED_HOSTS,
+        headers=headers,
+        data=body,
+        timeout=conf.WEBHOOK_TIMEOUT_SECONDS,
+        stream=True,
+    )
+
+
+def send_test(client):
+    """Send one `webhook.test` to the app's address, for an administrator who wants to know it arrives.
+
+    Nothing is stored and no person is involved: the body names no connection. Returns `(heard, what)`;
+    `what` is the HTTP status or the kind of failure, never anything the app said.
+    """
+    if not client.webhook_url:
+        return False, "no address is set"
+    event_id = str(uuid.uuid4())
+    body = json.dumps(
+        {
+            "id": event_id,
+            "type": WEBHOOK_TEST,
+            "created_at": timezone.now().isoformat(),
+            "connection": None,
+            "data": {"message": "A test from Plane. Answer with any 2xx status."},
+        },
+        separators=(",", ":"),
+        sort_keys=True,
+    ).encode("utf-8")
+    try:
+        response = _post(client, event_id, WEBHOOK_TEST, body)
+    except ValueError as error:
+        return False, f"the address is refused: {error}"
+    except requests.RequestException as error:
+        return False, type(error).__name__
+    status_code = response.status_code
+    response.close()
+    return 200 <= status_code < 300, f"HTTP {status_code}"
+
+
 def deliver_once(event):
     """One attempt at telling the app. Returns `(outcome, seconds to wait before the next try)`.
 
@@ -329,29 +387,9 @@ def deliver_once(event):
         _finish(event, AgentEvent.Status.FAILED, error="connection_ended")
         return GAVE_UP, 0
 
-    body = body_of(event)
-    timestamp = str(int(time.time()))
-    headers = {
-        "Content-Type": "application/json",
-        "User-Agent": "Plane-Agent-Events/1",
-        SIGNATURE_HEADER: sign(webhook_secret(client), timestamp, body),
-        TIMESTAMP_HEADER: timestamp,
-        EVENT_HEADER: event.event_type,
-        # The same on every retry of this event: what the app removes repeats by.
-        DELIVERY_HEADER: str(event.id),
-    }
     event.attempts += 1
     try:
-        response = pinned_fetch(
-            "POST",
-            client.webhook_url,
-            allowed_ips=settings.WEBHOOK_ALLOWED_IPS,
-            allowed_hosts=settings.WEBHOOK_ALLOWED_HOSTS,
-            headers=headers,
-            data=body,
-            timeout=conf.WEBHOOK_TIMEOUT_SECONDS,
-            stream=True,
-        )
+        response = _post(client, str(event.id), event.event_type, body_of(event))
     except ValueError:
         # The address is no longer one Plane will send to. It will not become one by waiting.
         _finish(event, AgentEvent.Status.FAILED, error="address_refused")

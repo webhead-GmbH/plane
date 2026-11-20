@@ -1021,6 +1021,27 @@ webhooks:
         "2XX":
           description: Heard. Answer quickly; the body is never read. Anything else (or no answer within ten seconds) is retried.
 
+  webhook.test:
+    post:
+      tags: [Events]
+      operationId: eventWebhookTest
+      summary: An administrator asked Plane to check that this address works
+      description: |
+        Sent only when an administrator runs `agent_client webhook --send-test`. About no person
+        (`connection` is `null`), not stored and not retried. Verify the signature and answer `2xx`.
+      parameters:
+        - { $ref: "#/components/parameters/EventSignature" }
+        - { $ref: "#/components/parameters/EventTimestamp" }
+        - { $ref: "#/components/parameters/EventDelivery" }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/WebhookTestEvent" }
+      responses:
+        "2XX":
+          description: Heard. The body is never read.
+
   connection.revoked:
     post:
       tags: [Events]
@@ -1618,6 +1639,18 @@ components:
                 id: { type: string, format: uuid }
                 ref: { type: string, examples: [WEB-12], description: "For showing to people. Fetch by `id`, because a project's identifier can be renamed." }
                 project_id: { type: string, format: uuid }
+
+    WebhookTestEvent:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        type: { type: string, enum: [webhook.test] }
+        created_at: { type: string, format: date-time }
+        connection: { type: "null", description: A test is about no person. }
+        data:
+          type: object
+          properties:
+            message: { type: string }
 
     ConnectionRevokedEvent:
       type: object

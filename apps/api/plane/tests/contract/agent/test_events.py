@@ -617,6 +617,48 @@ class TestWhereAnAppIsTold:
         assert bot.client.webhook_url == HOOK
 
 
+class TestTheTestEvent:
+    def test_it_is_signed_like_any_other_and_names_nobody(self, outbox, bot):
+        assert events.send_test(bot.client) == (True, "HTTP 200")
+
+        (call,) = outbox.calls
+        body = json.loads(call["data"])
+        assert body["type"] == "webhook.test" and body["connection"] is None
+        assert call["headers"]["X-Plane-Agent-Event"] == "webhook.test"
+        assert call["headers"]["X-Plane-Agent-Delivery"] == body["id"]
+        expected = events.sign(
+            events.webhook_secret(bot.client), call["headers"]["X-Plane-Agent-Timestamp"], call["data"]
+        )
+        assert call["headers"]["X-Plane-Agent-Signature"] == expected
+        # Nothing is stored: it is a question about the address, not an event about anybody.
+        assert AgentEvent.objects.count() == 0
+
+    @pytest.mark.parametrize(
+        ("status", "error", "heard", "what"),
+        [
+            (204, None, True, "HTTP 204"),
+            (500, None, False, "HTTP 500"),
+            (302, None, False, "HTTP 302"),
+            (200, requests.ConnectTimeout("slow"), False, "ConnectTimeout"),
+            (200, ValueError("private address"), False, "the address is refused: private address"),
+        ],
+    )
+    def test_it_says_whether_the_app_answered(self, outbox, bot, status, error, heard, what):
+        outbox.status, outbox.error = status, error
+        assert events.send_test(bot.client) == (heard, what)
+
+    def test_without_an_address_there_is_nothing_to_test(self, outbox, app):
+        assert events.send_test(app.client) == (False, "no address is set")
+        assert outbox.calls == []
+
+    def test_the_command_reports_it(self, outbox, bot, capsys):
+        call_command("agent_client", "webhook", bot.client.client_id, "--send-test")
+        assert "the app answered (HTTP 200)" in capsys.readouterr().out
+        outbox.status = 503
+        call_command("agent_client", "webhook", bot.client.client_id, "--send-test")
+        assert "NOT delivered (HTTP 503)" in capsys.readouterr().out
+
+
 class TestHousekeeping:
     def test_old_events_are_purged_whatever_their_state(self, grant):
         old = timezone.now() - conf.EVENT_RETENTION - timedelta(hours=1)

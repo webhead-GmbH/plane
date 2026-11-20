@@ -100,7 +100,10 @@ def test_every_event_is_documented_and_nothing_else():
     assert set(spec["webhooks"]) == set(EVENT_TYPES)
     schemas = spec["components"]["schemas"]
     work_item_types = set(schemas["WorkItemEvent"]["properties"]["type"]["enum"])
-    assert work_item_types | set(schemas["ConnectionRevokedEvent"]["properties"]["type"]["enum"]) == set(EVENT_TYPES)
+    other_types = set(schemas["ConnectionRevokedEvent"]["properties"]["type"]["enum"]) | set(
+        schemas["WebhookTestEvent"]["properties"]["type"]["enum"]
+    )
+    assert work_item_types | other_types == set(EVENT_TYPES)
     told = set(schemas["ConnectionRevokedEvent"]["properties"]["data"]["properties"]["reason"]["enum"])
     assert told == set(REVOKED_REASONS.values())
 

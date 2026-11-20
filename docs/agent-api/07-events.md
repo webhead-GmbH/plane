@@ -41,7 +41,7 @@ python manage.py agent_client webhook plane_client_Ab3… --url https://bot.exam
   secret:    plane_whsec_9b1f…
 ```
 
-Give the secret to the developer through a secret-sharing channel; it is not stored in Plane's database (it is derived), and `--show-secret` prints it again. `--new-secret` replaces it at once. `--off` stops events.
+Give the secret to the developer through a secret-sharing channel; it is not stored in Plane's database (it is derived), and `--show-secret` prints it again. `--new-secret` replaces it at once. `--off` stops events. **`--send-test`** sends one signed [`webhook.test`](#webhooktest) to the address right now and says whether the app answered, so the address and the secret can be checked before any real event depends on them.
 
 The address must be:
 
@@ -158,6 +158,12 @@ The due date, or the state, of a work item the person is **assigned to** was cha
 
 `data`: as above. One event per work item and kind for each change Plane records at once; two edits a minute apart are two events.
 
+### `webhook.test`
+
+Sent only when an administrator runs `agent_client webhook … --send-test`, to check that the address and the secret work. It is about no person: `connection` is `null`, and it is neither stored nor retried. Verify the signature as for any event and answer `2xx`.
+
+`data`: `{ "message": "A test from Plane. Answer with any 2xx status." }`
+
 ### `connection.revoked`
 
 The person's connection to your app has ended and **you did not end it**. Delete their tokens and stored data, and say so in the chat if you can.
@@ -182,7 +188,7 @@ Because events can be late or lost, treat them as a reason to look, not as the d
 
 ## A checklist
 
-- [ ] The secret is in a secret store, not in the repository.
+- [ ] The secret is in a secret store, not in the repository, and `--send-test` gets a `2xx` from the deployed address.
 - [ ] The signature is verified, over the raw body, in constant time, **before** parsing or acting.
 - [ ] The timestamp is checked (five minutes).
 - [ ] The handler answers `2xx` in a second or two and works afterwards.

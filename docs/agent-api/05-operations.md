@@ -70,7 +70,7 @@ python manage.py agent_client update plane_client_Ab3… \
     --set-scopes profile time:read work_items:read work_items:write time:write team:read
 ```
 
-Register **separate apps for development and production.**
+Register **separate apps for development and production.** To try an app out before its developer has built anything, use the [sandbox bot](examples/README.md).
 
 ## Managing apps
 
@@ -133,7 +133,7 @@ An app can be told when something happens to its people's work ([Events](07-even
 python manage.py agent_client webhook plane_client_Ab3… --url https://bot.example.com/plane/events
 ```
 
-It prints the **signing secret**, which you pass to the developer. The secret is not stored: it is derived from the server's `SECRET_KEY`, the app and a version number, so `--show-secret` prints it again, `--new-secret` replaces it at once (the old one stops verifying), and **changing `SECRET_KEY` changes every app's secret**. `agent_client list` shows each app's address and whether it is on.
+It prints the **signing secret**, which you pass to the developer. The secret is not stored: it is derived from the server's `SECRET_KEY`, the app and a version number, so `--show-secret` prints it again, `--new-secret` replaces it at once (the old one stops verifying), and **changing `SECRET_KEY` changes every app's secret**. `agent_client list` shows each app's address and whether it is on. `agent_client webhook <client_id> --send-test` sends one signed `webhook.test` and prints whether the app answered: run it after setting an address, after changing a secret, and when an app says it hears nothing.
 
 - The address must be HTTPS and must not resolve to an internal or private address, unless you have allowed the host (`WEBHOOK_ALLOWED_HOSTS`) or network (`WEBHOOK_ALLOWED_IPS`), the same settings Plane's own webhooks use. For a bot on the same private network, allow its host name; plain `http://` is accepted only for such hosts. The check is made when you set the address and on every delivery.
 - Events are sent by the Celery worker. Each is a row in `agent_events` (ids only, no content) with its outcome: `pending`, `delivered`, `failed`, how many attempts, and the last status or error. Kept `AGENT_EVENT_RETENTION_DAYS` days.

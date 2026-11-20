@@ -57,6 +57,7 @@ The person signs in to Plane in their own browser, exactly as they always do. **
 | 5   | [Operations guide](05-operations.md)             | Registering apps, settings, audit log, revoking, troubleshooting                                |
 | 6   | [Telegram bot recipe](06-telegram-recipe.md)     | A worked design for a daily check-in bot                                                        |
 | 7   | [Events](07-events.md)                           | Being told when something happens: setup, signature, retries, the events                        |
+| —   | [Sandbox bot](examples/README.md)                | A runnable stand-in for the bot, to try everything before the real one exists                   |
 | —   | [`openapi.yaml`](openapi.yaml)                   | Machine-readable OpenAPI 3.1 description                                                        |
 
 ---
@@ -66,6 +67,8 @@ The person signs in to Plane in their own browser, exactly as they always do. **
 You need: a Plane server (with this feature deployed), a person with a Plane account to test with, and a public HTTPS address for your bot's callback (or `http://localhost:<port>` while developing).
 
 Replace `PLANE` with your Plane address, for example `https://plane.example.com`.
+
+> **No bot yet?** [`examples/sandbox_bot.py`](examples/README.md) does all of this with a web page: it links you, calls every endpoint, previews and creates a work item, and shows Plane's events. It is also the shortest working example of the flow below.
 
 ### 1. Get your app registered
 
