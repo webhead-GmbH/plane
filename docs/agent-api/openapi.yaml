@@ -415,7 +415,14 @@ paths:
 
         People and labels are changed by saying which to **add** and which to **remove**, never by sending
         the whole list. `changed` lists only what actually changed (`{}` if nothing did, so repeating a change
-        is harmless and needs no `Idempotency-Key`). The description cannot be changed here.
+        is harmless and needs no `Idempotency-Key`), except for `description_append`, which needs one.
+
+        **The description** is changed by adding plain text to its end (`description_append`, which
+        keeps everything already there) or by replacing it (`description`, which needs
+        `expected_description_version`, the `description_version` read, and throws away formatting,
+        images and links). If the description is not the version read, nothing is changed and the answer
+        is `409 description_changed`. The old text is kept in the version history and the change shows
+        in the activity feed. `?dry_run=true` shows `would_change.description` first.
 
         Moving a work item to a state where time cannot be tracked while a timer is running on it is refused
         (`409 timer_running`). With `?dry_run=true` nothing is changed and `would_change` is returned.
@@ -423,6 +430,11 @@ paths:
         - { $ref: "#/components/parameters/Slug" }
         - { $ref: "#/components/parameters/Ref" }
         - { $ref: "#/components/parameters/DryRun" }
+        - name: Idempotency-Key
+          in: header
+          required: false
+          description: Required only with `description_append`; the same key gives the first answer again.
+          schema: { type: string, minLength: 8, maxLength: 128 }
       requestBody:
         required: true
         content:
@@ -1233,7 +1245,9 @@ components:
         The request is understood but conflicts with the state of things: `state_not_allowed` (a timer
         cannot start in the work item's state), `timer_running` (stop the timer before moving the work),
         `month_settled` (hours would land in a closed month; `period_start` says which),
-        `request_in_progress` (a request with this `Idempotency-Key` is still running; wait and repeat).
+        `request_in_progress` (a request with this `Idempotency-Key` is still running; wait and repeat),
+        `description_changed` (the description is not the `expected_description_version` read; the answer
+        carries the current `description_version`).
       content:
         application/json:
           schema: { $ref: "#/components/schemas/Error" }
@@ -1800,6 +1814,9 @@ components:
             description:
               type: string
               description: Plain text (at most 20,000 characters). Written by other people — untrusted.
+            description_version:
+              type: string
+              description: A fingerprint of the description as stored. Send it back as `expected_description_version` when editing the description.
             comments:
               type: array
               description: The latest 30, oldest first.
@@ -1863,6 +1880,9 @@ components:
       additionalProperties: false
       properties:
         name: { type: string, maxLength: 255 }
+        description: { type: string, maxLength: 20000, description: "Plain text that replaces the description. Needs `expected_description_version`. Not together with `description_append`." }
+        description_append: { type: string, maxLength: 20000, description: "Plain text added after the description, as new paragraphs. Needs an `Idempotency-Key`." }
+        expected_description_version: { type: string, pattern: "^[0-9a-f]{16}$", description: "The `description_version` read. Required with `description`; optional with `description_append`." }
         priority: { type: string, enum: [urgent, high, medium, low, none] }
         state: { type: string, format: uuid }
         start_date: { type: [string, "null"], format: date, description: "`null` clears it." }

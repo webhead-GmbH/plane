@@ -16,6 +16,7 @@ that app's very next call, because there is nothing remembered to go stale.
 """
 
 # Python imports
+import hashlib
 import html
 import re
 from uuid import UUID
@@ -44,6 +45,15 @@ from plane.hr.services.computation import minutes_from_seconds
 
 # Longest stretch of text from a work item or comment handed over in one piece.
 MAX_TEXT = 20000
+
+
+def description_version(html_text):
+    """A short fingerprint of a description as it is stored.
+
+    It is what an app sends back to say "I edited the description I read", so that an edit made
+    on top of somebody else's later change is refused instead of silently replacing it.
+    """
+    return hashlib.sha256((html_text or "").encode("utf-8")).hexdigest()[:16]
 
 
 def visible_issues(user):
@@ -225,6 +235,7 @@ def detail(issue):
     comments = IssueComment.objects.filter(issue=issue).select_related("actor").order_by("-created_at")[:MAX_COMMENTS]
     payload = compact(issue)
     payload["description"] = plain_text(issue.description_html or issue.description_stripped)
+    payload["description_version"] = description_version(issue.description_html)
     payload["comments"] = [
         {
             "id": str(comment.id),

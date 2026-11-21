@@ -82,7 +82,7 @@
       },
       "work_items_write": {
         "title": "Criar e alterar itens de trabalho por você",
-        "description": "Criar itens de trabalho, alterar o estado, a prioridade, as datas, os responsáveis e as etiquetas deles e adicionar comentários, em seu nome. Tudo o que o app fizer aparece no Plane com o seu nome."
+        "description": "Criar itens de trabalho, alterar o nome, a descrição, o estado, a prioridade, as datas, os responsáveis e as etiquetas deles e adicionar comentários, em seu nome. Tudo o que o app fizer aparece no Plane com o seu nome."
       },
       "time_write": {
         "title": "Registrar o seu tempo",

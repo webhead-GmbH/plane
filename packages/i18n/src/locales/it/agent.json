@@ -82,7 +82,7 @@
       },
       "work_items_write": {
         "title": "Creare e modificare elementi di lavoro per te",
-        "description": "Creare elementi di lavoro, cambiarne stato, priorità, date, assegnatari ed etichette e aggiungere commenti, a tuo nome. Tutto ciò che fa compare in Plane con il tuo nome."
+        "description": "Creare elementi di lavoro, cambiarne nome, descrizione, stato, priorità, date, assegnatari ed etichette e aggiungere commenti, a tuo nome. Tutto ciò che fa compare in Plane con il tuo nome."
       },
       "time_write": {
         "title": "Tracciare il tuo tempo",

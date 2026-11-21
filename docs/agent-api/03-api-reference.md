@@ -535,6 +535,7 @@ One work item, by its short reference (`WEB-1`, any letter case) or by id, withi
 {
   "…": "all the summary fields",
   "description": "The logo overlaps the menu below 400px.\nSee the Figma frame.",
+  "description_version": "9b1f4c0a7d2e8a35",
   "comments": [
     {
       "id": "1f11e3e1-…",
@@ -547,6 +548,7 @@ One work item, by its short reference (`WEB-1`, any letter case) or by id, withi
 ```
 
 - `description` and each comment `text` are **plain text**: markup removed, scripts and styles dropped, paragraphs and list items kept as line breaks (list items start with `- `). Limited to 20,000 and 5,000 characters. **They are other people's words — see [Untrusted text](#untrusted-text).**
+- `description_version` is a fingerprint of the description as stored. Send it back as `expected_description_version` when you edit the description, so an edit made on top of somebody else's later change is refused instead of replacing it.
 - `comments` are the latest 30, oldest first. `author` is `null` for comments the system wrote.
 - A work item the person cannot see answers `404`, exactly like one that does not exist.
 - The same path also takes `PATCH` to change the work item — see [Making changes](#making-changes).
@@ -566,7 +568,7 @@ They need a **write scope** (`work_items:write`, `time:write`), which the person
 | **JSON in** (files: multipart)   | `Content-Type: application/json`. Anything else is `415`.                                                                                                                                                                                            |
 | **Strict fields**                | Only the fields listed for an endpoint are accepted. An unknown field — `created_by`, `is_draft`, `description_html`, anything — is `400`, not ignored. You cannot set what you were not meant to set.                                               |
 | **Plain text becomes safe HTML** | Descriptions and comments are sent as **plain text**. Plane escapes every character before storing it: `<script>` arrives as the visible text `<script>`. Blank lines separate paragraphs; single line breaks are kept.                              |
-| **`Idempotency-Key`**            | **Required** on every request that would otherwise happen twice when you retry (create a work item, comment, attach a file, add hours). See below.                                                                                                   |
+| **`Idempotency-Key`**            | **Required** on every request that would otherwise happen twice when you retry (create a work item, comment, attach a file, add hours, add text to a description). See below.                                                                        |
 | **`?dry_run=true`**              | On creating and changing a work item: check everything, change nothing, and say what _would_ happen. Use it to show the person what you are about to do and ask them to confirm.                                                                     |
 | **Roles**                        | The person's role in the project decides. Members and admins may create and change; guests may only comment on what they can see. A project the person is not in answers `404`, like one that does not exist; one they are a guest in answers `403`. |
 | **Limits**                       | Writes are limited to **30 a minute per connection** (default), far below reads. Over the limit is `429` with `Retry-After`.                                                                                                                         |
@@ -625,20 +627,21 @@ It runs **every check the real request would** (permissions, assignee membership
 
 ### Errors specific to changes
 
-| HTTP | `error`                  | Meaning                                                                                                   | What to do                                                      |
-| ---- | ------------------------ | --------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
-| 400  | `invalid_request`        | A field is missing, malformed, unknown or not allowed; `fields` may name which.                           | Fix it.                                                         |
-| 403  | `forbidden`              | The person's role in the project does not allow this.                                                     | Tell the person; do not retry.                                  |
-| 403  | `not_assigned`           | Starting a timer on work the person is not assigned to.                                                   | Assign them first, or tell them.                                |
-| 404  | `not_found`              | No such project or work item, **or the person cannot see it.**                                            | —                                                               |
-| 409  | `state_not_allowed`      | A timer cannot be started in the work item's current state (the project decides which states allow time). | Move it to a state that does, or tell the person.               |
-| 409  | `timer_running`          | The change would move work to a state where time cannot be tracked while a timer is running on it.        | Stop the timer first (`POST /me/timer/stop/`).                  |
-| 409  | `month_settled`          | Hours would land in a month that has already been settled; `period_start` says which.                     | A person must reopen the month in Plane; do not work around it. |
-| 409  | `request_in_progress`    | See idempotency.                                                                                          | Wait, repeat.                                                   |
-| 413  | `file_too_large`         | The file is over the size limit; `limit` is in bytes.                                                     | Tell the person.                                                |
-| 400  | `file_type_not_allowed`  | The file type is not accepted (SVG images are refused outright).                                          | Tell the person.                                                |
-| 422  | `idempotency_key_reused` | See idempotency.                                                                                          | Use a new key.                                                  |
-| 502  | `storage_unavailable`    | The file could not be saved (Plane's storage or Google Drive).                                            | Retry later; nothing was stored.                                |
+| HTTP | `error`                  | Meaning                                                                                                                 | What to do                                                         |
+| ---- | ------------------------ | ----------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| 400  | `invalid_request`        | A field is missing, malformed, unknown or not allowed; `fields` may name which.                                         | Fix it.                                                            |
+| 403  | `forbidden`              | The person's role in the project does not allow this.                                                                   | Tell the person; do not retry.                                     |
+| 403  | `not_assigned`           | Starting a timer on work the person is not assigned to.                                                                 | Assign them first, or tell them.                                   |
+| 404  | `not_found`              | No such project or work item, **or the person cannot see it.**                                                          | —                                                                  |
+| 409  | `state_not_allowed`      | A timer cannot be started in the work item's current state (the project decides which states allow time).               | Move it to a state that does, or tell the person.                  |
+| 409  | `timer_running`          | The change would move work to a state where time cannot be tracked while a timer is running on it.                      | Stop the timer first (`POST /me/timer/stop/`).                     |
+| 409  | `month_settled`          | Hours would land in a month that has already been settled; `period_start` says which.                                   | A person must reopen the month in Plane; do not work around it.    |
+| 409  | `request_in_progress`    | See idempotency.                                                                                                        | Wait, repeat.                                                      |
+| 409  | `description_changed`    | The description is not the version you read (`expected_description_version`); `description_version` is the current one. | Read the work item again and redo the edit from what is there now. |
+| 413  | `file_too_large`         | The file is over the size limit; `limit` is in bytes.                                                                   | Tell the person.                                                   |
+| 400  | `file_type_not_allowed`  | The file type is not accepted (SVG images are refused outright).                                                        | Tell the person.                                                   |
+| 422  | `idempotency_key_reused` | See idempotency.                                                                                                        | Use a new key.                                                     |
+| 502  | `storage_unavailable`    | The file could not be saved (Plane's storage or Google Drive).                                                          | Retry later; nothing was stored.                                   |
 
 ---
 
@@ -718,18 +721,19 @@ Reply to the person with `url`: it is the link to the work item in Plane. Their 
 
 ### `PATCH /workspaces/{slug}/work-items/{ref}/`
 
-**Scope:** `work_items:write` · **Role:** admin or member of the project · **Supports:** `?dry_run=true` · No key needed.
+**Scope:** `work_items:write` · **Role:** admin or member of the project · **Supports:** `?dry_run=true` · No key needed, except for `description_append`.
 
 Change one or more of these; send at least one:
 
-| Field                               | Meaning                                                                                                                                                    |
-| ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `name`                              | New title.                                                                                                                                                 |
-| `priority`                          | `urgent`, `high`, `medium`, `low`, `none`.                                                                                                                 |
-| `state`                             | A state id of this work item's project. (Completing sets the completion time, as in the web app.)                                                          |
-| `start_date`, `target_date`         | `YYYY-MM-DD`, or `null` to clear.                                                                                                                          |
-| `add_assignees`, `remove_assignees` | Lists of user ids. **You add and remove; you never send the whole list**, so an app that does not know who is already on a work item cannot take them off. |
-| `add_labels`, `remove_labels`       | Lists of label ids, likewise.                                                                                                                              |
+| Field                                                               | Meaning                                                                                                                                                    |
+| ------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `name`                                                              | New title.                                                                                                                                                 |
+| `description`, `description_append`, `expected_description_version` | Replace the description, or add to it. See [Editing the description](#editing-the-description).                                                            |
+| `priority`                                                          | `urgent`, `high`, `medium`, `low`, `none`.                                                                                                                 |
+| `state`                                                             | A state id of this work item's project. (Completing sets the completion time, as in the web app.)                                                          |
+| `start_date`, `target_date`                                         | `YYYY-MM-DD`, or `null` to clear.                                                                                                                          |
+| `add_assignees`, `remove_assignees`                                 | Lists of user ids. **You add and remove; you never send the whole list**, so an app that does not know who is already on a work item cannot take them off. |
+| `add_labels`, `remove_labels`                                       | Lists of label ids, likewise.                                                                                                                              |
 
 ```json
 {
@@ -741,7 +745,26 @@ Change one or more of these; send at least one:
 }
 ```
 
-`changed` lists only what actually changed (and is `{}` if nothing did — the same change twice is harmless). The description **cannot** be changed here; add a comment instead.
+`changed` lists only what actually changed (and is `{}` if nothing did — the same change twice is harmless, except adding text to the description, which would be added twice and so needs a key).
+
+#### Editing the description
+
+The description is the one field other people may be typing in at that very moment, and an app only ever sees it as plain text, so it can be changed in two ways, with different safeguards.
+
+| Field                          | Meaning                                                                                                                                                                                                                              |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `description_append`           | Plain text **added after** what is there, as new paragraphs (≤ 20,000 characters). Everything already in the description stays, with its formatting, images and links. **Needs an `Idempotency-Key`**: adding twice would add twice. |
+| `description`                  | Plain text that **replaces** the whole description (≤ 20,000 characters). It needs `expected_description_version`.                                                                                                                   |
+| `expected_description_version` | The `description_version` you got when you read the work item. Required with `description`, optional with `description_append`. If the description is not that version any more, nothing is changed: `409 description_changed`.      |
+
+Send one of `description` and `description_append`, not both. They can go together with the other fields in one request.
+
+- **Prefer adding.** It cannot lose anything. Replacing throws away every image, link, list and heading in the old description, because you only ever see (and can only send) plain text: the dry run says so with `drops_formatting: true`.
+- **Read, then edit.** `GET` the work item, keep its `description_version`, make the edit from the `description` you read, send both back. If somebody else changed the description in between you get `409 description_changed` with the current `description_version`: read again, show the person what is there now, and redo the edit from that. Nothing is silently overwritten.
+- **Ask first.** `?dry_run=true` answers `would_change.description`: `{"mode": "append", "added": "…"}` or `{"mode": "replace", "from": "…", "to": "…", "drops_formatting": false}`. Show it to the person and wait for their yes.
+- **Undoing.** The old text is kept in the work item's description version history (the same one the editor uses), and the change shows in the activity feed under the person's name, so it can be restored in Plane. Replacing keeps the old text even if the same person edited a few minutes earlier.
+- **While somebody is typing.** The editor keeps its own live copy of the description. Plane makes it start again from the new text the next time the work item is opened, but a person who has the editor open at the moment of the edit does not see it appear, and if they keep typing, their next save can replace it. For a work item somebody is busy in, add a comment instead, or edit it when they are not there.
+- Text is escaped before it is stored: `<script>` arrives as the visible text `<script>`. The whole description may not become longer than about 200,000 characters.
 
 Moving a work item to a state where time cannot be tracked while a timer is running on it is refused (`409 timer_running`), exactly as in the web app.
 

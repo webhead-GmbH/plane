@@ -82,7 +82,7 @@
       },
       "work_items_write": {
         "title": "Create and change work items for you",
-        "description": "Create work items, change their state, priority, dates, assignees and labels, and add comments, as you. Everything it does shows in Plane under your name."
+        "description": "Create work items, change their name, description, state, priority, dates, assignees and labels, and add comments, as you. Everything it does shows in Plane under your name."
       },
       "time_write": {
         "title": "Track your time",

@@ -82,7 +82,7 @@
       },
       "work_items_write": {
         "title": "Vytváranie a úprava pracovných položiek vo vašom mene",
-        "description": "Vytvára pracovné položky, mení ich stav, prioritu, termíny, priradené osoby a štítky a pridáva komentáre vo vašom mene. Všetko, čo urobí, sa v Plane zobrazí pod vaším menom."
+        "description": "Vytvára pracovné položky, mení ich názov, popis, stav, prioritu, termíny, priradené osoby a štítky a pridáva komentáre vo vašom mene. Všetko, čo urobí, sa v Plane zobrazí pod vaším menom."
       },
       "time_write": {
         "title": "Sledovanie vášho času",

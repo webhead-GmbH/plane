@@ -217,6 +217,7 @@ Save the new refresh token **before** you use the new access token. If you ever 
 | ------------------------------------------------- | ------------------------------------------------------- | ------------------ |
 | Create a task (with description, assignee, dates) | `POST /workspaces/{slug}/projects/{id}/work-items/`     | `work_items:write` |
 | Move it, re-prioritise it, assign or unassign     | `PATCH /workspaces/{slug}/work-items/{ref}/`            | `work_items:write` |
+| Add to its description, or replace it             | `PATCH /workspaces/{slug}/work-items/{ref}/`            | `work_items:write` |
 | Add a comment                                     | `POST /workspaces/{slug}/work-items/{ref}/comments/`    | `work_items:write` |
 | Attach a file the person sent                     | `POST /workspaces/{slug}/work-items/{ref}/attachments/` | `work_items:write` |
 | Start or stop their timer                         | `POST /me/timer/start/`, `POST /me/timer/stop/`         | `time:write`       |
@@ -257,7 +258,7 @@ These explain the shape of everything else.
 
 Not available yet (planned, in this order):
 
-1. **More ways to change work**: editing a description, linking work items, moving work between projects. (A description can be set when a work item is created but not replaced afterwards, on purpose: the web app edits descriptions live, and overwriting one from outside is not safe to do blindly. Add a comment instead.)
+1. **More ways to change work**: linking work items, moving work between projects. (A description can be added to or replaced, with safeguards: see [Editing the description](03-api-reference.md#editing-the-description).)
 
 If you need one of these sooner, say which; the design leaves room for each.
 
