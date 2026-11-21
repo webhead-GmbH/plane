@@ -4,7 +4,7 @@
 # A merge conflict here means another PR added a migration to the same app first:
 # merge preview, delete your migration, and run makemigrations again.
 
-agent: 0002_idempotency_keys
+agent: 0003_events
 
 db: 0132_merge_20261020_1051
 

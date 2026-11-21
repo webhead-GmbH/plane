@@ -82,7 +82,7 @@
       },
       "work_items_write": {
         "title": "Sizin adınıza iş öğeleri oluşturma ve değiştirme",
-        "description": "Adınıza iş öğeleri oluşturur, durumlarını, önceliklerini, tarihlerini, atananlarını ve etiketlerini değiştirir ve yorum ekler. Yaptığı her şey Plane’de sizin adınızla görünür."
+        "description": "Adınıza iş öğeleri oluşturur, adlarını, açıklamalarını, durumlarını, önceliklerini, tarihlerini, atananlarını ve etiketlerini değiştirir ve yorum ekler. Yaptığı her şey Plane’de sizin adınızla görünür."
       },
       "time_write": {
         "title": "Sürenizi takip etme",

@@ -66,8 +66,8 @@ _SCOPES = (
     Scope(
         WORK_ITEMS_WRITE,
         "Create and change work items for you",
-        "Create work items, change their state, priority, dates, assignees and labels, and add comments, as you. "
-        "Everything it does shows in Plane under your name.",
+        "Create work items, change their name, description, state, priority, dates, assignees and labels, and add "
+        "comments, as you. Everything it does shows in Plane under your name.",
         writes=True,
     ),
     Scope(

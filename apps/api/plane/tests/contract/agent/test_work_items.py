@@ -153,6 +153,75 @@ class TestWhatIsVisible:
             assert client.get(path).status_code == 403
 
 
+class TestWorkspaceAdminsSeeEveryProject:
+    """As in the web app: an admin's project list is the workspace's, but acting still needs membership."""
+
+    @pytest.fixture
+    def admin_projects(self, workspace, person, colleague):
+        WorkspaceMember.objects.filter(workspace=workspace, member=person).update(role=ROLE.ADMIN.value)
+        make_project(workspace, "MINE", members=[(person, MEMBER), (colleague, MEMBER)])
+        make_project(workspace, "THEIRS", members=[(colleague, MEMBER)])
+        make_project(workspace, "GONE", members=[(colleague, MEMBER)], archived_at=timezone.now())
+
+    def listed(self, client, **query):
+        body = client.get("/api/agent/v1/projects/", query).json()
+        return {project["identifier"]: project for project in body["results"]}
+
+    def test_an_admin_is_given_every_project_of_the_workspace_and_told_which_are_theirs(self, client, admin_projects):
+        projects = self.listed(client)
+
+        assert sorted(projects) == ["MINE", "THEIRS"]  # archived work is left out for everybody
+        assert (projects["MINE"]["role"], projects["MINE"]["is_member"]) == ("member", True)
+        assert (projects["THEIRS"]["role"], projects["THEIRS"]["is_member"]) == (None, False)
+
+    def test_being_listed_is_not_being_able_to_act(self, client, workspace, admin_projects):
+        theirs = self.listed(client)["THEIRS"]
+
+        base = f"/api/agent/v1/workspaces/{workspace.slug}/projects/{theirs['id']}"
+        for tail in ("members/", "states/", "labels/"):
+            assert client.get(f"{base}/{tail}").status_code == 404
+        created = client.post(
+            f"{base}/work-items/", {"name": "Sneaking in"}, format="json", HTTP_IDEMPOTENCY_KEY="admin-not-member"
+        )
+        assert created.status_code == 404
+        assert not Issue.objects.filter(name="Sneaking in").exists()
+
+    def test_work_in_a_project_the_admin_is_not_in_is_still_not_theirs_to_read(
+        self, client, workspace, colleague, admin_projects
+    ):
+        project = make_project(workspace, "SECRET", members=[(colleague, MEMBER)])
+        issue = make_issue(project, "Private", author=colleague)
+        assert client.get("/api/agent/v1/work-items/").json()["results"] == []
+        assert client.get(f"/api/agent/v1/workspaces/{workspace.slug}/work-items/{issue.id}/").status_code == 404
+
+    def test_a_member_and_a_guest_get_only_their_own(self, client, workspace, person, admin_projects):
+        for role in (MEMBER, GUEST):
+            WorkspaceMember.objects.filter(workspace=workspace, member=person).update(role=role)
+            assert sorted(self.listed(client)) == ["MINE"]
+
+    def test_a_public_project_is_not_listed_to_a_member_either(self, client, workspace, colleague):
+        # The web app shows a workspace member the public projects too. An app is shown what the person is in.
+        make_project(workspace, "OPEN", members=[(colleague, MEMBER)], network=2)
+        assert self.listed(client) == {}
+
+    def test_it_is_decided_on_every_call(self, client, workspace, person, admin_projects):
+        assert sorted(self.listed(client)) == ["MINE", "THEIRS"]
+        WorkspaceMember.objects.filter(workspace=workspace, member=person).update(role=MEMBER)
+        assert sorted(self.listed(client)) == ["MINE"]
+        WorkspaceMember.objects.filter(workspace=workspace, member=person).update(
+            role=ROLE.ADMIN.value, is_active=False
+        )
+        assert self.listed(client) == {}
+
+    def test_administering_one_workspace_shows_nothing_of_another(self, client, workspace, person, admin_projects):
+        other = make_workspace()
+        join(other, person)  # an ordinary member there
+        make_project(other, "ELSEWHERE", members=[(make_user(), MEMBER)])
+        assert sorted(self.listed(client)) == ["MINE", "THEIRS"]
+        assert self.listed(client, workspace=other.slug) == {}
+        assert sorted(self.listed(client, workspace=workspace.slug)) == ["MINE", "THEIRS"]
+
+
 class TestListing:
     @pytest.fixture
     def project(self, workspace, person, colleague):

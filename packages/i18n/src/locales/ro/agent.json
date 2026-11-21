@@ -82,7 +82,7 @@
       },
       "work_items_write": {
         "title": "Crearea și modificarea activităților în numele tău",
-        "description": "Creează activități, le schimbă starea, prioritatea, datele, responsabilii și etichetele și adaugă comentarii, în numele tău. Tot ce face apare în Plane sub numele tău."
+        "description": "Creează activități, le schimbă numele, descrierea, starea, prioritatea, datele, responsabilii și etichetele și adaugă comentarii, în numele tău. Tot ce face apare în Plane sub numele tău."
       },
       "time_write": {
         "title": "Urmărirea timpului tău",

@@ -82,7 +82,7 @@
       },
       "work_items_write": {
         "title": "Créer et modifier des éléments de travail pour vous",
-        "description": "Créer des éléments de travail, modifier leur état, leur priorité, leurs dates, les personnes assignées et leurs étiquettes, et ajouter des commentaires, en votre nom. Tout ce que l’application fait apparaît dans Plane sous votre nom."
+        "description": "Créer des éléments de travail, modifier leur nom, leur description, leur état, leur priorité, leurs dates, les personnes assignées et leurs étiquettes, et ajouter des commentaires, en votre nom. Tout ce que l’application fait apparaît dans Plane sous votre nom."
       },
       "time_write": {
         "title": "Suivre votre temps",

@@ -82,7 +82,7 @@
       },
       "work_items_write": {
         "title": "Membuat dan mengubah item kerja atas nama Anda",
-        "description": "Membuat item kerja, mengubah status, prioritas, tanggal, penugas, dan labelnya, serta menambahkan komentar atas nama Anda. Semua yang dilakukannya tampil di Plane dengan nama Anda."
+        "description": "Membuat item kerja, mengubah nama, deskripsi, status, prioritas, tanggal, penugas, dan labelnya, serta menambahkan komentar atas nama Anda. Semua yang dilakukannya tampil di Plane dengan nama Anda."
       },
       "time_write": {
         "title": "Melacak waktu Anda",

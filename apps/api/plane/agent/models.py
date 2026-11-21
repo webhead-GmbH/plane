@@ -49,6 +49,18 @@ class AgentClient(models.Model):
     # The most this client may ever ask for.
     allowed_scopes = models.JSONField(default=list)
     is_active = models.BooleanField(default=True)
+    # Where Plane tells the app that something happened (see `services/events.py`). Set by an
+    # administrator, never by the app: an address the app could change is an address a stolen
+    # secret could point anywhere. Empty means the app polls instead.
+    webhook_url = models.URLField(max_length=1024, blank=True, default="")
+    # The signing secret is not stored: it is derived from the server's secret key, this
+    # client and this number, so a copy of the database holds nothing to forge a delivery
+    # with. Raising the number is how it is changed.
+    webhook_secret_version = models.PositiveIntegerField(default=1)
+    # Events in a row that could not be delivered at all. At the limit the address is switched
+    # off, so a dead app is not retried for ever.
+    webhook_failures = models.PositiveIntegerField(default=0)
+    webhook_disabled_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -221,3 +233,45 @@ class AgentIdempotencyKey(models.Model):
         verbose_name = "Agent idempotency key"
         constraints = [models.UniqueConstraint(fields=["grant", "key_hash"], name="agent_idempotency_once")]
         indexes = [models.Index(fields=["expires_at"], name="agent_idempotency_expires")]
+
+
+class AgentEvent(models.Model):
+    """Something that happened that one connected person's app may want to hear about.
+
+    The row says *that* it happened and to what, by id: no names, no text, no dates. The app
+    fetches the details with the person's own token, which decides again at that moment what
+    the person may see. So an event can never carry anything the person could not read, and
+    the table holds nothing worth stealing.
+
+    It is also the record of whether the app was told: a delivery is retried until it is
+    accepted or given up on, and the outcome is kept for a few days.
+    """
+
+    class Status(models.TextChoices):
+        PENDING = "pending", "Pending"
+        DELIVERED = "delivered", "Delivered"
+        FAILED = "failed", "Failed"
+
+    id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False)
+    grant = models.ForeignKey(AgentGrant, on_delete=models.CASCADE, related_name="events")
+    # work_item.assigned, work_item.unassigned, work_item.due_date_changed, work_item.state_changed,
+    # connection.revoked
+    event_type = models.CharField(max_length=40)
+    # Ids only. What the app receives, apart from the connection details added when it is sent.
+    payload = models.JSONField(default=dict)
+    status = models.CharField(max_length=10, choices=Status.choices, default=Status.PENDING)
+    attempts = models.PositiveSmallIntegerField(default=0)
+    created_at = models.DateTimeField(default=timezone.now)
+    delivered_at = models.DateTimeField(null=True, blank=True)
+    # What the app answered last, so "why did my bot not hear about this" has an answer.
+    last_status_code = models.PositiveSmallIntegerField(null=True, blank=True)
+    last_error = models.CharField(max_length=200, blank=True, default="")
+
+    class Meta:
+        db_table = "agent_events"
+        verbose_name = "Agent event"
+        ordering = ("-created_at",)
+        indexes = [
+            models.Index(fields=["created_at"], name="agent_event_created"),
+            models.Index(fields=["grant", "-created_at"], name="agent_event_grant"),
+        ]

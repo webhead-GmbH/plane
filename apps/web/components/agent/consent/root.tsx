@@ -51,11 +51,16 @@ function errorCode(error: unknown): string | undefined {
   return (error as TAgentError | undefined)?.error;
 }
 
+// The app's own layout clips whatever does not fit the window (`overflow-hidden`), so a page that can be
+// taller than the screen has to scroll itself. The approval screen lists every scope in full and is
+// often taller than a phone.
 function Shell(props: { children: ReactNode }) {
   return (
-    <div className="flex min-h-screen flex-col items-center bg-canvas px-4 py-10 sm:py-16">
-      <PlaneLogo className="h-8 w-auto text-primary" />
-      <main className="mt-8 w-full max-w-lg">{props.children}</main>
+    <div className="h-full w-full overflow-y-auto bg-canvas">
+      <div className="flex min-h-full flex-col items-center px-4 py-10 sm:py-16">
+        <PlaneLogo className="h-8 w-auto text-primary" />
+        <div className="mt-8 w-full max-w-lg">{props.children}</div>
+      </div>
     </div>
   );
 }
@@ -188,7 +193,7 @@ export function AgentConsentRoot(props: { requestToken: string }) {
 
   if (isLoading || !consent) {
     return (
-      <div className="grid min-h-screen place-items-center">
+      <div className="grid h-full place-items-center">
         <LogoSpinner />
       </div>
     );

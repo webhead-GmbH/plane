@@ -82,7 +82,7 @@
       },
       "work_items_write": {
         "title": "Werkitems voor je aanmaken en wijzigen",
-        "description": "Werkitems aanmaken, hun status, prioriteit, data, toegewezenen en labels wijzigen en reacties toevoegen, namens jou. Alles wat de app doet, verschijnt in Plane onder jouw naam."
+        "description": "Werkitems aanmaken, hun naam, beschrijving, status, prioriteit, data, toegewezenen en labels wijzigen en reacties toevoegen, namens jou. Alles wat de app doet, verschijnt in Plane onder jouw naam."
       },
       "time_write": {
         "title": "Je tijd bijhouden",
