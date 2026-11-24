@@ -78,6 +78,14 @@
       "work_items_read": {
         "title": "Seus projetos e itens de trabalho",
         "description": "Os projetos de que você é membro e os itens de trabalho que você pode ver neles, com seus comentários."
+      },
+      "work_items_write": {
+        "title": "Criar e alterar itens de trabalho por você",
+        "description": "Criar itens de trabalho, alterar o estado, a prioridade, as datas, os responsáveis e as etiquetas deles e adicionar comentários, em seu nome. Tudo o que o app fizer aparece no Plane com o seu nome."
+      },
+      "time_write": {
+        "title": "Registrar o seu tempo",
+        "description": "Iniciar e parar o seu cronômetro e adicionar horas ao seu tempo, em seu nome."
       }
     }
   }

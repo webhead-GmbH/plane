@@ -10,6 +10,10 @@ The OAuth endpoints (linking, refresh, revoke) are in [Connecting a person](02-c
 - [Hours and timer](#hours-and-timer) — `GET /me/time/`, `GET /me/timer/`
 - [Leave](#leave) — `GET /me/leave/`, `GET /me/absences/`
 - [Projects and work items](#projects-and-work-items) — `GET /projects/`, `GET /work-items/`, `GET /workspaces/{slug}/work-items/{ref}/`
+- [Making changes](#making-changes) — the rules, idempotency, dry runs, errors
+- [What the person can pick from](#what-the-person-can-pick-from) — members, states, labels
+- [Work items: create and change](#work-items-create-and-change) — create, change, comment, attach
+- [Time: timer and hours](#time-timer-and-hours) — start, stop, add hours
 
 ---
 
@@ -23,7 +27,7 @@ https://<your plane>/api/agent/v1/
 
 - **Trailing slashes are required** on every path.
 - `v1` changes only in compatible ways: new endpoints, new optional parameters, **new fields in responses**. Ignore fields you do not know; do not fail on them. A breaking change would be a new `v2`.
-- Everything in this version is a `GET`, except the OAuth endpoints. Other methods answer `405`.
+- Reads are `GET`. Changes are `POST` and `PATCH`, need a write scope, and are described under [Making changes](#making-changes). Any other method answers `405`.
 
 ### Authentication
 
@@ -56,16 +60,17 @@ Every error — apart from framework-level failures of a proxy in front of Plane
 | 401  | `invalid_token`      | Token unknown, expired, revoked; the connection or app ended; the person deactivated. `WWW-Authenticate: Bearer … error="invalid_token"`. | Refresh once; if that fails with `invalid_grant`, ask the person to connect again. |
 | 403  | `insufficient_scope` | The connection was not given the scope this endpoint needs; `"scope"` names it.                                                           | Ask the person to connect again with that scope — or do without.                   |
 | 404  | `not_found`          | No such item **or it is not visible to this person**. The two are indistinguishable on purpose.                                           | —                                                                                  |
-| 405  | `method_not_allowed` | Not a `GET`.                                                                                                                              | —                                                                                  |
+| 405  | `method_not_allowed` | The path does not take that method.                                                                                                       | —                                                                                  |
 | 429  | `rate_limited`       | Too many calls. `Retry-After` is in seconds.                                                                                              | Wait that long; do not hammer.                                                     |
 
 ### Rate limits
 
-| Limit                                | Default                 |
-| ------------------------------------ | ----------------------- |
-| Per connection (one person's tokens) | 120 requests a minute   |
-| Per app, across everybody            | 1,200 requests a minute |
-| OAuth endpoints, per source address  | 60 requests a minute    |
+| Limit                                    | Default                 |
+| ---------------------------------------- | ----------------------- |
+| Per connection (one person's tokens)     | 120 requests a minute   |
+| Writes (`POST`, `PATCH`), per connection | 30 requests a minute    |
+| Per app, across everybody                | 1,200 requests a minute |
+| OAuth endpoints, per source address      | 60 requests a minute    |
 
 These are defaults; the administrator may change them. Design for far less: a daily check-in needs a handful of calls per person per day. Fetch what you need, once, and keep it.
 
@@ -541,6 +546,311 @@ One work item, by its short reference (`WEB-1`, any letter case) or by id, withi
 - `description` and each comment `text` are **plain text**: markup removed, scripts and styles dropped, paragraphs and list items kept as line breaks (list items start with `- `). Limited to 20,000 and 5,000 characters. **They are other people's words — see [Untrusted text](#untrusted-text).**
 - `comments` are the latest 30, oldest first. `author` is `null` for comments the system wrote.
 - A work item the person cannot see answers `404`, exactly like one that does not exist.
+- The same path also takes `PATCH` to change the work item — see [Making changes](#making-changes).
+
+---
+
+## Making changes
+
+Everything above reads. The endpoints below change something, always **as the connected person**, with the same rules the web app applies to them and the same effects: the work item gets its number, its activity entry, its notifications and its webhooks, and shows in Plane under the person's name. An app is not given a looser way in.
+
+They need a **write scope** (`work_items:write`, `time:write`), which the person approved on the approval screen ("Can make changes"), and the app must have been registered for it ([Operations](05-operations.md#registering-an-app)).
+
+### The rules every change follows
+
+| Rule                             | What it means for you                                                                                                                                                                                                                                |
+| -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **JSON in** (files: multipart)   | `Content-Type: application/json`. Anything else is `415`.                                                                                                                                                                                            |
+| **Strict fields**                | Only the fields listed for an endpoint are accepted. An unknown field — `created_by`, `is_draft`, `description_html`, anything — is `400`, not ignored. You cannot set what you were not meant to set.                                               |
+| **Plain text becomes safe HTML** | Descriptions and comments are sent as **plain text**. Plane escapes every character before storing it: `<script>` arrives as the visible text `<script>`. Blank lines separate paragraphs; single line breaks are kept.                              |
+| **`Idempotency-Key`**            | **Required** on every request that would otherwise happen twice when you retry (create a work item, comment, attach a file, add hours). See below.                                                                                                   |
+| **`?dry_run=true`**              | On creating and changing a work item: check everything, change nothing, and say what _would_ happen. Use it to show the person what you are about to do and ask them to confirm.                                                                     |
+| **Roles**                        | The person's role in the project decides. Members and admins may create and change; guests may only comment on what they can see. A project the person is not in answers `404`, like one that does not exist; one they are a guest in answers `403`. |
+| **Limits**                       | Writes are limited to **30 a minute per connection** (default), far below reads. Over the limit is `429` with `Retry-After`.                                                                                                                         |
+| **Audit**                        | Each change is written to the audit log with the **ids** of what it touched — never its content — so the person and the administrator can see what the bot did.                                                                                      |
+
+### Idempotency: doing it once
+
+Chat apps retry: a webhook is delivered twice, a model calls a tool again, a reply is lost on the way. Each of those would otherwise create a second work item, a second comment, another hour on somebody's month.
+
+Send an `Idempotency-Key` header naming **the one action you intend** — 8 to 128 printable characters, no spaces. A UUID is ideal, and so is something stable from the source of the request (for Telegram: `tg-<update_id>-create`).
+
+```
+POST /workspaces/acme/projects/…/work-items/
+Idempotency-Key: tg-884412-create
+```
+
+| You send                                              | You get                                                                                                  |
+| ----------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| A key for the first time                              | The action is done; the answer is kept for 24 hours.                                                     |
+| The **same key and the same request** again           | The **first answer again** (same status, same body) with `Idempotent-Replay: true`, and nothing is done. |
+| The same key with a **different** request             | `422 idempotency_key_reused`. Use a new key for a new action.                                            |
+| The same key while the first is still being worked on | `409 request_in_progress` with `Retry-After`. Wait and repeat.                                           |
+| A key whose request was **refused** (4xx)             | Nothing is kept: fix the request and send it again with the same key.                                    |
+
+Keys belong to one connection; two people's keys never collide. Only successful answers are kept. Without a key, these endpoints answer `400`.
+
+Changing a work item (`PATCH`), starting a timer and stopping it do not need a key: doing the same thing twice changes nothing the second time.
+
+### Asking first: `dry_run`
+
+```bash
+curl -sS -X POST "$PLANE/api/agent/v1/workspaces/acme/projects/$PROJECT/work-items/?dry_run=true" \
+  -H "Authorization: Bearer $ACCESS_TOKEN" -H "Content-Type: application/json" \
+  -d '{"name": "Fix the header on mobile", "priority": "high", "assignees": ["f62bf509-…"]}'
+```
+
+```json
+{
+  "dry_run": true,
+  "valid": true,
+  "would_create": {
+    "project": { "id": "10005b47-…", "name": "Website relaunch", "identifier": "WEB" },
+    "name": "Fix the header on mobile",
+    "description": "",
+    "priority": "high",
+    "state": { "id": "9e8df6d5-…", "name": "Backlog", "group": "backlog" },
+    "assignees": [{ "id": "f62bf509-…", "display_name": "Pat Person" }],
+    "labels": [],
+    "start_date": null,
+    "target_date": null
+  }
+}
+```
+
+It runs **every check the real request would** (permissions, assignee membership, dates), so `valid: true` means the real request will succeed unless something changes in between. The preview uses Plane's own words — the person's name, the state's name — so the confirmation you show is true to what will happen, not what you hope will.
+
+### Errors specific to changes
+
+| HTTP | `error`                  | Meaning                                                                                                   | What to do                                                      |
+| ---- | ------------------------ | --------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| 400  | `invalid_request`        | A field is missing, malformed, unknown or not allowed; `fields` may name which.                           | Fix it.                                                         |
+| 403  | `forbidden`              | The person's role in the project does not allow this.                                                     | Tell the person; do not retry.                                  |
+| 403  | `not_assigned`           | Starting a timer on work the person is not assigned to.                                                   | Assign them first, or tell them.                                |
+| 404  | `not_found`              | No such project or work item, **or the person cannot see it.**                                            | —                                                               |
+| 409  | `state_not_allowed`      | A timer cannot be started in the work item's current state (the project decides which states allow time). | Move it to a state that does, or tell the person.               |
+| 409  | `timer_running`          | The change would move work to a state where time cannot be tracked while a timer is running on it.        | Stop the timer first (`POST /me/timer/stop/`).                  |
+| 409  | `month_settled`          | Hours would land in a month that has already been settled; `period_start` says which.                     | A person must reopen the month in Plane; do not work around it. |
+| 409  | `request_in_progress`    | See idempotency.                                                                                          | Wait, repeat.                                                   |
+| 413  | `file_too_large`         | The file is over the size limit; `limit` is in bytes.                                                     | Tell the person.                                                |
+| 400  | `file_type_not_allowed`  | The file type is not accepted (SVG images are refused outright).                                          | Tell the person.                                                |
+| 422  | `idempotency_key_reused` | See idempotency.                                                                                          | Use a new key.                                                  |
+| 502  | `storage_unavailable`    | The file could not be saved (Plane's storage or Google Drive).                                            | Retry later; nothing was stored.                                |
+
+---
+
+## What the person can pick from
+
+Before an app creates work it needs to know who can be assigned and which states and labels exist. These read endpoints answer for **projects the person is a member of** (anything else is `404`).
+
+**Scope:** `work_items:read`.
+
+### `GET /workspaces/{slug}/projects/{project_id}/members/`
+
+```json
+{
+  "results": [
+    { "id": "f62bf509-…", "display_name": "Pat Person", "role": "member", "can_be_assigned": true },
+    { "id": "5d6c1e88-…", "display_name": "Guest Gina", "role": "guest", "can_be_assigned": false }
+  ]
+}
+```
+
+Active members only, people (not bots), by name. Guests are listed but cannot be assigned work. **Find a person by matching the name the human gave you against this list in your own code; do not let a language model invent an id** — pass it only an id that appeared here.
+
+### `GET /workspaces/{slug}/projects/{project_id}/states/`
+
+```json
+{
+  "results": [
+    { "id": "93837d28-…", "name": "Backlog", "group": "backlog", "default": true },
+    { "id": "e1a0b2c4-…", "name": "In progress", "group": "started", "default": false },
+    { "id": "c7d19f30-…", "name": "Done", "group": "completed", "default": false }
+  ]
+}
+```
+
+### `GET /workspaces/{slug}/projects/{project_id}/labels/`
+
+```json
+{ "results": [{ "id": "7a54d0cf-…", "name": "bug", "color": "#ff0000" }] }
+```
+
+---
+
+## Work items: create and change
+
+### `POST /workspaces/{slug}/projects/{project_id}/work-items/`
+
+**Scope:** `work_items:write` · **Needs:** `Idempotency-Key` · **Role:** admin or member of the project · **Supports:** `?dry_run=true`
+
+| Field                       | Type              | Required | Meaning                                                                                                                          |
+| --------------------------- | ----------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `name`                      | string, ≤ 255     | yes      | The title.                                                                                                                       |
+| `description`               | string, ≤ 20,000  | no       | **Plain text.** Blank lines separate paragraphs.                                                                                 |
+| `priority`                  | string            | no       | `urgent`, `high`, `medium`, `low`, `none` (default `none`).                                                                      |
+| `state`                     | id                | no       | A state of this project; default is the project's default state.                                                                 |
+| `assignees`                 | list of ids, ≤ 20 | no       | Project members who can be assigned (not guests). If none is given, Plane assigns the project's default assignee, if it has one. |
+| `labels`                    | list of ids, ≤ 20 | no       | Labels of this project.                                                                                                          |
+| `start_date`, `target_date` | `YYYY-MM-DD`      | no       | `start_date` must not be after `target_date`.                                                                                    |
+
+**`201`** — the new work item, in the [same shape as reading one](#get-workspacesslugwork-itemsref) (reference, link, description, comments):
+
+```json
+{
+  "id": "df9faeac-226f-4c40-9c88-ff8bd97d2647",
+  "ref": "WEB-1",
+  "url": "https://plane.example.com/acme/browse/WEB-1/",
+  "name": "Fix the header on mobile",
+  "priority": "high",
+  "state": { "id": "93837d28-…", "name": "Backlog", "group": "backlog" },
+  "assignees": [{ "id": "f62bf509-…", "display_name": "Pat Person" }],
+  "description": "The logo overlaps the menu.\nSee the Figma frame.",
+  "comments": [],
+  "…": "…"
+}
+```
+
+Reply to the person with `url`: it is the link to the work item in Plane. Their name is on it as its creator.
+
+### `PATCH /workspaces/{slug}/work-items/{ref}/`
+
+**Scope:** `work_items:write` · **Role:** admin or member of the project · **Supports:** `?dry_run=true` · No key needed.
+
+Change one or more of these; send at least one:
+
+| Field                               | Meaning                                                                                                                                                    |
+| ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `name`                              | New title.                                                                                                                                                 |
+| `priority`                          | `urgent`, `high`, `medium`, `low`, `none`.                                                                                                                 |
+| `state`                             | A state id of this work item's project. (Completing sets the completion time, as in the web app.)                                                          |
+| `start_date`, `target_date`         | `YYYY-MM-DD`, or `null` to clear.                                                                                                                          |
+| `add_assignees`, `remove_assignees` | Lists of user ids. **You add and remove; you never send the whole list**, so an app that does not know who is already on a work item cannot take them off. |
+| `add_labels`, `remove_labels`       | Lists of label ids, likewise.                                                                                                                              |
+
+```json
+{
+  "changed": {
+    "priority": { "from": "low", "to": "high" },
+    "assignees": { "from": ["f62bf509-…"], "to": ["5d6c1e88-…", "f62bf509-…"] }
+  },
+  "work_item": { "ref": "WEB-1", "…": "the work item as it is now" }
+}
+```
+
+`changed` lists only what actually changed (and is `{}` if nothing did — the same change twice is harmless). The description **cannot** be changed here; add a comment instead.
+
+Moving a work item to a state where time cannot be tracked while a timer is running on it is refused (`409 timer_running`), exactly as in the web app.
+
+With `?dry_run=true`: `{"dry_run": true, "valid": true, "ref": "WEB-1", "would_change": {…}}`, nothing is changed.
+
+### `POST /workspaces/{slug}/work-items/{ref}/comments/`
+
+**Scope:** `work_items:write` · **Needs:** `Idempotency-Key` · **Role:** any member of the project who can see the work item (guests may comment on work they can see)
+
+| Field  | Type             | Required | Meaning                         |
+| ------ | ---------------- | -------- | ------------------------------- |
+| `text` | string, ≤ 10,000 | yes      | The comment, as **plain text**. |
+
+**`201`**: `{"id": "…", "work_item": "WEB-1", "author": "Pat Person", "created_at": "…", "text": "…"}`. The comment is the person's own, with the same notification and activity as one written in Plane.
+
+### `POST /workspaces/{slug}/work-items/{ref}/attachments/`
+
+**Scope:** `work_items:write` · **Needs:** `Idempotency-Key` · **Role:** admin or member of the project
+
+Send the file as `multipart/form-data` in a field named **`file`** — nothing else. Plane puts it **where the web app would**: in the workspace's Google Drive folder for the work item if Drive is set up for the workspace, otherwise in Plane's own file storage.
+
+```bash
+curl -sS -X POST "$PLANE/api/agent/v1/workspaces/acme/work-items/WEB-1/attachments/" \
+  -H "Authorization: Bearer $ACCESS_TOKEN" -H "Idempotency-Key: tg-884413-file" \
+  -F "file=@screenshot.png;type=image/png"
+```
+
+```json
+{
+  "work_item": "WEB-1",
+  "url": "https://plane.example.com/acme/browse/WEB-1/",
+  "file": { "id": "…", "name": "screenshot.png", "type": "image/png", "size": 183402, "storage": "plane", "link": null }
+}
+```
+
+`storage` is `plane` or `google_drive` (then `link` is the file's address in Drive). Rules:
+
+- **Size**: at most the server's attachment limit (5 MB by default; the administrator can raise it). Over it is `413 file_too_large`, with the limit in bytes. A file just under the limit can still be refused earlier, by the server's overall request-size guard, because the multipart wrapping adds a little: that answer is `413` with `{"error": "REQUEST_BODY_TOO_LARGE", …}`, not in the usual shape. Treat any `413` as "too big".
+- **Types**: the web app's allow-list (images, documents, audio, video, archives of common kinds). **SVG images are refused** — they can carry scripts.
+- **Name**: any directory part (`../../x`) is removed; only the file name is kept.
+- Telegram bots can download files up to 20 MB through the normal Bot API, so the server's limit is the one that bites.
+
+---
+
+## Time: timer and hours
+
+If the workspace has the CRM integration switched on, a timer or hours written through the API are mirrored to the CRM exactly like ones entered in the web app; there is no separate path that skips it.
+
+### `POST /me/timer/start/`
+
+**Scope:** `time:write` · No key needed.
+
+```json
+{ "workspace": "acme", "work_item": "WEB-1" }
+```
+
+The rules are the web app's:
+
+- only an **assignee** may start a timer on a work item (`403 not_assigned`);
+- only while the work item is in a state where **time may be tracked** — a project and workspace setting (`409 state_not_allowed`);
+- a person has **one timer at a time, across every workspace**: starting one **ends the one already running**, wherever it is. The answer says so in `stopped_previous`, so the bot can tell the person;
+- starting a timer that is **already running on that same work item** changes nothing and answers `200` with `already_running: true`.
+
+**`201`**:
+
+```json
+{
+  "started": true,
+  "already_running": false,
+  "stopped_previous": {
+    "started_at": "2026-03-04T08:05:00+00:00",
+    "elapsed_minutes": 50,
+    "work_item": { "ref": "WEB-1", "…": "…" }
+  },
+  "timer": {
+    "started_at": "2026-03-04T09:00:00+00:00",
+    "elapsed_minutes": 0,
+    "note": "",
+    "work_item": { "ref": "WEB-2", "…": "…" }
+  }
+}
+```
+
+`work_item` inside `timer` is only filled in if the connection also has `work_items:read`.
+
+### `POST /me/timer/stop/`
+
+**Scope:** `time:write` · No key needed.
+
+Stops the person's running timer, wherever it is. Optional body: `{"note": "header fix"}` — what the time was spent on (≤ 500 characters). With no timer running: `404 not_found`.
+
+```json
+{ "stopped": true, "minutes": 55, "started_at": "2026-03-04T08:05:00+00:00", "work_item": { "ref": "WEB-1", "…": "…" } }
+```
+
+### `POST /me/time-entries/`
+
+**Scope:** `time:write` · **Needs:** `Idempotency-Key` · **Role:** admin or member of the project
+
+Add hours the person worked on a work item, for today or a recent day.
+
+| Field       | Type           | Required | Meaning                                                                                                       |
+| ----------- | -------------- | -------- | ------------------------------------------------------------------------------------------------------------- |
+| `workspace` | string         | yes      | The workspace slug.                                                                                           |
+| `work_item` | string         | yes      | Short reference or id.                                                                                        |
+| `minutes`   | integer 1–1440 | yes      | A whole number. Not a string, not a fraction.                                                                 |
+| `date`      | `YYYY-MM-DD`   | no       | The day, **in the person's own time zone**. Default: today. Not in the future, and no more than 31 days back. |
+| `note`      | string, ≤ 500  | no       | What it was.                                                                                                  |
+
+**`201`**: `{"id": "…", "date": "2026-03-04", "minutes": 90, "note": "", "work_item": {…}}` (`work_item` only with `work_items:read`).
+
+These hours count in the person's month exactly like hours they enter by hand. **They are never added to a month that has been settled** (handed in, approved or closed): `409 month_settled`. Those figures have been read by somebody; a person has to reopen the month in Plane first. Time is money here — confirm with the person before adding it, and never add hours the person did not state.
 
 ---
 

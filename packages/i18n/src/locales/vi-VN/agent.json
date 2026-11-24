@@ -78,6 +78,14 @@
       "work_items_read": {
         "title": "Dự án và mục công việc của bạn",
         "description": "Các dự án bạn là thành viên và các mục công việc bạn có thể xem trong đó, kèm bình luận."
+      },
+      "work_items_write": {
+        "title": "Tạo và thay đổi mục công việc thay bạn",
+        "description": "Tạo mục công việc, thay đổi trạng thái, mức ưu tiên, ngày, người phụ trách và nhãn của chúng, đồng thời thêm bình luận, dưới danh nghĩa của bạn. Mọi thứ ứng dụng làm đều hiển thị trong Plane dưới tên bạn."
+      },
+      "time_write": {
+        "title": "Theo dõi thời gian của bạn",
+        "description": "Bắt đầu và dừng bộ đếm giờ của bạn, và thêm giờ vào thời gian của bạn, dưới danh nghĩa của bạn."
       }
     }
   }

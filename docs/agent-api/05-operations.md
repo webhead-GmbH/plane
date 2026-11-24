@@ -18,10 +18,10 @@ For whoever runs the Plane server. Everything here is done on the server, with t
 
 ## Deploying
 
-The feature adds one Django app (`agent`) with five tables, a daily clean-up task and new routes under `/api/agent/`. To deploy:
+The feature adds one Django app (`agent`) with six tables, a daily clean-up task and new routes under `/api/agent/`. To deploy:
 
 1. **Build and roll out** the API image as usual.
-2. **Apply the migration:** `python manage.py migrate` (creates `agent.0001_initial`; nothing existing is altered).
+2. **Apply the migration:** `python manage.py migrate` (creates `agent.0001_initial` and `agent.0002_idempotency_keys`; nothing existing is altered).
 3. **Restart the Celery worker and beat** so they pick up the new clean-up task (`plane.agent.tasks.purge_expired_agent_records`, daily at 04:30 UTC).
 4. **Check `WEB_URL`** is set to the address people open Plane at (for example `https://plane.example.com`). It is used to build the link people are sent; without it the link request fails with `server_error`.
 5. **Deploy the web app** (it contains the approval screen and _Connected apps_).
@@ -51,7 +51,16 @@ The secret is shown only now. Store it in the app's secret store.
 
 - **The secret is shown once.** Only its SHA-256 hash is stored; there is no way to read it back. Hand it to the app's developer through your secret-sharing channel, not by email or chat.
 - `--redirect-uri` (repeatable) is the **exact** address people are sent back to. Matching is character-for-character: no wildcards, no prefix matching, no query-string flexibility. Use `https`; plain `http` is accepted only for `localhost`, `127.0.0.1` and `::1`, for development. No fragments, no credentials in the address.
-- `--scope` (repeatable) is the **ceiling**: the most this app may ever ask for. Omit it to allow all scopes. Give an app only what its purpose needs. If the app asks for less, that is fine; if it asks for more, the request is refused.
+- `--scope` (repeatable) is the **ceiling**: the most this app may ever ask for. Omit it and the app is allowed only the **read-only** scopes (`profile`, `time:read`, `leave:read`, `work_items:read`): the scopes that change things (`work_items:write`, `time:write`) are never a default and must be named on purpose. Give an app only what its purpose needs. If the app asks for less, that is fine; if it asks for more, the request is refused.
+
+To let an app act for people (create work items, comment, attach files, start timers, add hours) name the write scopes as well:
+
+```bash
+python manage.py agent_client update plane_client_Ab3… \
+    --set-scopes profile time:read work_items:read work_items:write time:write
+```
+
+This only raises the **ceiling**. A person still has to approve each write scope on the approval screen, and connections that already exist keep what they were given: the person connects again to grant more. Grant write scopes only to an app whose developers have read the [Security guide](04-security-guide.md#4a-acting-on-a-persons-behalf).
 
 Register **separate apps for development and production.**
 
@@ -95,6 +104,9 @@ Environment variables for the API (all optional; the defaults are deliberate):
 | `AGENT_AUDIT_RETENTION_DAYS`          | `180`            | How long audit lines are kept.                                                                                                                                |
 | `AGENT_GRANT_RATE_LIMIT`              | `120/minute`     | Per connection (one person). DRF rate syntax.                                                                                                                 |
 | `AGENT_CLIENT_RATE_LIMIT`             | `1200/minute`    | Per app, across everyone.                                                                                                                                     |
+| `AGENT_WRITE_RATE_LIMIT`              | `30/minute`      | Writes (`POST`, `PATCH`) per connection.                                                                                                                      |
+| `AGENT_IDEMPOTENCY_RETENTION_HOURS`   | `24`             | How long a repeated write with the same `Idempotency-Key` is answered with the first answer.                                                                  |
+| `AGENT_MAX_BACKDATE_DAYS`             | `31`             | How far back an app may add hours (never the future, never a settled month).                                                                                  |
 | `AGENT_OAUTH_RATE_LIMIT`              | `60/minute`      | The OAuth endpoints, per source address.                                                                                                                      |
 | `NUM_PROXIES`                         | unset            | Number of reverse proxies in front of Plane. **Set it** so rate limits and the audit log see the real client address — see [Behind a proxy](#behind-a-proxy). |
 
@@ -119,14 +131,14 @@ If you restore the database from an old backup, connections that had been revoke
 
 Table `agent_audit_logs`. One row per event, **without content**: no query strings, request bodies or responses.
 
-| Column                             | Meaning                                                                                                                                                                                                                                                                                                                                                                                                      |
-| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `created_at`                       | When.                                                                                                                                                                                                                                                                                                                                                                                                        |
-| `event`                            | `request` (a link was registered), `approved`, `denied`, `linked` (code exchanged), `refreshed`, `refresh_retry` (an exact retry inside the leeway), `reuse_detected` (a spent refresh token replayed — connection ended), `revoked` (with `detail.reason`: `user`, `client`, `admin`, `code_reuse`, `token_reuse`, `superseded` — the same person linked the same chat account again), `api` (a data call). |
-| `client_id`, `grant_id`, `user_id` | Whom it concerned.                                                                                                                                                                                                                                                                                                                                                                                           |
-| `method`, `path`, `status_code`    | For `api` events.                                                                                                                                                                                                                                                                                                                                                                                            |
-| `ip_address`, `user_agent`         | The caller's.                                                                                                                                                                                                                                                                                                                                                                                                |
-| `detail`                           | Small JSON; never personal content.                                                                                                                                                                                                                                                                                                                                                                          |
+| Column                             | Meaning                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `created_at`                       | When.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| `event`                            | `request` (a link was registered), `approved`, `denied`, `linked` (code exchanged), `refreshed`, `refresh_retry` (an exact retry inside the leeway), `reuse_detected` (a spent refresh token replayed — connection ended), `revoked` (with `detail.reason`: `user`, `client`, `admin`, `code_reuse`, `token_reuse`, `superseded` — the same person linked the same chat account again), `api` (a call), `write` (a change; `detail.action` is e.g. `work_item.create`, `work_item.update`, `comment.create`, `attachment.create`, `timer.start`, `timer.stop`, `time_entry.create`, and the ids it touched — never content). |
+| `client_id`, `grant_id`, `user_id` | Whom it concerned.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| `method`, `path`, `status_code`    | For `api` events.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| `ip_address`, `user_agent`         | The caller's.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| `detail`                           | Small JSON; never personal content.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 
 Examples:
 
@@ -151,9 +163,13 @@ WHERE g.revoked_at IS NULL AND (g.last_used_at IS NULL OR g.last_used_at < now()
 
 ## Retention and clean-up
 
-A daily task (04:30 UTC) deletes sign-in requests and tokens that expired more than seven days ago, and audit lines older than `AGENT_AUDIT_RETENTION_DAYS`. **Connections are never deleted** — a revoked connection stays with `revoked_at` and `revoked_reason`, because "who had access and when it ended" is the question an audit asks.
+A daily task (04:30 UTC) deletes sign-in requests and tokens that expired more than seven days ago, expired idempotency keys, and audit lines older than `AGENT_AUDIT_RETENTION_DAYS`. **Connections are never deleted** — a revoked connection stays with `revoked_at` and `revoked_reason`, because "who had access and when it ended" is the question an audit asks.
 
 The audit log contains caller IP addresses and user agents. Set the retention to what your data-protection policy allows.
+
+**One table does hold content, briefly.** To answer a repeated request with the first answer, `agent_idempotency_keys` stores the response body of each successful change for `AGENT_IDEMPOTENCY_RETENTION_HOURS` (24 by default). That body can contain a work item's description or a comment's text. It is deleted when the key expires (the daily task also removes expired ones), and it is the only place a connected app's content is kept outside the work item itself. Shorten the window if that matters to your policy; do not go below the longest time an app might retry.
+
+**CRM.** Timers and hours an app writes are mirrored to the CRM (when that integration is on) by the same signals as ones from the web app. A bad write by a bot is therefore also a bad write in the CRM; that is one more reason to keep the write scopes to apps whose developers have read the security guide.
 
 ## Behind a proxy
 

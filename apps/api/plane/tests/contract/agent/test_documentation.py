@@ -65,11 +65,16 @@ def test_every_scope_is_described_and_nothing_else_is():
 def test_every_data_endpoint_says_which_scope_it_needs():
     spec = _spec()
     for route, view in _routes().items():
-        scope = getattr(view, "required_scope", None)
-        if scope is None:
+        if not hasattr(view, "all_scopes"):
             continue
-        operation = spec["paths"][route]["get"]
-        assert f"`{scope}`" in operation["description"], f"{route} does not mention `{scope}`"
+        for method in ("get", "post", "patch"):
+            if method not in spec["paths"][route] or not hasattr(view, method):
+                continue
+            scope = view().scope_for(method.upper())
+            if scope is None:
+                continue
+            description = spec["paths"][route][method]["description"]
+            assert f"`{scope}`" in description, f"{method.upper()} {route} does not mention `{scope}`"
 
 
 def test_the_documented_lifetimes_are_the_real_ones():

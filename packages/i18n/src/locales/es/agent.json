@@ -78,6 +78,14 @@
       "work_items_read": {
         "title": "Tus proyectos y elementos de trabajo",
         "description": "Los proyectos de los que eres miembro y los elementos de trabajo que puedes ver en ellos, con sus comentarios."
+      },
+      "work_items_write": {
+        "title": "Crear y cambiar elementos de trabajo por ti",
+        "description": "Crear elementos de trabajo, cambiar su estado, prioridad, fechas, asignados y etiquetas, y agregar comentarios, en tu nombre. Todo lo que haga aparecerá en Plane con tu nombre."
+      },
+      "time_write": {
+        "title": "Registrar tu tiempo",
+        "description": "Iniciar y detener tu temporizador y agregar horas a tu tiempo, en tu nombre."
       }
     }
   }

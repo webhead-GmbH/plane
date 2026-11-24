@@ -92,7 +92,7 @@ class TestScopes:
         scopes = [scope["id"] for scope in bearer(tokens["access_token"]).get(ME_URL).json()["connection"]["scopes"]]
         assert scopes == ["profile", "time:read"]
 
-    def test_every_endpoint_names_a_known_scope(self):
+    def test_every_endpoint_names_a_known_scope_for_every_method_it_serves(self):
         """A view that names none is refused outright, so this catches the one that was meant to work."""
         views = [
             pattern.callback.view_class
@@ -101,7 +101,9 @@ class TestScopes:
         ]
         assert views
         for view in views:
-            assert view.required_scope in SCOPES, view
+            methods = [name.upper() for name in view.http_method_names if hasattr(view, name) and name != "options"]
+            for method in methods:
+                assert view().scope_for(method) in SCOPES, (view, method)
 
     def test_a_view_that_names_no_scope_is_refused(self, linked, monkeypatch):
         from plane.agent.views.me import MeEndpoint

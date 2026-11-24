@@ -4,7 +4,9 @@ info:
   version: "1.0"
   summary: Let an application you run act on behalf of one person in Plane, with their consent.
   description: |
-    Version 1 is **read-only**: working days, hours, timer, leave, projects and work items.
+    Version 1 reads a person's working days, hours, timer, leave, projects and work items, and — with the
+    write scopes the person approves — acts for them: creates and changes work items, comments, attaches
+    files, starts and stops their timer and adds hours.
 
     A person connects an app through an OAuth 2.0 authorization-code flow hardened with pushed
     authorization requests (RFC 9126) and PKCE (RFC 7636, `S256` only). The app receives a short-lived
@@ -30,6 +32,8 @@ tags:
   - name: Hours and timer
   - name: Leave
   - name: Projects and work items
+  - name: Changing work
+  - name: Time tracking
 
 security:
   - bearerAuth: []
@@ -392,6 +396,394 @@ paths:
         "403": { $ref: "#/components/responses/InsufficientScope" }
         "404": { $ref: "#/components/responses/NotFound" }
         "429": { $ref: "#/components/responses/RateLimited" }
+    patch:
+      tags: [Changing work]
+      operationId: updateWorkItem
+      summary: Change a work item
+      description: |
+        **Scope:** `work_items:write`. Role: admin or member of the project. Send at least one field.
+
+        People and labels are changed by saying which to **add** and which to **remove**, never by sending
+        the whole list. `changed` lists only what actually changed (`{}` if nothing did, so repeating a change
+        is harmless and needs no `Idempotency-Key`). The description cannot be changed here.
+
+        Moving a work item to a state where time cannot be tracked while a timer is running on it is refused
+        (`409 timer_running`). With `?dry_run=true` nothing is changed and `would_change` is returned.
+      parameters:
+        - { $ref: "#/components/parameters/Slug" }
+        - { $ref: "#/components/parameters/Ref" }
+        - { $ref: "#/components/parameters/DryRun" }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/WorkItemChange" }
+      responses:
+        "200":
+          description: What changed, and the work item as it is now.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - { $ref: "#/components/schemas/WorkItemChanged" }
+                  - { $ref: "#/components/schemas/DryRunChange" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/InvalidToken" }
+        "403": { $ref: "#/components/responses/InsufficientScope" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "429": { $ref: "#/components/responses/RateLimited" }
+
+  /workspaces/{slug}/projects/{project_id}/members/:
+    get:
+      tags: [Projects and work items]
+      operationId: listProjectMembers
+      summary: The people in a project
+      description: |
+        **Scope:** `work_items:read`. Active members, people only, by name. Guests are listed but
+        `can_be_assigned` is false. Match the name a human gave you against this list in your own
+        code; never let a language model invent an id.
+      parameters:
+        - { $ref: "#/components/parameters/Slug" }
+        - { $ref: "#/components/parameters/ProjectId" }
+      responses:
+        "200":
+          description: The members.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  results:
+                    type: array
+                    items: { $ref: "#/components/schemas/ProjectMember" }
+        "401": { $ref: "#/components/responses/InvalidToken" }
+        "403": { $ref: "#/components/responses/InsufficientScope" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "429": { $ref: "#/components/responses/RateLimited" }
+
+  /workspaces/{slug}/projects/{project_id}/states/:
+    get:
+      tags: [Projects and work items]
+      operationId: listProjectStates
+      summary: The states a work item in the project can be in
+      description: "**Scope:** `work_items:read`."
+      parameters:
+        - { $ref: "#/components/parameters/Slug" }
+        - { $ref: "#/components/parameters/ProjectId" }
+      responses:
+        "200":
+          description: The states.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  results:
+                    type: array
+                    items: { $ref: "#/components/schemas/ProjectState" }
+        "401": { $ref: "#/components/responses/InvalidToken" }
+        "403": { $ref: "#/components/responses/InsufficientScope" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "429": { $ref: "#/components/responses/RateLimited" }
+
+  /workspaces/{slug}/projects/{project_id}/labels/:
+    get:
+      tags: [Projects and work items]
+      operationId: listProjectLabels
+      summary: The labels that can be put on work in the project
+      description: "**Scope:** `work_items:read`."
+      parameters:
+        - { $ref: "#/components/parameters/Slug" }
+        - { $ref: "#/components/parameters/ProjectId" }
+      responses:
+        "200":
+          description: The labels.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  results:
+                    type: array
+                    items: { $ref: "#/components/schemas/ProjectLabel" }
+        "401": { $ref: "#/components/responses/InvalidToken" }
+        "403": { $ref: "#/components/responses/InsufficientScope" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "429": { $ref: "#/components/responses/RateLimited" }
+
+  /workspaces/{slug}/projects/{project_id}/work-items/:
+    post:
+      tags: [Changing work]
+      operationId: createWorkItem
+      summary: Create a work item
+      description: |
+        **Scope:** `work_items:write`. Role: admin or member of the project. **Needs an `Idempotency-Key`.**
+
+        Created as the person, with the same number, activity entry, notifications and webhooks as one made
+        in the web app. `description` is plain text; every character is escaped before it is stored. Unknown
+        fields are refused. With `?dry_run=true` every check runs, nothing is created, and the work item is
+        described as it would be.
+      parameters:
+        - { $ref: "#/components/parameters/Slug" }
+        - { $ref: "#/components/parameters/ProjectId" }
+        - { $ref: "#/components/parameters/IdempotencyKey" }
+        - { $ref: "#/components/parameters/DryRun" }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/WorkItemCreate" }
+      responses:
+        "201":
+          description: The new work item.
+          headers:
+            Idempotent-Replay:
+              description: "`true` when this is the stored answer to an earlier request with the same key."
+              schema: { type: string, enum: ["true"] }
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/WorkItemDetail" }
+        "200":
+          description: "A dry run (`?dry_run=true`): what would be created. Nothing was."
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/DryRunCreate" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/InvalidToken" }
+        "403": { $ref: "#/components/responses/InsufficientScope" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "422": { $ref: "#/components/responses/IdempotencyKeyReused" }
+        "429": { $ref: "#/components/responses/RateLimited" }
+
+  /workspaces/{slug}/work-items/{ref}/comments/:
+    post:
+      tags: [Changing work]
+      operationId: createComment
+      summary: Add a comment as the person
+      description: |
+        **Scope:** `work_items:write`. Any member of the project who can see the work item (a guest may
+        comment on work they can see). **Needs an `Idempotency-Key`.** The comment appears under the
+        person's name, so show them the exact text before sending it.
+      parameters:
+        - { $ref: "#/components/parameters/Slug" }
+        - { $ref: "#/components/parameters/Ref" }
+        - { $ref: "#/components/parameters/IdempotencyKey" }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [text]
+              additionalProperties: false
+              properties:
+                text: { type: string, maxLength: 10000, description: Plain text. }
+      responses:
+        "201":
+          description: The comment.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id: { type: string, format: uuid }
+                  work_item: { type: string, examples: [WEB-1] }
+                  author: { type: string }
+                  created_at: { type: string }
+                  text: { type: string }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/InvalidToken" }
+        "403": { $ref: "#/components/responses/InsufficientScope" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "422": { $ref: "#/components/responses/IdempotencyKeyReused" }
+        "429": { $ref: "#/components/responses/RateLimited" }
+
+  /workspaces/{slug}/work-items/{ref}/attachments/:
+    post:
+      tags: [Changing work]
+      operationId: createAttachment
+      summary: Attach a file to a work item
+      description: |
+        **Scope:** `work_items:write`. Role: admin or member of the project. **Needs an `Idempotency-Key`.**
+
+        Send the file as `multipart/form-data` in one field named `file`, and nothing else. It is stored where
+        the web app would put it: the workspace's Google Drive folder for the work item when Drive is set up,
+        otherwise Plane's own file storage. Limited to the web app's size and file-type allow-list; **SVG
+        images are refused**. Any directory part of the file name is removed.
+      parameters:
+        - { $ref: "#/components/parameters/Slug" }
+        - { $ref: "#/components/parameters/Ref" }
+        - { $ref: "#/components/parameters/IdempotencyKey" }
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file: { type: string, format: binary }
+      responses:
+        "201":
+          description: Stored.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  work_item: { type: string, examples: [WEB-1] }
+                  url: { type: [string, "null"], format: uri }
+                  file:
+                    type: object
+                    properties:
+                      id: { type: string, format: uuid }
+                      name: { type: string }
+                      type: { type: string }
+                      size: { type: integer }
+                      storage: { type: string, enum: [plane, google_drive] }
+                      link: { type: [string, "null"], format: uri, description: The file's address in Drive, when stored there. }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/InvalidToken" }
+        "403": { $ref: "#/components/responses/InsufficientScope" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "413":
+          description: The file is over the size limit (`file_too_large`; `limit` is in bytes).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "422": { $ref: "#/components/responses/IdempotencyKeyReused" }
+        "429": { $ref: "#/components/responses/RateLimited" }
+        "502":
+          description: The file could not be saved (`storage_unavailable`). Nothing was stored.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  /me/timer/start/:
+    post:
+      tags: [Time tracking]
+      operationId: startTimer
+      summary: Start the person's timer on a work item
+      description: |
+        **Scope:** `time:write` (add `work_items:read` to have the work item named in the answer).
+
+        The web app's rules: only an assignee, only in a state where time may be tracked, and a person has
+        one timer at a time across every workspace, so starting one ends the one already running
+        (`stopped_previous`). Starting a timer that already runs on the same work item changes nothing
+        and answers `200`.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [workspace, work_item]
+              additionalProperties: false
+              properties:
+                workspace: { type: string, description: The workspace slug. }
+                work_item: { type: string, description: Short reference or id. }
+      responses:
+        "201":
+          description: Started.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/TimerStarted" }
+        "200":
+          description: Already running on that work item; nothing changed.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/TimerStarted" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/InvalidToken" }
+        "403": { $ref: "#/components/responses/InsufficientScope" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "429": { $ref: "#/components/responses/RateLimited" }
+
+  /me/timer/stop/:
+    post:
+      tags: [Time tracking]
+      operationId: stopTimer
+      summary: Stop the person's running timer
+      description: "**Scope:** `time:write`. Optional body `{\"note\": \"…\"}`. With no timer running: `404`."
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                note: { type: string, maxLength: 500, description: What the time was spent on. }
+      responses:
+        "200":
+          description: Stopped.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  stopped: { type: boolean }
+                  minutes: { type: integer }
+                  started_at: { type: [string, "null"], format: date-time }
+                  work_item: { oneOf: [{ $ref: "#/components/schemas/WorkItem" }, { type: "null" }] }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/InvalidToken" }
+        "403": { $ref: "#/components/responses/InsufficientScope" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "429": { $ref: "#/components/responses/RateLimited" }
+
+  /me/time-entries/:
+    post:
+      tags: [Time tracking]
+      operationId: createTimeEntry
+      summary: Add hours the person worked on a work item
+      description: |
+        **Scope:** `time:write` (add `work_items:read` to have the work item described in the answer).
+        Role: admin or member of the project. **Needs an `Idempotency-Key`.**
+
+        For today or a recent day (at most 31 days back by default; never the future), counted in the
+        person's month like hours entered by hand. **Never added to a month that has been settled**
+        (`409 month_settled`). Hours become pay and invoices: confirm with the person, and never add hours
+        they did not state.
+      parameters:
+        - { $ref: "#/components/parameters/IdempotencyKey" }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [workspace, work_item, minutes]
+              additionalProperties: false
+              properties:
+                workspace: { type: string }
+                work_item: { type: string, description: Short reference or id. }
+                minutes: { type: integer, minimum: 1, maximum: 1440 }
+                date: { type: string, format: date, description: The day in the person's own time zone. Default today. }
+                note: { type: string, maxLength: 500 }
+      responses:
+        "201":
+          description: Added.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id: { type: string, format: uuid }
+                  date: { type: string, format: date }
+                  minutes: { type: integer }
+                  note: { type: string }
+                  work_item: { oneOf: [{ $ref: "#/components/schemas/WorkItem" }, { type: "null" }] }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/InvalidToken" }
+        "403": { $ref: "#/components/responses/InsufficientScope" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "422": { $ref: "#/components/responses/IdempotencyKeyReused" }
+        "429": { $ref: "#/components/responses/RateLimited" }
 
 components:
   securitySchemes:
@@ -423,6 +815,39 @@ components:
       name: offset
       in: query
       schema: { type: integer, minimum: 0, default: 0 }
+
+    Slug:
+      name: slug
+      in: path
+      required: true
+      description: The workspace slug.
+      schema: { type: string }
+    Ref:
+      name: ref
+      in: path
+      required: true
+      description: Short reference (`WEB-1`, any case) or the work item id.
+      schema: { type: string }
+    ProjectId:
+      name: project_id
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: true
+      description: |
+        Names the one action you intend: 8 to 128 printable characters, no spaces (a UUID is ideal; for
+        Telegram, something like `tg-<update_id>-create`). The same key with the same request returns
+        the first answer and does nothing more (`Idempotent-Replay: true`); with a different request it is
+        `422`. Only successful answers are kept, for 24 hours.
+      schema: { type: string, minLength: 8, maxLength: 128, pattern: "^[\\x21-\\x7e]{8,128}$" }
+    DryRun:
+      name: dry_run
+      in: query
+      description: "`true` to check everything and change nothing, and be told what would happen."
+      schema: { type: boolean, default: false }
 
   responses:
     BadRequest:
@@ -488,6 +913,27 @@ components:
         application/json:
           schema: { $ref: "#/components/schemas/Error" }
           example: { error: rate_limited, error_description: Too many requests. Slow down and retry later. }
+    Conflict:
+      description: |
+        The request is understood but conflicts with the state of things: `state_not_allowed` (a timer
+        cannot start in the work item's state), `timer_running` (stop the timer before moving the work),
+        `month_settled` (hours would land in a closed month; `period_start` says which),
+        `request_in_progress` (a request with this `Idempotency-Key` is still running; wait and repeat).
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+          example:
+            error: month_settled
+            error_description: These hours fall in a month that has already been settled. A person has to reopen it in Plane first.
+            period_start: "2026-02-01"
+    IdempotencyKeyReused:
+      description: This `Idempotency-Key` was already used for a different request. Use a new key for a new action.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+          example:
+            error: idempotency_key_reused
+            error_description: This Idempotency-Key was already used for a different request. Use a new key for a new action.
 
   schemas:
     Error:
@@ -510,7 +956,7 @@ components:
 
     Scope:
       type: string
-      enum: [profile, "time:read", "leave:read", "work_items:read"]
+      enum: [profile, "time:read", "leave:read", "work_items:read", "work_items:write", "time:write"]
 
     ScopeInfo:
       type: object
@@ -518,7 +964,7 @@ components:
         id: { $ref: "#/components/schemas/Scope" }
         title: { type: string }
         description: { type: string }
-        writes: { type: boolean, description: Whether it lets the app change anything. False for all scopes in v1. }
+        writes: { type: boolean, description: Whether it lets the app change anything. True for `work_items:write` and `time:write`. }
 
     Account:
       type: object
@@ -885,3 +1331,131 @@ components:
                   text:
                     type: string
                     description: Plain text (at most 5,000 characters). Written by other people — untrusted.
+
+    ProjectMember:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        display_name: { type: string }
+        role: { type: string, enum: [admin, member, guest] }
+        can_be_assigned: { type: boolean, description: False for guests. }
+
+    ProjectState:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        group: { type: string, enum: [backlog, unstarted, started, completed, cancelled] }
+        default: { type: boolean }
+
+    ProjectLabel:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        color: { type: string }
+
+    WorkItemCreate:
+      type: object
+      required: [name]
+      additionalProperties: false
+      properties:
+        name: { type: string, maxLength: 255 }
+        description: { type: string, maxLength: 20000, description: Plain text; blank lines separate paragraphs. }
+        priority: { type: string, enum: [urgent, high, medium, low, none] }
+        state: { type: string, format: uuid, description: A state of this project; default is the project's default state. }
+        assignees:
+          type: array
+          maxItems: 20
+          items: { type: string, format: uuid }
+          description: Project members who can be assigned (not guests).
+        labels:
+          type: array
+          maxItems: 20
+          items: { type: string, format: uuid }
+        start_date: { type: string, format: date }
+        target_date: { type: string, format: date }
+
+    WorkItemChange:
+      type: object
+      minProperties: 1
+      additionalProperties: false
+      properties:
+        name: { type: string, maxLength: 255 }
+        priority: { type: string, enum: [urgent, high, medium, low, none] }
+        state: { type: string, format: uuid }
+        start_date: { type: [string, "null"], format: date, description: "`null` clears it." }
+        target_date: { type: [string, "null"], format: date, description: "`null` clears it." }
+        add_assignees: { type: array, maxItems: 20, items: { type: string, format: uuid } }
+        remove_assignees: { type: array, maxItems: 20, items: { type: string, format: uuid } }
+        add_labels: { type: array, maxItems: 20, items: { type: string, format: uuid } }
+        remove_labels: { type: array, maxItems: 20, items: { type: string, format: uuid } }
+
+    FieldChange:
+      type: object
+      properties:
+        from: {}
+        to: {}
+
+    WorkItemChanged:
+      type: object
+      properties:
+        changed:
+          type: object
+          description: Only what actually changed; empty if nothing did.
+          additionalProperties: { $ref: "#/components/schemas/FieldChange" }
+        work_item: { $ref: "#/components/schemas/WorkItemDetail" }
+
+    DryRunChange:
+      type: object
+      properties:
+        dry_run: { type: boolean, const: true }
+        valid: { type: boolean }
+        ref: { type: string, examples: [WEB-1] }
+        would_change:
+          type: object
+          additionalProperties: { $ref: "#/components/schemas/FieldChange" }
+
+    DryRunCreate:
+      type: object
+      properties:
+        dry_run: { type: boolean, const: true }
+        valid: { type: boolean }
+        would_create:
+          type: object
+          properties:
+            project:
+              type: object
+              properties:
+                id: { type: string, format: uuid }
+                name: { type: string }
+                identifier: { type: string }
+            name: { type: string }
+            description: { type: string }
+            priority: { type: string }
+            state:
+              type: [object, "null"]
+              properties:
+                id: { type: string, format: uuid }
+                name: { type: string }
+                group: { type: string }
+            assignees:
+              type: array
+              items:
+                type: object
+                properties:
+                  id: { type: string, format: uuid }
+                  display_name: { type: string }
+            labels: { type: array, items: { type: string } }
+            start_date: { type: [string, "null"], format: date }
+            target_date: { type: [string, "null"], format: date }
+
+    TimerStarted:
+      type: object
+      properties:
+        started: { type: boolean }
+        already_running: { type: boolean }
+        stopped_previous:
+          description: The timer that was ended to start this one, if any.
+          oneOf: [{ $ref: "#/components/schemas/Timer" }, { type: "null" }]
+        timer: { oneOf: [{ $ref: "#/components/schemas/Timer" }, { type: "null" }] }
