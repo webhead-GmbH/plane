@@ -4,7 +4,7 @@ The Agent API lets an application you run — a chat bot, a scheduled assistant,
 
 It was designed for a Telegram bot that talks to each employee, but nothing in it is specific to Telegram. Any server-side application can use it.
 
-> **Status — version 1: reading and acting.** An app can read a person's days, hours, leave, projects and work items, and — only with the extra scopes the person approves — create and change work items, comment, attach files, and start and stop their timer or add hours. A manager's app can also read how their team is doing (days, hours, open work), with a scope of its own that is never a default. Push notifications are planned as further endpoints in the same `v1`; apps that do not ask for them are unaffected. See [Roadmap](#roadmap).
+> **Status — version 1: reading and acting.** An app can read a person's days, hours, leave, projects and work items, and — only with the extra scopes the person approves — create and change work items, comment, attach files, and start and stop their timer or add hours. A manager's app can also read how their team is doing (days, hours, open work), with a scope of its own that is never a default. Plane can also **tell the app when something happens** (assigned, due date or state changed, connection ended) instead of the app asking. Apps that do not use these are unaffected. See [Roadmap](#roadmap).
 
 ---
 
@@ -43,6 +43,7 @@ The person signs in to Plane in their own browser, exactly as they always do. **
 | Building it for Telegram                             | [Telegram bot recipe](06-telegram-recipe.md)                                                                                                   |
 | Responsible for what the bot does with people's data | [Security guide for app developers](04-security-guide.md) — **mandatory reading**                                                              |
 | Running the Plane server                             | [Operations guide](05-operations.md)                                                                                                           |
+| Wanting to be told when work changes                 | [Events](07-events.md)                                                                                                                         |
 | Generating a client or importing into Postman        | [`openapi.yaml`](openapi.yaml)                                                                                                                 |
 
 ### The documents
@@ -55,6 +56,8 @@ The person signs in to Plane in their own browser, exactly as they always do. **
 | 4   | [Security guide](04-security-guide.md)           | What the app developer is obliged to do — secrets, prompt injection, group chats, personal data |
 | 5   | [Operations guide](05-operations.md)             | Registering apps, settings, audit log, revoking, troubleshooting                                |
 | 6   | [Telegram bot recipe](06-telegram-recipe.md)     | A worked design for a daily check-in bot                                                        |
+| 7   | [Events](07-events.md)                           | Being told when something happens: setup, signature, retries, the events                        |
+| —   | [Sandbox bot](examples/README.md)                | A runnable stand-in for the bot, to try everything before the real one exists                   |
 | —   | [`openapi.yaml`](openapi.yaml)                   | Machine-readable OpenAPI 3.1 description                                                        |
 
 ---
@@ -64,6 +67,8 @@ The person signs in to Plane in their own browser, exactly as they always do. **
 You need: a Plane server (with this feature deployed), a person with a Plane account to test with, and a public HTTPS address for your bot's callback (or `http://localhost:<port>` while developing).
 
 Replace `PLANE` with your Plane address, for example `https://plane.example.com`.
+
+> **No bot yet?** [`examples/sandbox_bot.py`](examples/README.md) does all of this with a web page: it links you, calls every endpoint, previews and creates a work item, and shows Plane's events. It is also the shortest working example of the flow below.
 
 ### 1. Get your app registered
 
@@ -201,7 +206,7 @@ Save the new refresh token **before** you use the new access token. If you ever 
 | What is their timer running on right now?                    | `GET /me/timer/`                                                          | `time:read` (+ `work_items:read`)           |
 | How much leave do they have left?                            | `GET /me/leave/`                                                          | `leave:read`                                |
 | What leave is booked?                                        | `GET /me/absences/`                                                       | `leave:read`                                |
-| Which projects are they in?                                  | `GET /projects/`                                                          | `work_items:read`                           |
+| Which projects are they in (an admin: every project)?        | `GET /projects/`                                                          | `work_items:read`                           |
 | What are they assigned to, what is due?                      | `GET /work-items/`                                                        | `work_items:read`                           |
 | What does this task say, what was discussed?                 | `GET /workspaces/{slug}/work-items/{ref}/`                                | `work_items:read`                           |
 | Who can I assign to, which states and labels exist?          | `GET /workspaces/{slug}/projects/{id}/members/`, `…/states/`, `…/labels/` | `work_items:read`                           |
@@ -212,6 +217,7 @@ Save the new refresh token **before** you use the new access token. If you ever 
 | ------------------------------------------------- | ------------------------------------------------------- | ------------------ |
 | Create a task (with description, assignee, dates) | `POST /workspaces/{slug}/projects/{id}/work-items/`     | `work_items:write` |
 | Move it, re-prioritise it, assign or unassign     | `PATCH /workspaces/{slug}/work-items/{ref}/`            | `work_items:write` |
+| Add to its description, or replace it             | `PATCH /workspaces/{slug}/work-items/{ref}/`            | `work_items:write` |
 | Add a comment                                     | `POST /workspaces/{slug}/work-items/{ref}/comments/`    | `work_items:write` |
 | Attach a file the person sent                     | `POST /workspaces/{slug}/work-items/{ref}/attachments/` | `work_items:write` |
 | Start or stop their timer                         | `POST /me/timer/start/`, `POST /me/timer/stop/`         | `time:write`       |
@@ -228,6 +234,8 @@ Save the new refresh token **before** you use the new access token. If you ever 
 A colleague's day off is reported as _away_, never why, and only the work the manager can see themselves is counted. See [Your team](03-api-reference.md#your-team-managers) and [Security guide §4b](04-security-guide.md#4b-managers-reading-about-colleagues).
 
 Every change is made **as the person**, with the same rules as in the web app, and appears in Plane under their name. Creating and attaching need an `Idempotency-Key`, and creating or changing can be previewed with `?dry_run=true` so the bot can ask "create this?" before it does. See [Making changes](03-api-reference.md#making-changes).
+
+**Being told** (an address the administrator sets for your app): `work_item.assigned`, `work_item.unassigned`, `work_item.due_date_changed`, `work_item.state_changed` and `connection.revoked`, each a signed request carrying ids only. See [Events](07-events.md).
 
 Full detail in the [API reference](03-api-reference.md).
 
@@ -250,8 +258,7 @@ These explain the shape of everything else.
 
 Not available yet (planned, in this order):
 
-1. **Events**: Plane calls your bot when something changes (assigned, due date moved) so it need not poll.
-2. **More ways to change work**: editing a description, linking work items, moving work between projects. (A description can be set when a work item is created but not replaced afterwards, on purpose: the web app edits descriptions live, and overwriting one from outside is not safe to do blindly. Add a comment instead.)
+1. **More ways to change work**: linking work items, moving work between projects. (A description can be added to or replaced, with safeguards: see [Editing the description](03-api-reference.md#editing-the-description).)
 
 If you need one of these sooner, say which; the design leaves room for each.
 

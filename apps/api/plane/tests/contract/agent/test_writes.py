@@ -21,7 +21,8 @@ from freezegun import freeze_time
 # Module imports
 from plane.agent.models import AgentAuditLog, AgentIdempotencyKey
 from plane.app.permissions import ROLE
-from plane.db.models import Issue, IssueComment, IssueWorkLog, State
+from plane.agent.services.work_items import description_version
+from plane.db.models import Issue, IssueComment, IssueDescriptionVersion, IssueWorkLog, State
 from plane.hr.models import HrPeriod
 from plane.tests.contract.agent.conftest import bearer, client_with
 from plane.tests.contract.agent.world import (
@@ -521,6 +522,257 @@ class TestChangingAWorkItem:
         wanted = uuid.UUID("12345678-1234-4234-8234-123456789012")
         make_issue(project, "Task", id=wanted)
         assert client.get(item_url(workspace, str(wanted))).json()["name"] == "Task"
+
+
+class TestChangingTheDescription:
+    """Adding to a description, and replacing it: what an app may do with words other people wrote."""
+
+    RICH = '<p>First paragraph</p><ul><li>one</li></ul><image-component src="x"></image-component>'
+
+    @pytest.fixture
+    def issue(self, project):
+        return make_issue(
+            project,
+            "Task",
+            description_html="<p>First paragraph</p>",
+            description_binary=b"the editor's own copy",
+            description_json={"type": "doc"},
+        )
+
+    def append(self, client, workspace, text, **extra):
+        return client.patch(
+            item_url(workspace, "PRJ-1"),
+            {"description_append": text, **extra},
+            format="json",
+            HTTP_IDEMPOTENCY_KEY=key(),
+        )
+
+    def version(self, client, workspace):
+        return client.get(item_url(workspace, "PRJ-1")).json()["description_version"]
+
+    # --- adding
+
+    def test_text_is_added_after_what_is_there_and_the_answer_says_so(self, client, workspace, issue):
+        response = self.append(client, workspace, "More\n\nand more")
+
+        body = response.json()
+        assert response.status_code == 200, response.content
+        assert body["changed"] == {"description": {"mode": "append", "added": "More\n\nand more"}}
+        issue.refresh_from_db()
+        assert issue.description_html == "<p>First paragraph</p><p>More</p><p>and more</p>"
+        assert issue.description_stripped == "First paragraphMoreand more"
+        assert body["work_item"]["description"] == "First paragraph\nMore\nand more"
+
+    def test_the_editors_own_copy_is_dropped_so_the_next_editor_session_starts_from_the_text(
+        self, client, workspace, issue
+    ):
+        self.append(client, workspace, "More")
+        issue.refresh_from_db()
+        assert issue.description_binary in (None, b"") and issue.description_json == {}
+
+    def test_adding_keeps_formatting_images_and_links(self, client, workspace, project):
+        issue = make_issue(project, "Rich", description_html=self.RICH)
+        self.append(client, workspace, "Added")
+        issue.refresh_from_db()
+        assert issue.description_html == self.RICH + "<p>Added</p>"
+
+    @pytest.mark.parametrize("empty", ["", "<p></p>", "<p><br></p>", "<p class='x'> </p>"])
+    def test_adding_to_an_empty_description_makes_no_empty_paragraph_first(self, client, workspace, project, empty):
+        issue = make_issue(project, "Empty", description_html=empty)
+        self.append(client, workspace, "Hello")
+        issue.refresh_from_db()
+        assert issue.description_html == "<p>Hello</p>"
+
+    def test_what_is_added_is_text_never_markup(self, client, workspace, issue):
+        self.append(client, workspace, "<script>alert(1)</script> & <b>x</b>")
+        issue.refresh_from_db()
+        assert "<script>" not in issue.description_html and "<b>" not in issue.description_html
+        assert "&lt;script&gt;alert(1)&lt;/script&gt; &amp; &lt;b&gt;x&lt;/b&gt;" in issue.description_html
+
+    def test_adding_twice_with_the_same_key_adds_it_once(self, client, workspace, issue):
+        same = key()
+        for _ in range(2):
+            response = client.patch(
+                item_url(workspace, "PRJ-1"), {"description_append": "Once"}, format="json", HTTP_IDEMPOTENCY_KEY=same
+            )
+            assert response.status_code == 200
+        issue.refresh_from_db()
+        assert issue.description_html.count("Once") == 1
+        assert response["Idempotent-Replay"] == "true"
+
+    def test_adding_needs_a_key_because_doing_it_twice_is_not_harmless(self, client, workspace, issue):
+        response = client.patch(item_url(workspace, "PRJ-1"), {"description_append": "x"}, format="json")
+        assert response.status_code == 400
+        issue.refresh_from_db()
+        assert issue.description_html == "<p>First paragraph</p>"
+
+    def test_adding_can_be_combined_with_other_changes(self, client, workspace, issue):
+        response = self.append(client, workspace, "Plus", name="Renamed", priority="high")
+        assert set(response.json()["changed"]) == {"name", "priority", "description"}
+
+    def test_adding_with_the_version_just_read_works_and_with_an_old_one_is_refused(self, client, workspace, issue):
+        old = self.version(client, workspace)
+        assert self.append(client, workspace, "A", expected_description_version=old).status_code == 200
+        stale = self.append(client, workspace, "B", expected_description_version=old)
+        assert stale.status_code == 409 and stale.json()["error"] == "description_changed"
+        issue.refresh_from_db()
+        assert "B" not in issue.description_html
+
+    # --- replacing
+
+    def test_replacing_needs_the_version_that_was_read(self, client, workspace, issue):
+        response = client.patch(item_url(workspace, "PRJ-1"), {"description": "New"}, format="json")
+        assert response.status_code == 400
+        assert "expected_description_version" in response.json()["error_description"]
+        issue.refresh_from_db()
+        assert issue.description_html == "<p>First paragraph</p>"
+
+    def test_a_description_is_replaced_and_the_answer_says_from_what_to_what(self, client, workspace, issue):
+        response = client.patch(
+            item_url(workspace, "PRJ-1"),
+            {"description": "Brand new", "expected_description_version": self.version(client, workspace)},
+            format="json",
+        )
+        assert response.status_code == 200, response.content
+        assert response.json()["changed"]["description"] == {
+            "mode": "replace",
+            "from": "First paragraph",
+            "to": "Brand new",
+            "drops_formatting": False,
+        }
+        issue.refresh_from_db()
+        assert issue.description_html == "<p>Brand new</p>"
+        assert issue.description_binary in (None, b"") and issue.description_json == {}
+
+    def test_replacing_says_when_it_will_throw_away_formatting(self, client, workspace, project):
+        make_issue(project, "Rich", description_html=self.RICH)
+        response = client.patch(
+            item_url(workspace, "PRJ-1") + "?dry_run=true",
+            {"description": "Plain", "expected_description_version": self.version(client, workspace)},
+            format="json",
+        )
+        assert response.json()["would_change"]["description"]["drops_formatting"] is True
+
+    def test_a_description_changed_by_somebody_else_in_between_is_not_replaced(self, client, workspace, issue):
+        read = self.version(client, workspace)
+        Issue.objects.filter(pk=issue.pk).update(description_html="<p>Somebody typed this meanwhile</p>")
+        response = client.patch(
+            item_url(workspace, "PRJ-1"),
+            {"description": "Mine", "expected_description_version": read},
+            format="json",
+        )
+        assert response.status_code == 409 and response.json()["error"] == "description_changed"
+        assert response.json()["description_version"] == description_version("<p>Somebody typed this meanwhile</p>")
+        issue.refresh_from_db()
+        assert issue.description_html == "<p>Somebody typed this meanwhile</p>"
+
+    def test_replacing_with_what_is_already_there_changes_nothing(self, client, workspace, project, background_tasks):
+        issue = make_issue(project, "Same", description_html="<p>Same</p>", description_binary=b"keep")
+        response = client.patch(
+            item_url(workspace, "PRJ-1"),
+            {"description": "Same", "expected_description_version": self.version(client, workspace)},
+            format="json",
+        )
+        assert response.json()["changed"] == {}
+        issue.refresh_from_db()
+        assert bytes(issue.description_binary) == b"keep"
+        background_tasks.issue_activity.assert_not_called()
+
+    # --- what is refused
+
+    @pytest.mark.parametrize(
+        "body",
+        [
+            {"description": "a", "description_append": "b", "expected_description_version": "0" * 16},
+            {"description_append": ""},
+            {"description_append": "   "},
+            {"description_append": 5},
+            {"description_append": "x" * 20001},
+            {"description_append": "x", "expected_description_version": "short"},
+            {"description_append": "x", "expected_description_version": "G" * 16},
+            {"expected_description_version": "0" * 16},
+            {"description": "", "expected_description_version": "0" * 16},
+        ],
+    )
+    def test_bad_requests_are_refused_and_change_nothing(self, client, workspace, issue, body):
+        response = client.patch(item_url(workspace, "PRJ-1"), body, format="json", HTTP_IDEMPOTENCY_KEY=key())
+        assert response.status_code == 400, response.content
+        issue.refresh_from_db()
+        assert issue.description_html == "<p>First paragraph</p>"
+
+    def test_a_description_cannot_grow_without_end(self, client, workspace, project):
+        issue = make_issue(project, "Long", description_html="<p>" + "x" * 195_000 + "</p>")
+        response = self.append(client, workspace, "y" * 6_000)
+        assert response.status_code == 400 and "too long" in response.json()["error_description"]
+        issue.refresh_from_db()
+        assert len(issue.description_html) < 200_000
+
+    def test_the_editors_binary_form_still_cannot_be_named(self, client, workspace, issue):
+        response = client.patch(item_url(workspace, "PRJ-1"), {"description_binary": "AAAA"}, format="json")
+        assert response.status_code == 400
+
+    def test_a_guest_cannot_edit_a_description(self, app, workspace, colleague):
+        guest = make_user()
+        join(workspace, guest)
+        shared = make_project(workspace, "GST", members=[(guest, GUEST), (colleague, MEMBER)])
+        make_issue(shared, "Mine", author=guest, description_html="<p>x</p>")
+        as_guest = client_with(app, guest, WRITE)
+        response = as_guest.patch(
+            item_url(workspace, "GST-1"), {"description_append": "y"}, format="json", HTTP_IDEMPOTENCY_KEY=key()
+        )
+        assert response.status_code == 403
+
+    # --- asking first, and what is recorded
+
+    def test_a_dry_run_shows_the_edit_and_changes_nothing_and_needs_no_key(self, client, workspace, issue):
+        response = client.patch(
+            item_url(workspace, "PRJ-1") + "?dry_run=true", {"description_append": "Later"}, format="json"
+        )
+        assert response.status_code == 200
+        assert response.json()["would_change"] == {"description": {"mode": "append", "added": "Later"}}
+        issue.refresh_from_db()
+        assert issue.description_html == "<p>First paragraph</p>" and bytes(issue.description_binary)
+
+    def test_a_dry_run_also_refuses_a_stale_version(self, client, workspace, issue):
+        response = client.patch(
+            item_url(workspace, "PRJ-1") + "?dry_run=true",
+            {"description_append": "x", "expected_description_version": "0" * 16},
+            format="json",
+        )
+        assert response.status_code == 409
+
+    def test_the_activity_feed_and_webhooks_are_told_the_old_and_the_new_text(
+        self, client, workspace, issue, background_tasks
+    ):
+        self.append(client, workspace, "More")
+        activity = background_tasks.issue_activity.call_args.kwargs
+        assert '"description_html": "<p>First paragraph</p><p>More</p>"' in activity["requested_data"]
+        assert '"description_html": "<p>First paragraph</p>"' in activity["current_instance"]
+        webhook = background_tasks.model_activity.call_args.kwargs
+        assert webhook["requested_data"]["description_html"] == "<p>First paragraph</p><p>More</p>"
+
+    def test_the_log_names_the_field_and_never_the_text(self, client, workspace, issue):
+        self.append(client, workspace, "A secret plan")
+        entry = AgentAuditLog.objects.get(event="write")
+        assert entry.detail["fields"] == ["description"]
+        assert "secret" not in str(entry.detail)
+
+    def test_the_old_text_stays_in_the_version_history_even_when_replaced_twice_quickly(self, client, workspace, issue):
+        for text in ("Second", "Third"):
+            response = client.patch(
+                item_url(workspace, "PRJ-1"),
+                {"description": text, "expected_description_version": self.version(client, workspace)},
+                format="json",
+            )
+            assert response.status_code == 200
+        kept = [version.description_html for version in IssueDescriptionVersion.objects.filter(issue=issue)]
+        assert "<p>First paragraph</p>" in kept and "<p>Second</p>" in kept and "<p>Third</p>" in kept
+
+    def test_the_version_is_part_of_what_is_read_and_follows_the_text(self, client, workspace, issue):
+        before = self.version(client, workspace)
+        assert before == description_version("<p>First paragraph</p>")
+        self.append(client, workspace, "More")
+        assert self.version(client, workspace) != before
 
 
 class TestComments:

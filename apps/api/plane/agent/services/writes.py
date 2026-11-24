@@ -19,12 +19,15 @@ the moment of the call.
 # Python imports
 import html
 import json
+import re
 from datetime import date as date_type
 from datetime import datetime, time
 
 # Django imports
 from django.core.serializers.json import DjangoJSONEncoder
+from django.db import transaction
 from django.utils import timezone
+from django.utils.html import strip_tags
 
 # Module imports
 from plane.agent import conf
@@ -34,7 +37,7 @@ from plane.api.serializers import IssueCommentCreateSerializer, IssueCommentSeri
 from plane.app.permissions import ROLE
 from plane.bgtasks.issue_activities_task import issue_activity
 from plane.bgtasks.webhook_task import model_activity
-from plane.db.models import IssueComment, IssueWorkLog, ProjectMember
+from plane.db.models import Issue, IssueComment, IssueDescriptionVersion, IssueWorkLog, ProjectMember
 from plane.hr.services.settled import settled_month_for
 from plane.hr.utils.calendar import hr_timezone
 from plane.utils.host import base_host
@@ -46,6 +49,8 @@ PRIORITIES = ("urgent", "high", "medium", "low", "none")
 
 MAX_NAME = 255
 MAX_DESCRIPTION = 20000
+# The whole description once text is added to it, as stored (HTML): the editor refuses documents far smaller than this.
+MAX_DESCRIPTION_HTML = 200_000
 MAX_COMMENT = 10000
 MAX_NOTE = 500
 MAX_PEOPLE = 20
@@ -168,6 +173,9 @@ def writable_issue(user, slug, ref, roles=WRITE_ROLES):
 CREATE_FIELDS = ("name", "description", "priority", "state", "assignees", "labels", "start_date", "target_date")
 UPDATE_FIELDS = (
     "name",
+    "description",
+    "description_append",
+    "expected_description_version",
     "priority",
     "state",
     "start_date",
@@ -285,10 +293,79 @@ def parse_update(data):
     for name in ("start_date", "target_date"):
         if name in data:
             fields[name] = date_field(data, name) or "clear"
+    fields.update(_parse_description_edit(data))
     fields = {key: value for key, value in fields.items() if value is not None}
     if not fields:
         raise invalid_request("Nothing to change. Send at least one of: " + ", ".join(UPDATE_FIELDS) + ".")
     return fields
+
+
+def _parse_description_edit(data):
+    """How the description is to change: text added to the end, or the whole of it replaced.
+
+    Adding keeps everything already there (formatting, images, links). Replacing does not, and an app
+    only ever sees the description as plain text, so it must say which version it read; if the work
+    item's description is not that any more somebody changed it in between, and the edit is refused.
+    """
+    append, replace = "description_append" in data, "description" in data
+    if append and replace:
+        raise invalid_request("Send either description (replace it) or description_append (add to it), not both.")
+    if not (append or replace):
+        if "expected_description_version" in data:
+            raise invalid_request("expected_description_version goes with description or description_append.")
+        return {}
+
+    name = "description_append" if append else "description"
+    text = text_field(data, name, max_length=MAX_DESCRIPTION)
+    if not text:
+        raise invalid_request(f"{name} must not be empty.")
+    fields = {name: text}
+
+    expected = data.get("expected_description_version")
+    if expected is not None:
+        if not isinstance(expected, str) or not re.fullmatch(r"[0-9a-f]{16}", expected):
+            raise invalid_request("expected_description_version must be the description_version you read.")
+        fields["expected_description_version"] = expected
+    elif replace:
+        raise invalid_request(
+            "Replacing a description needs expected_description_version: the description_version of the work item "
+            "as you read it. Read it first, or add to the description with description_append instead."
+        )
+    return fields
+
+
+def check_description_version(issue, fields):
+    """Refuse an edit made on top of a description that is no longer the one the app read."""
+    expected = fields.get("expected_description_version")
+    current = work_items.description_version(issue.description_html)
+    if expected and expected != current:
+        raise AgentError(
+            "description_changed",
+            "The description changed after you read it. Read the work item again and edit what is there now.",
+            status_code=409,
+            extra={"description_version": current},
+        )
+
+
+_EMPTY_BODY = re.compile(r"<(img|image-component|a|ul|ol|table|pre|blockquote)\b", re.IGNORECASE)
+_NOT_PLAIN = re.compile(r"<(?!/?(?:p|br)\b)[a-zA-Z]")
+
+
+def _is_empty_description(current_html):
+    """A description the editor left as an empty paragraph is nothing to add to."""
+    if _EMPTY_BODY.search(current_html or ""):
+        return False
+    return not re.sub(r"<[^>]*>", "", current_html or "").strip()
+
+
+def description_after(current_html, fields):
+    """The stored description once the edit is made."""
+    if "description" in fields:
+        return text_to_html(fields["description"])
+    added = text_to_html(fields["description_append"])
+    if _is_empty_description(current_html):
+        return added
+    return (current_html or "") + added
 
 
 def _current_ids(issue):
@@ -320,6 +397,24 @@ def plan_update(issue, fields):
             after = None if fields[name] == "clear" else fields[name].isoformat()
             before = getattr(issue, name).isoformat() if getattr(issue, name) else None
             change(name, before, after)
+    if "description" in fields or "description_append" in fields:
+        check_description_version(issue, fields)
+        before_html = issue.description_html or ""
+        after_html = description_after(before_html, fields)
+        if len(after_html) > MAX_DESCRIPTION_HTML:
+            raise invalid_request("The description would become too long. Add less, or put the rest in a comment.")
+        if before_html != after_html:
+            wanted["description_html"] = after_html
+            if "description" in fields:
+                changes["description"] = {
+                    "mode": "replace",
+                    "from": work_items.plain_text(before_html),
+                    "to": fields["description"],
+                    # Anything but plain paragraphs (images, links, lists, headings) is lost by replacing.
+                    "drops_formatting": bool(_NOT_PLAIN.search(before_html)),
+                }
+            else:
+                changes["description"] = {"mode": "append", "added": fields["description_append"]}
     if "add_assignees" in fields or "remove_assignees" in fields:
         after = (set(current_assignees) | set(fields.get("add_assignees", []))) - set(
             fields.get("remove_assignees", [])
@@ -330,6 +425,50 @@ def plan_update(issue, fields):
         after = (set(current_labels) | added) - removed
         change("labels", current_labels, sorted(after), key="labels")
     return wanted, changes
+
+
+def _update_serializer(issue, wanted, project):
+    # Not given the description: the serializer parses HTML and wraps several paragraphs in a `<div>`, so
+    # every addition would nest the whole description one level deeper. It is stored by `_store_description`.
+    return IssueSerializer(
+        issue,
+        data={key: value for key, value in wanted.items() if key != "description_html"},
+        context={"project_id": project.id, "workspace_id": project.workspace_id},
+        partial=True,
+    )
+
+
+def _store_description(issue, new_html):
+    """Store the new description.
+
+    The HTML here is the old description, which Plane stored itself, with paragraphs of escaped text added
+    or put in its place, so there is nothing in it to sanitise. The editor keeps a document of its own beside
+    the HTML. Left as it was, the next person to open the work item would see the old text and, typing,
+    replace the edit; emptied, it is made again from the HTML, which is what already happens for a work item
+    created through the API.
+    """
+    Issue.objects.filter(pk=issue.pk).update(
+        description_html=new_html,
+        description_stripped=strip_tags(new_html) if new_html else None,
+        description_binary=None,
+        description_json={},
+    )
+
+
+def _keep_description_version(issue, user, *, before, replacing=False):
+    """Put the description in the work item's version history, so an edit can be undone from Plane.
+
+    Before replacing, the old text is saved if the history does not already end with exactly it; after
+    any edit, the new text is. Written here rather than through the background task the web app uses,
+    which folds a person's saves within ten minutes into one and would fold the old text away.
+    """
+    if before:
+        if not replacing:
+            return
+        latest = IssueDescriptionVersion.objects.filter(issue_id=issue.pk).order_by("-last_saved_at").first()
+        if latest is not None and latest.description_html == issue.description_html:
+            return
+    IssueDescriptionVersion.log_issue_description_version(issue, user.id)
 
 
 def update_work_item(request, user, issue, fields, *, apply=True):
@@ -356,20 +495,29 @@ def update_work_item(request, user, issue, fields, *, apply=True):
                 status_code=409,
             )
 
-    serializer = IssueSerializer(
-        issue,
-        data=wanted,
-        context={"project_id": project.id, "workspace_id": project.workspace_id},
-        partial=True,
-    )
+    serializer = _update_serializer(issue, wanted, project)
     if not serializer.is_valid():
         raise _validation_error(serializer)
     if not apply:
         return changes
 
-    current_assignees, current_labels = _current_ids(issue)
-    current_instance = json.dumps(
-        {
+    with transaction.atomic():
+        stored = None
+        if "description_html" in wanted:
+            # The description is read again under a lock, so two edits at once cannot both think they were
+            # made on the description they read, and the version check is made on what is really stored.
+            stored = Issue.objects.select_for_update(of=("self",)).get(pk=issue.pk)
+            issue.description_html = stored.description_html
+            wanted, changes = plan_update(issue, fields)
+            if not changes:
+                return {}
+            serializer = _update_serializer(issue, wanted, project)
+            if not serializer.is_valid():
+                raise _validation_error(serializer)
+            _keep_description_version(stored, user, before=True, replacing="description" in fields)
+
+        current_assignees, current_labels = _current_ids(issue)
+        before = {
             "name": issue.name,
             "priority": issue.priority,
             "state_id": str(issue.state_id) if issue.state_id else None,
@@ -377,10 +525,15 @@ def update_work_item(request, user, issue, fields, *, apply=True):
             "target_date": issue.target_date.isoformat() if issue.target_date else None,
             "assignee_ids": current_assignees,
             "label_ids": current_labels,
-        },
-        cls=DjangoJSONEncoder,
-    )
-    serializer.save()
+        }
+        if "description_html" in wanted:
+            before["description_html"] = issue.description_html
+        current_instance = json.dumps(before, cls=DjangoJSONEncoder)
+        serializer.save()
+
+        if "description_html" in wanted:
+            _store_description(issue, wanted["description_html"])
+            _keep_description_version(Issue.objects.get(pk=issue.pk), user, before=False)
 
     requested = {
         {"state": "state_id", "assignees": "assignee_ids", "labels": "label_ids"}.get(key, key): value

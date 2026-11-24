@@ -91,3 +91,36 @@ def test_the_documented_lifetimes_are_the_real_ones():
     assert conf.REFRESH_TOKEN_LIFETIME.days == 90 and "**90 days**" in text
     assert conf.GRANT_MAX_AGE.days == 365 and "**365 days**" in text
     assert conf.REFRESH_REUSE_LEEWAY.total_seconds() == 10 and "**10 seconds**" in text
+
+
+def test_every_event_is_documented_and_nothing_else():
+    from plane.agent.services.events import EVENT_TYPES, REVOKED_REASONS
+
+    spec = _spec()
+    assert set(spec["webhooks"]) == set(EVENT_TYPES)
+    schemas = spec["components"]["schemas"]
+    work_item_types = set(schemas["WorkItemEvent"]["properties"]["type"]["enum"])
+    other_types = set(schemas["ConnectionRevokedEvent"]["properties"]["type"]["enum"]) | set(
+        schemas["WebhookTestEvent"]["properties"]["type"]["enum"]
+    )
+    assert work_item_types | other_types == set(EVENT_TYPES)
+    told = set(schemas["ConnectionRevokedEvent"]["properties"]["data"]["properties"]["reason"]["enum"])
+    assert told == set(REVOKED_REASONS.values())
+
+
+def test_the_documented_event_delivery_is_the_real_one():
+    """The retry waits, the timeout and the limit are written in prose people plan around."""
+    from plane.agent import conf
+
+    folder = Path(os.environ.get("AGENT_DOCS_DIR") or Path(__file__).resolve().parents[6] / "docs" / "agent-api")
+    path = folder / "07-events.md"
+    if not path.exists():
+        pytest.skip(f"{path} not found; run from a full checkout or set AGENT_DOCS_DIR")
+    text = path.read_text(encoding="utf-8")
+    assert (
+        conf.WEBHOOK_RETRY_SCHEDULE == (30, 120, 600, 600, 600)
+        and "30 seconds, 2 minutes and then three times at 10 minutes" in text
+    )
+    assert len(conf.WEBHOOK_RETRY_SCHEDULE) + 1 == 6 and "six attempts in all" in text
+    assert conf.WEBHOOK_FAILURE_LIMIT == 10 and "**10 events in a row**" in text
+    assert conf.WEBHOOK_TIMEOUT_SECONDS == 10 and "waits ten seconds" in text

@@ -39,6 +39,7 @@ from plane.agent import audit, conf
 from plane.agent.errors import AgentError, invalid_client, invalid_grant, invalid_request
 from plane.agent.models import AgentAuthorizationRequest, AgentClient, AgentGrant, AgentToken
 from plane.agent.scopes import parse_scope_string, unknown_scopes
+from plane.agent.services import events
 from plane.agent.text import clean_display_text
 from plane.agent.tokens import (
     ACCESS_PREFIX,
@@ -49,6 +50,7 @@ from plane.agent.tokens import (
     new_secret,
     secrets_match,
 )
+from plane.utils.exception_logger import log_exception
 
 CODE_CHALLENGE = re.compile(r"^[A-Za-z0-9_-]{43}$")
 CODE_VERIFIER = re.compile(r"^[A-Za-z0-9\-._~]{43,128}$")
@@ -468,13 +470,25 @@ def refresh(client, params, *, request=None):
 def revoke_grant(grant, reason, *, request=None):
     """End a link and every token under it, at once."""
     now = timezone.now()
+    newly_ended = False
     with transaction.atomic():
         if grant.revoked_at is None:
             grant.revoked_at = now
             grant.revoked_reason = reason
             grant.save(update_fields=["revoked_at", "revoked_reason"])
+            newly_ended = True
         grant.tokens.filter(revoked_at__isnull=True).update(revoked_at=now)
     audit.record("revoked", request=request, grant=grant, reason=reason)
+    if newly_ended:
+        _announce_ended(grant, reason)
+
+
+def _announce_ended(grant, reason):
+    """Tell the app its link was ended by somebody else, so it can forget the tokens. Never fails the revoke."""
+    try:
+        events.announce_revoked(grant, reason)
+    except Exception as error:  # noqa: BLE001 - ending access must not depend on telling anybody
+        log_exception(error)
 
 
 def revoke_token(client, params, *, request=None):

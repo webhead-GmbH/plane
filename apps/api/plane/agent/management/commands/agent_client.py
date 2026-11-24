@@ -24,6 +24,7 @@ from django.utils import timezone
 from plane.agent import oauth
 from plane.agent.models import AgentClient, AgentGrant
 from plane.agent.scopes import DEFAULT_SCOPES, unknown_scopes
+from plane.agent.services import events
 from plane.agent.tokens import CLIENT_ID_PREFIX, CLIENT_SECRET_PREFIX, hash_secret, new_secret
 
 
@@ -82,6 +83,26 @@ class Command(BaseCommand):
         update.add_argument("--remove-redirect-uri", action="append", default=[], dest="remove_uris")
         update.add_argument("--set-scopes", nargs="+", dest="set_scopes")
 
+        webhook = sub.add_parser(
+            "webhook",
+            help="Say where an app is told about events (assigned, due date or state changed, connection ended).",
+        )
+        webhook.add_argument("client_id")
+        webhook.add_argument("--url", help="An https:// address. Replaces the old one and switches delivery back on.")
+        webhook.add_argument("--off", action="store_true", help="Stop telling this app about events.")
+        webhook.add_argument(
+            "--new-secret", action="store_true", dest="new_secret", help="Change the signing secret at once."
+        )
+        webhook.add_argument(
+            "--show-secret", action="store_true", dest="show_secret", help="Print the signing secret again."
+        )
+        webhook.add_argument(
+            "--send-test",
+            action="store_true",
+            dest="send_test",
+            help="Send one signed `webhook.test` to the address now and say whether the app answered.",
+        )
+
         revoke = sub.add_parser("revoke-grants", help="End every connection an app has, or one person's.")
         revoke.add_argument("client_id")
         revoke.add_argument("--email", help="Only this person's connections.")
@@ -119,6 +140,9 @@ class Command(BaseCommand):
             self.stdout.write(f"{client.client_id}  {state:<6} {client.name}  ({live} connection(s))")
             self.stdout.write(f"    redirect: {', '.join(client.redirect_uris)}")
             self.stdout.write(f"    scopes:   {' '.join(client.allowed_scopes)}")
+            if client.webhook_url:
+                state = "OFF after repeated failures" if client.webhook_disabled_at else "on"
+                self.stdout.write(f"    events:   {client.webhook_url} ({state})")
 
     def _rotate_secret(self, options):
         client = _find(options["client_id"])
@@ -158,6 +182,56 @@ class Command(BaseCommand):
         self.stdout.write(
             self.style.SUCCESS("Updated. Connections that already exist keep the scopes they were given.")
         )
+
+    def _webhook(self, options):
+        client = _find(options["client_id"])
+        if options["url"] and options["off"]:
+            raise CommandError("Give either --url or --off.")
+        changed = False
+        if options["off"]:
+            client.webhook_url, client.webhook_failures, client.webhook_disabled_at = "", 0, None
+            changed = True
+        elif options["url"]:
+            try:
+                client.webhook_url = events.check_webhook_url(options["url"])
+            except ValueError as error:
+                raise CommandError(str(error))
+            client.webhook_failures, client.webhook_disabled_at = 0, None
+            changed = True
+        if options["new_secret"]:
+            client.webhook_secret_version += 1
+            changed = True
+        if changed:
+            client.save(
+                update_fields=[
+                    "webhook_url",
+                    "webhook_secret_version",
+                    "webhook_failures",
+                    "webhook_disabled_at",
+                    "updated_at",
+                ]
+            )
+
+        if not client.webhook_url:
+            self.stdout.write("Events are off for this app: it is not told anything, and polls instead.")
+            return
+        state = (
+            "OFF after repeated failures (set --url again to switch it back on)" if client.webhook_disabled_at else "on"
+        )
+        self.stdout.write(f"  address:   {client.webhook_url} ({state})")
+        self.stdout.write(f"  failures:  {client.webhook_failures} in a row")
+        if options["send_test"]:
+            heard, what = events.send_test(client)
+            style = self.style.SUCCESS if heard else self.style.ERROR
+            self.stdout.write(style(f"  test:      {'the app answered' if heard else 'NOT delivered'} ({what})"))
+        if changed or options["show_secret"]:
+            self.stdout.write(f"  secret:    {events.webhook_secret(client)}")
+            self.stdout.write(
+                self.style.WARNING(
+                    "Give the secret to the app's developer through your secret-sharing channel. It is not stored: "
+                    "--show-secret prints it again, --new-secret replaces it."
+                )
+            )
 
     def _revoke_grants(self, options):
         client = _find(options["client_id"])

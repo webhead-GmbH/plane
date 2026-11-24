@@ -82,7 +82,7 @@
       },
       "work_items_write": {
         "title": "Tworzenie i zmienianie elementów pracy w Twoim imieniu",
-        "description": "Tworzy elementy pracy, zmienia ich stan, priorytet, terminy, przypisane osoby i etykiety oraz dodaje komentarze w Twoim imieniu. Wszystko, co robi, jest widoczne w Plane pod Twoim imieniem."
+        "description": "Tworzy elementy pracy, zmienia ich nazwę, opis, stan, priorytet, terminy, przypisane osoby i etykiety oraz dodaje komentarze w Twoim imieniu. Wszystko, co robi, jest widoczne w Plane pod Twoim imieniem."
       },
       "time_write": {
         "title": "Śledzenie Twojego czasu",

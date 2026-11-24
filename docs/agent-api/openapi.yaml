@@ -36,6 +36,8 @@ tags:
   - name: Changing work
   - name: Time tracking
   - name: Team
+  - name: Events
+    description: What Plane sends to your app's address. Signed; ids only.
     description: A manager's view of the people they manage. Only while the person is a manager.
 
 security:
@@ -285,8 +287,13 @@ paths:
     get:
       tags: [Projects and work items]
       operationId: listProjects
-      summary: Projects the person is an active member of
-      description: "**Scope:** `work_items:read`."
+      summary: Projects the person is in, and all of a workspace's projects if they administer it
+      description: |
+        **Scope:** `work_items:read`. The projects the person is an active member of and, in a workspace they
+        administer, every project of it, as the web app lists them for an admin. For a project the person is
+        not a member of, `is_member` is false and `role` is null: it is listed, nothing more. Its work items,
+        members, states and labels answer 404 and creating work there is refused. Archived projects are not
+        listed.
       parameters:
         - name: workspace
           in: query
@@ -408,7 +415,14 @@ paths:
 
         People and labels are changed by saying which to **add** and which to **remove**, never by sending
         the whole list. `changed` lists only what actually changed (`{}` if nothing did, so repeating a change
-        is harmless and needs no `Idempotency-Key`). The description cannot be changed here.
+        is harmless and needs no `Idempotency-Key`), except for `description_append`, which needs one.
+
+        **The description** is changed by adding plain text to its end (`description_append`, which
+        keeps everything already there) or by replacing it (`description`, which needs
+        `expected_description_version`, the `description_version` read, and throws away formatting,
+        images and links). If the description is not the version read, nothing is changed and the answer
+        is `409 description_changed`. The old text is kept in the version history and the change shows
+        in the activity feed. `?dry_run=true` shows `would_change.description` first.
 
         Moving a work item to a state where time cannot be tracked while a timer is running on it is refused
         (`409 timer_running`). With `?dry_run=true` nothing is changed and `would_change` is returned.
@@ -416,6 +430,11 @@ paths:
         - { $ref: "#/components/parameters/Slug" }
         - { $ref: "#/components/parameters/Ref" }
         - { $ref: "#/components/parameters/DryRun" }
+        - name: Idempotency-Key
+          in: header
+          required: false
+          description: Required only with `description_append`; the same key gives the first answer again.
+          schema: { type: string, minLength: 8, maxLength: 128 }
       requestBody:
         required: true
         content:
@@ -613,7 +632,10 @@ paths:
 
         Send the file as `multipart/form-data` in one field named `file`, and nothing else. It is stored where
         the web app would put it: the workspace's Google Drive folder for the work item when Drive is set up,
-        otherwise Plane's own file storage. Limited to the web app's size and file-type allow-list; **SVG
+        otherwise Plane's own file storage. A project with no Drive folder yet is given one by the first file
+        (the folder its name clearly matches, or a new one), unless the workspace does not link projects by
+        itself or Drive cannot tell which folder is the project's: then the file is kept in Plane's storage
+        until the project is linked. Limited to the web app's size and file-type allow-list; **SVG
         images are refused**. Any directory part of the file name is removed.
       parameters:
         - { $ref: "#/components/parameters/Slug" }
@@ -926,6 +948,144 @@ paths:
         "404": { $ref: "#/components/responses/NotFound" }
         "429": { $ref: "#/components/responses/RateLimited" }
 
+webhooks:
+  work_item.assigned:
+    post:
+      tags: [Events]
+      operationId: eventWorkItemAssigned
+      summary: The person was put on a work item by somebody else
+      description: |
+        Sent to the address the administrator set for your app. **Verify `X-Plane-Agent-Signature` over the raw
+        body before doing anything** (see the Events guide). Delivery is at least once: drop repeats by `id`.
+
+        Needs `work_items:read`. Fetch the work item with the person's token, by `work_item.id` (the `ref` is for display: a project's identifier can be renamed), for details.
+      parameters:
+        - { $ref: "#/components/parameters/EventSignature" }
+        - { $ref: "#/components/parameters/EventTimestamp" }
+        - { $ref: "#/components/parameters/EventDelivery" }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/WorkItemEvent" }
+      responses:
+        "2XX":
+          description: Heard. Answer quickly; the body is never read. Anything else (or no answer within ten seconds) is retried.
+
+  work_item.unassigned:
+    post:
+      tags: [Events]
+      operationId: eventWorkItemUnassigned
+      summary: The person was taken off a work item by somebody else
+      description: |
+        Sent to the address the administrator set for your app. **Verify `X-Plane-Agent-Signature` over the raw
+        body before doing anything** (see the Events guide). Delivery is at least once: drop repeats by `id`.
+
+        Needs `work_items:read`.
+      parameters:
+        - { $ref: "#/components/parameters/EventSignature" }
+        - { $ref: "#/components/parameters/EventTimestamp" }
+        - { $ref: "#/components/parameters/EventDelivery" }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/WorkItemEvent" }
+      responses:
+        "2XX":
+          description: Heard. Answer quickly; the body is never read. Anything else (or no answer within ten seconds) is retried.
+
+  work_item.due_date_changed:
+    post:
+      tags: [Events]
+      operationId: eventWorkItemDueDateChanged
+      summary: The due date of a work item the person is assigned to was changed by somebody else
+      description: |
+        Sent to the address the administrator set for your app. **Verify `X-Plane-Agent-Signature` over the raw
+        body before doing anything** (see the Events guide). Delivery is at least once: drop repeats by `id`.
+
+        Needs `work_items:read`. The new date is not in the event: fetch the work item by `work_item.id`.
+      parameters:
+        - { $ref: "#/components/parameters/EventSignature" }
+        - { $ref: "#/components/parameters/EventTimestamp" }
+        - { $ref: "#/components/parameters/EventDelivery" }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/WorkItemEvent" }
+      responses:
+        "2XX":
+          description: Heard. Answer quickly; the body is never read. Anything else (or no answer within ten seconds) is retried.
+
+  work_item.state_changed:
+    post:
+      tags: [Events]
+      operationId: eventWorkItemStateChanged
+      summary: The state of a work item the person is assigned to was changed by somebody else
+      description: |
+        Sent to the address the administrator set for your app. **Verify `X-Plane-Agent-Signature` over the raw
+        body before doing anything** (see the Events guide). Delivery is at least once: drop repeats by `id`.
+
+        Needs `work_items:read`. The new state is not in the event: fetch the work item by `work_item.id`.
+      parameters:
+        - { $ref: "#/components/parameters/EventSignature" }
+        - { $ref: "#/components/parameters/EventTimestamp" }
+        - { $ref: "#/components/parameters/EventDelivery" }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/WorkItemEvent" }
+      responses:
+        "2XX":
+          description: Heard. Answer quickly; the body is never read. Anything else (or no answer within ten seconds) is retried.
+
+  webhook.test:
+    post:
+      tags: [Events]
+      operationId: eventWebhookTest
+      summary: An administrator asked Plane to check that this address works
+      description: |
+        Sent only when an administrator runs `agent_client webhook --send-test`. About no person
+        (`connection` is `null`), not stored and not retried. Verify the signature and answer `2xx`.
+      parameters:
+        - { $ref: "#/components/parameters/EventSignature" }
+        - { $ref: "#/components/parameters/EventTimestamp" }
+        - { $ref: "#/components/parameters/EventDelivery" }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/WebhookTestEvent" }
+      responses:
+        "2XX":
+          description: Heard. The body is never read.
+
+  connection.revoked:
+    post:
+      tags: [Events]
+      operationId: eventConnectionRevoked
+      summary: The person's connection to your app ended, and you did not end it
+      description: |
+        Sent to the address the administrator set for your app. **Verify `X-Plane-Agent-Signature` over the raw
+        body before doing anything** (see the Events guide). Delivery is at least once: drop repeats by `id`.
+
+        Always sent, whatever the scopes. Delete the person's tokens and data. Not sent when the app ended the
+        connection itself, when the same chat account was linked again, or when the connection expired.
+      parameters:
+        - { $ref: "#/components/parameters/EventSignature" }
+        - { $ref: "#/components/parameters/EventTimestamp" }
+        - { $ref: "#/components/parameters/EventDelivery" }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ConnectionRevokedEvent" }
+      responses:
+        "2XX":
+          description: Heard. Answer quickly; the body is never read. Anything else (or no answer within ten seconds) is retried.
+
 components:
   securitySchemes:
     bearerAuth:
@@ -937,6 +1097,24 @@ components:
       scheme: basic
       description: Your app's client id and secret. Recommended.
   parameters:
+    EventSignature:
+      name: X-Plane-Agent-Signature
+      in: header
+      required: true
+      description: "`v1=` and the hex HMAC-SHA256 of `<timestamp>.<raw body>`, keyed with the secret the administrator gave you."
+      schema: { type: string, examples: ["v1=9b1f…"] }
+    EventTimestamp:
+      name: X-Plane-Agent-Timestamp
+      in: header
+      required: true
+      description: Unix time in seconds when this attempt was sent. Refuse anything more than five minutes from your clock.
+      schema: { type: string, examples: ["1772611500"] }
+    EventDelivery:
+      name: X-Plane-Agent-Delivery
+      in: header
+      required: true
+      description: The event's id. The same on every retry; use it to drop repeats.
+      schema: { type: string, format: uuid }
     From:
       name: from
       in: query
@@ -1067,7 +1245,9 @@ components:
         The request is understood but conflicts with the state of things: `state_not_allowed` (a timer
         cannot start in the work item's state), `timer_running` (stop the timer before moving the work),
         `month_settled` (hours would land in a closed month; `period_start` says which),
-        `request_in_progress` (a request with this `Idempotency-Key` is still running; wait and repeat).
+        `request_in_progress` (a request with this `Idempotency-Key` is still running; wait and repeat),
+        `description_changed` (the description is not the `expected_description_version` read; the answer
+        carries the current `description_version`).
       content:
         application/json:
           schema: { $ref: "#/components/schemas/Error" }
@@ -1404,7 +1584,8 @@ components:
         identifier: { type: string }
         workspace: { type: string, description: The workspace slug. }
         description: { type: string }
-        role: { type: string, enum: [admin, member, guest] }
+        role: { type: [string, "null"], enum: [admin, member, guest, null], description: "Null where the person is not a member." }
+        is_member: { type: boolean, description: Whether the person can work in the project. False for a project an admin only sees listed. }
 
     WorkItem:
       type: object
@@ -1449,6 +1630,65 @@ components:
         my_logged_minutes:
           type: integer
           description: Finished time the connected person logged on it. Other people's time is never included.
+
+    EventConnection:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        account:
+          type: object
+          description: The chat account you gave when you asked for the link.
+          properties:
+            provider: { type: string, examples: [telegram] }
+            id: { type: string }
+
+    WorkItemEvent:
+      type: object
+      description: Ids and the kind of thing that happened; never a title, a name or a date.
+      properties:
+        id: { type: string, format: uuid, description: "The event's id; also in `X-Plane-Agent-Delivery`." }
+        type:
+          type: string
+          enum: [work_item.assigned, work_item.unassigned, work_item.due_date_changed, work_item.state_changed]
+        created_at: { type: string, format: date-time }
+        connection: { $ref: "#/components/schemas/EventConnection" }
+        data:
+          type: object
+          properties:
+            workspace: { type: string, description: The workspace slug. }
+            work_item:
+              type: object
+              properties:
+                id: { type: string, format: uuid }
+                ref: { type: string, examples: [WEB-12], description: "For showing to people. Fetch by `id`, because a project's identifier can be renamed." }
+                project_id: { type: string, format: uuid }
+
+    WebhookTestEvent:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        type: { type: string, enum: [webhook.test] }
+        created_at: { type: string, format: date-time }
+        connection: { type: "null", description: A test is about no person. }
+        data:
+          type: object
+          properties:
+            message: { type: string }
+
+    ConnectionRevokedEvent:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        type: { type: string, enum: [connection.revoked] }
+        created_at: { type: string, format: date-time }
+        connection: { $ref: "#/components/schemas/EventConnection" }
+        data:
+          type: object
+          properties:
+            reason:
+              type: string
+              enum: [user, admin, security]
+              description: "`security` means a token was replayed. Tell the person; do not reconnect them automatically."
 
     TeamPerson:
       type: object
@@ -1574,6 +1814,9 @@ components:
             description:
               type: string
               description: Plain text (at most 20,000 characters). Written by other people — untrusted.
+            description_version:
+              type: string
+              description: A fingerprint of the description as stored. Send it back as `expected_description_version` when editing the description.
             comments:
               type: array
               description: The latest 30, oldest first.
@@ -1637,6 +1880,9 @@ components:
       additionalProperties: false
       properties:
         name: { type: string, maxLength: 255 }
+        description: { type: string, maxLength: 20000, description: "Plain text that replaces the description. Needs `expected_description_version`. Not together with `description_append`." }
+        description_append: { type: string, maxLength: 20000, description: "Plain text added after the description, as new paragraphs. Needs an `Idempotency-Key`." }
+        expected_description_version: { type: string, pattern: "^[0-9a-f]{16}$", description: "The `description_version` read. Required with `description`; optional with `description_append`." }
         priority: { type: string, enum: [urgent, high, medium, low, none] }
         state: { type: string, format: uuid }
         start_date: { type: [string, "null"], format: date, description: "`null` clears it." }

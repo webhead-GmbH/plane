@@ -267,6 +267,7 @@ class TestGoogleDrive:
             )
 
         monkeypatch.setattr(files, "ready_connection_for", lambda workspace_id: object())
+        monkeypatch.setattr(files, "_project_has_drive_folder", lambda project, user: True)
         monkeypatch.setattr(files, "start_upload", fake_start)
         monkeypatch.setattr(files, "DriveClient", FakeDrive)
         monkeypatch.setattr(files, "S3Storage", mock.MagicMock(side_effect=AssertionError("Plane storage was used")))
@@ -307,3 +308,132 @@ class TestGoogleDrive:
         assert response.status_code == 502 and response.json()["error"] == "storage_unavailable"
         assert "quota exceeded" in response.json()["error_description"]
         assert not DriveFile.objects.exists() and not AgentIdempotencyKey.objects.exists()
+
+
+class TestTheProjectsDriveFolder:
+    """A project made before Drive was connected has no folder; the first file must not fail because of it."""
+
+    @pytest.fixture
+    def fake(self, workspace, monkeypatch):
+        """Drive set up for the workspace (its real rows), against a fake Google Drive."""
+        from plane.agent.services import files
+        from plane.gdrive import services as drive_services
+        from plane.gdrive.models import DriveConnection
+        from plane.tests.contract.gdrive.test_drive_endpoints import ROOT, FakeDrive
+
+        fake = FakeDrive()
+        connection = DriveConnection(
+            workspace=workspace, client_id="client", root_folder_id=ROOT, root_folder_name="webhead"
+        )
+        connection.set_client_secret("secret")
+        connection.set_refresh_token("refresh")
+        connection.save()
+        monkeypatch.setattr(drive_services, "DriveClient", lambda connection: fake)
+        monkeypatch.setattr(files, "DriveClient", lambda connection: fake)
+        monkeypatch.setattr(drive_services, "_lock", mock.MagicMock())
+        return fake
+
+    @pytest.fixture
+    def plane_storage_used(self, monkeypatch):
+        from plane.agent.services import files
+
+        storage = mock.MagicMock()
+        storage.upload_file.return_value = True
+        monkeypatch.setattr(files, "S3Storage", mock.MagicMock(return_value=storage))
+        return storage
+
+    @pytest.fixture
+    def never_plane_storage(self, monkeypatch):
+        from plane.agent.services import files
+
+        monkeypatch.setattr(files, "S3Storage", mock.MagicMock(side_effect=AssertionError("Plane storage was used")))
+
+    def test_the_first_file_makes_the_projects_folder_and_the_work_items(
+        self, client, workspace, project, issue, fake, never_plane_storage
+    ):
+        from plane.gdrive.models import DriveIssueFolder, DriveProjectFolder
+        from plane.tests.contract.gdrive.test_drive_endpoints import ROOT
+
+        response = send(client, workspace, b"hello", "notes.txt")
+
+        assert response.status_code == 201, response.content
+        assert response.json()["file"]["storage"] == "google_drive"
+        link = DriveProjectFolder.objects.get(project=project)
+        assert link.method == DriveProjectFolder.Method.CREATED and link.folder_name == "PRJ - Project PRJ"
+        assert fake.find_folder(ROOT, "PRJ - Project PRJ")["id"] == link.folder_id
+        tasks = fake.find_folder(link.folder_id, "Tasks")
+        work_item = fake.find_folder(tasks["id"], "PRJ-1")
+        assert DriveIssueFolder.objects.get(issue=issue).folder_id == work_item["id"]
+        assert DriveFile.objects.get().state == DriveFile.State.UPLOADED
+        assert not FileAsset.objects.exists()
+
+    def test_a_second_file_uses_the_folders_that_exist(
+        self, client, workspace, project, issue, fake, never_plane_storage
+    ):
+        from plane.gdrive.models import DriveProjectFolder
+
+        assert send(client, workspace).status_code == 201
+        before = len(fake.items)
+        assert send(client, workspace, b"more", "more.txt").status_code == 201
+        assert DriveProjectFolder.objects.filter(project=project).count() == 1
+        assert len(fake.items) == before + 1  # only the file itself
+
+    def test_a_folder_that_clearly_is_the_projects_is_used_not_duplicated(
+        self, client, workspace, project, issue, fake, never_plane_storage
+    ):
+        from plane.gdrive.models import DriveProjectFolder
+        from plane.tests.contract.gdrive.test_drive_endpoints import ROOT
+
+        existing = fake.add_folder("Project PRJ")
+
+        assert send(client, workspace).status_code == 201
+
+        link = DriveProjectFolder.objects.get(project=project)
+        assert link.folder_id == existing and link.method == DriveProjectFolder.Method.MATCHED
+        assert [folder["name"] for folder in fake.list_folders(ROOT)] == ["Project PRJ"]
+
+    def test_when_the_workspace_does_not_link_projects_by_itself_the_file_waits_in_plane_storage(
+        self, client, workspace, project, issue, fake, plane_storage_used
+    ):
+        from plane.gdrive.models import DriveConnection, DriveProjectFolder
+
+        DriveConnection.objects.filter(workspace=workspace).update(auto_link_new_projects=False)
+
+        response = send(client, workspace)
+
+        assert response.status_code == 201, response.content
+        assert response.json()["file"]["storage"] == "plane"
+        assert not DriveProjectFolder.objects.exists() and len(fake.items) == 1  # nothing was made in Drive
+        assert FileAsset.objects.count() == 1
+
+    def test_when_drive_cannot_tell_which_folder_is_the_projects_the_file_waits_in_plane_storage(
+        self, client, workspace, project, issue, fake, plane_storage_used
+    ):
+        from plane.gdrive.models import DriveProjectFolder
+
+        fake.add_folder("Project PRJ")
+        fake.add_folder("Project PRJ GmbH")
+
+        response = send(client, workspace)
+
+        assert response.status_code == 201 and response.json()["file"]["storage"] == "plane"
+        assert not DriveProjectFolder.objects.exists()
+        assert len(fake.items) == 3  # no third folder was added beside the two that look like it
+
+    def test_drive_failing_while_making_the_folder_is_a_clean_failure(
+        self, client, workspace, project, issue, fake, never_plane_storage, monkeypatch
+    ):
+        from plane.gdrive.models import DriveProjectFolder
+
+        def refuse(parent, name):
+            raise DriveError("Drive is down")
+
+        monkeypatch.setattr(fake, "create_folder", refuse)
+
+        response = send(client, workspace)
+
+        assert response.status_code == 502 and response.json()["error"] == "storage_unavailable"
+        assert "folder in Google Drive could not be made" in response.json()["error_description"]
+        assert "Drive is down" in response.json()["error_description"]
+        assert not DriveProjectFolder.objects.exists() and not DriveFile.objects.exists()
+        assert not FileAsset.objects.exists() and not AgentIdempotencyKey.objects.exists()

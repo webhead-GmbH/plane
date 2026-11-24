@@ -82,7 +82,7 @@
       },
       "work_items_write": {
         "title": "Tạo và thay đổi mục công việc thay bạn",
-        "description": "Tạo mục công việc, thay đổi trạng thái, mức ưu tiên, ngày, người phụ trách và nhãn của chúng, đồng thời thêm bình luận, dưới danh nghĩa của bạn. Mọi thứ ứng dụng làm đều hiển thị trong Plane dưới tên bạn."
+        "description": "Tạo mục công việc, thay đổi tên, mô tả, trạng thái, mức ưu tiên, ngày, người phụ trách và nhãn của chúng, đồng thời thêm bình luận, dưới danh nghĩa của bạn. Mọi thứ ứng dụng làm đều hiển thị trong Plane dưới tên bạn."
       },
       "time_write": {
         "title": "Theo dõi thời gian của bạn",

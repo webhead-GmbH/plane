@@ -16,13 +16,14 @@ that app's very next call, because there is nothing remembered to go stale.
 """
 
 # Python imports
+import hashlib
 import html
 import re
 from uuid import UUID
 
 # Django imports
 from django.conf import settings
-from django.db.models import Exists, F, OuterRef, Prefetch, Sum, Value
+from django.db.models import Exists, F, OuterRef, Prefetch, Q, Sum, Value
 from django.db.models.functions import Coalesce
 from django.utils.html import strip_tags
 
@@ -39,10 +40,20 @@ from plane.db.models import (
     ProjectMember,
     WorkspaceMember,
 )
+from plane.app.permissions import ROLE
 from plane.hr.services.computation import minutes_from_seconds
 
 # Longest stretch of text from a work item or comment handed over in one piece.
 MAX_TEXT = 20000
+
+
+def description_version(html_text):
+    """A short fingerprint of a description as it is stored.
+
+    It is what an app sends back to say "I edited the description I read", so that an edit made
+    on top of somebody else's later change is refused instead of silently replacing it.
+    """
+    return hashlib.sha256((html_text or "").encode("utf-8")).hexdigest()[:16]
 
 
 def visible_issues(user):
@@ -61,6 +72,22 @@ def visible_projects(user):
         workspace_id=OuterRef("workspace_id"), member=user, is_active=True
     )
     return Project.objects.filter(archived_at__isnull=True).filter(Exists(member_of), Exists(still_in_workspace))
+
+
+def listed_projects(user):
+    """The projects the person is shown in a list: their own, and, as in the web app, every project of a
+    workspace they administer.
+
+    Being listed is not being able to act. In a project the person is not a member of, the web app lets
+    a workspace admin see that it exists and nothing more, and so does this: its work items, members,
+    states and labels stay out of reach and creating work there is refused until they join.
+    """
+    administers = WorkspaceMember.objects.filter(
+        workspace_id=OuterRef("workspace_id"), member=user, is_active=True, role=ROLE.ADMIN.value
+    )
+    return Project.objects.filter(archived_at__isnull=True).filter(
+        Q(pk__in=visible_projects(user).values("pk")) | Q(Exists(administers))
+    )
 
 
 def with_my_time(queryset, user):
@@ -208,6 +235,7 @@ def detail(issue):
     comments = IssueComment.objects.filter(issue=issue).select_related("actor").order_by("-created_at")[:MAX_COMMENTS]
     payload = compact(issue)
     payload["description"] = plain_text(issue.description_html or issue.description_stripped)
+    payload["description_version"] = description_version(issue.description_html)
     payload["comments"] = [
         {
             "id": str(comment.id),

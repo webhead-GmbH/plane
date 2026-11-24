@@ -12,7 +12,7 @@ from celery import shared_task
 
 # Module imports
 from plane.agent import conf
-from plane.agent.models import AgentAuditLog, AgentAuthorizationRequest, AgentIdempotencyKey, AgentToken
+from plane.agent.models import AgentAuditLog, AgentAuthorizationRequest, AgentEvent, AgentIdempotencyKey, AgentToken
 from plane.utils.exception_logger import log_exception
 
 
@@ -31,6 +31,8 @@ def purge_expired(now=None):
         "tokens": AgentToken.objects.filter(expires_at__lt=cutoff).delete()[0],
         "audit_lines": AgentAuditLog.objects.filter(created_at__lt=now - conf.AUDIT_RETENTION).delete()[0],
         "idempotency_keys": AgentIdempotencyKey.objects.filter(expires_at__lt=now).delete()[0],
+        # Whatever the state: one still waiting after the retention window was never going to be sent.
+        "events": AgentEvent.objects.filter(created_at__lt=now - conf.EVENT_RETENTION).delete()[0],
     }
 
 
@@ -41,3 +43,37 @@ def purge_expired_agent_records():
     except Exception as error:  # noqa: BLE001 - a failed sweep is retried tomorrow
         log_exception(error)
         return None
+
+
+@shared_task
+def dispatch_activity_events(activity_ids):
+    """Work out who the activities just recorded are news to, and make an event for each."""
+    from plane.agent.services import events
+
+    try:
+        return events.dispatch_activities(activity_ids)
+    except Exception as error:  # noqa: BLE001 - telling an app is never a reason for anything else to fail
+        log_exception(error)
+        return None
+
+
+@shared_task(bind=True)
+def deliver_agent_event(self, event_id):
+    """Tell the app about one event; if it does not answer, try again later.
+
+    The waits and the number of tries come from `conf.WEBHOOK_RETRY_SCHEDULE`, and the number
+    of attempts is counted on the event itself, so a worker that dies mid-way does not reset it.
+    """
+    from plane.agent.services import events
+
+    try:
+        event = AgentEvent.objects.select_related("grant", "grant__client").filter(pk=event_id).first()
+        if event is None:
+            return None
+        outcome, wait = events.deliver_once(event)
+    except Exception as error:  # noqa: BLE001
+        log_exception(error)
+        return None
+    if outcome == events.RETRY:
+        raise self.retry(countdown=wait, max_retries=None)
+    return outcome

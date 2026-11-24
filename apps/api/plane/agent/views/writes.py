@@ -133,8 +133,9 @@ class WorkItemEndpoint(AgentWriteView):
     Changing needs `work_items:write`. Assignees and labels are changed by saying which to
     `add_…` and which to `remove_…`, never by sending the whole list, so an app that does not
     know everybody already on a work item cannot take them off. Doing the same change twice is
-    harmless (the second changes nothing), so no Idempotency-Key is needed. With `?dry_run=true`
-    the changes are reported, not made.
+    harmless (the second changes nothing), so no Idempotency-Key is needed, except when adding
+    text to the description, which would be added twice. With `?dry_run=true` the changes are
+    reported, not made.
     """
 
     http_method_names = ["get", "head", "patch", "options"]
@@ -157,11 +158,19 @@ class WorkItemEndpoint(AgentWriteView):
                 status=status.HTTP_200_OK,
             )
 
-        changes = writes.update_work_item(request, request.user, issue, fields)
-        if changes:
-            self.wrote(request, "work_item.update", work_item=str(issue.id), fields=sorted(changes))
-        issue = work_items.resolve(request.user, slug, str(issue.id))
-        return Response({"changed": changes, "work_item": work_items.detail(issue)}, status=status.HTTP_200_OK)
+        def action():
+            changes = writes.update_work_item(request, request.user, issue, fields)
+            if changes:
+                self.wrote(request, "work_item.update", work_item=str(issue.id), fields=sorted(changes))
+            fresh = work_items.resolve(request.user, slug, str(issue.id))
+            return status.HTTP_200_OK, {"changed": changes, "work_item": work_items.detail(fresh)}
+
+        # Doing the same change twice changes nothing, so most edits need no key. Adding text to the
+        # description does it twice, and an app that retries must not.
+        if "description_append" in fields:
+            return self.once(request, action, str(issue.id))
+        code, body = action()
+        return Response(body, status=code)
 
 
 class CommentCreateEndpoint(AgentWriteView):
