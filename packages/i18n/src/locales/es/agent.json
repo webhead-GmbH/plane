@@ -15,6 +15,7 @@
       "plane_account_help": "La aplicación actuará en tu nombre con esta cuenta.",
       "scopes_heading": "A qué tendrá acceso {app}",
       "can_change": "Puede hacer cambios",
+      "sees_others": "Muestra datos de otras personas",
       "allow": "Permitir",
       "revoke_hint": "Puedes retirar este acceso en cualquier momento en los ajustes de tu perfil, en Aplicaciones conectadas.",
       "redirecting": "Volviendo a {app}…",
@@ -86,6 +87,10 @@
       "time_write": {
         "title": "Registrar tu tiempo",
         "description": "Iniciar y detener tu temporizador y agregar horas a tu tiempo, en tu nombre."
+      },
+      "team_read": {
+        "title": "Los días, las horas y la carga de tu equipo",
+        "description": "Para las personas de tu equipo: qué días trabajan, cuántas horas han trabajado y cuánto trabajo abierto tienen. Nunca el motivo de un día libre. Solo funciona mientras te ocupes del equipo en Plane."
       }
     }
   }

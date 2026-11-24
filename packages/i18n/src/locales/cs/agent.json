@@ -15,6 +15,7 @@
       "plane_account_help": "Aplikace bude jednat vaším jménem pod tímto účtem.",
       "scopes_heading": "K čemu bude mít aplikace „{app}“ přístup",
       "can_change": "Může provádět změny",
+      "sees_others": "Zobrazuje informace o jiných lidech",
       "allow": "Povolit",
       "revoke_hint": "Tento přístup můžete kdykoli odebrat v nastavení profilu v části Připojené aplikace.",
       "redirecting": "Vracíme vás do aplikace „{app}“…",
@@ -86,6 +87,10 @@
       "time_write": {
         "title": "Sledování vašeho času",
         "description": "Spouští a zastavuje váš časovač a přidává hodiny k vašemu času, a to vaším jménem."
+      },
+      "team_read": {
+        "title": "Dny, hodiny a vytížení vašeho týmu",
+        "description": "Pro lidi ve vašem týmu: ve které dny pracují, kolik hodin odpracovali a kolik otevřené práce mají. Nikdy ne důvod volna. Funguje jen po dobu, kdy v Plane vedete tým."
       }
     }
   }

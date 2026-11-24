@@ -4,7 +4,7 @@ The Agent API lets an application you run — a chat bot, a scheduled assistant,
 
 It was designed for a Telegram bot that talks to each employee, but nothing in it is specific to Telegram. Any server-side application can use it.
 
-> **Status — version 1: reading and acting.** An app can read a person's days, hours, leave, projects and work items, and — only with the extra scopes the person approves — create and change work items, comment, attach files, and start and stop their timer or add hours. Manager reports and push notifications are planned as further scopes and endpoints in the same `v1`; apps that do not ask for them are unaffected. See [Roadmap](#roadmap).
+> **Status — version 1: reading and acting.** An app can read a person's days, hours, leave, projects and work items, and — only with the extra scopes the person approves — create and change work items, comment, attach files, and start and stop their timer or add hours. A manager's app can also read how their team is doing (days, hours, open work), with a scope of its own that is never a default. Push notifications are planned as further endpoints in the same `v1`; apps that do not ask for them are unaffected. See [Roadmap](#roadmap).
 
 ---
 
@@ -217,6 +217,16 @@ Save the new refresh token **before** you use the new access token. If you ever 
 | Start or stop their timer                         | `POST /me/timer/start/`, `POST /me/timer/stop/`         | `time:write`       |
 | Add hours they worked                             | `POST /me/time-entries/`                                | `time:write`       |
 
+**For managers** (scope `team:read`, which only works while the person is a manager in Plane):
+
+| What the manager asks the bot              | Endpoint                          | Scope                           |
+| ------------------------------------------ | --------------------------------- | ------------------------------- |
+| Who is on my team?                         | `GET /team/`                      | `team:read`                     |
+| Who has room next week, who is overloaded? | `GET /team/workload/`             | `team:read`                     |
+| What is on Ana's plate?                    | `GET /team/{user_id}/work-items/` | `team:read` + `work_items:read` |
+
+A colleague's day off is reported as _away_, never why, and only the work the manager can see themselves is counted. See [Your team](03-api-reference.md#your-team-managers) and [Security guide §4b](04-security-guide.md#4b-managers-reading-about-colleagues).
+
 Every change is made **as the person**, with the same rules as in the web app, and appears in Plane under their name. Creating and attaching need an `Idempotency-Key`, and creating or changing can be previewed with `?dry_run=true` so the bot can ask "create this?" before it does. See [Making changes](03-api-reference.md#making-changes).
 
 Full detail in the [API reference](03-api-reference.md).
@@ -240,9 +250,8 @@ These explain the shape of everything else.
 
 Not available yet (planned, in this order):
 
-1. **Manager views** (`team:read`): capacity and workload of the people a manager is responsible for, to answer "will they be done by next week?". Until then, the bot can only report on the person it is connected to.
-2. **Events**: Plane calls your bot when something changes (assigned, due date moved) so it need not poll.
-3. **More ways to change work**: editing a description, linking work items, moving work between projects. (A description can be set when a work item is created but not replaced afterwards, on purpose: the web app edits descriptions live, and overwriting one from outside is not safe to do blindly. Add a comment instead.)
+1. **Events**: Plane calls your bot when something changes (assigned, due date moved) so it need not poll.
+2. **More ways to change work**: editing a description, linking work items, moving work between projects. (A description can be set when a work item is created but not replaced afterwards, on purpose: the web app edits descriptions live, and overwriting one from outside is not safe to do blindly. Add a comment instead.)
 
 If you need one of these sooner, say which; the design leaves room for each.
 

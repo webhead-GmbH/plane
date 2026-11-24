@@ -15,6 +15,7 @@
       "plane_account_help": "L’app agirà per tuo conto con questo account.",
       "scopes_heading": "A cosa avrà accesso {app}",
       "can_change": "Può apportare modifiche",
+      "sees_others": "Mostra dati di altre persone",
       "allow": "Consenti",
       "revoke_hint": "Puoi revocare questo accesso in qualsiasi momento dalle impostazioni del profilo, in App collegate.",
       "redirecting": "Ti riportiamo su {app}…",
@@ -86,6 +87,10 @@
       "time_write": {
         "title": "Tracciare il tuo tempo",
         "description": "Avviare e fermare il tuo timer e aggiungere ore al tuo tempo, a tuo nome."
+      },
+      "team_read": {
+        "title": "Giorni, ore e carico di lavoro del tuo team",
+        "description": "Per le persone del tuo team: in quali giorni lavorano, quante ore hanno lavorato e quanto lavoro aperto hanno. Mai il motivo di un giorno di assenza. Funziona solo finché ti occupi del team in Plane."
       }
     }
   }

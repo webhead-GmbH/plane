@@ -71,6 +71,15 @@ def insufficient_scope(scope):
     )
 
 
+def not_a_manager():
+    return AgentError(
+        "not_a_manager",
+        "The people connected to this app can see their team only while they are a manager in Plane, and this "
+        "person is not one (any longer).",
+        status_code=status.HTTP_403_FORBIDDEN,
+    )
+
+
 def not_found(description="No such item, or it is not visible to you."):
     return AgentError("not_found", description, status_code=status.HTTP_404_NOT_FOUND)
 

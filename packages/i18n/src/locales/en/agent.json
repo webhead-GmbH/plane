@@ -15,6 +15,7 @@
       "plane_account_help": "The app will act for you as this account.",
       "scopes_heading": "What {app} will have access to",
       "can_change": "Can make changes",
+      "sees_others": "Shows other people's information",
       "allow": "Allow",
       "revoke_hint": "You can take this access back at any time in your profile settings, under Connected apps.",
       "redirecting": "Taking you back to {app}…",
@@ -86,6 +87,10 @@
       "time_write": {
         "title": "Track your time",
         "description": "Start and stop your timer, and add hours to your time, as you."
+      },
+      "team_read": {
+        "title": "Your team's days, hours and workload",
+        "description": "For the people on your team: which days they work, how many hours they have worked, and how much open work they have. Never the reason for a day off. It works only while you look after the team in Plane."
       }
     }
   }

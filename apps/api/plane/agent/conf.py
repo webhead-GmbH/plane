@@ -65,3 +65,9 @@ OAUTH_RATE_LIMIT = os.environ.get("AGENT_OAUTH_RATE_LIMIT", "60/minute")
 MAX_RANGE_DAYS = 92
 DEFAULT_PAGE_SIZE = 50
 MAX_PAGE_SIZE = 100
+
+# The team views work out every person's days one by one, so they ask for less: a shorter span and
+# fewer people per call. An app with a larger team pages through it.
+TEAM_MAX_RANGE_DAYS = 31
+TEAM_DEFAULT_PAGE_SIZE = 20
+TEAM_MAX_PAGE_SIZE = 25

@@ -6,7 +6,8 @@ info:
   description: |
     Version 1 reads a person's working days, hours, timer, leave, projects and work items, and — with the
     write scopes the person approves — acts for them: creates and changes work items, comments, attaches
-    files, starts and stops their timer and adds hours.
+    files, starts and stops their timer and adds hours. With `team:read`, which only works while the person
+    is a manager in Plane, it reads how their team is doing (days, hours, open work).
 
     A person connects an app through an OAuth 2.0 authorization-code flow hardened with pushed
     authorization requests (RFC 9126) and PKCE (RFC 7636, `S256` only). The app receives a short-lived
@@ -34,6 +35,8 @@ tags:
   - name: Projects and work items
   - name: Changing work
   - name: Time tracking
+  - name: Team
+    description: A manager's view of the people they manage. Only while the person is a manager.
 
 security:
   - bearerAuth: []
@@ -316,7 +319,7 @@ paths:
       parameters:
         - name: assignee
           in: query
-          description: "`me` is the only value: only work assigned to the connected person."
+          description: "`me` is the only value: only work assigned to the connected person. A manager reads a colleague's work with `GET /team/{user_id}/work-items/`."
           schema: { type: string, enum: [me] }
         - name: state_group
           in: query
@@ -785,6 +788,144 @@ paths:
         "422": { $ref: "#/components/responses/IdempotencyKeyReused" }
         "429": { $ref: "#/components/responses/RateLimited" }
 
+  /team/:
+    get:
+      tags: [Team]
+      operationId: listTeam
+      summary: The people on a manager's team
+      description: |
+        **Scope:** `team:read`. **Only while the person is a manager in Plane** (the flag on their employment
+        record, or an instance administrator), checked on every call: otherwise `403 not_a_manager`.
+
+        The people who work here now, alphabetically. Leavers, deactivated accounts and bots are not
+        listed. `id` is the person's Plane user id: the same one `GET /me/` returns for them and the project
+        member list uses for assigning.
+      parameters:
+        - { $ref: "#/components/parameters/Limit" }
+        - { $ref: "#/components/parameters/Offset" }
+      responses:
+        "200":
+          description: A page of people.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/TeamList" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/InvalidToken" }
+        "403": { $ref: "#/components/responses/NotAManager" }
+        "429": { $ref: "#/components/responses/RateLimited" }
+
+  /team/workload/:
+    get:
+      tags: [Team]
+      operationId: teamWorkload
+      summary: How much room each person has, and how much open work
+      description: |
+        **Scope:** `team:read`. **Only while the person is a manager in Plane**, checked on every call.
+
+        For each person: the hours they are expected to work in the span (after weekends, public holidays and
+        approved days off), the hours already worked, whether a timer is running, and counts of their
+        unfinished work among the work the manager can see.
+
+        **What is left out on purpose:** why somebody is away (a day off is `absence` or `partial_absence`,
+        with no kind and no note, even if the app also holds `leave:read`); any free text; work in projects
+        the manager is not a member of. Plane gives facts, not a forecast.
+      parameters:
+        - name: from
+          in: query
+          description: First day, inclusive. Default today (the manager's today).
+          schema: { type: string, format: date }
+        - name: to
+          in: query
+          description: Last day, inclusive. Default six days after `from`. **A span is at most 31 days here.**
+          schema: { type: string, format: date }
+        - name: user
+          in: query
+          description: Only these people, comma-separated user ids (at most 25). A malformed id is `400`; an unknown one matches nobody.
+          schema: { type: string }
+        - name: include
+          in: query
+          description: "`days` adds the day-by-day list under `capacity`."
+          schema: { type: string, enum: [days] }
+        - name: limit
+          in: query
+          description: Page size (default 20, at most 25).
+          schema: { type: integer, minimum: 1, maximum: 25, default: 20 }
+        - { $ref: "#/components/parameters/Offset" }
+      responses:
+        "200":
+          description: A page of people with their figures.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/TeamWorkload" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/InvalidToken" }
+        "403": { $ref: "#/components/responses/NotAManager" }
+        "429": { $ref: "#/components/responses/RateLimited" }
+
+  /team/{user_id}/work-items/:
+    get:
+      tags: [Team]
+      operationId: listTeamWorkItems
+      summary: One colleague's work items, among those the manager can see
+      description: |
+        **Scopes:** `team:read` and `work_items:read`. **Only while the person is a manager in Plane**, checked
+        on every call.
+
+        Takes every filter, the ordering and the paging of `GET /work-items/` except `assignee`, and returns
+        the same work item summaries, with `person_logged_minutes` (the colleague's own time on the item)
+        in place of `my_logged_minutes`. Somebody who is not on the team (left, deactivated, never employed,
+        or no such id) is `404`.
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          description: The person's Plane user id, from `GET /team/`.
+          schema: { type: string, format: uuid }
+        - name: state_group
+          in: query
+          description: Comma-separated stages.
+          schema: { type: string, examples: ["backlog,unstarted,started"] }
+        - name: priority
+          in: query
+          schema: { type: string }
+        - name: due_before
+          in: query
+          schema: { type: string, format: date }
+        - name: due_after
+          in: query
+          schema: { type: string, format: date }
+        - name: updated_since
+          in: query
+          schema: { type: string, format: date-time }
+        - name: q
+          in: query
+          schema: { type: string, maxLength: 200 }
+        - name: workspace
+          in: query
+          schema: { type: string }
+        - name: project
+          in: query
+          schema: { type: string, format: uuid }
+        - name: order_by
+          in: query
+          schema:
+            type: string
+            enum: [updated_at, -updated_at, created_at, -created_at, target_date, -target_date]
+            default: -updated_at
+        - { $ref: "#/components/parameters/Limit" }
+        - { $ref: "#/components/parameters/Offset" }
+      responses:
+        "200":
+          description: A page of the colleague's work items.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/TeamWorkItemList" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/InvalidToken" }
+        "403": { $ref: "#/components/responses/NotAManager" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "429": { $ref: "#/components/responses/RateLimited" }
+
 components:
   securitySchemes:
     bearerAuth:
@@ -897,6 +1038,14 @@ components:
             error: insufficient_scope
             error_description: "This connection was not granted the 'time:read' scope."
             scope: "time:read"
+    NotAManager:
+      description: The connection lacks a scope (`insufficient_scope`), or the person is not a manager in Plane (any longer) (`not_a_manager`).
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+          example:
+            error: not_a_manager
+            error_description: "The people connected to this app can see their team only while they are a manager in Plane, and this person is not one (any longer)."
     NotFound:
       description: No such item, or it is not visible to this person. The two are indistinguishable on purpose.
       content:
@@ -943,7 +1092,7 @@ components:
         error:
           type: string
           description: A stable code for programs.
-          examples: [invalid_request, invalid_token, insufficient_scope, not_found, rate_limited]
+          examples: [invalid_request, invalid_token, insufficient_scope, not_a_manager, not_found, rate_limited]
         error_description:
           type: string
           description: A sentence for people; may be reworded.
@@ -956,7 +1105,7 @@ components:
 
     Scope:
       type: string
-      enum: [profile, "time:read", "leave:read", "work_items:read", "work_items:write", "time:write"]
+      enum: [profile, "time:read", "leave:read", "work_items:read", "work_items:write", "time:write", "team:read"]
 
     ScopeInfo:
       type: object
@@ -965,6 +1114,7 @@ components:
         title: { type: string }
         description: { type: string }
         writes: { type: boolean, description: Whether it lets the app change anything. True for `work_items:write` and `time:write`. }
+        others: { type: boolean, description: "Whether it shows the app other people's information. True for `team:read`." }
 
     Account:
       type: object
@@ -1299,6 +1449,111 @@ components:
         my_logged_minutes:
           type: integer
           description: Finished time the connected person logged on it. Other people's time is never included.
+
+    TeamPerson:
+      type: object
+      properties:
+        id: { type: string, format: uuid, description: The person's Plane user id. }
+        display_name: { type: string }
+        timezone: { type: string, examples: [Europe/Vienna] }
+
+    TeamList:
+      type: object
+      properties:
+        count: { type: integer }
+        limit: { type: integer }
+        offset: { type: integer }
+        next_offset: { type: [integer, "null"] }
+        results:
+          type: array
+          items: { $ref: "#/components/schemas/TeamPerson" }
+
+    TeamDay:
+      type: object
+      description: One day of a colleague. Nothing about why they might be away.
+      properties:
+        date: { type: string, format: date }
+        weekday: { type: string }
+        kind:
+          type: string
+          enum: [workday, non_working_day, public_holiday, half_public_holiday, absence, partial_absence]
+        expects_work: { type: boolean }
+        scheduled_minutes: { type: integer }
+        expected_minutes: { type: integer }
+
+    TeamWorkloadPerson:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        display_name: { type: string }
+        timezone: { type: string }
+        capacity:
+          type: object
+          properties:
+            expected_minutes: { type: integer, description: Hours still to work in the span, after weekends, public holidays and approved days off. }
+            working_days: { type: integer }
+            days_away: { type: integer, description: Days that are a full or partial absence. Not why. }
+            has_schedule:
+              type: boolean
+              description: False means nobody has told Plane when this person works, so `expected_minutes` is 0 for want of data, not because they are away.
+            days:
+              type: array
+              description: Only with `include=days`.
+              items: { $ref: "#/components/schemas/TeamDay" }
+        worked:
+          type: object
+          description: Hours already logged in the span, in the person's own days. Days still to come are 0.
+          properties:
+            total_minutes: { type: integer }
+            work_item_minutes: { type: integer }
+            other_minutes: { type: integer }
+        timer_running: { type: boolean, description: Whether a timer is running now. Not what it runs on. }
+        open_work:
+          type: object
+          description: Their unfinished work (backlog, unstarted, started) among the work the manager can see.
+          properties:
+            count: { type: integer }
+            in_progress: { type: integer }
+            overdue: { type: integer, description: Due before the person's today. May overlap `due_in_span`. }
+            due_in_span: { type: integer }
+            due_later: { type: integer }
+            no_due_date: { type: integer }
+            urgent_or_high: { type: integer }
+
+    TeamWorkload:
+      type: object
+      properties:
+        from: { type: string, format: date }
+        to: { type: string, format: date }
+        count: { type: integer }
+        limit: { type: integer }
+        offset: { type: integer }
+        next_offset: { type: [integer, "null"] }
+        results:
+          type: array
+          items: { $ref: "#/components/schemas/TeamWorkloadPerson" }
+
+    TeamWorkItemList:
+      allOf:
+        - { $ref: "#/components/schemas/WorkItemList" }
+        - type: object
+          properties:
+            person:
+              type: object
+              properties:
+                id: { type: string, format: uuid }
+                display_name: { type: string }
+            results:
+              type: array
+              description: Work item summaries; `person_logged_minutes` replaces `my_logged_minutes`.
+              items:
+                allOf:
+                  - { $ref: "#/components/schemas/WorkItem" }
+                  - type: object
+                    properties:
+                      person_logged_minutes:
+                        type: integer
+                        description: Finished time that colleague logged on the item.
 
     WorkItemList:
       type: object

@@ -54,7 +54,7 @@ function AccessPills(props: { connection: TAgentConnection }) {
           <li key={scope.id}>
             <Tooltip label={text.description || text.title}>
               <span>
-                <Badge variant={scope.writes ? "warning" : "neutral"} size="xs" label={text.title} />
+                <Badge variant={scope.writes || scope.others ? "warning" : "neutral"} size="xs" label={text.title} />
               </span>
             </Tooltip>
           </li>

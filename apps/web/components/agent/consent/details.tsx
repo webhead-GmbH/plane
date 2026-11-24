@@ -104,6 +104,7 @@ function ScopeList(props: { scopes: TAgentScope[]; appName: string }) {
               <span className="flex flex-wrap items-center gap-2">
                 <span className="text-body-sm-medium text-primary">{text.title}</span>
                 {scope.writes && <Badge variant="warning" size="xs" label={t("agent.consent.can_change")} />}
+                {scope.others && <Badge variant="warning" size="xs" label={t("agent.consent.sees_others")} />}
               </span>
               {text.description && <span className="text-body-xs-regular text-tertiary">{text.description}</span>}
             </li>

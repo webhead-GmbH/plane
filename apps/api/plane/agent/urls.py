@@ -20,6 +20,7 @@ from plane.agent.views.consent import (
 )
 from plane.agent.views.me import MeEndpoint
 from plane.agent.views.oauth import AuthorizationRequestEndpoint, RevokeEndpoint, TokenEndpoint
+from plane.agent.views.team import TeamEndpoint, TeamWorkItemsEndpoint, TeamWorkloadEndpoint
 from plane.agent.views.timekeeping import (
     AbsencesEndpoint,
     DayEndpoint,
@@ -77,6 +78,10 @@ v1_patterns = [
         ProjectLabelsEndpoint.as_view(),
         name="agent-project-labels",
     ),
+    # A manager's team
+    path("v1/team/", TeamEndpoint.as_view(), name="agent-team"),
+    path("v1/team/workload/", TeamWorkloadEndpoint.as_view(), name="agent-team-workload"),
+    path("v1/team/<str:user_id>/work-items/", TeamWorkItemsEndpoint.as_view(), name="agent-team-work-items"),
     # Changing things
     path(
         "v1/workspaces/<str:slug>/projects/<str:project_id>/work-items/",

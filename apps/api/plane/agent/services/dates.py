@@ -42,24 +42,27 @@ def parse_datetime(raw, name):
     return value
 
 
-def parse_span(query, today, *, default_days=7):
+def parse_span(query, today, *, default_days=7, max_days=None):
     """`from` and `to` (inclusive) from the query, defaulting to a week starting today."""
+    max_days = max_days or conf.MAX_RANGE_DAYS
     first = parse_date(query.get("from"), "from") or today
     last = parse_date(query.get("to"), "to") or (first + timedelta(days=default_days - 1))
     if last < first:
         raise invalid_request("to must not be before from.")
-    if (last - first).days + 1 > conf.MAX_RANGE_DAYS:
-        raise invalid_request(f"A span may cover at most {conf.MAX_RANGE_DAYS} days.")
+    if (last - first).days + 1 > max_days:
+        raise invalid_request(f"A span may cover at most {max_days} days.")
     return first, last
 
 
-def parse_page(query):
+def parse_page(query, *, default=None, maximum=None):
     """`limit` and `offset`, clamped."""
+    default = default or conf.DEFAULT_PAGE_SIZE
+    maximum = maximum or conf.MAX_PAGE_SIZE
     try:
-        limit = int(query.get("limit", conf.DEFAULT_PAGE_SIZE))
+        limit = int(query.get("limit", default))
         offset = int(query.get("offset", 0))
     except (TypeError, ValueError):
         raise invalid_request("limit and offset must be whole numbers.")
     if limit < 1 or offset < 0:
         raise invalid_request("limit must be at least 1 and offset at least 0.")
-    return min(limit, conf.MAX_PAGE_SIZE), offset
+    return min(limit, maximum), offset

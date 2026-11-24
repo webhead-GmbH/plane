@@ -17,6 +17,8 @@ export type TAgentScope = {
   description: string;
   /** Whether the scope lets the app change anything. */
   writes: boolean;
+  /** Whether the scope shows the app other people's information, people who approved nothing themselves. */
+  others: boolean;
 };
 
 /** The account on the app's side that is being linked. Typed by a stranger and passed on by the app: never trusted. */

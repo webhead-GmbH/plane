@@ -14,6 +14,7 @@ The OAuth endpoints (linking, refresh, revoke) are in [Connecting a person](02-c
 - [What the person can pick from](#what-the-person-can-pick-from) — members, states, labels
 - [Work items: create and change](#work-items-create-and-change) — create, change, comment, attach
 - [Time: timer and hours](#time-timer-and-hours) — start, stop, add hours
+- [Your team (managers)](#your-team-managers) — `GET /team/`, `GET /team/workload/`, `GET /team/{user_id}/work-items/`
 
 ---
 
@@ -59,6 +60,7 @@ Every error — apart from framework-level failures of a proxy in front of Plane
 | 401  | `unauthorized`       | No `Authorization` header.                                                                                                                | Send a token.                                                                      |
 | 401  | `invalid_token`      | Token unknown, expired, revoked; the connection or app ended; the person deactivated. `WWW-Authenticate: Bearer … error="invalid_token"`. | Refresh once; if that fails with `invalid_grant`, ask the person to connect again. |
 | 403  | `insufficient_scope` | The connection was not given the scope this endpoint needs; `"scope"` names it.                                                           | Ask the person to connect again with that scope — or do without.                   |
+| 403  | `not_a_manager`      | A [team](#your-team-managers) endpoint, and the person is not a manager in Plane (any longer).                                            | Tell the person; do not retry. It works again if they become one.                  |
 | 404  | `not_found`          | No such item **or it is not visible to this person**. The two are indistinguishable on purpose.                                           | —                                                                                  |
 | 405  | `method_not_allowed` | The path does not take that method.                                                                                                       | —                                                                                  |
 | 429  | `rate_limited`       | Too many calls. `Retry-After` is in seconds.                                                                                              | Wait that long; do not hammer.                                                     |
@@ -78,7 +80,7 @@ These are defaults; the administrator may change them. Design for far less: a da
 
 See [Concepts → Time and dates](01-concepts.md#time-and-dates). In short: dates `YYYY-MM-DD`, timestamps ISO 8601 with offset, durations in whole minutes, and "today" is the person's today (reported as `today` and `timezone` in the answer).
 
-Spans (`from`/`to`) are **inclusive** and at most **92 days** long; longer is `400`. Dates before 1970 or after 2200 are refused.
+Spans (`from`/`to`) are **inclusive** and at most **92 days** long (31 for the [team](#your-team-managers) views); longer is `400`. Dates before 1970 or after 2200 are refused.
 
 ### Pagination
 
@@ -490,18 +492,18 @@ The projects the person is an active member of. **Query:** `workspace` — a wor
 
 Work items across the person's projects. All filters combine with AND.
 
-| Query                     | Values                                                                                            | Meaning                                                                                                          |
-| ------------------------- | ------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| `assignee`                | `me`                                                                                              | Only work assigned to the connected person. (`me` is the only value; there is no way to ask about someone else.) |
-| `state_group`             | comma list of `backlog`, `unstarted`, `started`, `completed`, `cancelled`                         | Stage. "Their open work" is `backlog,unstarted,started`.                                                         |
-| `priority`                | comma list of `urgent`, `high`, `medium`, `low`, `none`                                           |                                                                                                                  |
-| `due_before`, `due_after` | `YYYY-MM-DD`                                                                                      | Due date at or before / at or after. Work with no due date matches neither.                                      |
-| `updated_since`           | ISO 8601 **with a time zone**                                                                     | Changed at or after this moment. A timestamp without a zone is refused.                                          |
-| `q`                       | text, ≤ 200 chars                                                                                 | Words in the name or description.                                                                                |
-| `workspace`               | slug                                                                                              |                                                                                                                  |
-| `project`                 | project id                                                                                        |                                                                                                                  |
-| `order_by`                | `updated_at`, `-updated_at` (default), `created_at`, `-created_at`, `target_date`, `-target_date` | Anything else is `400`.                                                                                          |
-| `limit`, `offset`         | integers                                                                                          | See [Pagination](#pagination).                                                                                   |
+| Query                     | Values                                                                                            | Meaning                                                                                                                                                                       |
+| ------------------------- | ------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `assignee`                | `me`                                                                                              | Only work assigned to the connected person. (`me` is the only value. A manager reads a colleague's work through [`/team/{user_id}/work-items/`](#get-teamuser_idwork-items).) |
+| `state_group`             | comma list of `backlog`, `unstarted`, `started`, `completed`, `cancelled`                         | Stage. "Their open work" is `backlog,unstarted,started`.                                                                                                                      |
+| `priority`                | comma list of `urgent`, `high`, `medium`, `low`, `none`                                           |                                                                                                                                                                               |
+| `due_before`, `due_after` | `YYYY-MM-DD`                                                                                      | Due date at or before / at or after. Work with no due date matches neither.                                                                                                   |
+| `updated_since`           | ISO 8601 **with a time zone**                                                                     | Changed at or after this moment. A timestamp without a zone is refused.                                                                                                       |
+| `q`                       | text, ≤ 200 chars                                                                                 | Words in the name or description.                                                                                                                                             |
+| `workspace`               | slug                                                                                              |                                                                                                                                                                               |
+| `project`                 | project id                                                                                        |                                                                                                                                                                               |
+| `order_by`                | `updated_at`, `-updated_at` (default), `created_at`, `-created_at`, `target_date`, `-target_date` | Anything else is `400`.                                                                                                                                                       |
+| `limit`, `offset`         | integers                                                                                          | See [Pagination](#pagination).                                                                                                                                                |
 
 ```json
 {
@@ -851,6 +853,149 @@ Add hours the person worked on a work item, for today or a recent day.
 **`201`**: `{"id": "…", "date": "2026-03-04", "minutes": 90, "note": "", "work_item": {…}}` (`work_item` only with `work_items:read`).
 
 These hours count in the person's month exactly like hours they enter by hand. **They are never added to a month that has been settled** (handed in, approved or closed): `409 month_settled`. Those figures have been read by somebody; a person has to reopen the month in Plane first. Time is money here — confirm with the person before adding it, and never add hours the person did not state.
+
+## Your team (managers)
+
+For an app that helps a manager see how their people are doing: who has room, who is overloaded, what is on someone's plate. It answers "will they be done by next week?" and "who could take another task?" with facts. It does not forecast; that is the app's job.
+
+**Two things must be true on every call**, and both are checked every time:
+
+1. The connection holds the `team:read` scope. It is **never part of an app's default scopes**: the administrator names it when registering the app, and the person sees it marked _"Shows other people's information"_ on the approval screen.
+2. The person behind the connection is a manager in Plane **at that moment**: the manager flag on their employment record, or an instance administrator, which is the rule Plane's own HR pages use. Otherwise `403 not_a_manager`. The connection stays, so the view comes back if they become a manager again, and ends on the very next call if they stop being one.
+
+**What is deliberately left out.** These are colleagues who approved nothing themselves, so the app is told only what it needs:
+
+- **Never why somebody is away.** A day off shows as `absence` (or `partial_absence`) with no kind and no note, even if the app was also granted `leave:read` for the manager's own leave. The reason may be sickness, and health information about a named colleague must not reach an app, or a language model behind it.
+- **Never free text** from HR records.
+- **Only work the manager can see.** The manager flag grants sight of hours and days, not of projects: a colleague's work is counted and listed only in projects the manager is a member of. If the figures look low, the manager is probably not in that project.
+- **Names of work only with `work_items:read`.** The workload counts name nothing; the list of one person's work needs both scopes.
+
+Everything an app reads here is written to the audit log with the **ids of the people** it covered (never their data), so it is always possible to say whose information an app looked at.
+
+### `GET /team/`
+
+**Scope:** `team:read` · **Role:** manager
+
+The people who work here now, in alphabetical order. Leavers, deactivated accounts and bots are not listed. `limit` and `offset` as in [Pagination](#pagination).
+
+```json
+{
+  "count": 2,
+  "limit": 50,
+  "offset": 0,
+  "next_offset": null,
+  "results": [
+    { "id": "7b1c0f0e-…", "display_name": "Ana", "timezone": "Europe/Vienna" },
+    { "id": "0d9e5a41-…", "display_name": "Ben", "timezone": "Europe/Vienna" }
+  ]
+}
+```
+
+`id` is the person's **Plane user id**: the same `id` that `GET /me/` returns for them when they connect, and that the project member list uses for assigning. It is how the app matches a colleague here to the chat account they linked.
+
+### `GET /team/workload/`
+
+**Scope:** `team:read` · **Role:** manager
+
+For each person: how many hours they are expected to work in a span, how many they have worked, and how much unfinished work they have. One call covers up to 25 people; page through a bigger team.
+
+| Query             | Values                 | Meaning                                                                                                                        |
+| ----------------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `from`, `to`      | `YYYY-MM-DD`           | Inclusive. Default: today (the manager's today) and the six days after it. **At most 31 days**, shorter than the 92 elsewhere. |
+| `user`            | comma list of user ids | Only these people (at most 25). A malformed id is `400`; an id that is not on the team simply matches nobody.                  |
+| `include`         | `days`                 | Adds the day-by-day list under `capacity`.                                                                                     |
+| `limit`, `offset` | integers               | Default 20, **maximum 25** (each person's days are worked out one by one).                                                     |
+
+```json
+{
+  "from": "2026-03-02",
+  "to": "2026-03-06",
+  "count": 1,
+  "limit": 20,
+  "offset": 0,
+  "next_offset": null,
+  "results": [
+    {
+      "id": "0d9e5a41-…",
+      "display_name": "Ben",
+      "timezone": "Europe/Vienna",
+      "capacity": {
+        "expected_minutes": 1440,
+        "working_days": 3,
+        "days_away": 2,
+        "has_schedule": true
+      },
+      "worked": { "total_minutes": 165, "work_item_minutes": 120, "other_minutes": 45 },
+      "timer_running": false,
+      "open_work": {
+        "count": 4,
+        "in_progress": 2,
+        "overdue": 1,
+        "due_in_span": 1,
+        "due_later": 1,
+        "no_due_date": 1,
+        "urgent_or_high": 2
+      }
+    }
+  ]
+}
+```
+
+**`capacity`** is the hours the person is expected to work in the span, after weekends, public holidays and approved days off, worked out by the same arithmetic as their monthly figures.
+
+- `expected_minutes` and `working_days`: what is left to work.
+- `days_away`: days that are a full or partial absence. Not why.
+- `has_schedule`: `false` means nobody has told Plane when this person works, so `expected_minutes` is `0` for want of data and **not** because they are away. Do not report such a person as having no capacity.
+- With `include=days`, `days` lists each date with `kind` (`workday`, `non_working_day`, `public_holiday`, `half_public_holiday`, `absence`, `partial_absence`), `weekday`, `expects_work`, `scheduled_minutes` and `expected_minutes`. Nothing else about the day.
+
+**`worked`** is the hours already logged in the span, counted in the person's own days and rounded once per day and project, as in their own summary. Days still to come are `0`. `total_minutes` is `work_item_minutes` (time on work items) plus `other_minutes` (hours entered by hand).
+
+**`timer_running`** is whether they have a timer running now. Not what it runs on.
+
+**`open_work`** counts their unfinished work items (`backlog`, `unstarted`, `started`) among the work the manager can see. A work item two people share counts for both.
+
+| Field            | Meaning                                                                                        |
+| ---------------- | ---------------------------------------------------------------------------------------------- |
+| `count`          | All of it.                                                                                     |
+| `in_progress`    | Of those, in a started state.                                                                  |
+| `overdue`        | Due before the **person's** today. May overlap `due_in_span` when the span starts in the past. |
+| `due_in_span`    | Due on a day from `from` to `to`.                                                              |
+| `due_later`      | Due after `to`.                                                                                |
+| `no_due_date`    | Without a due date. Work that cannot be sequenced is often the real risk.                      |
+| `urgent_or_high` | With one of those priorities.                                                                  |
+
+**Answering "will they be done by next week?"** Plane gives you the facts, not a verdict. Compare `capacity.expected_minutes` with the work due in the span (`due_in_span`, `overdue`), and fetch what that work is with [`/team/{user_id}/work-items/`](#get-teamuser_idwork-items) to read its due dates and estimates. Estimates are each project's own unit (points or categories), **not hours**: do not add them up unless you know they share a scale. A person with room and nothing due is who to hand new work to.
+
+### `GET /team/{user_id}/work-items/`
+
+**Scope:** `team:read` **and** `work_items:read` · **Role:** manager
+
+One colleague's work items among those the manager can see, by the user id from `/team/`. It takes every filter, the ordering and the paging of [`GET /work-items/`](#get-work-items) except `assignee`, and returns the same [work item summaries](#work-item-summary), with two differences:
+
+- `person_logged_minutes` replaces `my_logged_minutes`: the hours **that colleague** has logged on the item, not the manager's.
+- `person` at the top names whose work it is.
+
+```json
+{
+  "person": { "id": "7b1c0f0e-…", "display_name": "Ana" },
+  "count": 1,
+  "limit": 50,
+  "offset": 0,
+  "next_offset": null,
+  "results": [
+    {
+      "ref": "WEB-7",
+      "name": "Quarterly report",
+      "target_date": "2026-03-06",
+      "estimate": "5",
+      "person_logged_minutes": 90,
+      "…": "…"
+    }
+  ]
+}
+```
+
+Somebody who is not on the team (left, deactivated, never employed, or an id that does not exist) is `404`, the same for all of them. The recipe for "what is on Ana's plate": `?state_group=backlog,unstarted,started&order_by=target_date`.
 
 ---
 
