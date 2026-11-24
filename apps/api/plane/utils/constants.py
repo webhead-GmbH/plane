@@ -68,4 +68,6 @@ RESTRICTED_WORKSPACE_SLUGS = [
     "licenses",
     "instances",
     "instance",
+    # The approval screen for connected apps lives at /connect/agent/<link>.
+    "connect",
 ]

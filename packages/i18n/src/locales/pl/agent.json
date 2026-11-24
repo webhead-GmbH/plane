@@ -1,0 +1,84 @@
+{
+  "agent": {
+    "consent": {
+      "page_title": "Połącz aplikację",
+      "title": "Aplikacja „{app}” chce połączyć się z Twoim kontem Plane",
+      "description": "Jeśli na to zezwolisz, aplikacja „{app}” będzie mogła działać w Plane w Twoim imieniu, ale tylko w zakresie dostępu wymienionym poniżej.",
+      "warning_title": "Zezwalaj tylko wtedy, gdy połączenie zainicjowałeś Ty",
+      "warning_description": "Sprawdź, czy konto poniżej należy do Ciebie i czy połączenie z aplikacją „{app}” zostało właśnie zainicjowane przez Ciebie. Jeśli ten link wysłała Ci inna osoba, wybierz Anuluj.",
+      "account_heading": "Konto, które zostanie powiązane",
+      "account_service": "Usługa",
+      "account_name": "Nazwa",
+      "account_username": "Nazwa użytkownika",
+      "account_id": "ID",
+      "plane_account_heading": "Twoje konto Plane",
+      "plane_account_help": "Aplikacja będzie działać w Twoim imieniu z użyciem tego konta.",
+      "scopes_heading": "Do czego aplikacja „{app}” uzyska dostęp",
+      "can_change": "Może wprowadzać zmiany",
+      "allow": "Zezwól",
+      "revoke_hint": "Ten dostęp możesz w każdej chwili cofnąć w ustawieniach profilu, w sekcji Połączone aplikacje.",
+      "redirecting": "Przekierowujemy Cię z powrotem do aplikacji „{app}”…",
+      "continue": "Kontynuuj",
+      "expired_title": "Ten link wygasł",
+      "expired_description": "Link do połączenia aplikacji działa tylko raz i tylko przez kilka minut. Wróć do aplikacji i poproś o nowy.",
+      "error_title": "Nie udało się tego dokończyć",
+      "error_description": "Nie udało się zrealizować żądania. Spróbuj ponownie lub poproś aplikację o nowy link.",
+      "framed_title": "Otwórz tę stronę osobno",
+      "framed_description": "Ze względów bezpieczeństwa ta strona nie działa wewnątrz innej strony. Otwórz ją w nowej karcie, aby kontynuować.",
+      "framed_open": "Otwórz w nowej karcie"
+    },
+    "connected_apps": {
+      "nav_label": "Połączone aplikacje",
+      "title": "Połączone aplikacje",
+      "description": "Aplikacje upoważnione do działania w Twoim imieniu w Plane. Usuń te, z których już nie korzystasz.",
+      "fields": {
+        "access": "Dostęp",
+        "linked": "Połączono",
+        "last_used": "Ostatnie użycie",
+        "expires": "Wygasa"
+      },
+      "not_used_yet": "Jeszcze nieużywana",
+      "no_expiry": "Nigdy",
+      "revoke": "Cofnij dostęp",
+      "revoke_aria": "Cofnij dostęp aplikacji „{app}”",
+      "revoke_title": "Cofnąć dostęp aplikacji „{app}”?",
+      "revoke_description": "Aplikacja „{app}” natychmiast przestanie działać. Możesz połączyć ją ponownie później.",
+      "revoke_confirm": "Cofnij dostęp",
+      "revoking": "Cofanie…",
+      "revoke_success": {
+        "title": "Dostęp cofnięty",
+        "message": "Aplikacja „{app}” nie może już działać w Twoim imieniu."
+      },
+      "revoke_error": {
+        "title": "Nie udało się cofnąć dostępu",
+        "message": "Coś poszło nie tak. Spróbuj ponownie."
+      },
+      "empty": {
+        "title": "Brak połączonych aplikacji",
+        "description": "Gdy połączysz aplikację ze swoim kontem Plane, pojawi się tutaj."
+      },
+      "load_error": {
+        "title": "Nie udało się wczytać połączonych aplikacji",
+        "description": "Sprawdź połączenie i spróbuj ponownie."
+      }
+    },
+    "scopes": {
+      "profile": {
+        "title": "Twoje imię i nazwisko oraz przestrzenie robocze",
+        "description": "Twoje imię i nazwisko, Twoja strefa czasowa oraz przestrzenie robocze, do których należysz."
+      },
+      "time_read": {
+        "title": "Twoje dni i czas pracy",
+        "description": "Informacja, czy dany dzień jest dla Ciebie dniem roboczym, świętem czy dniem wolnym, liczba przepracowanych godzin oraz element pracy, przy którym działa Twój licznik."
+      },
+      "leave_read": {
+        "title": "Twój urlop",
+        "description": "Twoje saldo urlopu oraz rodzaj nieobecności (na przykład urlop lub zwolnienie chorobowe) wpisany na dzień wolny."
+      },
+      "work_items_read": {
+        "title": "Twoje projekty i elementy pracy",
+        "description": "Projekty, których jesteś członkiem, i elementy pracy, które możesz w nich widzieć, wraz z komentarzami."
+      }
+    }
+  }
+}

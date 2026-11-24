@@ -1,0 +1,84 @@
+{
+  "agent": {
+    "consent": {
+      "page_title": "Conectează o aplicație",
+      "title": "{app} dorește să se conecteze la contul tău Plane",
+      "description": "Dacă permiți, {app} va putea acționa în numele tău în Plane, dar numai în limitele accesului enumerat mai jos.",
+      "warning_title": "Permite doar dacă tu ai inițiat conectarea",
+      "warning_description": "Verifică dacă contul de mai jos este al tău și dacă tocmai ai cerut ca {app} să se conecteze. Dacă ți-a trimis acest link altcineva, alege Anulează.",
+      "account_heading": "Contul care va fi asociat",
+      "account_service": "Serviciu",
+      "account_name": "Nume",
+      "account_username": "Nume de utilizator",
+      "account_id": "ID",
+      "plane_account_heading": "Contul tău Plane",
+      "plane_account_help": "Aplicația va acționa în numele tău cu acest cont.",
+      "scopes_heading": "La ce va avea acces {app}",
+      "can_change": "Poate face modificări",
+      "allow": "Permite",
+      "revoke_hint": "Poți retrage acest acces oricând din setările profilului, la Aplicații conectate.",
+      "redirecting": "Te ducem înapoi la {app}…",
+      "continue": "Continuă",
+      "expired_title": "Acest link a expirat",
+      "expired_description": "Un link pentru conectarea unei aplicații funcționează o singură dată și doar câteva minute. Întoarce-te în aplicație și cere unul nou.",
+      "error_title": "Nu am putut finaliza acțiunea",
+      "error_description": "Solicitarea nu a putut fi finalizată. Încearcă din nou sau cere aplicației un link nou.",
+      "framed_title": "Deschide această pagină separat",
+      "framed_description": "Pentru siguranța ta, această pagină nu funcționează în interiorul altei pagini. Deschide-o într-o filă nouă pentru a continua.",
+      "framed_open": "Deschide într-o filă nouă"
+    },
+    "connected_apps": {
+      "nav_label": "Aplicații conectate",
+      "title": "Aplicații conectate",
+      "description": "Aplicațiile cărora le-ai permis să acționeze în numele tău în Plane. Elimină-le pe cele pe care nu le mai folosești.",
+      "fields": {
+        "access": "Acces",
+        "linked": "Conectată",
+        "last_used": "Ultima utilizare",
+        "expires": "Expiră"
+      },
+      "not_used_yet": "Încă neutilizată",
+      "no_expiry": "Niciodată",
+      "revoke": "Revocă",
+      "revoke_aria": "Revocă accesul pentru {app}",
+      "revoke_title": "Revoci accesul pentru {app}?",
+      "revoke_description": "{app} va înceta imediat să funcționeze. O poți conecta din nou mai târziu.",
+      "revoke_confirm": "Revocă accesul",
+      "revoking": "Se revocă…",
+      "revoke_success": {
+        "title": "Acces revocat",
+        "message": "{app} nu mai poate acționa în numele tău."
+      },
+      "revoke_error": {
+        "title": "Nu s-a putut revoca accesul",
+        "message": "Ceva nu a mers bine. Încearcă din nou."
+      },
+      "empty": {
+        "title": "Nicio aplicație conectată",
+        "description": "Când conectezi o aplicație la contul tău Plane, va apărea aici."
+      },
+      "load_error": {
+        "title": "Nu s-au putut încărca aplicațiile conectate",
+        "description": "Verifică conexiunea și încearcă din nou."
+      }
+    },
+    "scopes": {
+      "profile": {
+        "title": "Numele tău și spațiile tale de lucru",
+        "description": "Numele tău, fusul tău orar și spațiile de lucru din care faci parte."
+      },
+      "time_read": {
+        "title": "Zilele și timpul tău de lucru",
+        "description": "Dacă fiecare zi este pentru tine zi lucrătoare, sărbătoare legală sau zi liberă, orele pe care le-ai lucrat și activitatea la care rulează cronometrul tău."
+      },
+      "leave_read": {
+        "title": "Concediul tău",
+        "description": "Soldul tău de concediu și tipul de absență (de exemplu concediu sau concediu medical) înregistrat într-o zi liberă."
+      },
+      "work_items_read": {
+        "title": "Proiectele și activitățile tale",
+        "description": "Proiectele din care faci parte și activitățile pe care le poți vedea în ele, împreună cu comentariile."
+      }
+    }
+  }
+}

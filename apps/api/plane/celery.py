@@ -118,6 +118,10 @@ app.conf.beat_schedule = {
         "task": "plane.hr.bgtasks.ledger_rebuild.report_days_needing_review",
         "schedule": crontab(hour=4, minute=0),  # UTC 04:00
     },
+    "check-every-day-for-expired-agent-records": {
+        "task": "plane.agent.tasks.purge_expired_agent_records",
+        "schedule": crontab(hour=4, minute=30),  # UTC 04:30
+    },
 }
 
 

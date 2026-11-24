@@ -1,0 +1,84 @@
+{
+  "agent": {
+    "consent": {
+      "page_title": "Hubungkan aplikasi",
+      "title": "{app} ingin terhubung ke akun Plane Anda",
+      "description": "Jika Anda mengizinkan, {app} dapat bertindak atas nama Anda di Plane, tetapi hanya dalam akses yang tercantum di bawah.",
+      "warning_title": "Izinkan hanya jika Anda sendiri yang memulainya",
+      "warning_description": "Pastikan akun di bawah ini milik Anda dan Anda baru saja meminta {app} untuk terhubung. Jika orang lain mengirimkan tautan ini kepada Anda, pilih Batalkan.",
+      "account_heading": "Akun yang akan ditautkan",
+      "account_service": "Layanan",
+      "account_name": "Nama",
+      "account_username": "Nama pengguna",
+      "account_id": "ID",
+      "plane_account_heading": "Akun Plane Anda",
+      "plane_account_help": "Aplikasi akan bertindak atas nama Anda dengan akun ini.",
+      "scopes_heading": "Apa yang dapat diakses {app}",
+      "can_change": "Dapat membuat perubahan",
+      "allow": "Izinkan",
+      "revoke_hint": "Anda dapat mencabut akses ini kapan saja di pengaturan profil, pada Aplikasi terhubung.",
+      "redirecting": "Mengembalikan Anda ke {app}…",
+      "continue": "Lanjutkan",
+      "expired_title": "Tautan ini sudah kedaluwarsa",
+      "expired_description": "Tautan untuk menghubungkan aplikasi hanya berfungsi sekali dan hanya selama beberapa menit. Kembali ke aplikasi dan minta tautan baru.",
+      "error_title": "Tidak dapat menyelesaikannya",
+      "error_description": "Permintaan tidak dapat diselesaikan. Coba lagi, atau minta tautan baru dari aplikasi.",
+      "framed_title": "Buka halaman ini secara terpisah",
+      "framed_description": "Demi keamanan Anda, halaman ini tidak berfungsi di dalam halaman lain. Buka di tab baru untuk melanjutkan.",
+      "framed_open": "Buka di tab baru"
+    },
+    "connected_apps": {
+      "nav_label": "Aplikasi terhubung",
+      "title": "Aplikasi terhubung",
+      "description": "Aplikasi yang Anda izinkan bertindak atas nama Anda di Plane. Hapus yang tidak lagi Anda gunakan.",
+      "fields": {
+        "access": "Akses",
+        "linked": "Terhubung",
+        "last_used": "Terakhir digunakan",
+        "expires": "Kedaluwarsa"
+      },
+      "not_used_yet": "Belum digunakan",
+      "no_expiry": "Tidak pernah",
+      "revoke": "Cabut",
+      "revoke_aria": "Cabut akses {app}",
+      "revoke_title": "Cabut akses {app}?",
+      "revoke_description": "{app} akan langsung berhenti berfungsi. Anda dapat menghubungkannya lagi nanti.",
+      "revoke_confirm": "Cabut akses",
+      "revoking": "Mencabut…",
+      "revoke_success": {
+        "title": "Akses dicabut",
+        "message": "{app} tidak dapat lagi bertindak atas nama Anda."
+      },
+      "revoke_error": {
+        "title": "Tidak dapat mencabut akses",
+        "message": "Terjadi kesalahan. Silakan coba lagi."
+      },
+      "empty": {
+        "title": "Tidak ada aplikasi terhubung",
+        "description": "Saat Anda menghubungkan aplikasi ke akun Plane Anda, aplikasi itu akan muncul di sini."
+      },
+      "load_error": {
+        "title": "Tidak dapat memuat aplikasi terhubung Anda",
+        "description": "Periksa koneksi Anda dan coba lagi."
+      }
+    },
+    "scopes": {
+      "profile": {
+        "title": "Nama dan ruang kerja Anda",
+        "description": "Nama Anda, zona waktu Anda, dan ruang kerja tempat Anda tergabung."
+      },
+      "time_read": {
+        "title": "Hari dan waktu kerja Anda",
+        "description": "Apakah setiap hari adalah hari kerja, hari libur nasional, atau hari libur bagi Anda, jam yang telah Anda kerjakan, dan item kerja tempat pengatur waktu Anda berjalan."
+      },
+      "leave_read": {
+        "title": "Cuti Anda",
+        "description": "Saldo cuti Anda dan jenis ketidakhadiran (misalnya cuti atau sakit) yang dicatat pada hari libur."
+      },
+      "work_items_read": {
+        "title": "Proyek dan item kerja Anda",
+        "description": "Proyek yang Anda ikuti dan item kerja yang dapat Anda lihat di dalamnya, beserta komentarnya."
+      }
+    }
+  }
+}

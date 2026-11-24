@@ -25,6 +25,8 @@ serves both the live view and the frozen record.
 
 # Python imports
 from collections import defaultdict
+from dataclasses import dataclass, replace
+from datetime import date
 
 # Django imports
 from django.db import transaction
@@ -73,9 +75,12 @@ from plane.hr.utils.resolve import (
 )
 
 
-def _profile_timezone(profile):
+def profile_timezone(profile):
     """The zone this person's days are measured in."""
     return profile.timezone or getattr(profile.workspace, "timezone", "") or None
+
+
+_profile_timezone = profile_timezone
 
 
 def _slice_for_day(absence, day, absence_type, records_leave_account=True):
@@ -177,6 +182,82 @@ def leave_charged_between(profile, first, last):
             )
         ).leave_minutes
     return total
+
+
+@dataclass(frozen=True)
+class DayOutlook:
+    """What one day asks of one person, before anything has been worked on it."""
+
+    day: date
+    # One of the computation module's KIND_* values.
+    kind: int
+    # What the schedule says for this weekday, whatever else falls on the day.
+    scheduled_minutes: int
+    # What is still expected after a public holiday and approved absence have taken their share.
+    expected_minutes: int
+    holiday: object = None
+    # (absence row, how it applies to this day: the whole of it, a half, or some hours).
+    absences: tuple = ()
+    # Whether any schedule covers the day. Without one nothing is expected of the
+    # person, which is a gap in the records rather than a day off.
+    has_schedule: bool = True
+
+
+def day_outlook(profile, first, last):
+    """For every day from `first` to `last`: working day, public holiday, or away.
+
+    Reads and computes; writes nothing and builds no month. That is the point of it
+    being separate from the rebuild: somebody asking "is today a working day?" must
+    not cause a month to be recalculated, and may ask about days months ahead that
+    no month exists for yet.
+
+    The arithmetic is the ledger's own (`compute_day`), so this answers the question
+    the same way the month will once it is built. Two differences, both deliberate:
+    the schedule counts whether or not a daily target is recorded for the person,
+    because the question is what the days *are*, not what is owed; and every approved
+    absence counts as being away, paid or not, because unpaid leave is no more a
+    working day than annual leave is. Only approved absences are looked at: one still
+    waiting to be decided has not changed anybody's plans yet.
+    """
+    personal_schedules = list(HrWorkSchedule.objects.filter(profile_id=profile.id))
+    default_schedules = list(HrWorkSchedule.objects.filter(profile__isnull=True))
+    holidays = _holiday_lookup(profile, first, last)
+    absences = _absence_lookup(profile, first, last)
+
+    outlook = []
+    for day in iter_days(first, last):
+        schedule = effective_schedule(personal_schedules, default_schedules, day)
+        scheduled = scheduled_minutes(schedule, day)
+        holiday = holidays.get(day)
+        covering = absences.covering(day)
+        # An absence draws down the day however it is paid for. Everything about the
+        # entitlement it uses is left out: this is about the day, not the account.
+        slices = [
+            replace(_slice_for_day(absence, day, absence.absence_type, records_leave_account=True), credits_actual=True)
+            for absence in covering
+        ]
+        result = compute_day(
+            DayInput(
+                day=day,
+                records_target=True,
+                scheduled_minutes=scheduled,
+                credited_day_minutes=credited_day_minutes(schedule, day),
+                holiday_fraction=holiday.day_fraction if holiday else None,
+                absences=slices,
+            )
+        )
+        outlook.append(
+            DayOutlook(
+                day=day,
+                kind=result.day_kind,
+                scheduled_minutes=scheduled,
+                expected_minutes=max(scheduled - result.holiday_minutes - result.absence_minutes, 0),
+                holiday=holiday,
+                absences=tuple(zip(covering, slices)),
+                has_schedule=schedule is not None,
+            )
+        )
+    return outlook
 
 
 def _worklog_minutes_by_day(profile, first, last, tz):

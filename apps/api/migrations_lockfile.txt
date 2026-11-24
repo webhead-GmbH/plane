@@ -4,6 +4,8 @@
 # A merge conflict here means another PR added a migration to the same app first:
 # merge preview, delete your migration, and run makemigrations again.
 
+agent: 0001_initial
+
 db: 0132_merge_20261020_1051
 
 gdrive: 0002_drivefile_moved_from
