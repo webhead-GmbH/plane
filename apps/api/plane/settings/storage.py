@@ -32,6 +32,10 @@ class StorageUnavailable(Exception):
 
 
 class S3Storage(S3Boto3Storage):
+    # FileField uploads send no canned ACL: an object keeps the bucket's default access
+    # and is read through presigned URLs. Takes precedence over AWS_DEFAULT_ACL.
+    default_acl = None
+
     def url(self, name, parameters=None, expire=None, http_method=None):
         return name
 
@@ -41,6 +45,9 @@ class S3Storage(S3Boto3Storage):
         # is_server: the public API's asset endpoints pass it for uploads another server
         # makes rather than a browser. Links are signed for the address the caller reached
         # the API on either way, which is one it can evidently reach, so nothing differs.
+        # Let django-storages set up its own state (location, bucket_name, ...) so
+        # this class also works as the default FileField storage.
+        super().__init__()
         # Get the AWS credentials and bucket name from the environment
         self.aws_access_key_id = os.environ.get("AWS_ACCESS_KEY_ID")
         # Use the AWS_SECRET_ACCESS_KEY environment variable for the secret key
