@@ -8,6 +8,7 @@
 import {
   AiStarFourOutline,
   ImageOutline,
+  IntegrationsOutline,
   LockOutline,
   MailOutline,
   SettingsOutline,
@@ -16,7 +17,14 @@ import {
 // types
 import type { TSidebarMenuItem } from "./types";
 
-export type TCoreSidebarMenuKey = "general" | "email" | "workspace" | "authentication" | "ai" | "image";
+export type TCoreSidebarMenuKey =
+  | "general"
+  | "email"
+  | "workspace"
+  | "authentication"
+  | "connected-apps"
+  | "ai"
+  | "image";
 
 export const coreSidebarMenuLinks: Record<TCoreSidebarMenuKey, TSidebarMenuItem> = {
   general: {
@@ -42,6 +50,12 @@ export const coreSidebarMenuLinks: Record<TCoreSidebarMenuKey, TSidebarMenuItem>
     name: "Authentication",
     description: "Configure authentication modes.",
     href: `/authentication/`,
+  },
+  "connected-apps": {
+    Icon: IntegrationsOutline,
+    name: "Connected apps",
+    description: "Register the apps, such as a chat bot, that people may connect to Plane.",
+    href: `/connected-apps/`,
   },
   ai: {
     Icon: AiStarFourOutline,

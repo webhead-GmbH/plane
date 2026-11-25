@@ -14,6 +14,7 @@ export function useSidebarMenu(): TSidebarMenuItem[] {
     coreSidebarMenuLinks.email,
     coreSidebarMenuLinks.authentication,
     coreSidebarMenuLinks.workspace,
+    coreSidebarMenuLinks["connected-apps"],
     coreSidebarMenuLinks.ai,
     coreSidebarMenuLinks.image,
   ];

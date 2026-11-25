@@ -184,7 +184,9 @@ class AgentAuditLog(models.Model):
 
     id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False)
     created_at = models.DateTimeField(default=timezone.now, db_index=True)
-    # request, linked, refreshed, refresh_retry, revoked, reuse_detected, denied
+    # request, linked, refreshed, refresh_retry, revoked, reuse_detected, denied; and, from the administrators'
+    # "Connected apps" screen: app_registered, app_changed, app_secret_replaced, app_events_changed,
+    # app_events_secret, app_events_tested, app_connections_ended
     event = models.CharField(max_length=32)
     client = models.ForeignKey(AgentClient, on_delete=models.SET_NULL, null=True, blank=True, related_name="+")
     grant = models.ForeignKey(AgentGrant, on_delete=models.SET_NULL, null=True, blank=True, related_name="+")
