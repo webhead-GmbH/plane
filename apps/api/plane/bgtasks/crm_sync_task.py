@@ -141,9 +141,7 @@ def _crm_staff_id_for(workspace_id, user, staff_by_email=None):
     if user is None:
         return None
 
-    member = WorkspaceMember.objects.filter(
-        workspace_id=workspace_id, member=user, is_active=True
-    ).first()
+    member = WorkspaceMember.objects.filter(workspace_id=workspace_id, member=user, is_active=True).first()
     if member and member.crm_staff_id:
         return member.crm_staff_id
 
@@ -195,7 +193,7 @@ def _local_datetime(value):
     if value is None:
         return "—"
     local = dj_timezone.localtime(value)
-    return f'{local.strftime("%Y-%m-%d")}<br>{local.strftime("%H:%M")}'
+    return f"{local.strftime('%Y-%m-%d')}<br>{local.strftime('%H:%M')}"
 
 
 def _duration_hm(seconds):
@@ -213,9 +211,7 @@ def _unmatched_worklogs(issue, staff_by_email):
     CRM already holds and count them twice.
     """
     worklogs = list(
-        IssueWorkLog.objects.filter(issue_id=issue.id)
-        .select_related("logged_by")
-        .order_by("started_at", "logged_at")
+        IssueWorkLog.objects.filter(issue_id=issue.id).select_related("logged_by").order_by("started_at", "logged_at")
     )
     users = [wl.logged_by for wl in worklogs if wl.logged_by_id]
     if not users:
@@ -233,9 +229,7 @@ def _unmatched_worklogs(issue, staff_by_email):
             crm_staff_id__gt=0,
         ).values_list("member_id", flat=True)
     )
-    mirrored = set(
-        CrmTimerLink.objects.filter(worklog__in=worklogs).values_list("worklog_id", flat=True)
-    )
+    mirrored = set(CrmTimerLink.objects.filter(worklog__in=worklogs).values_list("worklog_id", flat=True))
 
     unmatched = []
     for worklog in worklogs:
@@ -299,7 +293,7 @@ def _unmatched_worklog_note(issue, staff_by_email):
         '<hr style="margin:18px 0 14px;border:0;border-top:1px solid rgba(128,128,128,.35)">'
         '<p style="margin:0 0 3px"><strong>Time logged in Plane by people without a CRM account</strong></p>'
         f'<p style="margin:0 0 10px;{_MUTED}">These entries could not be attached to a CRM staff '
-        'member, so they are recorded here instead of being lost.</p>'
+        "member, so they are recorded here instead of being lost.</p>"
         '<table cellpadding="0" cellspacing="0" style="border-collapse:collapse;width:100%;font-size:13px">'
         f'<thead><tr><th style="{_HEAD}">User</th><th style="{_HEAD}">Start ({tz_label})</th>'
         f'<th style="{_HEAD}">End ({tz_label})</th>'
@@ -450,11 +444,7 @@ def _sync_issue_locked(issue_id):
     if not Issue.objects.select_for_update().filter(id=issue_id).exists():
         return
 
-    issue = (
-        Issue.objects.filter(id=issue_id)
-        .select_related("project", "workspace", "state")
-        .first()
-    )
+    issue = Issue.objects.filter(id=issue_id).select_related("project", "workspace", "state").first()
     if issue is None:
         return
 
@@ -477,8 +467,7 @@ def _sync_issue_locked(issue_id):
     # table, and is skipped entirely for a work item with neither — the common
     # case, which must not start paying for a CRM round-trip it has no use for.
     needs_staff = (
-        IssueAssignee.objects.filter(issue=issue).exists()
-        or IssueWorkLog.objects.filter(issue_id=issue.id).exists()
+        IssueAssignee.objects.filter(issue=issue).exists() or IssueWorkLog.objects.filter(issue_id=issue.id).exists()
     )
     staff_by_email = _crm_staff_by_email(issue.workspace_id) if needs_staff else {}
     if staff_by_email is None:
@@ -612,9 +601,7 @@ def _mirror_newly_matched_worklogs(issue, staff_by_email):
     so they have to become real timers in the same breath or the hours would
     simply disappear from the CRM.
     """
-    linked = set(
-        CrmTimerLink.objects.filter(worklog__issue_id=issue.id).values_list("worklog_id", flat=True)
-    )
+    linked = set(CrmTimerLink.objects.filter(worklog__issue_id=issue.id).values_list("worklog_id", flat=True))
     unmatched = {worklog.id for worklog in _unmatched_worklogs(issue, staff_by_email)}
     for worklog_id in IssueWorkLog.objects.filter(issue_id=issue.id).values_list("id", flat=True):
         if worklog_id in linked or worklog_id in unmatched:
@@ -627,11 +614,7 @@ def sync_worklog_to_crm(worklog_id):
     """Create or update the CRM timer mirroring one worklog / running timer."""
     # all_objects: deleting a worklog in Plane is a soft delete, so removal
     # arrives here as a save of a row the default manager no longer returns.
-    worklog = (
-        IssueWorkLog.all_objects.filter(id=worklog_id)
-        .select_related("issue", "project", "logged_by")
-        .first()
-    )
+    worklog = IssueWorkLog.all_objects.filter(id=worklog_id).select_related("issue", "project", "logged_by").first()
     if worklog is None:
         return
 
@@ -786,15 +769,11 @@ def backfill_workspace_to_crm(integration_id):
     if not mapped_project_ids:
         return
 
-    issue_ids = list(
-        Issue.objects.filter(project_id__in=mapped_project_ids).values_list("id", flat=True)
-    )
+    issue_ids = list(Issue.objects.filter(project_id__in=mapped_project_ids).values_list("id", flat=True))
     for issue_id in issue_ids:
         sync_issue_to_crm(issue_id)
 
-    worklog_ids = list(
-        IssueWorkLog.objects.filter(project_id__in=mapped_project_ids).values_list("id", flat=True)
-    )
+    worklog_ids = list(IssueWorkLog.objects.filter(project_id__in=mapped_project_ids).values_list("id", flat=True))
     for worklog_id in worklog_ids:
         sync_worklog_to_crm(worklog_id)
 
@@ -921,9 +900,7 @@ def resync_stranded_crm_hours():
         issue_ids = set(candidates.filter(logged_by_id__in=matchable).values_list("issue_id", flat=True))
         for issue_id in issue_ids:
             sync_issue_to_crm.delay(str(issue_id))
-        logger.info(
-            "Sending on stranded hours from %s CRM work items in workspace %s.", len(issue_ids), workspace_id
-        )
+        logger.info("Sending on stranded hours from %s CRM work items in workspace %s.", len(issue_ids), workspace_id)
 
 
 # ─── Project remap (a project's CRM id changed) ──────────────────────────────
@@ -983,9 +960,7 @@ def move_crm_task_to_crm_project(link_id):
             return
 
         # all_objects: the work item may be soft-deleted while its CRM task lives on.
-        project_id = (
-            Issue.all_objects.filter(id=link.issue_id).values_list("project_id", flat=True).first()
-        )
+        project_id = Issue.all_objects.filter(id=link.issue_id).values_list("project_id", flat=True).first()
         if project_id is None:
             return
         project = Project.objects.filter(id=project_id).select_related("workspace").first()
@@ -1065,6 +1040,7 @@ def import_crm_task_attachments(issue_id, actor_id, files):
         return
 
     storage = S3Storage(is_server=True)
+    copied = 0
     for entry in files:
         file_id = int(entry["id"])
         already = FileAsset.objects.filter(
@@ -1107,3 +1083,28 @@ def import_crm_task_attachments(issue_id, actor_id, files):
                 is_uploaded=True,
                 storage_metadata=storage.get_object_metadata(object_name=asset_key),
             )
+        copied += 1
+
+    if copied:
+        _send_files_to_drive(issue, actor)
+
+
+def _send_files_to_drive(issue, actor):
+    """Put the files just copied where the web app would have put them: in Google Drive, when the workspace has it.
+
+    The copy above stores a file in Plane's own storage, from where somebody had to press "Move to Google
+    Drive" for every work item that came from the CRM. A project without a Drive folder is given one the way
+    a new project is (when the workspace links projects by itself), and the work item's files then move
+    through the same code the button uses. Whatever goes wrong here leaves the files in Plane's storage,
+    where the button still works: the copy itself succeeded and must not be undone by it.
+    """
+    try:
+        from plane.gdrive.services import link_new_project, ready_connection_for
+        from plane.gdrive.tasks import move_plane_attachments_to_drive
+
+        if ready_connection_for(issue.workspace_id) is None:
+            return
+        link_new_project(issue.project, actor)
+        move_plane_attachments_to_drive.delay(str(issue.workspace_id), str(issue.id))
+    except Exception as exc:  # noqa: BLE001 - see the docstring
+        logger.warning("Could not send the files of work item %s to Google Drive: %s", issue.id, exc)

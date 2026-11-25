@@ -525,6 +525,62 @@ class TestImportingAttachments:
         download.assert_not_called()
         assert FileAsset.objects.filter(issue=issue).count() == 1
 
+    def drive(self, setup, issue, files, *, ready=True, link=None):
+        """Run the import with Google Drive faked; returns the queued move and the folder lookup."""
+        connection = mock.Mock() if ready else None
+        with (
+            mock.patch("plane.gdrive.services.ready_connection_for", return_value=connection),
+            mock.patch("plane.gdrive.services.link_new_project", **(link or {"return_value": "skipped"})) as linked,
+            mock.patch("plane.gdrive.tasks.move_plane_attachments_to_drive.delay") as move,
+        ):
+            self.run(setup, issue, files)
+        return move, linked
+
+    def test_the_files_go_to_google_drive_without_anybody_pressing_a_button(self, setup):
+        issue = self.issue(setup)
+
+        move, linked = self.drive(setup, issue, [{"id": 31, "name": "screenshot.png", "type": "image/png"}])
+
+        move.assert_called_once_with(str(setup["workspace"].id), str(issue.id))
+        # a project that has no folder yet is given one, as for a new project
+        assert linked.call_args.args[0].id == issue.project_id and linked.call_args.args[1] == setup["owner"]
+
+    def test_without_google_drive_the_files_simply_stay_in_plane(self, setup):
+        issue = self.issue(setup)
+
+        move, linked = self.drive(
+            setup, issue, [{"id": 31, "name": "screenshot.png", "type": "image/png"}], ready=False
+        )
+
+        move.assert_not_called()
+        linked.assert_not_called()
+        assert FileAsset.objects.filter(issue=issue).count() == 1
+
+    def test_nothing_is_moved_when_nothing_was_copied(self, setup):
+        issue = self.issue(setup)
+        files = [{"id": 31, "name": "screenshot.png", "type": "image/png"}]
+        self.run(setup, issue, files)
+
+        move, _linked = self.drive(setup, issue, files)  # the same file again: nothing is copied
+
+        move.assert_not_called()
+
+    def test_a_drive_that_cannot_make_the_folder_does_not_undo_the_copy(self, setup):
+        from plane.gdrive.client import DriveError
+
+        issue = self.issue(setup)
+
+        move, _linked = self.drive(
+            setup,
+            issue,
+            [{"id": 31, "name": "screenshot.png", "type": "image/png"}],
+            link={"side_effect": DriveError("Drive is down")},
+        )
+
+        move.assert_not_called()
+        asset = FileAsset.objects.get(issue=issue)
+        assert asset.is_uploaded and asset.attributes["crm_file_id"] == 31
+
     def test_a_type_plane_does_not_take_stays_in_the_crm(self, setup):
         issue = self.issue(setup)
 
