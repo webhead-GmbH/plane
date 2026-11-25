@@ -6,6 +6,8 @@ A small web page that behaves like the chat bot will: it links you to Plane, cal
 
 ### 1. Register the app (on the Plane server)
 
+On the _Connected apps_ page of the admin app (**Add app**), or with the command:
+
 ```bash
 python manage.py agent_client create \
     --name "Sandbox bot" \
@@ -17,6 +19,8 @@ python manage.py agent_client create \
 Keep the `client_id` and `client_secret` it prints. Leave out `--scope work_items:write --scope time:write` to try the API read-only, and `--scope team:read` if you do not want it to see the team.
 
 ### 2. Optional: let Plane tell the sandbox about events
+
+On the app's page (_Manage → Events_) set the address and use **Send a test message**, or with the command:
 
 ```bash
 python manage.py agent_client webhook <client_id> --url http://host.docker.internal:8920/plane/events

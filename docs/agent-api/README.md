@@ -72,7 +72,7 @@ Replace `PLANE` with your Plane address, for example `https://plane.example.com`
 
 ### 1. Get your app registered
 
-Someone who runs the Plane server registers your app once ([how](05-operations.md#registering-an-app)):
+Someone who runs the Plane server registers your app once, on the _Connected apps_ page of the admin app or with the command ([how](05-operations.md#registering-an-app)):
 
 ```bash
 python manage.py agent_client create \

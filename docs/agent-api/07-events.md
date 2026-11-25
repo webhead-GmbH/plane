@@ -29,7 +29,7 @@ Events are about **the person who connected your app**, never about colleagues. 
 
 ## Setting it up
 
-**An administrator** gives your app an address and a secret (you cannot set either yourself):
+**An administrator** gives your app an address and a secret (you cannot set either yourself), on the _Connected apps_ page of the admin app (_Manage → Events_), or with the command:
 
 ```bash
 python manage.py agent_client webhook plane_client_Ab3… --url https://bot.example.com/plane/events
@@ -139,7 +139,7 @@ A request that fails verification gets `401` (or is simply dropped) and is **not
 - Any other answer, a timeout or a connection error is a failure. Plane tries again after **30 seconds, 2 minutes and then three times at 10 minutes**, six attempts in all (about half an hour), and then gives up on that event. Each attempt is signed afresh.
 - Plane **never reads your answer's body**. Do not use it to say anything.
 - **Expect duplicates.** Keep the ids of events you have handled (for a day is plenty) and ignore a repeat. A retry carries the same `id`; a second change to the same work item is a new event with a new id.
-- **If your address keeps failing**, Plane stops using it: after **10 events in a row** could not be delivered at all, events are switched off for your app until the administrator sets the address again (`agent_client webhook … --url`). Your app is then back to polling, which still works. One accepted delivery resets the count.
+- **If your address keeps failing**, Plane stops using it: after **10 events in a row** could not be delivered at all, events are switched off for your app until the administrator saves the address again (_Connected apps → Manage → Events → Switch back on_, or `agent_client webhook … --url`). Your app is then back to polling, which still works. One accepted delivery resets the count.
 - Events for a person who is not connected any more are not sent.
 
 ## The events
@@ -160,7 +160,7 @@ The due date, or the state, of a work item the person is **assigned to** was cha
 
 ### `webhook.test`
 
-Sent only when an administrator runs `agent_client webhook … --send-test`, to check that the address and the secret work. It is about no person: `connection` is `null`, and it is neither stored nor retried. Verify the signature as for any event and answer `2xx`.
+Sent only when an administrator asks for it (_Send a test message_ on the _Connected apps_ page, or `agent_client webhook … --send-test`), to check that the address and the secret work. It is about no person: `connection` is `null`, and it is neither stored nor retried. Verify the signature as for any event and answer `2xx`.
 
 `data`: `{ "message": "A test from Plane. Answer with any 2xx status." }`
 
